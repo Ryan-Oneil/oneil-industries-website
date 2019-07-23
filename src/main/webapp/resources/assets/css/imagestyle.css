@@ -1,0 +1,23 @@
+.images {
+}
+
+.imageBox {
+  display: inline-block;
+  padding: 5px;
+}
+.galNav {
+	background-color: white;
+}
+.subMenu {
+	padding-top: 0px !important;
+}
+.imageUpload{
+	display: inline-block;
+}
+.imageUpload .details{
+	text-align: left;
+}
+.imageUpload form {
+	border: 1px solid;
+	padding: 20px;
+}
