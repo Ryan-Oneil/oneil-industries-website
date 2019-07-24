@@ -24,3 +24,7 @@
 	border: 1px solid;
 	padding: 20px;
 }
+
+.imageUpload h1 {
+	padding: 20px !important;
+}

@@ -40,7 +40,7 @@
 					<c:forEach items="${images}" var="image">
 						<div class="imageBox">
 							<p>${image.name}</p>
-							<img src="${pageContext.request.contextPath}/gallery/images/thumbnail/${image.fileName}" />
+							<a href="${pageContext.request.contextPath}/gallery/images/${image.fileName}" > <img src="${pageContext.request.contextPath}/gallery/images/thumbnail/${image.fileName}" /></a>
 						</div>
 					</c:forEach>
 				</div>

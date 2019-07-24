@@ -1,6 +1,7 @@
 package biz.oneilindsutries.gallery.demo.controller.advice;
 
 import biz.oneilindsutries.gallery.demo.exception.FileExistsException;
+import biz.oneilindsutries.gallery.demo.exception.NotAuthorisedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -28,6 +29,13 @@ public class ImageGalleryControllerAdvice {
 
     @ExceptionHandler(FileNotFoundException.class)
     public ResponseEntity handleException(FileNotFoundException error) {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(error.getMessage());
+    }
+
+    @ExceptionHandler(NotAuthorisedException.class)
+    public ResponseEntity handleException(NotAuthorisedException error) {
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .body(error.getMessage());

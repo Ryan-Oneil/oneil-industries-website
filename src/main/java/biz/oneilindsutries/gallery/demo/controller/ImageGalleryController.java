@@ -2,6 +2,7 @@ package biz.oneilindsutries.gallery.demo.controller;
 
 import biz.oneilindsutries.gallery.demo.entity.Image;
 import biz.oneilindsutries.gallery.demo.exception.FileExistsException;
+import biz.oneilindsutries.gallery.demo.exception.NotAuthorisedException;
 import biz.oneilindsutries.gallery.demo.filecreater.FileHandler;
 import biz.oneilindsutries.gallery.demo.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,11 +104,38 @@ public class ImageGalleryController {
     }
 
     @GetMapping("gallery/myimages/{imageFileName}")
-    public String manageImage(@PathVariable(value = "imageFileName") String imageFileName, Model model, Authentication user) {
+    public String manageImage(@PathVariable(value = "imageFileName") String imageFileName, Model model, Authentication user) throws FileNotFoundException, NotAuthorisedException {
+        Image image = imageService.getImageFileName(imageFileName);
 
+        if (image == null) {
+            throw new FileNotFoundException(imageFileName + ": Does not exist on this server");
+        }
+        if (!image.getUploader().equals(user.getName())) {
+            throw new NotAuthorisedException(user.getName() + " is not authorised");
+        }
 
-        return "gallery/myimages/manageimage";
+        model.addAttribute("image", image);
+
+        return "gallery/manageimage";
     }
 
+    @PostMapping("gallery/update/{imageID}")
+    public String updateImage(@PathVariable(value = "imageID") String id, @RequestParam(name = "imageName") String imageName, @RequestParam(name = "privacy") String linkStatus, Authentication user) throws FileNotFoundException, NotAuthorisedException {
+        Image image = imageService.getImage(Integer.valueOf(id));
+
+        if (image == null) {
+            throw new FileNotFoundException("Updating image wasn't found");
+        }
+        if (!image.getUploader().equals(user.getName())) {
+            throw new NotAuthorisedException(user.getName() + " is not authorised");
+        }
+
+        image.setName(imageName);
+        image.setLinkStatus(linkStatus);
+
+        imageService.saveImage(image);
+
+        return "redirect:/gallery/myimages/" + image.getFileName();
+    }
 
 }
