@@ -1,6 +1,7 @@
 package biz.oneilindsutries.gallery.demo.controller;
 
 import biz.oneilindsutries.gallery.demo.entity.Image;
+import biz.oneilindsutries.gallery.demo.exception.FileExistsException;
 import biz.oneilindsutries.gallery.demo.filecreater.FileHandler;
 import biz.oneilindsutries.gallery.demo.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,12 +52,12 @@ public class ImageGalleryController {
     }
 
     @PostMapping(value = "gallery/upload", consumes = "multipart/form-data")
-    public String uploadImage(@RequestParam("image")MultipartFile file, @RequestParam String name, @RequestParam String privacy, Authentication authentication) throws IOException {
+    public String uploadImage(@RequestParam("image")MultipartFile file, @RequestParam String name, @RequestParam String privacy, Authentication authentication) throws FileExistsException, IOException {
         if (!file.isEmpty()) {
             Image doesImageExistsAlready = imageService.getImageFileName(file.getOriginalFilename());
 
             if (doesImageExistsAlready != null) {
-                return "gallery/upload?fileFound";
+                throw new FileExistsException(file.getOriginalFilename() + " Already exists in database");
             }
 
             //Handles file writing
