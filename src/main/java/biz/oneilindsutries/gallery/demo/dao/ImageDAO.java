@@ -24,11 +24,21 @@ public class ImageDAO {
         return query.getResultList();
     }
 
+    public List<Image> getImagesByUser(String username) {
+
+        Session currentSession = sessionFactory.getCurrentSession();
+
+        Query<Image> query = currentSession.createQuery("from Image where uploader=:username", Image.class);
+        query.setParameter("username",username);
+
+        return query.getResultList();
+    }
+
     public List<Image> getPublicImages() {
 
         Session currentSession = sessionFactory.getCurrentSession();
 
-        Query<Image> query = currentSession.createQuery("from Image where linkStatus=:linkStatus", Image.class);
+        Query<Image> query = currentSession.createQuery("from Image where linkStatus=:linkStatus order by id desc", Image.class);
         query.setParameter("linkStatus","public");
 
         return query.getResultList();

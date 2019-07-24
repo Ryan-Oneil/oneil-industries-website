@@ -37,10 +37,11 @@
 			</div>
 			<div class="mainpage">
 				<div class="images">
-					<c:forEach items="${images}" var="image">
-						<div class="imageBox">
-							<p>${image.name}</p>
-							<img src="${pageContext.request.contextPath}/gallery/images/thumbnail/${image.fileName}" />
+					<h1>Click on a image to manage its options</h1>
+					<c:forEach items="${userimages}" var="image">
+						< class="imageBox">
+							<p>${image.name} ${image.dateAdded}</p>
+					<a href=""> <img src="${pageContext.request.contextPath}/gallery/images/thumbnail/${image.fileName}" /></a>
 						</div>
 					</c:forEach>
 				</div>

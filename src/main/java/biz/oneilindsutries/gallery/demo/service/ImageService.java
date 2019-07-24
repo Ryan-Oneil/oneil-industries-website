@@ -25,6 +25,11 @@ public class ImageService {
     }
 
     @Transactional
+    public List<Image> getImagesByUser(String username) {
+        return this.dao.getImagesByUser(username);
+    }
+
+    @Transactional
     public Image getImage(int id) {
         return dao.getImage(id);
     }

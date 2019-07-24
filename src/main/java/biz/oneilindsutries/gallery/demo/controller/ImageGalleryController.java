@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Controller
 public class ImageGalleryController {
@@ -40,6 +42,10 @@ public class ImageGalleryController {
     public byte[] getImage(@PathVariable(value = "imageFileName") String imageFileName) throws IOException {
         File serverFile = new File(GALLERY_IMAGES_DIRECTORY + imageFileName);
 
+        if (!serverFile.exists() || !serverFile.isFile()) {
+            throw new FileNotFoundException(imageFileName + ": Does not exist on this server");
+        }
+
         return Files.readAllBytes(serverFile.toPath());
     }
 
@@ -48,6 +54,9 @@ public class ImageGalleryController {
     public byte[] getImageThumbnail(@PathVariable(value = "imageFileName") String imageFileName) throws IOException {
         File serverFile = new File(GALLERY_IMAGES_DIRECTORY + "thumbnail/" + imageFileName);
 
+        if (!serverFile.exists() || !serverFile.isFile()) {
+            throw new FileNotFoundException(imageFileName + ": Does not exist on this server");
+        }
         return Files.readAllBytes(serverFile.toPath());
     }
 
@@ -80,4 +89,25 @@ public class ImageGalleryController {
     public String showUpload() {
         return "gallery/upload";
     }
+
+    @GetMapping("gallery/myimages")
+    public String showUserImages(Model model, Authentication user) {
+
+        List<Image> userImages = imageService.getImagesByUser(user.getName());
+
+        if (userImages != null) {
+            model.addAttribute("userimages",userImages);
+        }
+
+        return "gallery/myimages";
+    }
+
+    @GetMapping("gallery/myimages/{imageFileName}")
+    public String manageImage(@PathVariable(value = "imageFileName") String imageFileName, Model model, Authentication user) {
+
+
+        return "gallery/myimages/manageimage";
+    }
+
+
 }

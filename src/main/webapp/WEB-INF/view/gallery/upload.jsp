@@ -31,7 +31,7 @@
             <nav class="galNav">
                 <ul id="navBar" class="subMenu">
                     <li><a href="${pageContext.request.contextPath}/gallery/upload">Upload</a></li>
-                    <li><a href="#">My Images</a></li>
+                    <li><a href="${pageContext.request.contextPath}/gallery/myimages">My Images</a></li>
                     <li><a href="#">Logout</a></li>
                 </ul>
             </nav>

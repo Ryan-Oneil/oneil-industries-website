@@ -73,6 +73,14 @@ public class Image {
         this.uploader = uploader;
     }
 
+    public String getDateAdded() {
+        return dateAdded;
+    }
+
+    public void setDateAdded(String dateAdded) {
+        this.dateAdded = dateAdded;
+    }
+
     @Override
     public String toString() {
         return "Image{" +
