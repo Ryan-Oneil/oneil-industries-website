@@ -9,24 +9,20 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 
-public class ImageWriter {
+public class ImageThumbnailWriter {
 
-    private static final String IMAGE_LOCATIONS = "C:\\Users\\Ryan\\Desktop\\OneilIndustries\\src\\main\\webapp\\WEB-INF\\view\\gallery\\images\\";
+    private ImageThumbnailWriter() {
+    }
+
     private static final int IMAGE_RESIZE_SIZE = 400;
 
-    public static void writeImage(MultipartFile image) throws IOException {
-        String fileName = image.getOriginalFilename();
-        String fileExtension = image.getOriginalFilename().substring(fileName.lastIndexOf(".")+1,fileName.length()).toLowerCase();
-
+    public static void writeImage(MultipartFile image,String dest, String extension) throws IOException {
         BufferedImage src = ImageIO.read(new ByteArrayInputStream(image.getBytes()));
 
-        File destination = new File(IMAGE_LOCATIONS + "\\" + image.getOriginalFilename());
+        File thumbnailDestination = new File(dest + "\\thumbnail\\" + image.getOriginalFilename());
 
-        File thumbnailDestination = new File(IMAGE_LOCATIONS + "\\thumbnail\\" + image.getOriginalFilename());
-
-        //Writes both files
-        write(src,fileExtension,destination);
-        write(getThumbnailImage(src),fileExtension,thumbnailDestination);
+        //Writes thumbnail
+        write(getThumbnailImage(src),extension,thumbnailDestination);
     }
 
     public static void write(BufferedImage src, String imageFormat, File destination) throws IOException {

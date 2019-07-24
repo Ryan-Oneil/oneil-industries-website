@@ -1,7 +1,7 @@
 package biz.oneilindsutries.gallery.demo.controller;
 
 import biz.oneilindsutries.gallery.demo.entity.Image;
-import biz.oneilindsutries.gallery.demo.filecreater.ImageWriter;
+import biz.oneilindsutries.gallery.demo.filecreater.FileHandler;
 import biz.oneilindsutries.gallery.demo.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -59,7 +59,9 @@ public class ImageGalleryController {
                 return "gallery/upload?fileFound";
             }
 
-            ImageWriter.writeImage(file);
+            //Handles file writing
+            FileHandler fileHandler = new FileHandler();
+            fileHandler.writeFile(file,GALLERY_IMAGES_DIRECTORY);
 
             String fileName = file.getOriginalFilename();
 
