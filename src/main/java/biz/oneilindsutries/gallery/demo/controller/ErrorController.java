@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class ErrorController {
 
-    @GetMapping(name = "/error")
+    @GetMapping("/pageNotFound")
     public String showErrorPage() {
-        return "error";
+        return "notfound";
     }
 }

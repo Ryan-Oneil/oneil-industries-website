@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -62,7 +63,7 @@ public class ImageGalleryController {
     }
 
     @PostMapping(value = "gallery/upload", consumes = "multipart/form-data")
-    public String uploadImage(@RequestParam("image")MultipartFile file, @RequestParam String name, @RequestParam String privacy, Authentication authentication) throws FileExistsException, IOException {
+    public ModelAndView uploadImage(@RequestParam("image")MultipartFile file, @RequestParam String name, @RequestParam String privacy, Authentication authentication) throws FileExistsException, IOException {
         if (!file.isEmpty()) {
             Image doesImageExistsAlready = imageService.getImageFileName(file.getOriginalFilename());
 
@@ -83,7 +84,7 @@ public class ImageGalleryController {
 
             imageService.saveImage(image);
         }
-        return "gallery/upload";
+        return new ModelAndView("redirect:/gallery/myimages/" + file.getOriginalFilename());
     }
 
     @GetMapping("gallery/upload")
@@ -135,7 +136,7 @@ public class ImageGalleryController {
 
         imageService.saveImage(image);
 
-        return "redirect:/gallery/myimages/" + image.getFileName();
+        return "redirect:/gallery/myimages/" + image.getFileName()  ;
     }
 
 }

@@ -66,6 +66,34 @@ h2 {
     color: #FFF;
 }
 
+.logoutForm {
+	display: block;
+	letter-spacing: 1px;
+	text-decoration: none;
+	text-align: center;
+	text-transform: uppercase;
+	font-size: 0.80em;
+	font-weight: 600;
+	border: none;
+	color: #FFF;
+}
+.logoutButton {
+	padding: 20px 40px;
+	border: none;
+	background-color: #00AABB;
+	color: white;
+	text-transform: uppercase;
+	font-weight: 600;
+}
+
+.logoutForm:hover:not(.active) {
+	background-color: #008C9A;
+}
+
+.logoutButton:hover:not(.active) {
+	background-color: #008C9A;
+}
+
 li a:hover:not(.active) {
     background-color: #008C9A;
 }

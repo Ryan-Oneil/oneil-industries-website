@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <html lang="en">
 	<head>
 		<meta charset="UTF-8">
@@ -31,7 +32,9 @@
 					<ul id="navBar" class="subMenu">
 						<li><a href="${pageContext.request.contextPath}/gallery/upload">Upload</a></li>
 						<li><a href="${pageContext.request.contextPath}/gallery/myimages">My Images</a></li>
-						<li><a href="#">Logout</a></li>
+						<li><form:form action="${pageContext.request.contextPath}/logout" class="logoutForm" method="post">
+							<input type="submit" class="logoutButton" value="Logout"/>
+						</form:form></li>
 					</ul>
 				</nav>
 			</div>
