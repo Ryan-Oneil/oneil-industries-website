@@ -32,6 +32,7 @@
                 <ul id="navBar" class="subMenu">
                     <li><a href="${pageContext.request.contextPath}/gallery/upload">Upload</a></li>
                     <li><a href="${pageContext.request.contextPath}/gallery/myimages">My Images</a></li>
+                    <li><a href="${pageContext.request.contextPath}/gallery/myalbums">My Albums</a></li>
                     <li><form:form action="${pageContext.request.contextPath}/logout" class="logoutForm" method="post">
                         <input type="submit" class="logoutButton" value="Logout"/>
                     </form:form></li>
@@ -54,6 +55,22 @@
                             <option value="private">Private</option>
                         </select>
                         </p>
+                        <p>Album: <select id="albumoption" name="albumName">
+                            <option value="none">None</option>
+                            <!-- Add some JS here for creation of new albums -->
+                            <option value="new">new</option>
+                            <c:forEach items="${albums}" var="album">
+                                <option value="${album.name}">${album.name}</option>
+                            </c:forEach>
+                        </select></p>
+                        <div class="newAlbumOptions">
+                            <p>Album Name: <input type="text" name="newalbumName" placeholder="Album name"></p>
+                            <p>Show Unlisted images: <select name="showUnlistedImages">
+                                <option value="false">False</option>
+                                <option value="true">True</option>
+                            </select>
+                            </p>
+                        </div>
                         <input type="submit" value="Save">
                     </form:form>
                 </div>

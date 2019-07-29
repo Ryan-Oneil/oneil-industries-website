@@ -5,7 +5,7 @@
 	<meta charset="UTF-8">
 	<link href="<c:url value="/resources/assets/css/style.css" />" rel="stylesheet">
 	<link href="<c:url value="/resources/assets/css/imagestyle.css" />" rel="stylesheet">
-	<title>Oneil - Gallery</title>
+	<title>Oneil - My Albums</title>
 </head>
 
 <body>
@@ -41,11 +41,11 @@
 		</div>
 		<div class="mainpage">
 			<div class="images">
-				<h1>Click on a image to manage its options</h1>
-				<c:forEach items="${userimages}" var="image">
-					<div class="imageBox">
-						<p>${image.name} ${image.dateAdded}</p>
-						<a href="${pageContext.request.contextPath}/gallery/myimages/${image.fileName}"> <img src="${pageContext.request.contextPath}/gallery/images/thumbnail/${image.fileName}" /></a>
+				<h2>Click on a album to manage its options</h2>
+				<c:forEach items="${albums}" var="albums">
+					<div class="album">
+						<p>${albums.album.name}</p>
+						<a href="${pageContext.request.contextPath}/gallery/managealbum/${albums.album.name}"> <img src="${pageContext.request.contextPath}/gallery/images/thumbnail/${albums.images.get(0).fileName}" /></a>
 					</div>
 				</c:forEach>
 			</div>

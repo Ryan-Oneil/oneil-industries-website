@@ -10,10 +10,6 @@ public class ErrorPageControllerAdvice {
 
     @ExceptionHandler(NoHandlerFoundException.class)
     public RedirectView handleNoHandlerFoundException(NoHandlerFoundException ex) {
-        RedirectView redirect = new RedirectView("error");
-
-        return redirect;
+        return new RedirectView("/pageNotFound");
     }
-
-
 }

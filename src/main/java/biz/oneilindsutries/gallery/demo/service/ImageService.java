@@ -11,8 +11,12 @@ import java.util.List;
 @Service
 public class ImageService {
 
+    private final ImageDAO dao;
+
     @Autowired
-    private ImageDAO dao;
+    public ImageService(ImageDAO dao) {
+        this.dao = dao;
+    }
 
     @Transactional
     public List<Image> getImages() {
@@ -20,13 +24,18 @@ public class ImageService {
     }
 
     @Transactional
-    public List<Image> getPublicImages() {
-        return dao.getPublicImages();
+    public List<Image> getImagesByLinkStatus(String status) {
+        return dao.getImagesByLinkStatus(status);
     }
 
     @Transactional
     public List<Image> getImagesByUser(String username) {
         return this.dao.getImagesByUser(username);
+    }
+
+    @Transactional
+    public List<Image> getAlbumImages(int id) {
+        return this.dao.getAlbumImages(id);
     }
 
     @Transactional

@@ -12,11 +12,14 @@ import java.util.List;
 @Repository
 public class ImageDAO {
 
+    private final SessionFactory sessionFactory;
+
     @Autowired
-    private SessionFactory sessionFactory;
+    public ImageDAO(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
 
     public List<Image> getImages() {
-
         Session currentSession = sessionFactory.getCurrentSession();
 
         Query<Image> query = currentSession.createQuery("from Image order by id desc", Image.class);
@@ -25,7 +28,6 @@ public class ImageDAO {
     }
 
     public List<Image> getImagesByUser(String username) {
-
         Session currentSession = sessionFactory.getCurrentSession();
 
         Query<Image> query = currentSession.createQuery("from Image where uploader=:username", Image.class);
@@ -34,18 +36,25 @@ public class ImageDAO {
         return query.getResultList();
     }
 
-    public List<Image> getPublicImages() {
-
+    public List<Image> getImagesByLinkStatus(String status) {
         Session currentSession = sessionFactory.getCurrentSession();
 
         Query<Image> query = currentSession.createQuery("from Image where linkStatus=:linkStatus order by id desc", Image.class);
-        query.setParameter("linkStatus","public");
+        query.setParameter("linkStatus",status);
+
+        return query.getResultList();
+    }
+
+    public List<Image> getAlbumImages(int id) {
+        Session currentSession = sessionFactory.getCurrentSession();
+
+        Query<Image> query = currentSession.createQuery("from Image where albumID =:id");
+        query.setParameter("id",id);
 
         return query.getResultList();
     }
 
     public Image getImage(int id) {
-
         Session currentSession = sessionFactory.getCurrentSession();
 
         Image image = currentSession.get(Image.class, id);
@@ -65,14 +74,12 @@ public class ImageDAO {
     }
 
     public void saveImage(Image image) {
-
         Session currentSession = sessionFactory.getCurrentSession();
 
         currentSession.saveOrUpdate(image);
     }
 
     public void deleteImage(int id) {
-
         Session currentSession = sessionFactory.getCurrentSession();
 
         Query query = currentSession.createQuery("delete from Image where id=:ImageId");

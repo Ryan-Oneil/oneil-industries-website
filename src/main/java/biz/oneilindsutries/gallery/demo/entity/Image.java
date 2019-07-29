@@ -1,6 +1,7 @@
 package biz.oneilindsutries.gallery.demo.entity;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Image {
@@ -21,6 +22,18 @@ public class Image {
 
     @Column(name = "date_added")
     private String dateAdded;
+
+    @Column(name = "album_id")
+    private Integer albumID;
+
+    public Image(String name, String fileName, String linkStatus, String uploader, String dateAdded, Integer albumID) {
+        this.name = name;
+        this.fileName = fileName;
+        this.linkStatus = linkStatus;
+        this.uploader = uploader;
+        this.dateAdded = dateAdded;
+        this.albumID = albumID;
+    }
 
     public Image(String name, String fileName, String linkStatus, String uploader, String dateAdded) {
         this.name = name;
@@ -81,14 +94,37 @@ public class Image {
         this.dateAdded = dateAdded;
     }
 
+    public Integer getAlbumID() {
+        return albumID;
+    }
+
+    public void setAlbumID(Integer albumID) {
+        this.albumID = albumID;
+    }
+
     @Override
     public String toString() {
         return "Image{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", path='" + fileName + '\'' +
+                ", fileName='" + fileName + '\'' +
                 ", linkStatus='" + linkStatus + '\'' +
                 ", uploader='" + uploader + '\'' +
+                ", dateAdded='" + dateAdded + '\'' +
+                ", albumID=" + albumID +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Image image = (Image) o;
+        return getId() == image.getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 }
