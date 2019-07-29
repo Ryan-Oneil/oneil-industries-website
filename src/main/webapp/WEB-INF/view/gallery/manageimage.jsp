@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <link href="<c:url value="/resources/assets/css/style.css" />" rel="stylesheet">
     <link href="<c:url value="/resources/assets/css/imagestyle.css" />" rel="stylesheet">
+    <script src="<c:url value="/resources/assets/scripts/album.js" />"> </script>
+
     <title>Oneil - Gallery</title>
 </head>
 
@@ -55,7 +57,7 @@
                             <option value="private">Private</option>
                         </select>
                         </p>
-                        <p>Album: <select id="albumoption" name="albumName">
+                        <p>Album: <select id="albumoption" name="albumName" onchange="checkAlbum()">
                             <option value="none">None</option>
                             <!-- Add some JS here for creation of new albums -->
                             <option value="new">new</option>
@@ -63,7 +65,7 @@
                                 <option value="${album.name}">${album.name}</option>
                             </c:forEach>
                         </select></p>
-                        <div class="newAlbumOptions">
+                        <div id="newAlbumOptions" style="display: none;">
                             <p>Album Name: <input type="text" name="newalbumName" placeholder="Album name"></p>
                             <p>Show Unlisted images: <select name="showUnlistedImages">
                                 <option value="false">False</option>

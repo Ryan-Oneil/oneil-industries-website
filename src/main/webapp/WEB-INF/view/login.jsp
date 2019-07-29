@@ -5,16 +5,9 @@
 	<meta charset="UTF-8">
 	<link href="<c:url value="/resources/assets/css/style.css" />" rel="stylesheet">
 	<link href="<c:url value="/resources/assets/css/loginstyle.css" />" rel="stylesheet">
-	<link href="<c:url value="/resources/assets/scripts/login.js" />" rel="script">
+	<script src="<c:url value="/resources/assets/scripts/login.js" />"> </script>
 
-	<!-- Temp fix until I fix the js file not being loaded? -->
-	<script>
-		function changeFormOption() {
-			$("form").animate({height: "toggle", opacity: "toggle"}, "slow");
-		}
-	</script>
-
-	<title>Oneil - Home</title>
+	<title>Oneil - Login</title>
 
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">

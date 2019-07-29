@@ -139,7 +139,6 @@ public class ImageGalleryController {
         if (userImages != null) {
             model.addAttribute("userimages",userImages);
         }
-
         return "gallery/myimages";
     }
 

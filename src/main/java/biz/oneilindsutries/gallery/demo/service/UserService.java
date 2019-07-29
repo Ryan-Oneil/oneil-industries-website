@@ -13,11 +13,15 @@ import java.util.List;
 @Service
 public class UserService {
 
-    @Autowired
-    private UserDAO dao;
+    private final UserDAO dao;
+
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    public UserService(UserDAO dao, PasswordEncoder passwordEncoder) {
+        this.dao = dao;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Transactional
     public List<User> getUsers() {
@@ -43,7 +47,7 @@ public class UserService {
     public void registerUser(String username, String password, String email) {
         String encryptedPassword = passwordEncoder.encode(password);
 
-        Authority authority = new Authority("USER");
+        Authority authority = new Authority("ROLE_UNREGISTERED");
 
         User user = new User(username,encryptedPassword,1,email);
 

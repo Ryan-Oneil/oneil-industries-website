@@ -8,6 +8,11 @@ public class ErrorController {
 
     @GetMapping("/pageNotFound")
     public String showErrorPage() {
-        return "notfound";
+        return "error/notfound";
+    }
+
+    @GetMapping("/error/unauthorised")
+    public String showUnauthorisedPage() {
+        return "error/unauthorised";
     }
 }
