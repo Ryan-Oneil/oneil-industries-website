@@ -42,10 +42,15 @@
         <div class="mainpage">
             <div class="images">
                 <h2>${album.name} - By ${album.creator}</h2>
-                <c:forEach items="${albumImages}" var="image">
+                <c:forEach items="${albumMedias}" var="media">
                     <div class="imageBox">
-                        <p>${image.name}</p>
-                        <a href="${pageContext.request.contextPath}/gallery/images/${image.fileName}" > <img src="${pageContext.request.contextPath}/gallery/images/thumbnail/${image.fileName}" /></a>
+                        <p>${media.name}</p>
+                        <c:if test="${media.mediaType == 'image'}" >
+                            <a href="${pageContext.request.contextPath}/gallery/images/${media.fileName}" > <img src="${pageContext.request.contextPath}/gallery/images/thumbnail/${media.fileName}" /></a>
+                        </c:if>
+                        <c:if test="${media.mediaType == 'video'}" >
+                            <a href="${pageContext.request.contextPath}/gallery/images/${media.fileName}" > <video src="${pageContext.request.contextPath}/gallery/images/${media.fileName}" controls width="400" height="400"></video></a>
+                        </c:if>
                     </div>
                 </c:forEach>
             </div>

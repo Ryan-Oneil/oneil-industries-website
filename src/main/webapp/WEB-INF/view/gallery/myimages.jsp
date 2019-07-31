@@ -41,12 +41,16 @@
 		</div>
 		<div class="mainpage">
 			<div class="images">
-				<h1>Click on a image to manage its options</h1>
-				<c:forEach items="${userimages}" var="image">
+				<h1>Click on a media to manage its options</h1>
+				<c:forEach items="${usermedias}" var="media">
 					<div class="imageBox">
-						<p>${image.name} ${image.dateAdded}</p>
-						<a href="${pageContext.request.contextPath}/gallery/myimages/${image.fileName}"> <img src="${pageContext.request.contextPath}/gallery/images/thumbnail/${image.fileName}" /></a>
-					</div>
+						<p>${media.name} ${media.dateAdded}</p>
+						<c:if test="${media.mediaType == 'image'}" >
+							<a href="${pageContext.request.contextPath}/gallery/myimages/${media.fileName}" > <img src="${pageContext.request.contextPath}/gallery/images/thumbnail/${media.fileName}" /></a>
+						</c:if>
+						<c:if test="${media.mediaType == 'video'}" >
+							<a href="${pageContext.request.contextPath}/gallery/myimages/${media.fileName}" > <video src="${pageContext.request.contextPath}/gallery/images/${media.fileName}" controls width="400" height="400"></video></a>
+						</c:if>					</div>
 				</c:forEach>
 			</div>
 		</div>

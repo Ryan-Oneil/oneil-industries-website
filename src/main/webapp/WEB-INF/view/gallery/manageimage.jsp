@@ -44,33 +44,37 @@
         <div class="mainpage">
             <div class="images">
                 <div class="imageUpload">
-                    <h1>${image.name} - ${image.dateAdded}</h1>
-                    <a href="${pageContext.request.contextPath}/gallery/images/${image.fileName}"> <img src="${pageContext.request.contextPath}/gallery/images/thumbnail/${image.fileName}" /></a>
-
-                    <form:form action="${pageContext.request.contextPath}/gallery/update/${image.id}" method="post">
-                        <input type="hidden" name="id" placeholder="${image.id}">
-                        <p>Image Name: <input required type="text" name="imageName" placeholder="${image.name}"></p>
-                        <p>Link Status: <select name="privacy">
-                            <option hidden value="${image.linkStatus}"></option>
+                    <h1>${media.name} - ${media.dateAdded}</h1>
+                    <c:if test="${media.mediaType == 'image'}" >
+                        <a href="${pageContext.request.contextPath}/gallery/images/${media.fileName}" > <img src="${pageContext.request.contextPath}/gallery/images/thumbnail/${media.fileName}" /></a>
+                    </c:if>
+                    <c:if test="${media.mediaType == 'video'}" >
+                        <a href="${pageContext.request.contextPath}/gallery/images/${media.fileName}" > <video src="${pageContext.request.contextPath}/gallery/images/${media.fileName}" controls width="400" height="400"></video></a>
+                    </c:if>
+                    <p><a href="${pageContext.request.contextPath}/gallery/delete/${media.id}">Delete Image</a></p>
+                    <form:form action="${pageContext.request.contextPath}/gallery/update/${media.id}" method="post" modelAttribute="GalleryUpload">
+                        <input type="hidden" name="id" placeholder="${media.id}">
+                        <p>Image Name: <form:input type="text" name="imageName" placeholder="${media.name}" path="name"/></p>
+                        <p>Link Status: <form:select name="privacy" path="privacy">
+                            <option hidden value="${media.linkStatus}"></option>
                             <option value="unlisted">Unlisted</option>
                             <option value="public">Public</option>
                             <option value="private">Private</option>
-                        </select>
+                        </form:select>
                         </p>
-                        <p>Album: <select id="albumoption" name="albumName" onchange="checkAlbum()">
+                        <p>Album: <form:select id="albumoption" name="albumName" onchange="checkAlbum()" path="albumName">
                             <option value="none">None</option>
-                            <!-- Add some JS here for creation of new albums -->
                             <option value="new">new</option>
                             <c:forEach items="${albums}" var="album">
                                 <option value="${album.name}">${album.name}</option>
                             </c:forEach>
-                        </select></p>
+                        </form:select></p>
                         <div id="newAlbumOptions" style="display: none;">
-                            <p>Album Name: <input type="text" name="newalbumName" placeholder="Album name"></p>
-                            <p>Show Unlisted images: <select name="showUnlistedImages">
+                            <p>Album Name: <form:input type="text" name="newalbumName" placeholder="Album name" path="newalbumName"/></p>
+                            <p>Show Unlisted media: <form:select name="showUnlistedImages" path="showUnlistedImages">
                                 <option value="false">False</option>
                                 <option value="true">True</option>
-                            </select>
+                            </form:select>
                             </p>
                         </div>
                         <input type="submit" value="Save">

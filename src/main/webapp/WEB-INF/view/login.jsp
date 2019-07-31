@@ -1,5 +1,6 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
@@ -36,11 +37,15 @@
 		<div class="mainpage">
 			<div class="login-page">
 				<div class="form">
-					<form:form action="${pageContext.request.contextPath}/register" method="POST" class="register-form">
+					<form:form action="${pageContext.request.contextPath}/register" method="POST" modelAttribute="LoginForm" class="register-form" >
 
-						<input type="text" name="username" placeholder="name"/>
-						<input type="password" name="password" placeholder="password"/>
-						<input type="email" name="email" placeholder="email address"/>
+
+						<form:errors path="name" />
+						<form:input name="username" type="text" placeholder="username" path="name"/>
+						<form:errors path="password" />
+						<form:input name="password" type="password" placeholder="password" path="password"/>
+						<form:errors path="email" />
+						<form:input name="email" type="text" placeholder="email address" path="email"/>
 						<button>create</button>
 						<p class="message">Already registered? <a href="#" onclick="changeFormOption()">Sign In</a></p>
 					</form:form>
@@ -51,12 +56,13 @@
 							</div>
 						</c:if>
 
+						<!---  Do login error display -->
 						<c:if test="${param.logout != null}">
 							<div class="alert alert-success col-xs-offset-1 col-xs-10">
 								You have been logged out.
 							</div>
 						</c:if>
-						<input name="username" type="text" placeholder="username"/>
+						<input type="text" name="username" placeholder="username"/>
 						<input name="password" type="password" placeholder="password"/>
 						<button>login</button>
 						<p class="message">Not registered? <a href="#" onclick="changeFormOption()">Create an account</a></p>

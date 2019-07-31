@@ -41,11 +41,11 @@
         </div>
         <div class="mainpage">
             <div class="images">
-                <h2>Click on a image to manage its options</h2>
+                <h2>Click on a media to manage its options</h2>
                 <a href="/gallery/album/${album.album.name}">Direct Album Link</a>
                 <form:form action="/gallery/changealbum/${album.album.name}" method="post">
                     <p> Album Name: <input type="text" name="newAlbumName" placeholder="${album.album.name}"> </p>
-                    <p>Show Unlisted images: <select name="showUnlistedImages">
+                    <p>Show Unlisted media: <select name="showUnlistedImages">
                         <option hidden value="${album.album.showUnlistedImages}"></option>
                         <option value="false">False</option>
                         <option value="true">True</option>
@@ -53,11 +53,15 @@
                     </p>
                     <input type="submit" value="Save">
                 </form:form >
-                <c:forEach items="${album.images}" var="images">
+                <c:forEach items="${album.media}" var="media">
                     <div class="imageBox">
-                        <p>${images.name} - ${images.dateAdded}</p>
-                        <a href="${pageContext.request.contextPath}/gallery/myimages/${images.fileName}"> <img src="${pageContext.request.contextPath}/gallery/images/thumbnail/${images.fileName}" /></a>
-                    </div>
+                        <p>${media.name} - ${media.dateAdded}</p>
+                        <c:if test="${media.mediaType == 'image'}" >
+                            <a href="${pageContext.request.contextPath}/gallery/myimages/${media.fileName}" > <img src="${pageContext.request.contextPath}/gallery/images/thumbnail/${media.fileName}" /></a>
+                        </c:if>
+                        <c:if test="${media.mediaType == 'video'}" >
+                            <a href="${pageContext.request.contextPath}/gallery/myimages/${media.fileName}" > <video src="${pageContext.request.contextPath}/gallery/images/${media.fileName}" controls width="400" height="400"></video></a>
+                        </c:if>                    </div>
                 </c:forEach>
             </div>
         </div>

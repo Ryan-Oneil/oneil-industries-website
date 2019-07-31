@@ -42,30 +42,29 @@
         </div>
         <div class="mainpage">
             <div class="imageUpload">
-                <form:form action="${pageContext.request.contextPath}/gallery/upload" method="POST" enctype="multipart/form-data">
+                <form:form action="${pageContext.request.contextPath}/gallery/upload" method="POST" enctype="multipart/form-data" modelAttribute="GalleryUpload">
                     <div class="details">
-                        <p>Image: <input type="file" name="image"/></p>
-                        <p>Name: <input type="text" name="name"/></p>
-                        <p>Link Status: <select name="privacy">
-                            <option value="unlisted">Unlisted</option>
-                            <option value="public">Public</option>
-                            <option value="private">Private</option>
-                        </select>
+                        <p>Image: <form:input type="file" name="media" path="file"/> </p>
+                        <p>Name: <form:input type="text" name="name" path="name"/></p>
+                        <p>Link Status: <form:select name="privacy" path="privacy">
+                            <form:option value="unlisted">Unlisted</form:option>
+                            <form:option value="public">Public</form:option>
+                            <form:option value="private">Private</form:option>
+                        </form:select>
                         </p>
-                        <p>Album: <select id="albumoption" name="albumName" onchange="checkAlbum()">
-                            <option value="none">None</option>
-                            <!-- Add some JS here for creation of new albums -->
-                            <option value="new">new</option>
+                        <p>Album: <form:select id="albumoption" name="albumName" onchange="checkAlbum()" path="albumName">
+                            <form:option value="none">None</form:option>
+                            <form:option value="new">new</form:option>
                             <c:forEach items="${albums}" var="album">
-                                <option value="${album.name}">${album.name}</option>
+                                <form:option value="${album.name}">${album.name}</form:option>
                             </c:forEach>
-                        </select></p>
+                        </form:select></p>
                         <div id="newAlbumOptions" style="display: none;">
-                            <p>Album Name: <input type="text" name="newalbumName" placeholder="Album name"></p>
-                            <p>Show Unlisted images: <select name="showUnlistedImages">
-                                <option value="false">False</option>
-                                <option value="true">True</option>
-                            </select>
+                            <p>Album Name: <form:input type="text" name="newalbumName" placeholder="Album name" path="newalbumName"/></p>
+                            <p>Show Unlisted media: <form:select name="showUnlistedImages" path="showUnlistedImages">
+                                <form:option value="false">False</form:option>
+                                <form:option value="true">True</form:option>
+                            </form:select>
                             </p>
                         </div>
                     </div>

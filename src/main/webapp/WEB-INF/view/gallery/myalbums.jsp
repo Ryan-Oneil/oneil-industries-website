@@ -45,7 +45,14 @@
 				<c:forEach items="${albums}" var="albums">
 					<div class="album">
 						<p>${albums.album.name}</p>
-						<a href="${pageContext.request.contextPath}/gallery/managealbum/${albums.album.name}"> <img src="${pageContext.request.contextPath}/gallery/images/thumbnail/${albums.images.get(0).fileName}" /></a>
+						<a href="${pageContext.request.contextPath}/gallery/managealbum/${albums.album.name}">
+							<c:if test="${not empty albums.media}">
+								<img src="${pageContext.request.contextPath}/gallery/images/thumbnail/${albums.media.get(0).fileName}" />
+							</c:if>
+							<c:if test="${empty albums.media}">
+								<img src=<c:url value="/resources/assets/images/noimage.png"/> />
+							</c:if>
+						</a>
 					</div>
 				</c:forEach>
 			</div>
