@@ -4,7 +4,9 @@ import biz.oneilindsutries.website.dao.UserDAO;
 import biz.oneilindsutries.website.entity.Authority;
 import biz.oneilindsutries.website.entity.User;
 import biz.oneilindsutries.website.validation.LoginForm;
+import biz.oneilindsutries.website.validation.UpdatedUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -58,6 +60,24 @@ public class UserService {
         User user = new User(loginForm.getName(),encryptedPassword,1,loginForm.getEmail());
 
         user.addAuthority(authority);
+
+        saveUser(user);
+    }
+
+    @Transactional
+    public void updateUser(UpdatedUser updatedUser, String name) throws UsernameNotFoundException {
+        User user = getUser(name);
+
+        if (user == null) {
+            throw new UsernameNotFoundException(name + " doesn't exists");
+        }
+
+        user.setUsername(updatedUser.getUsername());
+        user.setEmail(updatedUser.getEmail());
+        user.setEnabled(updatedUser.getEnabled());
+
+        //For my system I want users to only have one role/authority at a time
+        user.getCustomaAthorities().get(0).setAuthority(updatedUser.getRole());
 
         saveUser(user);
     }

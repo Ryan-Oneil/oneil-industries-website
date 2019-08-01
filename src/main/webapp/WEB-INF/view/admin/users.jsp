@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <link href="<c:url value="/resources/assets/css/style.css" />" rel="stylesheet">
+    <link href="<c:url value="/resources/assets/css/admin.css" />" rel="stylesheet">
+
     <title>Oneil - Admin - Users</title>
 </head>
 
@@ -17,7 +19,7 @@
     </header>
     <nav>
         <ul id="navBar">
-            <li><a class="active" href="${pageContext.request.contextPath}/">Home</a></li>
+            <li><a href="${pageContext.request.contextPath}/">Home</a></li>
             <li><a href="#">About Us</a></li>
             <li><a href="#">Contact</a></li>
             <li><a href="${pageContext.request.contextPath}/gallery">Images</a></li>
@@ -26,7 +28,26 @@
     </nav>
     <div class="maindiv">
         <div class="mainpage">
-
+            <div style="overflow-x:auto;">
+                <table>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Enabled</th>
+                        <th>Option</th>
+                    </tr>
+                    <c:forEach items="${users}" var="user">
+                        <tr>
+                            <td>${user.username}</td>
+                            <td>${user.email}</td>
+                            <td>${user.authorities.get(0).authority}</td>
+                            <td>${user.enabled}</td>
+                            <td><a href="${pageContext.request.contextPath}/admin/user/${user.username}">Manage</a> </td>
+                        </tr>
+                    </c:forEach>
+                </table>
+            </div>
         </div>
     </div>
 
