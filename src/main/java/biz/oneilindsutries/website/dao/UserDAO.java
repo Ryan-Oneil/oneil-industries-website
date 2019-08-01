@@ -23,7 +23,7 @@ public class UserDAO {
 
         Session currentSession = sessionFactory.getCurrentSession();
 
-        Query<User> theQuery = currentSession.createQuery("from User", User.class);
+        Query<User> theQuery = currentSession.createQuery("from users", User.class);
 
         return theQuery.getResultList();
     }
@@ -58,7 +58,7 @@ public class UserDAO {
 
         Session currentSession = sessionFactory.getCurrentSession();
 
-        Query query = currentSession.createQuery("delete from User where username=:username");
+        Query query = currentSession.createQuery("delete from users where username=:username");
         query.setParameter("username",username);
         query.executeUpdate();
     }

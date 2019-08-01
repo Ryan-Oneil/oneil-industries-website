@@ -38,8 +38,6 @@
 			<div class="login-page">
 				<div class="form">
 					<form:form action="${pageContext.request.contextPath}/register" method="POST" modelAttribute="LoginForm" class="register-form" >
-
-
 						<form:errors path="name" />
 						<form:input name="username" type="text" placeholder="username" path="name"/>
 						<form:errors path="password" />

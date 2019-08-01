@@ -21,7 +21,7 @@ public class User implements UserDetails {
     @Column(name = "email")
     private String email;
 
-    @OneToMany(mappedBy = "username", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "username", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true  )
     private List<Authority> customaAthorities;
 
     public User(String username, String password, int enabled, String email) {
@@ -112,13 +112,4 @@ public class User implements UserDetails {
         this.customaAthorities = customaAthorities;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", enabled=" + enabled +
-                ", email='" + email + '\'' +
-                '}';
-    }
 }
