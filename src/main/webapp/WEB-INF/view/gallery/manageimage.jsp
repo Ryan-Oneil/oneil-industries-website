@@ -7,7 +7,7 @@
     <link href="<c:url value="/resources/assets/css/imagestyle.css" />" rel="stylesheet">
     <script src="<c:url value="/resources/assets/scripts/album.js" />"> </script>
 
-    <title>Oneil - Gallery</title>
+    <title>Oneil - Manage Image</title>
 </head>
 
 <body>
@@ -51,8 +51,8 @@
                     <c:if test="${media.mediaType == 'video'}" >
                         <a href="${pageContext.request.contextPath}/gallery/images/${media.fileName}" > <video src="${pageContext.request.contextPath}/gallery/images/${media.fileName}" controls width="400" height="400"></video></a>
                     </c:if>
-                    <p><a href="${pageContext.request.contextPath}/gallery/delete/${media.id}">Delete Image</a></p>
-                    <form:form action="${pageContext.request.contextPath}/gallery/update/${media.id}" method="post" modelAttribute="GalleryUpload">
+                    <p><a href="${pageContext.request.contextPath}/gallery/delete/${media.fileName}">Delete Image</a></p>
+                    <form:form action="${pageContext.request.contextPath}/gallery/update/${media.fileName}" method="post" modelAttribute="GalleryUpload">
                         <input type="hidden" name="id" placeholder="${media.id}">
                         <p>Image Name: <form:input type="text" name="imageName" placeholder="${media.name}" path="name"/></p>
                         <p>Link Status: <form:select name="privacy" path="privacy">

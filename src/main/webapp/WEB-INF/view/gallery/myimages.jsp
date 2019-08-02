@@ -5,7 +5,7 @@
 	<meta charset="UTF-8">
 	<link href="<c:url value="/resources/assets/css/style.css" />" rel="stylesheet">
 	<link href="<c:url value="/resources/assets/css/imagestyle.css" />" rel="stylesheet">
-	<title>Oneil - Gallery</title>
+	<title>Oneil - Images</title>
 </head>
 
 <body>

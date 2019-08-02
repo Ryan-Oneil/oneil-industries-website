@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <link href="<c:url value="/resources/assets/css/style.css" />" rel="stylesheet">
-    <title>Oneil - Home</title>
+    <title>Oneil - 404</title>
 </head>
 
 <body>

@@ -29,7 +29,7 @@
     <div class="maindiv">
         <div class="mainpage">
             <div style="overflow-x:auto;">
-                <table>
+                <table class="users-table">
                     <tr>
                         <th>Username</th>
                         <th>Email</th>
