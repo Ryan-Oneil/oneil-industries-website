@@ -62,6 +62,7 @@
 						</c:if>
 						<input type="text" name="username" placeholder="username"/>
 						<input name="password" type="password" placeholder="password"/>
+						Remember Me? <input name="oneil-industries-remember-me" type="checkbox"/>
 						<button>login</button>
 						<p class="message">Not registered? <a href="#" onclick="changeFormOption()">Create an account</a></p>
 					</form:form>

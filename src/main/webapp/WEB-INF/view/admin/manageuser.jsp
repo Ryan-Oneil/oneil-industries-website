@@ -60,6 +60,11 @@
                         <td class = "user-data"><a href="/gallery/${user.username}/media">View Media</a> </td>
                         <td class = "user-data"><a href="/gallery/${user.username}/albums">View Albums</a> </td>
                     </tr>
+                    <tr>
+                        <td class = "user-data"><a href="/admin/user/${user.username}/hideMedia">Hide All Media</a> </td>
+                        <td class = "user-data"><a href="#">Delete All Media</a> </td>
+
+                    </tr>
                 </table>
             </div>
         </div>

@@ -69,4 +69,11 @@ public class AdminController {
         return "redirect:/admin/users";
     }
 
+    @GetMapping("/admin/user/{username}/hideMedia")
+    public String hideUserMedia(@PathVariable String username) {
+        mediaService.hideAllMedia(username);
+
+        return "redirect:/admin/user/" + username;
+    }
+
 }

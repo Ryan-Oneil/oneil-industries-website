@@ -94,21 +94,14 @@ fabric.properties
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
 
-/biz/oneilindsutries/website/config/
 .DS_Store
 .idea/
 lib/
 pom.xml
 spring-security-demo.iml
 
-src/main/java/biz/oneilindustries/gallery/filecreater/ImageUpload.java
-src/main/java/biz/oneilindustries/gallery/hibernate.cfg.xml
 src/main/java/hibernate.cfg.xml
-src/main/webapp/WEB-INF/view/gallery/media/
-src/main/webapp/WEB-INF/view/home.jsp
-src/main/webapp/WEB-INF/view/oldlogin.jsp
-src/main/webapp/resources/assets/media/
+
 src/test/
 target/
-/biz/oneilindustries/website/config/
-/biz/oneilindustries/website/hibernate.cfg.xml
+/src/main/java/biz/oneilindustries/website/config/

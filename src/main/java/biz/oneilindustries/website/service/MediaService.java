@@ -113,4 +113,16 @@ public class MediaService {
         }
         saveMedia(media);
     }
+
+    @Transactional
+    public void hideAllMedia(String name) {
+        List<Media> userMedias = getMediasByUser(name);
+
+        if (userMedias == null) return;
+
+        for (Media media : userMedias) {
+            media.setLinkStatus("private");
+            saveMedia(media);
+        }
+    }
 }
