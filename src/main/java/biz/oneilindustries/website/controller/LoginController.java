@@ -1,17 +1,26 @@
 package biz.oneilindustries.website.controller;
 
 import biz.oneilindustries.website.entity.User;
+import biz.oneilindustries.website.entity.VerificationToken;
+import biz.oneilindustries.website.eventlisteners.OnRegistrationCompleteEvent;
 import biz.oneilindustries.website.service.UserService;
 import biz.oneilindustries.website.validation.LoginForm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.Calendar;
+import java.util.Locale;
 
 @Controller
 public class LoginController {
@@ -21,9 +30,16 @@ public class LoginController {
 
     private static final String LOGIN_PAGE = "login";
 
+    private final ApplicationEventPublisher eventPublisher;
+
+
+    private final MessageSource messageSource;
+
     @Autowired
-    public LoginController(UserService userService) {
+    public LoginController(UserService userService, ApplicationEventPublisher eventPublisher, @Qualifier("customMessageSource") MessageSource messageSource) {
         this.userService = userService;
+        this.eventPublisher = eventPublisher;
+        this.messageSource = messageSource;
     }
 
     @GetMapping("/login")
@@ -35,7 +51,7 @@ public class LoginController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@ModelAttribute("LoginForm") @Valid LoginForm loginForm, BindingResult bindingResult) {
+    public String registerUser(@ModelAttribute("LoginForm") @Valid LoginForm loginForm, BindingResult bindingResult, HttpServletRequest request) {
 
         User user = userService.getUser(loginForm.getName());
 
@@ -52,8 +68,43 @@ public class LoginController {
         if (bindingResult.hasErrors()) {
             return LOGIN_PAGE;
         }
-        userService.registerUser(loginForm);
+
+        User newUser = userService.registerUser(loginForm);
+
+        String appUrl = request.getContextPath();
+        eventPublisher.publishEvent(new OnRegistrationCompleteEvent
+                (newUser, request.getLocale(), appUrl));
 
         return "redirect:/" + LOGIN_PAGE;
+    }
+
+    @GetMapping("/registrationConfirm{tokens}")
+    public ModelAndView confirmRegistration(WebRequest request, @RequestParam("token") String token, @PathVariable String tokens, RedirectAttributes redir) {
+
+        ModelAndView redirect = new ModelAndView("redirect:/login");
+
+        Locale locale = request.getLocale();
+
+        VerificationToken verificationToken = userService.getToken(token);
+        if (verificationToken == null) {
+            String message = messageSource.getMessage("auth.message.invalidToken", null, locale);
+            redirect.setViewName("redirect:/error/userError");
+            redir.addFlashAttribute("error", message);
+            return redirect;
+        }
+
+        User user = verificationToken.getUser();
+        Calendar cal = Calendar.getInstance();
+        if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
+            String messageValue = messageSource.getMessage("auth.message.expired", null, locale);
+            redirect.setViewName("redirect:/error/userError");
+            redir.addFlashAttribute("error", messageValue);
+            return redirect;
+        }
+
+        user.setEnabled(1);
+        userService.saveUser(user);
+
+        return redirect;
     }
 }

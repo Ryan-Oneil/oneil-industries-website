@@ -50,7 +50,7 @@
 					<form:form action="${pageContext.request.contextPath}/authenticateUser" method="POST" class="login-form">
 						<c:if test="${param.error != null}">
 							<div class="alert alert-danger col-xs-offset-1 col-xs-10">
-								Invalid username and password.
+									${sessionScope.get("SPRING_SECURITY_LAST_EXCEPTION")}
 							</div>
 						</c:if>
 
@@ -62,7 +62,9 @@
 						</c:if>
 						<input type="text" name="username" placeholder="username"/>
 						<input name="password" type="password" placeholder="password"/>
-						Remember Me? <input name="oneil-industries-remember-me" type="checkbox"/>
+						 <label>Remember Me?
+						<input name="oneil-industries-remember-me" type="checkbox"/>
+					</label>
 						<button>login</button>
 						<p class="message">Not registered? <a href="#" onclick="changeFormOption()">Create an account</a></p>
 					</form:form>

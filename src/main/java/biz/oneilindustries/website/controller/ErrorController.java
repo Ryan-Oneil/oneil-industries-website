@@ -15,4 +15,9 @@ public class ErrorController {
     public String showUnauthorisedPage() {
         return "error/unauthorised";
     }
+
+    @GetMapping("/error/userError")
+    public String showUserErrorPage() {
+        return "error/userError";
+    }
 }

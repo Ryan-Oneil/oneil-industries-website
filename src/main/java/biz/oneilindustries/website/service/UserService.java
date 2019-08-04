@@ -1,8 +1,10 @@
 package biz.oneilindustries.website.service;
 
+import biz.oneilindustries.website.dao.TokenDAO;
 import biz.oneilindustries.website.dao.UserDAO;
 import biz.oneilindustries.website.entity.Authority;
 import biz.oneilindustries.website.entity.User;
+import biz.oneilindustries.website.entity.VerificationToken;
 import biz.oneilindustries.website.validation.LoginForm;
 import biz.oneilindustries.website.validation.UpdatedUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +20,14 @@ public class UserService {
 
     private final UserDAO dao;
 
+    private final TokenDAO tokenDAO;
+
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserDAO dao, PasswordEncoder passwordEncoder) {
+    public UserService(UserDAO dao, TokenDAO tokenDAO, PasswordEncoder passwordEncoder) {
         this.dao = dao;
+        this.tokenDAO = tokenDAO;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -52,16 +57,18 @@ public class UserService {
     }
 
     @Transactional
-    public void registerUser(LoginForm loginForm) {
+    public User registerUser(LoginForm loginForm) {
         String encryptedPassword = passwordEncoder.encode(loginForm.getPassword());
 
         Authority authority = new Authority("ROLE_UNREGISTERED");
 
-        User user = new User(loginForm.getName(),encryptedPassword,1,loginForm.getEmail());
+        User user = new User(loginForm.getName(),encryptedPassword,0,loginForm.getEmail());
 
         user.addAuthority(authority);
 
         saveUser(user);
+
+        return user;
     }
 
     @Transactional
@@ -80,5 +87,26 @@ public class UserService {
         user.getCustomaAthorities().get(0).setAuthority(updatedUser.getRole());
 
         saveUser(user);
+    }
+
+    @Transactional
+    public void createVerificationToken(User user, String token) {
+        VerificationToken myToken = new VerificationToken(token, user);
+        tokenDAO.saveToken(myToken);
+    }
+
+    @Transactional
+    public VerificationToken getToken(String token) {
+        return tokenDAO.findByToken(token);
+    }
+
+    @Transactional
+    public VerificationToken getTokenByUser(User user) {
+        return tokenDAO.findByUser(user);
+    }
+
+    @Transactional
+    public void saveToken(VerificationToken token) {
+        tokenDAO.saveToken(token);
     }
 }
