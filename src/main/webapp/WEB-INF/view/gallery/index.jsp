@@ -5,6 +5,8 @@
 		<meta charset="UTF-8">
 		<link href="<c:url value="/resources/assets/css/style.css" />" rel="stylesheet">
 		<link href="<c:url value="/resources/assets/css/imagestyle.css" />" rel="stylesheet">
+		<script src="<c:url value="/resources/assets/scripts/image.js" />"> </script>
+
 		<title>Oneil - Gallery</title>
 	</head>
 
@@ -44,10 +46,10 @@
 					<c:forEach items="${media}" var="media">
 						<div class="imageBox">
 							<c:if test="${media.mediaType == 'image'}" >
-								<a href="${pageContext.request.contextPath}/gallery/images/${media.fileName}" > <img class="imgstyle" src="${pageContext.request.contextPath}/gallery/images/thumbnail/${media.fileName}" /></a>
+								<a href="${pageContext.request.contextPath}/gallery/images/${media.fileName}" > <img class="imgstyle lazy" data-src="${pageContext.request.contextPath}/gallery/images/thumbnail/${media.fileName}" /></a>
 							</c:if>
 							<c:if test="${media.mediaType == 'video'}" >
-								<a href="${pageContext.request.contextPath}/gallery/images/${media.fileName}" > <video class="imgstyle" src="${pageContext.request.contextPath}/gallery/images/${media.fileName}" controls height="400" width="400"></video> </a>
+								<a href="${pageContext.request.contextPath}/gallery/images/${media.fileName}" > <video class="imgstyle lazy" data-src="${pageContext.request.contextPath}/gallery/images/${media.fileName}" controls height="400" width="400"></video> </a>
 							</c:if>
 						</div>
 					</c:forEach>

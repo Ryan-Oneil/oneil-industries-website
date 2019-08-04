@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <link href="<c:url value="/resources/assets/css/style.css" />" rel="stylesheet">
     <link href="<c:url value="/resources/assets/css/imagestyle.css" />" rel="stylesheet">
+    <script src="<c:url value="/resources/assets/scripts/image.js" />"> </script>
+
     <title>Oneil - My Albums - Manage</title>
 </head>
 
@@ -57,10 +59,10 @@
                     <div class="imageBox">
                         <p>${media.name} - ${media.dateAdded}</p>
                         <c:if test="${media.mediaType == 'image'}" >
-                            <a href="${pageContext.request.contextPath}/gallery/myimages/${media.fileName}" > <img src="${pageContext.request.contextPath}/gallery/images/thumbnail/${media.fileName}" /></a>
+                            <a href="${pageContext.request.contextPath}/gallery/myimages/${media.fileName}" > <img class="lazy" data-src="${pageContext.request.contextPath}/gallery/images/thumbnail/${media.fileName}" /></a>
                         </c:if>
                         <c:if test="${media.mediaType == 'video'}" >
-                            <a href="${pageContext.request.contextPath}/gallery/myimages/${media.fileName}" > <video src="${pageContext.request.contextPath}/gallery/images/${media.fileName}" controls width="400" height="400"></video></a>
+                            <a href="${pageContext.request.contextPath}/gallery/myimages/${media.fileName}" > <video class="lazy" data-src="${pageContext.request.contextPath}/gallery/images/${media.fileName}" controls width="400" height="400"></video></a>
                         </c:if>                    </div>
                 </c:forEach>
             </div>
