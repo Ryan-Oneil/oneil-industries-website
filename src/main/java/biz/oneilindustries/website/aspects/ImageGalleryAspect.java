@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -25,14 +26,15 @@ public class ImageGalleryAspect {
     private final AlbumService albumService;
 
     private static final String FILE_NOT_EXISTS_ERROR_MESSAGE = ": Does not exist on this server";
-    private static final String GALLERY_IMAGES_DIRECTORY = "C:\\Users\\Ryan\\Desktop\\OneilIndustries\\src\\main\\webapp\\WEB-INF\\view\\gallery\\images\\";
+    private final String galleryImagesDirectory;
     private static final String NO_PERMISSION = "You don't have the permission to access this resource";
     private static final String ADMIN_ROLE = "ROLE_ADMIN";
 
     @Autowired
-    public ImageGalleryAspect(MediaService mediaService, AlbumService albumService) {
+    public ImageGalleryAspect(MediaService mediaService, AlbumService albumService, ServletContext servletContext) {
         this.mediaService = mediaService;
         this.albumService = albumService;
+        galleryImagesDirectory = servletContext.getRealPath("/WEB-INF/view/gallery/images/");
     }
 
     @Pointcut("execution(* biz.oneilindustries.website.controller.ImageGalleryController.getMedia*(..))")
@@ -77,7 +79,7 @@ public class ImageGalleryAspect {
 
         Media media = mediaService.getMediaFileName(mediaFileName);
 
-        File serverFile = new File(GALLERY_IMAGES_DIRECTORY + mediaFileName);
+        File serverFile = new File(galleryImagesDirectory + mediaFileName);
 
         if (!serverFile.exists() || !serverFile.isFile()) {
             throw new FileNotFoundException(mediaFileName + FILE_NOT_EXISTS_ERROR_MESSAGE);

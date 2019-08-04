@@ -16,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.File;
@@ -28,15 +29,15 @@ import java.util.List;
 @Controller
 public class ImageGalleryController {
 
-    private static final String GALLERY_IMAGES_DIRECTORY = "C:\\Users\\Ryan\\Desktop\\OneilIndustries\\src\\main\\webapp\\WEB-INF\\view\\gallery\\images\\";
-
+    private final String galleryImagesDirectory;
     private final MediaService mediaService;
     private final AlbumService albumService;
 
     @Autowired
-    public ImageGalleryController(MediaService mediaService, AlbumService albumService) {
+    public ImageGalleryController(MediaService mediaService, AlbumService albumService, ServletContext servletContext) {
         this.mediaService = mediaService;
         this.albumService = albumService;
+        galleryImagesDirectory = servletContext.getRealPath("/WEB-INF/view/gallery/images/");
     }
 
     @GetMapping("gallery")
@@ -50,7 +51,7 @@ public class ImageGalleryController {
     @ResponseBody
     public byte[] getMedia(@PathVariable(value = "mediaFileName") String mediaFileName, Authentication user) throws IOException {
 
-        File serverFile = new File(GALLERY_IMAGES_DIRECTORY + mediaFileName);
+        File serverFile = new File(galleryImagesDirectory + mediaFileName);
 
         return Files.readAllBytes(serverFile.toPath());
     }
@@ -59,7 +60,7 @@ public class ImageGalleryController {
     @ResponseBody
     public byte[] getMediaThumbnail(@PathVariable(value = "mediaFileName") String mediaFileName, Authentication user) throws IOException {
 
-        File serverFile = new File(GALLERY_IMAGES_DIRECTORY + "thumbnail/" + mediaFileName);
+        File serverFile = new File(galleryImagesDirectory + "thumbnail/" + mediaFileName);
 
         return Files.readAllBytes(serverFile.toPath());
     }
@@ -79,7 +80,7 @@ public class ImageGalleryController {
             throw new FileExistsException(fileName + " Already exists in database");
         }
 
-        FileHandler.writeFile(galleryUpload.getFile(),GALLERY_IMAGES_DIRECTORY);
+        FileHandler.writeFile(galleryUpload.getFile(), galleryImagesDirectory);
 
         Album album = null;
 
