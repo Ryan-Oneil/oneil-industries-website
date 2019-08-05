@@ -1,10 +1,13 @@
 package biz.oneilindustries.website.service;
 
+import biz.oneilindustries.website.dao.ResetPasswordTokenDAO;
 import biz.oneilindustries.website.dao.TokenDAO;
 import biz.oneilindustries.website.dao.UserDAO;
 import biz.oneilindustries.website.entity.Authority;
+import biz.oneilindustries.website.entity.PasswordResetToken;
 import biz.oneilindustries.website.entity.User;
 import biz.oneilindustries.website.entity.VerificationToken;
+import biz.oneilindustries.website.exception.TokenException;
 import biz.oneilindustries.website.validation.LoginForm;
 import biz.oneilindustries.website.validation.UpdatedUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +25,15 @@ public class UserService {
 
     private final TokenDAO tokenDAO;
 
+    private final ResetPasswordTokenDAO passwordTokenDAO;
+
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserDAO dao, TokenDAO tokenDAO, PasswordEncoder passwordEncoder) {
+    public UserService(UserDAO dao, TokenDAO tokenDAO, ResetPasswordTokenDAO passwordTokenDAO, PasswordEncoder passwordEncoder) {
         this.dao = dao;
         this.tokenDAO = tokenDAO;
+        this.passwordTokenDAO = passwordTokenDAO;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -108,5 +114,29 @@ public class UserService {
     @Transactional
     public void saveToken(VerificationToken token) {
         tokenDAO.saveToken(token);
+    }
+
+    @Transactional
+    public void generateResetToken(User user, String token) {
+
+        if (passwordTokenDAO.getTokenByUser(user.getUsername()) != null) {
+            throw new TokenException("A reset link has already been emailed to you");
+        }
+
+        PasswordResetToken passwordResetToken = new PasswordResetToken(token,user);
+
+        passwordTokenDAO.saveToken(passwordResetToken);
+    }
+
+    @Transactional
+    public PasswordResetToken getResetToken(String token) {
+        return passwordTokenDAO.getToken(token);
+    }
+
+    @Transactional
+    public void changeUserPassword(User user, String password) {
+        user.setPassword(passwordEncoder.encode(password));
+
+        saveUser(user);
     }
 }

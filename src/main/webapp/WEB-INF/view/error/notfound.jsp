@@ -16,7 +16,7 @@
         </div>
     </header>
     <nav>
-        <ul id="navBar">
+        <ul class="navBar">
             <li><a href="${pageContext.request.contextPath}/">Home</a></li>
             <li><a href="#">About Us</a></li>
             <li><a href="#">Contact</a></li>
@@ -26,7 +26,7 @@
     </nav>
     <div class="maindiv">
         <div class="mainpage" style="display: grid; min-height: 300px;">
-            <h1 style="margin: auto;">Error 404 - The page you were looking for was not found</h1>
+            <h1 style="margin: auto;">Error 404 - ${page} - Not Found</h1>
         </div>
     </div>
 

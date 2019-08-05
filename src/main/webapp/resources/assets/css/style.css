@@ -32,7 +32,7 @@ header{
 #logo h1 {
     font-size: 3em;
 }
-#navBar	{
+.navBar	{
     list-style-type: none;
 	display: inline-block;
     margin: 0;
@@ -44,7 +44,7 @@ header{
     background-color: #00AABB;
 }
 
-#navBar li {
+.navBar li {
     float: left;
 }
 h2 {
@@ -53,7 +53,7 @@ h2 {
     color: #666;
 
 }
-#navBar li a {
+.navBar li a {
     display: block;
     letter-spacing: 1px;
     padding: 20px 40px;

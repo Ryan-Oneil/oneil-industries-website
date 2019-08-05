@@ -20,7 +20,7 @@
 			</div>
 		</header>
 		<nav>
-		<ul id="navBar">
+		<ul class="navBar">
 			<li><a href="${pageContext.request.contextPath}/">Home</a></li>
 			<li><a href="#">About Us</a></li>
 			<li><a href="#">Contact</a></li>
@@ -31,7 +31,7 @@
 		<div class="maindiv">
 			<div class="gallerySubMenu">
 				<nav class="galNav">
-					<ul id="navBar" class="subMenu">
+					<ul class="subMenu navBar">
 						<li><a href="${pageContext.request.contextPath}/gallery/upload">Upload</a></li>
 						<li><a href="${pageContext.request.contextPath}/gallery/myimages">My Images</a></li>
 						<li><a href="${pageContext.request.contextPath}/gallery/myalbums">My Albums</a></li>

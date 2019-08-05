@@ -80,7 +80,6 @@ public class MediaService {
         }else if (FileHandler.isVideoFile(galleryUpload.getFile().getContentType())) {
             media.setMediaType("video");
         }
-
         saveMedia(media);
     }
 

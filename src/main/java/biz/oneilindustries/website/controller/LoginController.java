@@ -3,6 +3,8 @@ package biz.oneilindustries.website.controller;
 import biz.oneilindustries.website.entity.User;
 import biz.oneilindustries.website.entity.VerificationToken;
 import biz.oneilindustries.website.eventlisteners.OnRegistrationCompleteEvent;
+import biz.oneilindustries.website.exception.TokenException;
+import biz.oneilindustries.website.service.EmailSender;
 import biz.oneilindustries.website.service.UserService;
 import biz.oneilindustries.website.validation.LoginForm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,14 +15,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.Calendar;
-import java.util.Locale;
+import java.util.UUID;
 
 @Controller
 public class LoginController {
@@ -32,14 +32,16 @@ public class LoginController {
 
     private final ApplicationEventPublisher eventPublisher;
 
-
     private final MessageSource messageSource;
 
+    private final EmailSender emailSender;
+
     @Autowired
-    public LoginController(UserService userService, ApplicationEventPublisher eventPublisher, @Qualifier("customMessageSource") MessageSource messageSource) {
+    public LoginController(UserService userService, ApplicationEventPublisher eventPublisher, @Qualifier("customMessageSource") MessageSource messageSource, EmailSender emailSender) {
         this.userService = userService;
         this.eventPublisher = eventPublisher;
         this.messageSource = messageSource;
+        this.emailSender = emailSender;
     }
 
     @GetMapping("/login")
@@ -79,32 +81,67 @@ public class LoginController {
     }
 
     @GetMapping("/registrationConfirm{tokens}")
-    public ModelAndView confirmRegistration(WebRequest request, @RequestParam("token") String token, @PathVariable String tokens, RedirectAttributes redir) {
+    public ModelAndView confirmRegistration(@RequestParam("token") String token, @PathVariable String tokens, RedirectAttributes redir) {
 
         ModelAndView redirect = new ModelAndView("redirect:/login");
 
-        Locale locale = request.getLocale();
-
         VerificationToken verificationToken = userService.getToken(token);
-        if (verificationToken == null) {
-            String message = messageSource.getMessage("auth.message.invalidToken", null, locale);
-            redirect.setViewName("redirect:/error/userError");
-            redir.addFlashAttribute("error", message);
-            return redirect;
-        }
 
         User user = verificationToken.getUser();
-        Calendar cal = Calendar.getInstance();
-        if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
-            String messageValue = messageSource.getMessage("auth.message.expired", null, locale);
-            redirect.setViewName("redirect:/error/userError");
-            redir.addFlashAttribute("error", messageValue);
-            return redirect;
-        }
 
         user.setEnabled(1);
         userService.saveUser(user);
 
         return redirect;
+    }
+
+    @GetMapping("/forgotPassword")
+    public String forgotPassword() {
+        return "forgotpassword";
+    }
+
+    @PostMapping("/forgotPassword")
+    public ModelAndView sendResetToken(@RequestParam String email, HttpServletRequest request) {
+
+        User user = userService.getUserByEmail(email);
+
+        ModelAndView modelAndView = new ModelAndView("/forgotpassword");
+
+        if (user == null) {
+            modelAndView.addObject("message","Invalid Email");
+            return modelAndView;
+        }
+
+        String token = UUID.randomUUID().toString();
+
+        userService.generateResetToken(user,token);
+
+        emailSender.sendSimpleEmail(user.getEmail(),"Password Reset","Reset Password Link " + request.getLocalName() + "/changePassword?token=" + token,"Oneil-Industries");
+
+        modelAndView.addObject("message","Successfully sent reset email");
+
+        return modelAndView;
+    }
+
+    @GetMapping("/changePassword")
+    public String confirmNewPassword(@RequestParam("token") String token, Model model) {
+
+        model.addAttribute("token", token);
+
+        return "changePassword";
+    }
+
+    @PostMapping("/newPassword")
+    public String setNewPassword(@RequestParam("token") String token, @RequestParam String password) {
+
+        User user = userService.getResetToken(token).getUsername();
+
+        if (user == null) {
+            throw new TokenException("Token is not associated with any user");
+        }
+
+        userService.changeUserPassword(user, password);
+
+        return "redirect:/login";
     }
 }

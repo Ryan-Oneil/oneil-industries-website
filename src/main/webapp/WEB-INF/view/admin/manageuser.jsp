@@ -19,7 +19,7 @@
         </div>
     </header>
     <nav>
-        <ul id="navBar">
+        <ul class="navBar">
             <li><a href="${pageContext.request.contextPath}/">Home</a></li>
             <li><a href="#">About Us</a></li>
             <li><a href="#">Contact</a></li>

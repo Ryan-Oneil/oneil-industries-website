@@ -25,7 +25,7 @@
 		</div>
 	</header>
 	<nav>
-		<ul id="navBar">
+		<ul class="navBar">
 			<li><a href="${pageContext.request.contextPath}/">Home</a></li>
 			<li><a href="#">About Us</a></li>
 			<li><a href="#">Contact</a></li>
@@ -66,6 +66,7 @@
 						<input name="oneil-industries-remember-me" type="checkbox"/>
 					</label>
 						<button>login</button>
+						<p class="message">Forgot Passowrd? <a href="${pageContext.request.contextPath}/forgotPassword">Reset</a></p>
 						<p class="message">Not registered? <a href="#" onclick="changeFormOption()">Create an account</a></p>
 					</form:form>
 				</div>
