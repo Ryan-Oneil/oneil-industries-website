@@ -46,9 +46,9 @@
                 <h2>Click on a media to manage its options</h2>
                 <a href="/gallery/album/${album.album.name}">Direct Album Link</a>
                 <form:form action="/gallery/changealbum/${album.album.name}" method="post">
-                    <p> Album Name: <input type="text" name="newAlbumName" placeholder="${album.album.name}"> </p>
+                    <p> Album Name: <input type="text" name="newAlbumName" value="${album.album.name}"> </p>
                     <p>Show Unlisted media: <select name="showUnlistedImages">
-                        <option hidden value="${album.album.showUnlistedImages}"></option>
+                        <option value="${album.album.showUnlistedImages}">Current: ${album.album.showUnlistedImages}</option>
                         <option value="false">False</option>
                         <option value="true">True</option>
                     </select>

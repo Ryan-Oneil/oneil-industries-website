@@ -56,13 +56,16 @@
                         <input type="hidden" name="id" placeholder="${media.id}">
                         <p>Image Name: <form:input type="text" name="imageName" placeholder="${media.name}" path="name"/></p>
                         <p>Link Status: <form:select name="privacy" path="privacy">
-                            <option hidden value="${media.linkStatus}"></option>
+                            <option value="${media.linkStatus}">Current: ${media.linkStatus}</option>
                             <option value="unlisted">Unlisted</option>
                             <option value="public">Public</option>
                             <option value="private">Private</option>
                         </form:select>
                         </p>
                         <p>Album: <form:select id="albumoption" name="albumName" onchange="checkAlbum()" path="albumName">
+                            <c:if test="${GalleryUpload.albumName != null}">
+                                <option value="${GalleryUpload.albumName}">Current: ${GalleryUpload.albumName}</option>
+                            </c:if>
                             <option value="none">None</option>
                             <option value="new">new</option>
                             <c:forEach items="${albums}" var="album">
@@ -70,7 +73,7 @@
                             </c:forEach>
                         </form:select></p>
                         <div id="newAlbumOptions" style="display: none;">
-                            <p>Album Name: <form:input type="text" name="newalbumName" placeholder="Album name" path="newalbumName"/></p>
+                            <p>Album Name: <form:input type="text" name="newAlbumName" placeholder="Album name" path="newAlbumName"/></p>
                             <p>Show Unlisted media: <form:select name="showUnlistedImages" path="showUnlistedImages">
                                 <option value="false">False</option>
                                 <option value="true">True</option>

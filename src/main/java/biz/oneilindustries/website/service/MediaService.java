@@ -7,16 +7,27 @@ import biz.oneilindustries.website.filecreater.FileHandler;
 import biz.oneilindustries.website.validation.GalleryUpload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class MediaService {
 
     private final MediaDAO dao;
+
+    private static List<String> privacySettings;
+
+    static {
+        privacySettings = new ArrayList<>();
+        privacySettings.add("unlisted");
+        privacySettings.add("private");
+        privacySettings.add("public");
+    }
 
     @Autowired
     public MediaService(MediaDAO dao) {
@@ -78,6 +89,26 @@ public class MediaService {
         if (FileHandler.isImageFile(galleryUpload.getFile().getOriginalFilename())) {
             media.setMediaType("image");
         }else if (FileHandler.isVideoFile(galleryUpload.getFile().getContentType())) {
+            media.setMediaType("video");
+        }
+        saveMedia(media);
+    }
+
+    @Transactional
+    public void registerMedia(MultipartFile file, String user, String privacy) {
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        LocalDate localDate = LocalDate.now();
+
+        if (privacy == null || privacy.isEmpty() || !privacySettings.contains(privacy)) {
+            privacy = "unlisted";
+        }
+
+        Media media = new Media(file.getName(), file.getOriginalFilename() , privacy, user, localDate.format(dtf));
+
+        if (FileHandler.isImageFile(file.getOriginalFilename())) {
+            media.setMediaType("image");
+        }else if (FileHandler.isVideoFile(file.getContentType())) {
             media.setMediaType("video");
         }
         saveMedia(media);

@@ -2,7 +2,7 @@ package biz.oneilindustries.website.service;
 
 import biz.oneilindustries.website.dao.AlbumDAO;
 import biz.oneilindustries.website.entity.Album;
-import biz.oneilindustries.website.exception.FileExistsException;
+import biz.oneilindustries.website.exception.MediaException;
 import biz.oneilindustries.website.validation.GalleryUpload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,7 +56,7 @@ public class AlbumService {
         Album album = getAlbumByName(galleryUpload.getAlbumName());
 
         if (album == null) {
-            album = new Album(galleryUpload.getNewalbumName(), user, galleryUpload.getShowUnlistedImages());
+            album = new Album(galleryUpload.getNewAlbumName(), user, galleryUpload.getShowUnlistedImages());
             saveAlbum(album);
         }
         return album;
@@ -72,10 +72,10 @@ public class AlbumService {
         Album album = getAlbumByName(galleryUpload.getAlbumName());
 
         if (album == null) {
-            if (getAlbumByName(galleryUpload.getNewalbumName()) != null) {
-                throw new FileExistsException("This album already exists");
+            if (getAlbumByName(galleryUpload.getNewAlbumName()) != null) {
+                throw new MediaException("This album already exists");
             }
-            album = new Album(galleryUpload.getNewalbumName(),user,galleryUpload.getShowUnlistedImages());
+            album = new Album(galleryUpload.getNewAlbumName(),user,galleryUpload.getShowUnlistedImages());
             saveAlbum(album);
         }
         return album;

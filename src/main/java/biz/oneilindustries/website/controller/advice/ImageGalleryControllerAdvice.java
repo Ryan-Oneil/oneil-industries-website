@@ -1,6 +1,6 @@
 package biz.oneilindustries.website.controller.advice;
 
-import biz.oneilindustries.website.exception.FileExistsException;
+import biz.oneilindustries.website.exception.MediaException;
 import biz.oneilindustries.website.exception.NotAuthorisedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,8 +13,8 @@ import java.io.IOException;
 @ControllerAdvice
 public class ImageGalleryControllerAdvice {
 
-    @ExceptionHandler(FileExistsException.class)
-    public ResponseEntity handleException(FileExistsException error) {
+    @ExceptionHandler(MediaException.class)
+    public ResponseEntity handleException(MediaException error) {
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .body(error.getMessage());

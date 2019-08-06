@@ -60,7 +60,7 @@
                             </c:forEach>
                         </form:select></p>
                         <div id="newAlbumOptions" style="display: none;">
-                            <p>Album Name: <form:input type="text" name="newalbumName" placeholder="Album name" path="newalbumName"/></p>
+                            <p>Album Name: <form:input type="text" name="newAlbumName" placeholder="Album name" path="newAlbumName"/></p>
                             <p>Show Unlisted media: <form:select name="showUnlistedImages" path="showUnlistedImages">
                                 <form:option value="false">False</form:option>
                                 <form:option value="true">True</form:option>

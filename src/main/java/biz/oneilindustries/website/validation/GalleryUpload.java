@@ -12,23 +12,21 @@ public class GalleryUpload {
     @NotNull
     private String name;
 
-    @NotNull
-    private String privacy;
+    private String privacy = "unlisted";
 
-    @NotNull
-    @Size(min = 1,message = "Please enter an album names")
-    private String albumName;
+    @Size(min = 1, message = "Please enter an album names")
+    private String albumName = "none";
 
-    private String newalbumName;
+    private String newAlbumName;
 
     private Boolean showUnlistedImages;
 
-    public GalleryUpload(MultipartFile file, @NotNull String name, @NotNull String privacy,@NotNull String albumName, String newalbumName, Boolean showUnlistedImages) {
+    public GalleryUpload(MultipartFile file, @NotNull String name, String privacy, String albumName, String newAlbumName, Boolean showUnlistedImages) {
         this.file = file;
         this.name = name;
         this.privacy = privacy;
         this.albumName = albumName;
-        this.newalbumName = newalbumName;
+        this.newAlbumName = newAlbumName;
         this.showUnlistedImages = showUnlistedImages;
     }
 
@@ -67,12 +65,12 @@ public class GalleryUpload {
         this.albumName = albumName;
     }
 
-    public String getNewalbumName() {
-        return newalbumName;
+    public String getNewAlbumName() {
+        return newAlbumName;
     }
 
-    public void setNewalbumName(String newalbumName) {
-        this.newalbumName = newalbumName;
+    public void setNewAlbumName(String newAlbumName) {
+        this.newAlbumName = newAlbumName;
     }
 
     public Boolean getShowUnlistedImages() {

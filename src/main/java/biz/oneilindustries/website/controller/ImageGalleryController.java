@@ -2,7 +2,7 @@ package biz.oneilindustries.website.controller;
 
 import biz.oneilindustries.website.entity.Album;
 import biz.oneilindustries.website.entity.Media;
-import biz.oneilindustries.website.exception.FileExistsException;
+import biz.oneilindustries.website.exception.MediaException;
 import biz.oneilindustries.website.filecreater.FileHandler;
 import biz.oneilindustries.website.gallery.AlbumCreator;
 import biz.oneilindustries.website.gallery.MediaAlbum;
@@ -77,7 +77,7 @@ public class ImageGalleryController {
         Media doesMediaExistsAlready = mediaService.getMediaFileName(fileName);
 
         if (doesMediaExistsAlready != null) {
-            throw new FileExistsException(fileName + " Already exists in database");
+            throw new MediaException(fileName + " Already exists in database");
         }
 
         FileHandler.writeFile(galleryUpload.getFile(), galleryImagesDirectory);
@@ -140,7 +140,10 @@ public class ImageGalleryController {
         List<Album> albums = albumService.getAlbumsByCreator(user.getName());
 
         model.addAttribute("albums",albums);
-        model.addAttribute("GalleryUpload",new GalleryUpload());
+
+        GalleryUpload galleryUpload = new GalleryUpload(null,media.getName(),media.getLinkStatus(),albumService.getAlbum(media.getAlbumID()).getName(),null,null);
+
+        model.addAttribute("GalleryUpload", galleryUpload);
 
         return "gallery/manageimage";
     }
