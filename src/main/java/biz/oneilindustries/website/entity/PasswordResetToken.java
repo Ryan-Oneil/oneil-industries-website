@@ -1,9 +1,8 @@
 package biz.oneilindustries.website.entity;
 
 import javax.persistence.*;
-import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Objects;
 
 @Entity(name = "password_reset_token")
@@ -33,11 +32,11 @@ public class PasswordResetToken {
     public PasswordResetToken() {
     }
 
-    private java.sql.Date calculateExpiryDate() {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Timestamp(cal.getTime().getTime()));
+    private Date calculateExpiryDate() {
+        final Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(new Date().getTime());
         cal.add(Calendar.MINUTE, EXPIRATION);
-        return new java.sql.Date(cal.getTime().getTime());
+        return new Date(cal.getTime().getTime());
     }
 
     public int getId() {

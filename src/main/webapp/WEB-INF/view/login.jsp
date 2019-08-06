@@ -66,7 +66,7 @@
 						<input name="oneil-industries-remember-me" type="checkbox"/>
 					</label>
 						<button>login</button>
-						<p class="message">Forgot Passowrd? <a href="${pageContext.request.contextPath}/forgotPassword">Reset</a></p>
+						<p class="message">Forgot Password? <a href="${pageContext.request.contextPath}/forgotPassword">Reset</a></p>
 						<p class="message">Not registered? <a href="#" onclick="changeFormOption()">Create an account</a></p>
 					</form:form>
 				</div>

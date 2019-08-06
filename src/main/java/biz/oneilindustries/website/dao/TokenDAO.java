@@ -40,4 +40,11 @@ public class TokenDAO {
 
         currentSession.saveOrUpdate(token);
     }
+
+    public void deleteToken(VerificationToken token) {
+
+        Session currentSession = sessionFactory.getCurrentSession();
+
+        currentSession.delete(token);
+    }
 }

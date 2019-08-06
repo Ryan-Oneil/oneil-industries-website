@@ -89,6 +89,8 @@ public class LoginController {
 
         User user = verificationToken.getUser();
 
+        userService.deleteVerificationToken(verificationToken);
+
         user.setEnabled(1);
         userService.saveUser(user);
 
@@ -139,6 +141,8 @@ public class LoginController {
         if (user == null) {
             throw new TokenException("Token is not associated with any user");
         }
+
+        userService.deletePasswordResetToken(userService.getResetToken(token));
 
         userService.changeUserPassword(user, password);
 

@@ -16,6 +16,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -98,7 +100,7 @@ public class UserService {
     @Transactional
     public void createVerificationToken(User user, String token) {
         VerificationToken myToken = new VerificationToken(token, user);
-        tokenDAO.saveToken(myToken);
+        saveVerificationToken(myToken);
     }
 
     @Transactional
@@ -112,18 +114,25 @@ public class UserService {
     }
 
     @Transactional
-    public void saveToken(VerificationToken token) {
+    public void saveVerificationToken(VerificationToken token) {
         tokenDAO.saveToken(token);
+    }
+
+    @Transactional
+    public void deleteVerificationToken(VerificationToken token) {
+        tokenDAO.deleteToken(token);
     }
 
     @Transactional
     public void generateResetToken(User user, String token) {
 
-        if (passwordTokenDAO.getTokenByUser(user.getUsername()) != null) {
+        PasswordResetToken passwordResetToken = passwordTokenDAO.getTokenByUser(user.getUsername());
+
+        if (passwordResetToken != null && !isExpired(passwordResetToken.getExpiryDate())) {
             throw new TokenException("A reset link has already been emailed to you");
         }
 
-        PasswordResetToken passwordResetToken = new PasswordResetToken(token,user);
+        passwordResetToken = new PasswordResetToken(token,user);
 
         passwordTokenDAO.saveToken(passwordResetToken);
     }
@@ -138,5 +147,16 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(password));
 
         saveUser(user);
+    }
+
+    @Transactional
+    public void deletePasswordResetToken(PasswordResetToken token) {
+        passwordTokenDAO.deleteToken(token);
+    }
+
+    public boolean isExpired(Date date) {
+
+        Calendar cal = Calendar.getInstance();
+        return (date.getTime() - cal.getTime().getTime()) <= 0;
     }
 }

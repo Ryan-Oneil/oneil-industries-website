@@ -1,9 +1,8 @@
 package biz.oneilindustries.website.entity;
 
 import javax.persistence.*;
-import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Objects;
 
 @Entity
@@ -24,8 +23,8 @@ public class VerificationToken {
     private Date expiryDate;
 
     private Date calculateExpiryDate() {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Timestamp(cal.getTime().getTime()));
+        final Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(new java.util.Date().getTime());
         cal.add(Calendar.MINUTE, EXPIRATION);
         return new Date(cal.getTime().getTime());
     }
