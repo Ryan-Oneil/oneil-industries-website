@@ -27,7 +27,7 @@
             <li><a href="#">Services</a></li>
         </ul>
     </nav>
-    <div class="maindiv">
+    <div id="maindiv">
         <div class="mainpage">
             <div>
                 <form:form action="${pageContext.request.contextPath}/admin/updateUser/${user.username}" method="post" modelAttribute="user">

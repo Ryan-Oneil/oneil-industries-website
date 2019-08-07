@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <link href="<c:url value="/resources/assets/css/style.css" />" rel="stylesheet">
     <link href="<c:url value="/resources/assets/css/imagestyle.css" />" rel="stylesheet">
+
     <script src="<c:url value="/resources/assets/scripts/album.js" />"> </script>
     <title>Oneil - Upload</title>
 </head>
@@ -27,7 +28,7 @@
             <li><a href="#">Services</a></li>
         </ul>
     </nav>
-    <div class="maindiv">
+    <div id="maindiv">
         <div class="gallerySubMenu">
             <nav class="galNav">
                 <ul class="subMenu navBar">

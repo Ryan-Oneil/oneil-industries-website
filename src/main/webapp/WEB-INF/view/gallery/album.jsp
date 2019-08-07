@@ -28,7 +28,7 @@
             <li><a href="#">Services</a></li>
         </ul>
     </nav>
-    <div class="maindiv">
+    <id class="maindiv">
         <div class="gallerySubMenu">
             <nav class="galNav">
                 <ul class="subMenu navbar">
@@ -57,7 +57,7 @@
                 </c:forEach>
             </div>
         </div>
-    </div>
+    </id>
 
 
 </div>

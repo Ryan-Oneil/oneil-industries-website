@@ -24,7 +24,7 @@
             <li><a href="#">Services</a></li>
         </ul>
     </nav>
-    <div class="maindiv">
+    <div id="maindiv">
         <div class="mainpage" style="display: grid; min-height: 300px;">
             <h1 style="margin: auto;">Error 404 - ${page} - Not Found</h1>
         </div>

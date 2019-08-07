@@ -28,7 +28,7 @@
 			<li><a href="#">Services</a></li>
 		</ul>
 	</nav>
-	<div class="maindiv">
+	<div id="maindiv">
 		<div class="gallerySubMenu">
 			<nav class="galNav">
 				<ul class="subMenu navBar">

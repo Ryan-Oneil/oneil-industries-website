@@ -26,7 +26,7 @@
             <li><a href="#">Services</a></li>
         </ul>
     </nav>
-    <div class="maindiv">
+    <div id="maindiv">
         <div class="mainpage">
             <div style="overflow-x:auto;">
                 <table class="users-table">
@@ -50,8 +50,6 @@
             </div>
         </div>
     </div>
-
-
 </div>
 
 <div class="footer">

@@ -77,6 +77,10 @@ public class ImageGalleryController {
         Media doesMediaExistsAlready = mediaService.getMediaFileName(fileName);
 
         if (doesMediaExistsAlready != null) {
+            if (doesMediaExistsAlready.getUploader().equalsIgnoreCase(authentication.getName())) {
+                return new ModelAndView("redirect:/gallery/myimages/" + fileName);
+            }
+
             throw new MediaException(fileName + " Already exists in database");
         }
 
@@ -141,7 +145,15 @@ public class ImageGalleryController {
 
         model.addAttribute("albums",albums);
 
-        GalleryUpload galleryUpload = new GalleryUpload(null,media.getName(),media.getLinkStatus(),albumService.getAlbum(media.getAlbumID()).getName(),null,null);
+        Integer albumID = media.getAlbumID();
+
+
+        GalleryUpload galleryUpload = new GalleryUpload(null,media.getName(),media.getLinkStatus(),null,null,null);
+
+        if (albumID != null) {
+            Album album = albumService.getAlbum(albumID);
+            galleryUpload.setAlbumName(album.getName());
+        }
 
         model.addAttribute("GalleryUpload", galleryUpload);
 

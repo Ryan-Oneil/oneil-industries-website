@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <html lang="en">
 	<head>
 		<meta charset="UTF-8">
@@ -24,9 +25,9 @@
 			<li><a href="#">Services</a></li>
 		</ul>
 		</nav>
-		<div class="maindiv">
+		<div id="maindiv">
 			<div class="mainpage">
-				
+				<p><h2>Oneil Industries a community dedicated to banter. </h2></p>
 			</div>
 		</div>
 
