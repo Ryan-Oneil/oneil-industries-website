@@ -6,7 +6,6 @@
 	<meta charset="UTF-8">
 	<link href="<c:url value="/resources/assets/css/style.css" />" rel="stylesheet">
 	<link href="<c:url value="/resources/assets/css/loginstyle.css" />" rel="stylesheet">
-	<script src="<c:url value="/resources/assets/scripts/login.js" />"> </script>
 
 	<title>Oneil - Contact</title>
 

@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <link href="<c:url value="/resources/assets/css/style.css" />" rel="stylesheet">
     <link href="<c:url value="/resources/assets/css/imagestyle.css" />" rel="stylesheet">
+    <link href="<c:url value="/resources/assets/css/loginstyle.css" />" rel="stylesheet">
     <script src="<c:url value="/resources/assets/scripts/album.js" />"> </script>
 
     <title>Oneil - Manage Image</title>
@@ -46,13 +47,13 @@
                 <div class="imageUpload">
                     <h1>${media.name} - ${media.dateAdded}</h1>
                     <c:if test="${media.mediaType == 'image'}" >
-                        <a href="${pageContext.request.contextPath}/gallery/images/${media.fileName}" > <img src="${pageContext.request.contextPath}/gallery/images/thumbnail/${media.fileName}" /></a>
+                        <a href="${pageContext.request.contextPath}/gallery/images/${media.fileName}" > <img class="imgstyle" src="${pageContext.request.contextPath}/gallery/images/thumbnail/${media.fileName}" /></a>
                     </c:if>
                     <c:if test="${media.mediaType == 'video'}" >
-                        <a href="${pageContext.request.contextPath}/gallery/images/${media.fileName}" > <video src="${pageContext.request.contextPath}/gallery/images/${media.fileName}" controls width="400" height="400"></video></a>
+                        <a href="${pageContext.request.contextPath}/gallery/images/${media.fileName}" > <video class="imgstyle" src="${pageContext.request.contextPath}/gallery/images/${media.fileName}" controls width="400" height="400"></video></a>
                     </c:if>
-                    <p><a href="${pageContext.request.contextPath}/gallery/delete/${media.fileName}">Delete Image</a></p>
-                    <form:form action="${pageContext.request.contextPath}/gallery/update/${media.fileName}" method="post" modelAttribute="GalleryUpload">
+                    <div class="form">
+                    <form:form action="${pageContext.request.contextPath}/gallery/update/${media.fileName}" method="post" modelAttribute="GalleryUpload" class="login-form">
                         <input type="hidden" name="id" placeholder="${media.id}">
                         <p>Image Name: <form:input type="text" name="imageName" placeholder="${media.name}" path="name"/></p>
                         <p>Link Status: <form:select name="privacy" path="privacy">
@@ -80,8 +81,11 @@
                             </form:select>
                             </p>
                         </div>
-                        <input type="submit" value="Save">
+                        <button style="margin-bottom: 20px !important;">Save</button>
+                        <a class="deleteButton" href="${pageContext.request.contextPath}/gallery/delete/${media.fileName}">Delete Image</a>
+
                     </form:form>
+                    </div>
                 </div>
             </div>
         </div>

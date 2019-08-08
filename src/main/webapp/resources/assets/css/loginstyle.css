@@ -15,7 +15,7 @@
   text-align: center;
   box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
 }
-.form input, .form textarea {
+.form input, .form textarea, .form select {
   font-family: "Roboto", sans-serif;
   outline: 0;
   background: #f2f2f2;
@@ -26,7 +26,7 @@
   box-sizing: border-box;
   font-size: 14px;
 }
-.form button {
+.form button, .form .deleteButton {
   font-family: "Roboto", sans-serif;
   text-transform: uppercase;
   outline: 0;

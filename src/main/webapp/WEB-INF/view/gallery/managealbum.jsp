@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <link href="<c:url value="/resources/assets/css/style.css" />" rel="stylesheet">
     <link href="<c:url value="/resources/assets/css/imagestyle.css" />" rel="stylesheet">
+    <link href="<c:url value="/resources/assets/css/loginstyle.css" />" rel="stylesheet">
+
     <script src="<c:url value="/resources/assets/scripts/image.js" />"> </script>
 
     <title>Oneil - My Albums - Manage</title>
@@ -45,7 +47,8 @@
             <div class="images">
                 <h2>Click on a media to manage its options</h2>
                 <a href="/gallery/album/${album.album.name}">Direct Album Link</a>
-                <form:form action="/gallery/changealbum/${album.album.name}" method="post">
+                <div class="form">
+                <form:form action="/gallery/changealbum/${album.album.name}" method="post" class="login-form">
                     <p> Album Name: <input type="text" name="newAlbumName" value="${album.album.name}"> </p>
                     <p>Show Unlisted media: <select name="showUnlistedImages">
                         <option value="${album.album.showUnlistedImages}">Current: ${album.album.showUnlistedImages}</option>
@@ -53,16 +56,17 @@
                         <option value="true">True</option>
                     </select>
                     </p>
-                    <input type="submit" value="Save">
+                    <button>Save</button>
                 </form:form >
+                </div>
                 <c:forEach items="${album.media}" var="media">
                     <div class="imageBox">
                         <p>${media.name} - ${media.dateAdded}</p>
                         <c:if test="${media.mediaType == 'image'}" >
-                            <a href="${pageContext.request.contextPath}/gallery/myimages/${media.fileName}" > <img class="lazy" data-src="${pageContext.request.contextPath}/gallery/images/thumbnail/${media.fileName}" /></a>
+                            <a href="${pageContext.request.contextPath}/gallery/myimages/${media.fileName}" > <img class="imgstyle lazy" data-src="${pageContext.request.contextPath}/gallery/images/thumbnail/${media.fileName}" /></a>
                         </c:if>
                         <c:if test="${media.mediaType == 'video'}" >
-                            <a href="${pageContext.request.contextPath}/gallery/myimages/${media.fileName}" > <video class="lazy" data-src="${pageContext.request.contextPath}/gallery/images/${media.fileName}" controls width="400" height="400"></video></a>
+                            <a href="${pageContext.request.contextPath}/gallery/myimages/${media.fileName}" > <video class="imgstyle lazy" data-src="${pageContext.request.contextPath}/gallery/images/${media.fileName}" controls width="400" height="400"></video></a>
                         </c:if>                    </div>
                 </c:forEach>
             </div>

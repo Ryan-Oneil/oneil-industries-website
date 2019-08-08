@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <link href="<c:url value="/resources/assets/css/style.css" />" rel="stylesheet">
     <link href="<c:url value="/resources/assets/css/imagestyle.css" />" rel="stylesheet">
-
+    <link href="<c:url value="/resources/assets/css/loginstyle.css" />" rel="stylesheet">
     <script src="<c:url value="/resources/assets/scripts/album.js" />"> </script>
     <title>Oneil - Upload</title>
 </head>
@@ -42,8 +42,8 @@
             </nav>
         </div>
         <div class="mainpage">
-            <div class="imageUpload">
-                <form:form action="${pageContext.request.contextPath}/gallery/upload" method="POST" enctype="multipart/form-data" modelAttribute="GalleryUpload">
+            <div class="form">
+                <form:form action="${pageContext.request.contextPath}/gallery/upload" method="POST" enctype="multipart/form-data" modelAttribute="GalleryUpload" class="login-form">
                     <div class="details">
                         <p>Image: <form:input type="file" name="media" path="file"/> </p>
                         <p>Name: <form:input type="text" name="name" path="name"/></p>
@@ -69,7 +69,7 @@
                             </p>
                         </div>
                     </div>
-                    <input type="submit" value="Submit" class="submit" />
+                    <button>Upload</button>
                 </form:form>
             </div>
         </div>

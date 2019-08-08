@@ -151,7 +151,7 @@ nav{
 	margin-top: 20px;
 }
 .mainpage a{
-	font-weight: 600;
+	font-weight: 400;
     color: #666;
 	text-decoration: none;
 }
@@ -189,9 +189,7 @@ ul{
 	display: inline-block;
 	text-align: justify;
 }
-button {
-	margin: 5px;
-}
+
 .description{
 	border: 2px #111 solid;
 	padding: 2px;
@@ -235,4 +233,15 @@ nav ul {
 
 .memberTable{
 	margin: auto;
+}
+
+.imgstyle {
+	padding: 5px;
+}
+
+.imgstyle:hover {
+	box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	padding: 5px;
 }
