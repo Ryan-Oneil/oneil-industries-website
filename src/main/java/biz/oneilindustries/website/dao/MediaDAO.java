@@ -57,9 +57,7 @@ public class MediaDAO {
     public Media getMedia(int id) {
         Session currentSession = sessionFactory.getCurrentSession();
 
-        Media media = currentSession.get(Media.class, id);
-
-        return media;
+        return currentSession.get(Media.class, id);
     }
 
     public Media getMediaFileName(String fileName) {
@@ -68,9 +66,8 @@ public class MediaDAO {
         Query query= currentSession.
                 createQuery("from Media where fileName=:fileName");
         query.setParameter("fileName", fileName);
-        Media media = (Media) query.uniqueResult();
 
-        return media;
+        return (Media) query.uniqueResult();
     }
 
     public void saveMedia(Media media) {

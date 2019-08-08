@@ -32,9 +32,7 @@ public class UserDAO {
 
         Session currentSession = sessionFactory.getCurrentSession();
 
-        User user = currentSession.get(User.class, username);
-
-        return user;
+        return currentSession.get(User.class, username);
     }
 
     public User getUserByEmail(String email) {

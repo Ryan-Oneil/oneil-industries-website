@@ -39,9 +39,7 @@ public class AlbumDAO {
     public Album getAlbum(int id) {
         Session currentSession = sessionFactory.getCurrentSession();
 
-        Album album = currentSession.get(Album.class,id);
-
-        return album;
+        return currentSession.get(Album.class,id);
     }
 
     public Album getAlbumByName(String albumName) {
@@ -50,9 +48,7 @@ public class AlbumDAO {
         Query query = currentSession.createQuery("FROM Album where name=:albumName");
         query.setParameter("albumName",albumName);
 
-        Album album = (Album) query.uniqueResult();
-
-        return album;
+        return (Album) query.uniqueResult();
     }
 
     public void saveAlbum(Album album) {

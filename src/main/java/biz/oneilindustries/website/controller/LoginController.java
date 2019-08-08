@@ -8,9 +8,7 @@ import biz.oneilindustries.website.service.EmailSender;
 import biz.oneilindustries.website.service.UserService;
 import biz.oneilindustries.website.validation.LoginForm;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -32,15 +30,12 @@ public class LoginController {
 
     private final ApplicationEventPublisher eventPublisher;
 
-    private final MessageSource messageSource;
-
     private final EmailSender emailSender;
 
     @Autowired
-    public LoginController(UserService userService, ApplicationEventPublisher eventPublisher, @Qualifier("customMessageSource") MessageSource messageSource, EmailSender emailSender) {
+    public LoginController(UserService userService, ApplicationEventPublisher eventPublisher, EmailSender emailSender) {
         this.userService = userService;
         this.eventPublisher = eventPublisher;
-        this.messageSource = messageSource;
         this.emailSender = emailSender;
     }
 
@@ -118,7 +113,7 @@ public class LoginController {
 
         userService.generateResetToken(user,token);
 
-        emailSender.sendSimpleEmail(user.getEmail(),"Password Reset","Reset Password Link " + request.getLocalName() + "/changePassword?token=" + token,"Oneil-Industries");
+        emailSender.sendSimpleEmail(user.getEmail(),"Password Reset","Reset Password Link " + request.getLocalName() + "/changePassword?token=" + token,"Oneil-Industries",null);
 
         modelAndView.addObject("message","Successfully sent reset email");
 

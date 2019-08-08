@@ -20,12 +20,12 @@ public class ErrorPageControllerAdvice {
     }
 
     @ExceptionHandler(TooManyLoginAttempts.class)
-    public RedirectView TooManyLoginAttemptsException(TooManyLoginAttempts ex) {
+    public RedirectView tooManyLoginAttemptsException(TooManyLoginAttempts ex) {
         return new RedirectView("/");
     }
 
     @ExceptionHandler(TokenException.class)
-    public RedirectView TokenException(TokenException ex, RedirectAttributes redirectAttributes) {
+    public RedirectView tokenException(TokenException ex, RedirectAttributes redirectAttributes) {
 
         redirectAttributes.addFlashAttribute("error",ex.getMessage());
 

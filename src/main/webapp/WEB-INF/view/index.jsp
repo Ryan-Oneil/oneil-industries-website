@@ -17,13 +17,13 @@
 			</div>
 		</header>
 		<nav>
-		<ul class="navBar">
-			<li><a class="active" href="${pageContext.request.contextPath}/">Home</a></li>
-			<li><a href="#">About Us</a></li>
-			<li><a href="#">Contact</a></li>
-			<li><a href="${pageContext.request.contextPath}/gallery">Images</a></li>
-			<li><a href="#">Services</a></li>
-		</ul>
+			<ul class="navBar">
+				<li><a class="active" href="${pageContext.request.contextPath}/">Home</a></li>
+				<li><a href="${pageContext.request.contextPath}/about">About Us</a></li>
+				<li><a href="${pageContext.request.contextPath}/contact">Contact</a></li>
+				<li><a href="${pageContext.request.contextPath}/gallery">Images</a></li>
+				<li><a href="${pageContext.request.contextPath}/services">Services</a></li>
+			</ul>
 		</nav>
 		<div id="maindiv">
 			<div class="mainpage">

@@ -41,6 +41,6 @@ public class RegistrationListener implements
                 = event.getAppUrl() + "/registrationConfirm?token=" + token;
         String message = messages.getMessage("message.regSucc", null, event.getLocale());
 
-        emailSender.sendSimpleEmail(recipientAddress,subject,message + " http://localhost:8080" + confirmationUrl,"Oneil_Industries");
+        emailSender.sendSimpleEmail(recipientAddress,subject,message + " http://localhost:8080" + confirmationUrl,"Oneil_Industries", null);
     }
 }
