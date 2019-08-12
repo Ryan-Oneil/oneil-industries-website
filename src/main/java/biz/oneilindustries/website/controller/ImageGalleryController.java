@@ -9,35 +9,39 @@ import biz.oneilindustries.website.gallery.MediaAlbum;
 import biz.oneilindustries.website.service.AlbumService;
 import biz.oneilindustries.website.service.MediaService;
 import biz.oneilindustries.website.validation.GalleryUpload;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class ImageGalleryController {
 
-    private final String galleryImagesDirectory;
+    private static final String GALLERY_IMAGES_DIRECTORY = "E:/images/";
     private final MediaService mediaService;
     private final AlbumService albumService;
 
     @Autowired
-    public ImageGalleryController(MediaService mediaService, AlbumService albumService, ServletContext servletContext) {
+    public ImageGalleryController(MediaService mediaService, AlbumService albumService) {
         this.mediaService = mediaService;
         this.albumService = albumService;
-        galleryImagesDirectory = servletContext.getRealPath("/WEB-INF/view/gallery/images/");
     }
 
     @GetMapping("gallery")
@@ -47,23 +51,38 @@ public class ImageGalleryController {
         return "gallery/index";
     }
 
-    @GetMapping(value = "gallery/images/{mediaFileName}")
+    @GetMapping(value = "gallery/media")
     @ResponseBody
-    public byte[] getMedia(@PathVariable(value = "mediaFileName") String mediaFileName, Authentication user) throws IOException {
-
-        File serverFile = new File(galleryImagesDirectory + mediaFileName);
-
-        return Files.readAllBytes(serverFile.toPath());
+    public void getMedia(@RequestParam("mediaID") int mediaID, Authentication user, HttpServletResponse response) throws IOException {
+        displayMedia(response, mediaID, GALLERY_IMAGES_DIRECTORY);
     }
 
-    @GetMapping(value = "gallery/images/thumbnail/{mediaFileName}")
+    @GetMapping(value = "gallery/media/thumbnail")
     @ResponseBody
-    public byte[] getMediaThumbnail(@PathVariable(value = "mediaFileName") String mediaFileName, Authentication user) throws IOException {
-
-        File serverFile = new File(galleryImagesDirectory + "thumbnail/" + mediaFileName);
-
-        return Files.readAllBytes(serverFile.toPath());
+    public void getMediaThumbnail(@RequestParam("mediaID") int mediaID, Authentication user, HttpServletResponse response) throws IOException {
+        displayMedia(response, mediaID, GALLERY_IMAGES_DIRECTORY + "thumbnail/");
     }
+
+    private void displayMedia(HttpServletResponse response, int mediaID, String directory) throws IOException {
+
+        Media media = mediaService.getMedia(mediaID);
+
+        String imageName = media.getFileName();
+
+        File serverFile = new File(directory + imageName);
+
+        if (media.getMediaType().equalsIgnoreCase("image")) {
+            response.setContentType("image/" + FileHandler.getContentType(media.getFileName()));
+        } else {
+            response.setContentType("video/" + FileHandler.getContentType(media.getFileName()));
+        }
+
+        ServletOutputStream responseOutputStream = response.getOutputStream();
+        responseOutputStream.write(Files.readAllBytes(serverFile.toPath()));
+        responseOutputStream.flush();
+        responseOutputStream.close();
+    }
+
 
     @PostMapping(value = "gallery/upload", consumes = "multipart/form-data")
     public ModelAndView uploadMedia(@ModelAttribute("GalleryUpload") @Valid GalleryUpload galleryUpload, Authentication authentication) throws IOException {
@@ -84,7 +103,7 @@ public class ImageGalleryController {
             throw new MediaException(fileName + " Already exists in database");
         }
 
-        FileHandler.writeFile(galleryUpload.getFile(), galleryImagesDirectory);
+        FileHandler.writeFile(galleryUpload.getFile(), GALLERY_IMAGES_DIRECTORY);
 
         Album album = null;
 

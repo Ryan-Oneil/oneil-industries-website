@@ -98,7 +98,7 @@ public class LoginController {
     }
 
     @PostMapping("/forgotPassword")
-    public ModelAndView sendResetToken(@RequestParam String email, HttpServletRequest request) {
+    public ModelAndView sendResetToken(@RequestParam String email) {
 
         User user = userService.getUserByEmail(email);
 
@@ -113,7 +113,7 @@ public class LoginController {
 
         userService.generateResetToken(user,token);
 
-        emailSender.sendSimpleEmail(user.getEmail(),"Password Reset","Reset Password Link " + request.getLocalName() + "/changePassword?token=" + token,"Oneil-Industries",null);
+        emailSender.sendSimpleEmail(user.getEmail(),"Password Reset","Reset Password Link " + " http://oneilindustries.biz" + "/changePassword?token=" + token,"Oneil-Industries",null);
 
         modelAndView.addObject("message","Successfully sent reset email");
 

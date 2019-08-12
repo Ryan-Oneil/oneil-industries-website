@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
+@Table(name = "feedback")
 public class FeedBack {
 
     @Id
@@ -93,5 +94,18 @@ public class FeedBack {
 
     public void setIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
+    }
+
+    @Override
+    public String toString() {
+        return "FeedBack{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", email='" + email + '\'' +
+            ", subject='" + subject + '\'' +
+            ", message='" + message + '\'' +
+            ", time=" + time +
+            ", ipAddress='" + ipAddress + '\'' +
+            '}';
     }
 }

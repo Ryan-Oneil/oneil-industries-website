@@ -46,8 +46,9 @@ public class ContactService {
         for (FeedBack feedBack : feedBacks) {
 
             feedbackCreationDate.setTime(feedBack.getTime());
+            feedbackCreationDate.add(Calendar.HOUR_OF_DAY,24);
 
-            if (feedbackCreationDate.getTime().before(today.getTime())) {
+            if (feedbackCreationDate.getTime().after(today.getTime())) {
                 within24hours.add(feedBack);
             }
         }

@@ -47,7 +47,7 @@
 						<p>${albums.album.name}</p>
 						<a href="${pageContext.request.contextPath}/gallery/managealbum/${albums.album.name}">
 							<c:if test="${not empty albums.media}">
-								<img class="imgstyle" src="${pageContext.request.contextPath}/gallery/images/thumbnail/${albums.media.get(0).fileName}" />
+								<img class="imgstyle" src="${pageContext.request.contextPath}/gallery/media/thumbnail?mediaID=${albums.media.get(0).id}" />
 							</c:if>
 							<c:if test="${empty albums.media}">
 								<img src=<c:url value="/resources/assets/images/noimage.png"/> />

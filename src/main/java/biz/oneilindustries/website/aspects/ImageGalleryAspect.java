@@ -5,6 +5,9 @@ import biz.oneilindustries.website.entity.Media;
 import biz.oneilindustries.website.exception.NotAuthorisedException;
 import biz.oneilindustries.website.service.AlbumService;
 import biz.oneilindustries.website.service.MediaService;
+import java.io.File;
+import java.io.FileNotFoundException;
+import javax.servlet.http.HttpServletRequest;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -12,11 +15,6 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.FileNotFoundException;
 
 @Component
 @Aspect
@@ -26,15 +24,14 @@ public class ImageGalleryAspect {
     private final AlbumService albumService;
 
     private static final String FILE_NOT_EXISTS_ERROR_MESSAGE = ": Does not exist on this server";
-    private final String galleryImagesDirectory;
+    private static final String GALLERY_IMAGES_DIRECTORY = "E:/images/";
     private static final String NO_PERMISSION = "You don't have the permission to access this resource";
     private static final String ADMIN_ROLE = "ROLE_ADMIN";
 
     @Autowired
-    public ImageGalleryAspect(MediaService mediaService, AlbumService albumService, ServletContext servletContext) {
+    public ImageGalleryAspect(MediaService mediaService, AlbumService albumService) {
         this.mediaService = mediaService;
         this.albumService = albumService;
-        galleryImagesDirectory = servletContext.getRealPath("/WEB-INF/view/gallery/images/");
     }
 
     @Pointcut("execution(* biz.oneilindustries.website.controller.ImageGalleryController.getMedia*(..))")
@@ -74,15 +71,15 @@ public class ImageGalleryAspect {
 
         Object[] args = joinPoint.getArgs();
 
-        String mediaFileName = (String) args[0];
+        int mediaID = (int) args[0];
         Authentication user = (Authentication) args[1];
 
-        Media media = mediaService.getMediaFileName(mediaFileName);
+        Media media = mediaService.getMedia(mediaID);
 
-        File serverFile = new File(galleryImagesDirectory + mediaFileName);
+        File serverFile = new File(GALLERY_IMAGES_DIRECTORY + media.getFileName());
 
         if (!serverFile.exists() || !serverFile.isFile()) {
-            throw new FileNotFoundException(mediaFileName + FILE_NOT_EXISTS_ERROR_MESSAGE);
+            throw new FileNotFoundException(media.getFileName() + FILE_NOT_EXISTS_ERROR_MESSAGE);
         }
 
         if (media.getLinkStatus().equalsIgnoreCase("private") && ( user == null || !user.getName().equalsIgnoreCase(media.getUploader())) ) {

@@ -8,6 +8,7 @@
     <link href="<c:url value="/resources/assets/css/loginstyle.css" />" rel="stylesheet">
     <script src="<c:url value="/resources/assets/scripts/album.js" />"> </script>
 
+
     <title>Oneil - Manage Image</title>
 </head>
 
@@ -47,10 +48,10 @@
                 <div class="imageUpload">
                     <h1>${media.name} - ${media.dateAdded}</h1>
                     <c:if test="${media.mediaType == 'image'}" >
-                        <a href="${pageContext.request.contextPath}/gallery/images/${media.fileName}" > <img class="imgstyle" src="${pageContext.request.contextPath}/gallery/images/thumbnail/${media.fileName}" /></a>
+                        <a href="${pageContext.request.contextPath}/gallery/media?mediaID=${media.id}" > <img class="imgstyle" src="${pageContext.request.contextPath}/gallery/media/thumbnail?mediaID=${media.id}" /></a>
                     </c:if>
                     <c:if test="${media.mediaType == 'video'}" >
-                        <a href="${pageContext.request.contextPath}/gallery/images/${media.fileName}" > <video class="imgstyle" src="${pageContext.request.contextPath}/gallery/images/${media.fileName}" controls width="400" height="400"></video></a>
+                        <a href="${pageContext.request.contextPath}/gallery/media?mediaID=${media.id}" > <video class="imgstyle" src="${pageContext.request.contextPath}/gallery/media?mediaID=${media.id}" controls height="400" width="400"></video> </a>
                     </c:if>
                     <div class="form">
                     <form:form action="${pageContext.request.contextPath}/gallery/update/${media.fileName}" method="post" modelAttribute="GalleryUpload" class="login-form">
