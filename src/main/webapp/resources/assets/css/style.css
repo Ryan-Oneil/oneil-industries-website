@@ -245,3 +245,33 @@ nav ul {
 	border-radius: 4px;
 	padding: 5px;
 }
+.teamspeakList {
+	width: 20%;
+	display: inline-block;
+	text-align: left;
+	background: #FFFFFF;
+	box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+	height: 50%;
+	max-height: 50%;
+	overflow: auto;
+	margin: 20px;
+}
+.teamspeakList h2 {
+	text-align: center;
+}
+.user{
+	padding-left: 30px;
+}
+.subChannel{
+	padding-left: 20px;
+}
+.channel {
+
+}
+
+.channel p, .subChannel p, .user p {
+	margin: 5px;
+}
+.channel img, .subChannel img, .user img {
+	vertical-align: middle;
+}
