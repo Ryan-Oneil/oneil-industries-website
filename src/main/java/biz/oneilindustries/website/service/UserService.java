@@ -4,7 +4,9 @@ import biz.oneilindustries.website.dao.ResetPasswordTokenDAO;
 import biz.oneilindustries.website.dao.TokenDAO;
 import biz.oneilindustries.website.dao.UserDAO;
 import biz.oneilindustries.website.entity.Authority;
+import biz.oneilindustries.website.entity.DiscordUser;
 import biz.oneilindustries.website.entity.PasswordResetToken;
+import biz.oneilindustries.website.entity.TeamspeakUser;
 import biz.oneilindustries.website.entity.User;
 import biz.oneilindustries.website.entity.VerificationToken;
 import biz.oneilindustries.website.exception.TokenException;
@@ -92,7 +94,7 @@ public class UserService {
         user.setEnabled(updatedUser.getEnabled());
 
         //For my system I want users to only have one role/authority at a time
-        user.getCustomaAthorities().get(0).setAuthority(updatedUser.getRole());
+        user.getCustomAuthorities().get(0).setAuthority(updatedUser.getRole());
 
         saveUser(user);
     }
@@ -158,5 +160,55 @@ public class UserService {
 
         Calendar cal = Calendar.getInstance();
         return (date.getTime() - cal.getTime().getTime()) <= 0;
+    }
+
+    @Transactional
+    public List<DiscordUser> getUserDiscordProfiles(String username) {
+        return dao.getUsersDiscordProfile(username);
+    }
+
+    @Transactional
+    public List<TeamspeakUser> getUserTeamspeakProfile(String username) {
+        return dao.getUserTeamspeakProfile(username);
+    }
+
+    @Transactional
+    public void saveUserTeamspeakProfile(TeamspeakUser teamspeakUser) {
+        dao.saveTeamspeakProfile(teamspeakUser);
+    }
+
+    @Transactional
+    public void saveUserDiscordProfile(DiscordUser discordUser) {
+        dao.saveDiscordProfile(discordUser);
+    }
+
+    @Transactional
+    public TeamspeakUser getTeamspeakUUID(String uuid) {
+        return dao.getTeamspeakUUID(uuid);
+    }
+
+    @Transactional
+    public DiscordUser getDiscordUUID(String uuid) {
+        return dao.getDiscordUUID(uuid);
+    }
+
+    @Transactional
+    public List<String> getTeamspeakUUIDs() {
+        return dao.getTeamspeakUUIDs();
+    }
+
+    @Transactional
+    public List<String> getDiscordUUIDs() {
+        return dao.getDiscordUUIDs();
+    }
+
+    @Transactional
+    public void deleteTeamspeakUUID(TeamspeakUser teamspeakUser) {
+        dao.deleteTeamspeakUUID(teamspeakUser);
+    }
+
+    @Transactional
+    public void deleteDiscordUUID(DiscordUser discordUser) {
+        dao.deleteDiscordUUID(discordUser);
     }
 }

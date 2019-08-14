@@ -3,25 +3,44 @@ package biz.oneilindustries.website.service;
 import biz.oneilindustries.services.discord.DiscordManager;
 import biz.oneilindustries.services.teamspeak.CustomChannel;
 import biz.oneilindustries.services.teamspeak.TSManager;
+import biz.oneilindustries.website.dao.ServiceTokenDAO;
+import biz.oneilindustries.website.entity.DiscordUser;
+import biz.oneilindustries.website.entity.ServiceToken;
+import biz.oneilindustries.website.entity.TeamspeakUser;
+import biz.oneilindustries.website.exception.ServiceProfileException;
 import com.github.theholywaffle.teamspeak3.api.wrapper.Channel;
 import com.github.theholywaffle.teamspeak3.api.wrapper.Client;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import javax.transaction.Transactional;
 import net.dv8tion.jda.api.entities.Category;
+import net.dv8tion.jda.api.entities.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ManagerService {
 
+    private static final String SERVICE_CONFIRMATION_MESSAGE = "This account has been registered on OneilIndustries.biz please confirm with this link http://oneilindustries.biz/services/confirm?token=";
+    private static final String ACCOUNT_ALREADY_REGISTERED = "This account is already registered to another user";
+    private static final String CLAIMED_BY = "\nClaimed by ";
+
     private final TSManager tsManager;
 
     private final DiscordManager discordManager;
 
+    private final UserService userService;
+
+    private final ServiceTokenDAO serviceTokenDAO;
+
     @Autowired
-    public ManagerService(TSManager tsManager, DiscordManager discordManager) {
+    public ManagerService(TSManager tsManager, DiscordManager discordManager, UserService userService,
+        ServiceTokenDAO serviceTokenDAO) {
         this.tsManager = tsManager;
         this.discordManager = discordManager;
+        this.userService = userService;
+        this.serviceTokenDAO = serviceTokenDAO;
     }
 
     public List<Client> getTSClients() {
@@ -54,5 +73,100 @@ public class ManagerService {
 
     public List<Category> getDiscordCategories() {
         return discordManager.getCategories();
+    }
+
+    public List<Member> getDiscordMembers() {
+        return discordManager.getMembers();
+    }
+
+    public void sendDiscordPrivateMessage(String uuid, String message) {
+        discordManager.sendUserMessage(uuid, message);
+    }
+
+    public void sendTeamspeakPrivateMessage(String uuid, String message) {
+        tsManager.sendPrivateMessage(uuid, message);
+    }
+
+    public String getDiscordName(String uuid) {
+        return discordManager.getUserName(uuid);
+    }
+
+    public String getTeamspeakName(String uuid) {
+        return tsManager.getUsername(uuid);
+    }
+
+    @Transactional
+    public void addDiscordService(String uuid, String user, String discordName) {
+
+        DiscordUser exists = userService.getDiscordUUID(uuid);
+
+        if (exists != null) {
+            throw new ServiceProfileException(ACCOUNT_ALREADY_REGISTERED);
+        }
+
+        DiscordUser discordUser = new DiscordUser(user, uuid, discordName);
+
+        userService.saveUserDiscordProfile(discordUser);
+
+        ServiceToken serviceToken = new ServiceToken(UUID.randomUUID().toString(), uuid,"discord");
+
+        saveServiceToken(serviceToken);
+
+        sendDiscordPrivateMessage(uuid, SERVICE_CONFIRMATION_MESSAGE + serviceToken.getTokenUUID() + CLAIMED_BY + user);
+    }
+
+    @Transactional
+    public void addTeamspeakService(String uuid, String user, String teamspeakName) {
+
+        TeamspeakUser exists = userService.getTeamspeakUUID(uuid);
+
+        if (exists != null) {
+            throw new ServiceProfileException(ACCOUNT_ALREADY_REGISTERED);
+        }
+
+        TeamspeakUser teamspeakUser = new TeamspeakUser(user, uuid, teamspeakName);
+
+        userService.saveUserTeamspeakProfile(teamspeakUser);
+
+        ServiceToken serviceToken = new ServiceToken(UUID.randomUUID().toString(), uuid,"teamspeak");
+
+        saveServiceToken(serviceToken);
+        sendTeamspeakPrivateMessage(uuid, SERVICE_CONFIRMATION_MESSAGE + serviceToken.getTokenUUID() + CLAIMED_BY + user);
+    }
+
+    @Transactional
+    public ServiceToken getServicetoken(String uuid) {
+        return serviceTokenDAO.getToken(uuid);
+    }
+
+    @Transactional
+    public void saveServiceToken(ServiceToken serviceToken) {
+        serviceTokenDAO.savetoken(serviceToken);
+    }
+
+    @Transactional
+    public void deleteServiceToken(ServiceToken serviceToken) {
+        serviceTokenDAO.deleteToken(serviceToken);
+    }
+
+    @Transactional
+    public void confirmService(ServiceToken token) {
+
+        if (token.getService().equalsIgnoreCase("discord")) {
+
+            DiscordUser discordUser = userService.getDiscordUUID(token.getServicUUID());
+
+            discordUser.setActivated(1);
+
+            userService.saveUserDiscordProfile(discordUser);
+        }else {
+
+            TeamspeakUser teamspeakUser = userService.getTeamspeakUUID(token.getServicUUID());
+
+            teamspeakUser.setActivated(1);
+
+            userService.saveUserTeamspeakProfile(teamspeakUser);
+        }
+        deleteServiceToken(token);
     }
 }

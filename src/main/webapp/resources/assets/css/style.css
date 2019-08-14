@@ -194,23 +194,6 @@ ul{
 	border: 2px #111 solid;
 	padding: 2px;
 }
-table {
-	table-layout: fixed;
-	width: 45vh;
-}
-.col1 {
-	width: 15vh;
-}
-.col2 {
-	width: 10vh;
-}
-.col3 {
-	width: 30vh;
-}
-iframe {
-	width: 50%;
-	height: 30vh;
-}
 .contactme span{
 	color: #ff0000;
 }
@@ -274,4 +257,16 @@ nav ul {
 }
 .channel img, .subChannel img, .user img {
 	vertical-align: middle;
+}
+.userForm {
+	margin: 0 auto 50px !important;
+}
+.serviceProfile {
+	background-color: white;
+	text-align: center;
+	display: inline-block;
+}
+
+.serviceProfile table {
+	background-color: white;
 }

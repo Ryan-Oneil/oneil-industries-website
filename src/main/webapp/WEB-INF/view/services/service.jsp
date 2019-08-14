@@ -32,7 +32,7 @@
             <h2>Voice Services</h2>
 
             <div class="teamspeakList">
-            <h2>- Teamspeak -</h2>
+                <a href="ts3server://oneilindustries.biz/?port=9987"><h2>Connect to Teamspeak</h2></a>
 
                 <c:forEach items="${teamspeakChannels}" var="channel">
                     <c:if test="${channel.parentChannelID == 0}">
@@ -63,7 +63,7 @@
 
             <div class="teamspeakList">
 
-                <h2>- Discord -</h2>
+                <a href="https://discord.gg/TSYe5vX"><h2>Connect to Discord</h2></a>
 
                 <c:forEach items="${discordCategories}" var="category">
                     <c:if test="${category.voiceChannels.size() > 0}">

@@ -21,9 +21,23 @@ public class TSManager {
         return ts3Api.getClients();
     }
 
+    public String getUsername(String uuid) {
+
+        this.ts3Api = TSBot.api();
+
+        return ts3Api.getClientByUId(uuid).getNickname();
+    }
+
     public List<Channel> getServerChannels() {
         this.ts3Api = TSBot.api();
 
         return ts3Api.getChannels();
+    }
+
+    public void sendPrivateMessage(String uuid, String message) {
+
+        this.ts3Api = TSBot.api();
+
+        ts3Api.sendPrivateMessage(ts3Api.getClientByUId(uuid).getId(), message);
     }
 }

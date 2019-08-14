@@ -1,12 +1,16 @@
 package biz.oneilindustries.website.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity(name = "users")
 public class User implements UserDetails {
@@ -22,7 +26,7 @@ public class User implements UserDetails {
     private String email;
 
     @OneToMany(mappedBy = "username", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true  )
-    private List<Authority> customaAthorities;
+    private List<Authority> customAuthorities;
 
     public User(String username, String password, int enabled, String email) {
         this.username = username;
@@ -82,18 +86,18 @@ public class User implements UserDetails {
         List<GrantedAuthority> authorities = new ArrayList<>();
 
         // add user's authorities
-        for (Authority authority : customaAthorities) {
+        for (Authority authority : customAuthorities) {
             authorities.add(new SimpleGrantedAuthority(authority.getAuthority()));
         }
         return authorities;
     }
 
     public void addAuthority(Authority authority) {
-        if (this.customaAthorities == null) {
-            this.customaAthorities = new ArrayList<>();
+        if (this.customAuthorities == null) {
+            this.customAuthorities = new ArrayList<>();
         }
         authority.setUsername(this);
-        this.customaAthorities.add(authority);
+        this.customAuthorities.add(authority);
     }
 
     public String getEmail() {
@@ -104,12 +108,11 @@ public class User implements UserDetails {
         this.email = email;
     }
 
-    public List<Authority> getCustomaAthorities() {
-        return customaAthorities;
+    public List<Authority> getCustomAuthorities() {
+        return customAuthorities;
     }
 
-    public void setCustomaAthorities(List<Authority> customaAthorities) {
-        this.customaAthorities = customaAthorities;
+    public void setCustomAuthorities(List<Authority> customAuthorities) {
+        this.customAuthorities = customAuthorities;
     }
-
 }
