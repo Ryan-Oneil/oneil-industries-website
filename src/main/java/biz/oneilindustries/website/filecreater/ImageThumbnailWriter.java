@@ -16,10 +16,16 @@ public class ImageThumbnailWriter {
 
     private static final int IMAGE_RESIZE_SIZE = 400;
 
-    public static void writeImage(MultipartFile image,String dest, String extension) throws IOException {
+    public static void writeImage(MultipartFile image,String dest, String extension, String uploader) throws IOException {
         BufferedImage src = ImageIO.read(new ByteArrayInputStream(image.getBytes()));
 
-        File thumbnailDestination = new File(dest + "\\thumbnail\\" + image.getOriginalFilename());
+        File destFolder = new File(dest + "/thumbnail/" + uploader + "/");
+
+        if (!destFolder.exists()) {
+            destFolder.mkdir();
+        }
+
+        File thumbnailDestination = new File(dest + "/thumbnail/" + uploader + "/" + image.getOriginalFilename());
 
         //Writes thumbnail
         write(getThumbnailImage(src),extension,thumbnailDestination);

@@ -31,7 +31,7 @@ public class GalleryRestController {
 
         mediaService.registerMedia(file, user.getName(), privacy);
 
-        FileHandler.writeFile(file, galleryImagesDirectory);
+        FileHandler.writeFile(file, galleryImagesDirectory, user.getName());
 
         return request.getLocalName() + "/gallery/images/" + file.getOriginalFilename();
     }

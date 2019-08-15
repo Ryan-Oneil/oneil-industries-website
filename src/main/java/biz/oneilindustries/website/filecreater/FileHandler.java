@@ -18,15 +18,21 @@ public class FileHandler {
     private FileHandler() {
     }
 
-    public static void writeFile(MultipartFile file, String dest) throws IOException {
+    public static void writeFile(MultipartFile file, String dest, String uploader) throws IOException {
         String extension = getExtensionType(file.getOriginalFilename());
+
+        File destFolder = new File(dest + uploader + "/");
+
+        if (!destFolder.exists()) {
+            destFolder.mkdir();
+        }
 
         //If file is image
         if (isImageFile(extension)) {
-            ImageThumbnailWriter.writeImage(file,dest, extension);
+            ImageThumbnailWriter.writeImage(file,dest, extension, uploader);
         }
 
-        File newFile = new File(dest + file.getOriginalFilename());
+        File newFile = new File(dest + uploader + "/" + file.getOriginalFilename());
         //Copy file to new file
         file.transferTo(newFile);
     }

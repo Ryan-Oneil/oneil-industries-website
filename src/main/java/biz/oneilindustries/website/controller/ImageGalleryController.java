@@ -69,7 +69,9 @@ public class ImageGalleryController {
 
         String imageName = media.getFileName();
 
-        File serverFile = new File(directory + imageName);
+        File serverFile = new File(directory + media.getUploader() + "/" + imageName);
+
+        System.out.println("the file path is " + serverFile.getAbsolutePath());
 
         if (media.getMediaType().equalsIgnoreCase("image")) {
             response.setContentType("image/" + FileHandler.getContentType(media.getFileName()));
@@ -103,7 +105,7 @@ public class ImageGalleryController {
             throw new MediaException(fileName + " Already exists in database");
         }
 
-        FileHandler.writeFile(galleryUpload.getFile(), GALLERY_IMAGES_DIRECTORY);
+        FileHandler.writeFile(galleryUpload.getFile(), GALLERY_IMAGES_DIRECTORY, authentication.getName());
 
         Album album = null;
 

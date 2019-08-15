@@ -76,7 +76,7 @@ public class ImageGalleryAspect {
 
         Media media = mediaService.getMedia(mediaID);
 
-        File serverFile = new File(GALLERY_IMAGES_DIRECTORY + media.getFileName());
+        File serverFile = new File(GALLERY_IMAGES_DIRECTORY  + user.getName() + "/" + media.getFileName());
 
         if (!serverFile.exists() || !serverFile.isFile()) {
             throw new FileNotFoundException(media.getFileName() + FILE_NOT_EXISTS_ERROR_MESSAGE);
