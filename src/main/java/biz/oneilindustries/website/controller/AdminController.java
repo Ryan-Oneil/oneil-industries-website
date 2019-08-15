@@ -57,6 +57,8 @@ public class AdminController {
         model.addAttribute("user", new UpdatedUser(user.getUsername(),user.getEmail(),user.getAuthorities().get(0).getAuthority(),user.getEnabled()));
         model.addAttribute("mediaCount", mediaService.getTotalMediaCountByUser(username));
         model.addAttribute("albumCount",albumService.getAlbumCountByUser(username));
+        model.addAttribute("teamspeakProfiles", userService.getUserTeamspeakProfile(username));
+        model.addAttribute("discordProfiles", userService.getUserDiscordProfiles(username));
 
         return "/admin/manageuser";
     }

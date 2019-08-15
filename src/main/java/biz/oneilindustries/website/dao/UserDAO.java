@@ -117,6 +117,20 @@ public class UserDAO {
         return (DiscordUser) query.uniqueResult();
     }
 
+    public TeamspeakUser getTeamspeakByID(int id) {
+
+        Session currentSession = sessionFactory.getCurrentSession();
+
+        return currentSession.get(TeamspeakUser.class, id);
+    }
+
+    public DiscordUser getDiscordByID(int id) {
+
+        Session currentSession = sessionFactory.getCurrentSession();
+
+        return currentSession.get(DiscordUser.class, id);
+    }
+
     public void deleteDiscordUUID(DiscordUser discordUser) {
 
         Session currentSession = sessionFactory.getCurrentSession();

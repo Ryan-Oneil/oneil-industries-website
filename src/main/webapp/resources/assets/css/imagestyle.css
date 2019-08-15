@@ -1,8 +1,5 @@
 .images {
 }
-
-
-
 .imageBox {
 	display: inline-block;
 	padding: 10px;
@@ -10,19 +7,12 @@
 	max-width: 400px;
 	overflow: hidden;
 }
-.galNav {
-	background-color: white;
-}
-.subMenu {
-	padding-top: 0px !important;
-}
 .imageUpload{
 	display: inline-block;
 }
 .imageUpload .details{
 	text-align: left;
 }
-
 .imageUpload h1 {
 	padding: 20px !important;
 }

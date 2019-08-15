@@ -169,4 +169,20 @@ public class ManagerService {
         }
         deleteServiceToken(token);
     }
+
+    public void addDiscordRole(String uuid, String role) {
+        discordManager.addUserRole(discordManager.getMember(uuid), role);
+    }
+
+    public void deleteDiscordRoles(String uuid) {
+        discordManager.removeRoles(discordManager.getMember(uuid));
+    }
+
+    public void addTeamspeakRole(String uuid, String role) {
+        tsManager.addUserRole(uuid, role);
+    }
+
+    public void deleteTeamspeakRoles(String uuid) {
+        tsManager.removeUserRoles(uuid);
+    }
 }

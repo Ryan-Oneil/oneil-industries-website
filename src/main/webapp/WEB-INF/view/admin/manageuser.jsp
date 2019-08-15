@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <link href="<c:url value="/resources/assets/css/style.css" />" rel="stylesheet">
     <link href="<c:url value="/resources/assets/css/admin.css" />" rel="stylesheet">
+    <link href="<c:url value="/resources/assets/css/loginstyle.css" />" rel="stylesheet">
+
 
     <title>Oneil - Update User</title>
 </head>
@@ -25,12 +27,24 @@
             <li><a href="${pageContext.request.contextPath}/contact">Contact</a></li>
             <li><a href="${pageContext.request.contextPath}/gallery">Images</a></li>
             <li><a href="${pageContext.request.contextPath}/services">Services</a></li>
+            <li><a href="${pageContext.request.contextPath}/profile">Profile</a></li>
         </ul>
     </nav>
     <div id="maindiv">
+        <div class="gallerySubMenu">
+            <nav class="galNav">
+                <ul class="subMenu navBar">
+                    <li><a href="${pageContext.request.contextPath}/admin">Admin</a></li>
+                    <li><a href="${pageContext.request.contextPath}/admin/users">Users</a></li>
+                    <li><form:form action="${pageContext.request.contextPath}/logout" class="logoutForm" method="post">
+                        <input type="submit" class="logoutButton" value="Logout"/>
+                    </form:form></li>
+                </ul>
+            </nav>
+        </div>
         <div class="mainpage">
-            <div>
-                <form:form action="${pageContext.request.contextPath}/admin/updateUser/${user.username}" method="post" modelAttribute="user">
+            <div class="form">
+                <form:form action="${pageContext.request.contextPath}/admin/updateUser/${user.username}" method="post" modelAttribute="user" class="login-form">
                     <p>Username: <form:input path="username" type="text" placeholder="${user.username}"/></p>
                     <p>Email: <form:input path="email" type="text" placeholder="${user.email}"/> </p>
                     <p>Role: <form:select path="role">
@@ -42,7 +56,7 @@
                         <form:option value="1">True</form:option>
                         <form:option value="0">False</form:option>
                     </form:select></p>
-                <input type="submit" value="Save">
+                <button>Save</button>
                 </form:form>
             </div>
 
@@ -66,6 +80,46 @@
 
                     </tr>
                 </table>
+
+                <div class="serviceProfile">
+                    <h2>Teamspeak Profile</h2>
+
+                    <table>
+                        <tr>
+                            <th>Teamspeak Name</th>
+                            <th>Teamspeak UUID</th>
+                            <th>Manage</th>
+                        </tr>
+                        <c:if test="${not empty teamspeakProfiles}">
+                            <c:forEach items="${teamspeakProfiles}" var="teamspeakProfile">
+                                <tr>
+                                    <td>${teamspeakProfile.teamspeakName}</td>
+                                    <td>${teamspeakProfile.uuid}</td>
+                                    <td><a href="${pageContext.request.contextPath}/profile/serviceDelete?uuid=${teamspeakProfile.id}&service=teamspeak">Delete</a> </td>
+                                </tr>
+                            </c:forEach>
+                        </c:if>
+                    </table>
+
+                    <h2>Discord Profile</h2>
+
+                    <table>
+                        <tr>
+                            <th>Discord Name</th>
+                            <th>Discord UUID</th>
+                            <th>Manage</th>
+                        </tr>
+                        <c:if test="${not empty discordProfiles}">
+                            <c:forEach items="${discordProfiles}" var="discordProfile">
+                                <tr>
+                                    <td>${discordProfile.discordName}</td>
+                                    <td>${discordProfile.uuid}</td>
+                                    <td><a href="${pageContext.request.contextPath}/profile/serviceDelete?uuid=${discordProfile.id}&service=discord">Delete</a> </td>
+                                </tr>
+                            </c:forEach>
+                        </c:if>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

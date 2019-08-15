@@ -267,6 +267,13 @@ nav ul {
 	display: inline-block;
 }
 
-.serviceProfile table {
+.serviceProfile table, .user-info table {
+	background-color: white;
+	width: 100%;
+}
+.subMenu {
+	padding-top: 0px !important;
+}
+.galNav {
 	background-color: white;
 }

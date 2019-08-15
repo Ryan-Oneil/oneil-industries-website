@@ -10,6 +10,7 @@ import biz.oneilindustries.website.service.UserService;
 import com.github.theholywaffle.teamspeak3.api.wrapper.Client;
 import java.util.ArrayList;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import net.dv8tion.jda.api.entities.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -22,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class UserProfileController {
+
+    private static final String ADMIN_ROLE = "ROLE_ADMIN";
 
     private final UserService userService;
     private final ManagerService managerService;
@@ -88,7 +91,12 @@ public class UserProfileController {
     }
 
     @PostMapping("/profile/servicesAdd")
-    public String addUserService(@RequestParam(value = "teamspeak", required = false) String teamspeakUUID, @RequestParam(value = "discord", required = false) String discordUUID, Authentication user) {
+    public String addUserService(@RequestParam(value = "teamspeak", required = false) String teamspeakUUID, @RequestParam(value = "discord", required = false) String discordUUID, Authentication user, HttpServletRequest request, Model model) {
+
+        if (request.isUserInRole("ROLE_UNREGISTERED")) {
+            model.addAttribute("msg", "Your account must be approved to register a service");
+            return "/profile/confirmservice";
+        }
 
         if (teamspeakUUID != null && !teamspeakUUID.isEmpty()) {
             managerService.addTeamspeakService(teamspeakUUID, user.getName(), managerService.getTeamspeakName(teamspeakUUID));
@@ -96,37 +104,37 @@ public class UserProfileController {
         if (discordUUID != null && !discordUUID.isEmpty()) {
             managerService.addDiscordService(discordUUID, user.getName(), managerService.getDiscordName(discordUUID));
         }
+        model.addAttribute("msg", "A message has been pmed to the relevant service account");
         return "/profile/confirmservice";
     }
 
     @GetMapping("/profile/serviceDelete")
-    public String deleteUserService(@RequestParam("uuid") String serviceUUID, @RequestParam("service") String serviceName, Authentication user) {
+    public String deleteUserService(@RequestParam("uuid") int serviceID, @RequestParam("service") String serviceName, Authentication user, HttpServletRequest request) {
 
         if (serviceName.equalsIgnoreCase("discord")) {
 
-            DiscordUser discordUser = userService.getDiscordUUID(serviceUUID);
+            DiscordUser discordUser = userService.getDiscordById(serviceID);
 
             if (discordUser == null) {
                 throw new ServiceProfileException("The requested account was not found");
             }
-            if (!discordUser.getUsername().equalsIgnoreCase(user.getName())) {
+            if (!discordUser.getUsername().equalsIgnoreCase(user.getName()) && !request.isUserInRole(ADMIN_ROLE)) {
                 throw new NotAuthorisedException("You cannot delete service profile accounts that you don't own");
             }
             userService.deleteDiscordUUID(discordUser);
 
         }else if (serviceName.equalsIgnoreCase("teamspeak")) {
 
-            TeamspeakUser teamspeakUser = userService.getTeamspeakUUID(serviceUUID);
+            TeamspeakUser teamspeakUser = userService.getTeamspeakByID(serviceID);
 
             if (teamspeakUser == null) {
                 throw new ServiceProfileException("The requested account was not found");
             }
-            if (!teamspeakUser.getUsername().equalsIgnoreCase(user.getName())) {
+            if (!teamspeakUser.getUsername().equalsIgnoreCase(user.getName()) && !request.isUserInRole(ADMIN_ROLE)) {
                 throw new NotAuthorisedException("You cannot delete service profile accounts that you don't own");
             }
             userService.deleteTeamspeakUUID(teamspeakUser);
         }
-
         return "redirect:/profile";
     }
 }

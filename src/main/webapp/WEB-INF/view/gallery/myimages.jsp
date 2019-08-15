@@ -26,6 +26,7 @@
 			<li><a href="${pageContext.request.contextPath}/contact">Contact</a></li>
 			<li><a href="${pageContext.request.contextPath}/gallery">Images</a></li>
 			<li><a href="${pageContext.request.contextPath}/services">Services</a></li>
+			<li><a href="${pageContext.request.contextPath}/profile">Profile</a></li>
 		</ul>
 	</nav>
 	<div id="maindiv">

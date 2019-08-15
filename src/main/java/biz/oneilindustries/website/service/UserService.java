@@ -203,6 +203,16 @@ public class UserService {
     }
 
     @Transactional
+    public TeamspeakUser getTeamspeakByID(int id) {
+        return dao.getTeamspeakByID(id);
+    }
+
+    @Transactional
+    public DiscordUser getDiscordById(int id) {
+        return dao.getDiscordByID(id);
+    }
+
+    @Transactional
     public void deleteTeamspeakUUID(TeamspeakUser teamspeakUser) {
         dao.deleteTeamspeakUUID(teamspeakUser);
     }

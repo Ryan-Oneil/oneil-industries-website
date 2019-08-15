@@ -27,6 +27,7 @@
             <li><a href="${pageContext.request.contextPath}/contact">Contact</a></li>
             <li><a href="${pageContext.request.contextPath}/gallery">Images</a></li>
             <li><a href="${pageContext.request.contextPath}/services">Services</a></li>
+            <li><a class="active" href="${pageContext.request.contextPath}/profile">Profile</a></li>
         </ul>
     </nav>
     <div id="maindiv">
@@ -81,7 +82,7 @@
                             <tr>
                                 <td>${teamspeakProfile.teamspeakName}</td>
                                 <td>${teamspeakProfile.uuid}</td>
-                                <td><a href="${pageContext.request.contextPath}/profile/serviceDelete?uuid=${teamspeakProfile.uuid}&service=teamspeak">Delete</a> </td>
+                                <td><a href="${pageContext.request.contextPath}/profile/serviceDelete?uuid=${teamspeakProfile.id}&service=teamspeak">Delete</a> </td>
                             </tr>
                         </c:forEach>
                     </c:if>
@@ -100,7 +101,7 @@
                             <tr>
                                 <td>${discordProfile.discordName}</td>
                                 <td>${discordProfile.uuid}</td>
-                                <td><a href="${pageContext.request.contextPath}/profile/serviceDelete?uuid=${discordProfile.uuid}&service=discord">Delete</a> </td>
+                                <td><a href="${pageContext.request.contextPath}/profile/serviceDelete?uuid=${discordProfile.id}&service=discord">Delete</a> </td>
                             </tr>
                         </c:forEach>
                     </c:if>
