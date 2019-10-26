@@ -39,7 +39,6 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
             chain.doFilter(req, res);
             return;
         }
-
         UsernamePasswordAuthenticationToken authentication = getAuthentication(req);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -48,6 +47,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
         String token = request.getHeader(HEADER_STRING);
+
         if (token != null) {
             // parse the token.
             DecodedJWT decodedToken = JWT.require(Algorithm.HMAC512(SECRET.getBytes()))
@@ -57,8 +57,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
             if (decodedToken.getExpiresAt().before(new Date())) {
                 return null;
             }
-
-            String user = decodedToken.getSubject();
+            String user = decodedToken.getClaim("user").asString();
 
             if (user != null) {
                 User userDetails = userService.getUser(user);

@@ -6,6 +6,7 @@ import biz.oneilindustries.website.exception.MediaException;
 import biz.oneilindustries.website.exception.NotAuthorisedException;
 import biz.oneilindustries.website.service.AlbumService;
 import biz.oneilindustries.website.service.MediaService;
+import biz.oneilindustries.website.validation.GalleryUpload;
 import java.io.FileNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import org.aspectj.lang.JoinPoint;
@@ -54,6 +55,9 @@ public class ImageGalleryAspect {
     @Pointcut("execution(* biz.oneilindustries.website.controller.ImageGalleryController.manageMyAlbums(..))")
     private void manageAlbum() {}
 
+    @Pointcut("execution(* biz.oneilindustries.website.controller.ImageGalleryController.showUserAlbumNames(..))")
+    private void showAlbumNames() {}
+
     @Pointcut("execution(* biz.oneilindustries.website.controller.ImageGalleryController.updateAlbum(..))")
     private void updateAlbum() {}
 
@@ -69,7 +73,9 @@ public class ImageGalleryAspect {
     @Before("uploadAPI()")
     public void performValidation(JoinPoint joinpoint) {
 
-        MultipartFile file = (MultipartFile) joinpoint.getArgs()[0];
+        GalleryUpload galleryUpload = (GalleryUpload) joinpoint.getArgs()[0];
+
+        MultipartFile file = galleryUpload.getFile();
 
         if (file.getSize() == 0) {
             throw new MediaException("File not found");

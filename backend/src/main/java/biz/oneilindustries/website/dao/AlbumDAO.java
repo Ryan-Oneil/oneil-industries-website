@@ -73,4 +73,13 @@ public class AlbumDAO {
 
         return (long) query.uniqueResult();
     }
+
+    public List<String> getAlbumNamesByUser(String user) {
+        Session currentSession = sessionFactory.getCurrentSession();
+
+        Query<String> query = currentSession.createQuery("select name from Album where creator=: username", String.class);
+        query.setParameter("username",user);
+
+        return query.getResultList();
+    }
 }

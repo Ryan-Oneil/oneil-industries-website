@@ -80,4 +80,9 @@ public class AlbumService {
         }
         return album;
     }
+
+    @Transactional
+    public List<String> getAlbumNamesByUser(String user) {
+        return albumDAO.getAlbumNamesByUser(user);
+    }
  }

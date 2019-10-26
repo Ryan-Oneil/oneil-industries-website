@@ -9,26 +9,32 @@ import biz.oneilindustries.website.gallery.MediaAlbum;
 import biz.oneilindustries.website.service.AlbumService;
 import biz.oneilindustries.website.service.MediaService;
 import biz.oneilindustries.website.validation.GalleryUpload;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController(value = "/gallery")
+@RestController
+@RequestMapping("/api/gallery")
 public class ImageGalleryController {
 
     private static final String GALLERY_IMAGES_DIRECTORY = "E:/images/";
@@ -46,16 +52,42 @@ public class ImageGalleryController {
         return mediaService.getMediaByLinkStatus("public");
     }
 
-    @GetMapping(value = "/media{mediaID}")
-    @ResponseBody
-    public Media getMedia(@PathVariable("mediaID") int mediaID, Authentication user) throws IOException {
-        return mediaService.getMedia(mediaID);
+    @GetMapping(value = "/media/{mediaID}")
+    public void getMedia(@PathVariable("mediaID") int mediaID, Authentication user, HttpServletResponse response) throws IOException {
+        displayMedia(response, mediaID, GALLERY_IMAGES_DIRECTORY);
     }
 
-    @PostMapping("/api/gallery/upload")
-    public String uploadMediaAPI(@Valid GalleryUpload galleryUpload, Authentication user, HttpServletRequest request) throws IOException {
+    @GetMapping(value = "/media/thumbnail/{mediaID}")
+    public void getMediaThumbnail(@PathVariable("mediaID") int mediaID, Authentication user, HttpServletResponse response) throws IOException {
+        displayMedia(response, mediaID, GALLERY_IMAGES_DIRECTORY + "thumbnail/");
+    }
 
-        mediaService.registerMedia(galleryUpload.getFile(), user.getName(), galleryUpload.getPrivacy());
+    private void displayMedia(HttpServletResponse response, int mediaID, String directory) throws IOException {
+
+        Media media = mediaService.getMedia(mediaID);
+
+        String imageName = media.getFileName();
+
+        File serverFile = new File(directory + media.getUploader() + "/" + imageName);
+
+        if (!serverFile.exists()) {
+            serverFile = new File(directory + "noimage.png");
+        }
+
+        if (media.getMediaType().equalsIgnoreCase("image")) {
+            response.setContentType("image/" + FileHandler.getContentType(media.getFileName()));
+        } else {
+            response.setContentType("video/" + FileHandler.getContentType(media.getFileName()));
+        }
+
+        ServletOutputStream responseOutputStream = response.getOutputStream();
+        responseOutputStream.write(Files.readAllBytes(serverFile.toPath()));
+        responseOutputStream.flush();
+        responseOutputStream.close();
+    }
+
+    @PostMapping("/upload")
+    public String uploadMediaAPI(@Valid GalleryUpload galleryUpload, Authentication user, HttpServletRequest request) throws IOException {
 
         FileHandler.writeFile(galleryUpload.getFile(), GALLERY_IMAGES_DIRECTORY, user.getName());
 
@@ -64,12 +96,12 @@ public class ImageGalleryController {
         if (!galleryUpload.getAlbumName().equalsIgnoreCase("none")) {
             album = albumService.registerAlbum(galleryUpload, user.getName());
         }
-        mediaService.registerMedia(galleryUpload, user.getName(),album);
+        mediaService.registerMedia(galleryUpload, user.getName(), album);
 
         return request.getLocalName() + "/gallery/images/" + galleryUpload.getFile().getOriginalFilename();
     }
 
-    @GetMapping("/delete/{mediaFileName}")
+    @DeleteMapping("/delete/{mediaFileName}")
     public ResponseEntity deleteMedia(@PathVariable String mediaFileName, Authentication user) {
 
         Media media = mediaService.getMediaFileName(mediaFileName);
@@ -121,6 +153,11 @@ public class ImageGalleryController {
         return albumMedia;
     }
 
+    @GetMapping("/myalbums/{username}/names")
+    public List<String> showUserAlbumNames(Authentication user, @PathVariable String username, HttpServletRequest request) {
+        return albumService.getAlbumNamesByUser(user.getName());
+    }
+
     @GetMapping("/myalbums/{username}")
     public List<MediaAlbum> showUserAlbum(Authentication user, @PathVariable String username, HttpServletRequest request) {
 
@@ -137,7 +174,7 @@ public class ImageGalleryController {
         return fullAlbums;
     }
 
-    @GetMapping("/myalbums/{albumName}")
+    @GetMapping("/myalbum/{albumName}")
     public MediaAlbum manageMyAlbums(@PathVariable String albumName,Authentication user, HttpServletRequest request) {
 
         Album album = albumService.getAlbumByName(albumName);
