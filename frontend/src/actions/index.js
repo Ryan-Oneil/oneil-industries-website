@@ -1,4 +1,5 @@
 import axios from 'axios';
+import api from "../apis/api";
 
 export const LOGIN_REQUEST = 'LOGIN_REQUEST';
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
@@ -10,8 +11,20 @@ export const LOGOUT_FAILURE = 'LOGOUT_FAILURE';
 export const MEDIA_REQUEST = 'MEDIA_REQUEST';
 export const MEDIA_SUCCESS = 'MEDIA_SUCCESS';
 export const MEDIA_FAILURE = 'MEDIA_FAILURE';
+export const MEDIA_POST_SENT = 'MEDIA_POST_SENT';
+export const MEDIA_POST_FAIL = 'MEDIA_POST_FAIL';
+export const MEDIA_POST_SUCCESS = 'MEDIA_POST_SUCCESS';
+
+export const ALBUM_REQUEST = 'ALBUM_REQUEST';
+export const ALBUM_FAILURE = 'ALBUM_FAILURE';
 
 const API_URL = "http://localhost:8080";
+const apiConfig = {
+    headers: {
+        Authorization: "Bearer " + localStorage.getItem('token'),
+        'Content-Type': 'multipart/form-data'
+    }
+};
 
 function requestLogin(creds) {
     return {
@@ -61,7 +74,7 @@ export function loginUser(creds) {
     let config = {
         mode: "cors",
         method: 'POST',
-        headers: { 'Content-Type':'application/json' },
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({username: creds.username, password: creds.password})
     };
 
@@ -70,7 +83,7 @@ export function loginUser(creds) {
         dispatch(requestLogin(creds));
 
         return fetch(API_URL + '/login', config)
-            .then(( response, user ) =>  {
+            .then((response, user) => {
                 if (response.status > 400) {
                     // If there was a problem, we want to
                     // dispatch the error condition
@@ -95,13 +108,43 @@ export function logoutUser() {
     }
 }
 
-export const fetchImages = () => async dispatch => {
-    await axios.create({
-        baseURL: "http://localhost:8080/api"
-    }).get("/gallery/medias").then( response => {
+const apiGetCall = async endpoint => {
+    return await api.get(endpoint, apiConfig);
+};
+
+const apiPostCall = async (endpoint, data) => {
+    return await api.post(endpoint, data, apiConfig);
+};
+
+export const fetchImages = (endpoint) => dispatch => {
+    apiGetCall(endpoint).then(response => {
         dispatch({type: MEDIA_REQUEST, payload: response.data});
     }).catch(error => {
             dispatch({type: MEDIA_FAILURE, message: error});
         }
     );
+};
+
+export const fetchAlbum = (endpoint) => dispatch => {
+    apiGetCall(endpoint).then(response => {
+        dispatch({type: ALBUM_REQUEST, payload: response.data});
+    }).catch(error => {
+            dispatch({type: ALBUM_FAILURE, message: error});
+        }
+    );
+};
+
+export const uploadMedia = (endpoint, data) => dispatch => {
+    let postData = new FormData();
+
+    postData.append("file", data.file[0]);
+    postData.append("name", data.name);
+    postData.append("privacy", data.linkStatus);
+    postData.append("albumName", data.album);
+
+    apiPostCall(endpoint, postData).then(response => {
+        dispatch({type: MEDIA_POST_SENT, message: response.data})
+    }).catch(error => {
+        dispatch({type: MEDIA_POST_FAIL, message: error.message})
+    }).finally(dispatch({type: MEDIA_POST_SUCCESS}));
 };

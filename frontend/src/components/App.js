@@ -10,11 +10,12 @@ import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import {connect} from "react-redux";
 import Images from "./pages/Gallery/GalleryPage";
+import UploadPage from "./pages/Gallery/UploadPage";
 
 class App extends React.Component {
 
     render() {
-        const { dispatch, isAuthenticated, errorMessage } = this.props;
+        const { dispatch, isAuthenticated, errorMessage, user } = this.props;
         return (
             <div className="fullHeight">
                 <Header/>
@@ -32,6 +33,12 @@ class App extends React.Component {
                                 <Route path="/images" exact render={() => (
                                         <Images
                                         dispatch={dispatch}
+                                    />)
+                                }/>
+                                <Route path="/images/upload" exact render={() => (
+                                    <UploadPage
+                                        dispatch={dispatch}
+                                        user={user}
                                     />)
                                 }/>
                                 <Route path="/login" render={(props) => (
@@ -56,11 +63,12 @@ class App extends React.Component {
 function mapStateToProps(state) {
 
     const { auth } = state;
-    const { isAuthenticated, errorMessage } = auth;
+    const { isAuthenticated, errorMessage, user } = auth;
 
     return {
         isAuthenticated,
-        errorMessage
+        errorMessage,
+        user
     }
 }
 

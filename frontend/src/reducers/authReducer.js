@@ -4,7 +4,8 @@ import {
 
 export  default function auth(state = {
     isFetching: false,
-    isAuthenticated: localStorage.getItem('id_token') ? true : false
+    isAuthenticated: localStorage.getItem('token') ? true : false,
+    user: getUserNameFromJWT()
 }, action) {
     switch (action.type) {
         case LOGIN_REQUEST:
@@ -34,3 +35,14 @@ export  default function auth(state = {
             return state
     }
 }
+
+const getUserNameFromJWT = () => {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+        return "";
+    }
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace('-', '+').replace('_', '/');
+    return JSON.parse(window.atob(base64)).user;
+};

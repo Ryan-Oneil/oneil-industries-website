@@ -1,4 +1,5 @@
 import React from "react";
+import '../../../assets/css/images.css';
 
 class MediaModal extends React.Component {
 
@@ -29,15 +30,38 @@ class MediaModal extends React.Component {
         }
     }
 
+    renderImage = (media) => {
+        const src = `http://localhost:8080/api/gallery/media/thumbnail/${media.id}`;
+
+        return (
+            <img className="ui centered image" src={src} onClick={this.handleShowDialog}/>
+        )
+    };
+
+    renderVideo = (media) => {
+        const src = `http://localhost:8080/api/gallery/media/${media.id}`;
+
+        return (
+            <video className="centerVideo" src={src} onClick={this.handleShowDialog} height="400" width="400" controls/>
+        )
+    };
+
+    renderMedia = (media)=> {
+        if (media.mediaType === "video") {
+            return this.renderVideo(media)
+        }
+        return this.renderImage(media);
+    };
+
     render() {
-        const {media, src, closeModal} = this.props;
+        const {media, closeModal} = this.props;
 
         return (
             <div ref={this.setWrapperRef} className="imageModal ui modal visible active">
                 <i className="closeModal close icon" onClick={closeModal}/>
                 <h1 className="ui center aligned header">{media.name}</h1>
                 <div className="image">
-                    <img className="ui centered image" src={src}/>
+                    {this.renderMedia(media)}
                 </div>
                 <div className="content">
                     <div className="centerText">

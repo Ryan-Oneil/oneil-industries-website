@@ -8,7 +8,7 @@ import Media from "./Media";
 class GalleryPage extends React.Component {
 
     componentDidMount() {
-        this.props.fetchImages();
+        this.props.fetchImages("/gallery/medias");
     }
 
     renderErrorMessage = () => {
@@ -23,8 +23,8 @@ class GalleryPage extends React.Component {
         if (this.props.medias.message) {
                 return this.renderErrorMessage();
             }
-        if (this.props.medias) {
-            return this.props.medias.map(media => {
+        if (this.props.medias.mediasList) {
+            return this.props.medias.mediasList.map(media => {
                 return (
                     <div className="column imageBox" key={media.id}>
                         <Media media={media}/>

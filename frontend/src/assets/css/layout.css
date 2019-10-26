@@ -42,3 +42,13 @@
 .fullHeight {
     height: 100%;
 }
+
+.textFormat {
+    font-weight: 600;
+    color: #666;
+    font-family: 'Muli', sans-serif;
+}
+.centerVideo {
+    display: block;
+    margin: 0 auto;
+}
