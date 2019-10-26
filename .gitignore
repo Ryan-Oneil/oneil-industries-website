@@ -1,3 +1,7 @@
 
 backend/src/main/java/biz/oneilindustries/website/security/SecurityConstants.java
 backend/src/main/webapp/
+*.json
+frontend/README.md
+*.xml
+*.iml

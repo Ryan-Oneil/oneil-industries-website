@@ -1,0 +1,20 @@
+.imageBox {
+    overflow: hidden;
+}
+
+.imageModal {
+    margin: 5% auto!important;
+    left: 0!important;
+    right: 0!important;
+    position: fixed!important;
+    top: 20%!important;
+}
+.closeModal {
+    color: #000!important;
+    top: -0.5rem!important;
+    right: -.5rem!important;
+}
+
+.centerText {
+    text-align: center;
+}
