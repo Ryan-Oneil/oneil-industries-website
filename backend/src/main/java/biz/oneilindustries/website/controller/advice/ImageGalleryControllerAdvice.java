@@ -16,7 +16,7 @@ public class ImageGalleryControllerAdvice {
     @ExceptionHandler(MediaException.class)
     public ResponseEntity handleException(MediaException error) {
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
+                .status(HttpStatus.NOT_FOUND)
                 .body(error.getMessage());
     }
     //IOException

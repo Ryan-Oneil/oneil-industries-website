@@ -20,7 +20,11 @@ public class AlbumCreator {
 
         List<Media> media = mediaService.getAlbumMedias(album.getId());
 
-        if (media == null) media = new ArrayList<>();
+        if (media == null || media.isEmpty()) {
+            media = new ArrayList<>();
+            media.add(new Media("No images in Album", "No images in Album", "unlisted", album.getCreator(), "None"));
+        }
+
 
         return new MediaAlbum(album, media);
     }

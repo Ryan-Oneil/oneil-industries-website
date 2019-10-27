@@ -88,25 +88,19 @@ public class ImageGalleryAspect {
         }
     }
 
-//    @Before("displayMedia()")
-//    public void before(JoinPoint joinPoint) throws FileNotFoundException {
-//
-//        Object[] args = joinPoint.getArgs();
-//
-//        int mediaID = (int) args[0];
-//        Authentication user = (Authentication) args[1];
-//
-//        Media media = mediaService.getMedia(mediaID);
-////        File serverFile = new File(GALLERY_IMAGES_DIRECTORY  + user.getName() + "/" + media.getFileName());
-////
-////        if (!serverFile.exists() || !serverFile.isFile()) {
-////            throw new FileNotFoundException(media.getFileName() + FILE_NOT_EXISTS_ERROR_MESSAGE);
-////        }
-//
-//        if (media.getLinkStatus().equalsIgnoreCase("private") && ( user == null || !user.getName().equalsIgnoreCase(media.getUploader())) ) {
-//            throw new NotAuthorisedException(NO_PERMISSION);
-//        }
-//    }
+    @Before("displayMedia()")
+    public void before(JoinPoint joinPoint) throws FileNotFoundException {
+
+        Object[] args = joinPoint.getArgs();
+
+        int mediaID = (int) args[0];
+
+        Media media = mediaService.getMedia(mediaID);
+
+        if (media == null) {
+            throw new MediaException("Media doesn't exist");
+        }
+    }
 
     @Before("showUserMedia()")
     public void checkPermission(JoinPoint joinPoint) {

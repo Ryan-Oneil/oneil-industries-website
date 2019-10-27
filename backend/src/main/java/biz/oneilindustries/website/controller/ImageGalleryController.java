@@ -154,7 +154,7 @@ public class ImageGalleryController {
 
     @GetMapping("/myalbums/{username}/names")
     public List<String> showUserAlbumNames(Authentication user, @PathVariable String username, HttpServletRequest request) {
-        return albumService.getAlbumNamesByUser(user.getName());
+        return albumService.getAlbumNamesByUser(username);
     }
 
     @GetMapping("/myalbums/{username}")
