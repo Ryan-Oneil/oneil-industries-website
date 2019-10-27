@@ -12,6 +12,9 @@ import {connect} from "react-redux";
 import Images from "./pages/Gallery/GalleryPage";
 import UploadPage from "./pages/Gallery/UploadPage";
 import UserGalleryPage from "./pages/Gallery/UserGalleryPage";
+import {PrivateRoute} from "./PrivateRoute";
+import Album from "./pages/Gallery/Album";
+import UserAlbumsPage from "./pages/Gallery/UserAlbumsPage";
 
 class App extends React.Component {
 
@@ -34,16 +37,22 @@ class App extends React.Component {
                                 <Route path="/images" exact render={() => (
                                         <Images/>)
                                 }/>
-                                <Route path="/images/upload" exact render={() => (
-                                    <UploadPage
-                                        user={user}
-                                    />)
-                                }/>
-                                <Route path="/images/mygallery" exact render={() => (
-                                    <UserGalleryPage
-                                        user={user}
-                                    />)
-                                }/>
+                                <PrivateRoute path="/images/upload" exact
+                                              component={UploadPage}
+                                              isAuthenticated={isAuthenticated}
+                                              user={user}
+                                />
+                                <PrivateRoute path="/images/mygallery" exact
+                                              component={UserGalleryPage}
+                                              isAuthenticated={isAuthenticated}
+                                              user={user}
+                                />
+                                <PrivateRoute path="/images/myalbums" exact
+                                              component={UserAlbumsPage}
+                                              isAuthenticated={isAuthenticated}
+                                              user={user}
+                                />
+                                <Route path="/images/album/:albumName" component={Album} />
                                 <Route path="/login" render={(props) => (
                                     <Login
                                         {...props}

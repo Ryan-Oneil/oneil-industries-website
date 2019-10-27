@@ -1,57 +1,40 @@
 import React from 'react';
-import MediaModal from "./MediaModal";
 
 class Media extends React.Component {
-    state = { isOpen: false };
-
-    handleShowDialog = () => {
-        this.setState({ isOpen: !this.state.isOpen });
-    };
 
     renderImage = (media) => {
         const src = `http://localhost:8080/api/gallery/media/thumbnail/${media.id}`;
 
         return (
-            <div className="ui">
-                <h2 className="ui center aligned header">{media.name}</h2>
-                <img alt={media.name} src={src} onClick={this.handleShowDialog}/>
+            <div className="image">
+                <img alt={media.name} className="ui centered image" src={src}/>
             </div>
         )
     };
 
-    renderVideo = (media) => {
+    renderVideo = (media, renderVideoControls) => {
         const src = `http://localhost:8080/api/gallery/media/${media.id}`;
 
         return (
             <div className="ui">
-                <h2 className="ui center aligned header">{media.name}</h2>
-                <video src={src} onClick={this.handleShowDialog} height="400" width="400"/>
+                <video className="centerVideo" src={src}  controls={renderVideoControls} height="400" width="400"/>
             </div>
         )
     };
 
-    renderMedia = (media)=> {
+    renderMedia = (media, renderVideoControls)=> {
         if (media.mediaType === "video") {
-            return this.renderVideo(media)
+            return this.renderVideo(media, renderVideoControls)
         }
         return this.renderImage(media);
     };
 
     render() {
-        const {media} = this.props;
-
-        const src = `http://localhost:8080/api/gallery/media/thumbnail/${media.id}`;
+        const {media, renderVideoControls} = this.props;
 
         return <div className="column imageBox" key={media.id}>
-            {this.renderMedia(media)}
-            {this.state.isOpen && (<MediaModal
-                media={media}
-                src={src}
-                closeModal = {() => this.handleShowDialog()}>
-                {this.props.children}
-            </MediaModal>)}
+            {this.renderMedia(media, renderVideoControls)}
         </div>
     }
 }
-
 export default Media;

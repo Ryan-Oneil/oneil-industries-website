@@ -2,7 +2,7 @@ import {
     LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE, LOGOUT_SUCCESS
 } from '../actions'
 
-export  default function auth(state = {
+export default function auth(state = {
     isFetching: false,
     isAuthenticated: localStorage.getItem('token') ? true : false,
     user: getUserNameFromJWT()
@@ -29,7 +29,8 @@ export  default function auth(state = {
         case LOGOUT_SUCCESS:
             return Object.assign({}, state, {
                 isFetching: true,
-                isAuthenticated: false
+                isAuthenticated: false,
+                user: ""
             });
         default:
             return state

@@ -9,7 +9,6 @@ class UploadPage extends React.Component {
 
     constructor(props) {
         super(props);
-
         this.props.medias.albums = props.fetchAlbum(`/gallery/myalbums/${props.user}/names`);
     }
 
