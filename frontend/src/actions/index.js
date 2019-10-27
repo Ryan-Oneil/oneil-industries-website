@@ -1,5 +1,4 @@
-import axios from 'axios';
-import api from "../apis/api";
+import {apiDeleteCall, apiGetCall, apiPostCall} from "../apis/api";
 
 export const LOGIN_REQUEST = 'LOGIN_REQUEST';
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
@@ -14,17 +13,13 @@ export const MEDIA_FAILURE = 'MEDIA_FAILURE';
 export const MEDIA_POST_SENT = 'MEDIA_POST_SENT';
 export const MEDIA_POST_FAIL = 'MEDIA_POST_FAIL';
 export const MEDIA_POST_SUCCESS = 'MEDIA_POST_SUCCESS';
+export const MEDIA_DELETE_FAIL = 'MEDIA_DELETE_FAIL';
+export const MEDIA_DELETE_DONE = 'MEDIA_DELETE_DONE';
 
 export const ALBUM_REQUEST = 'ALBUM_REQUEST';
 export const ALBUM_FAILURE = 'ALBUM_FAILURE';
 
 const API_URL = "http://localhost:8080";
-const apiConfig = {
-    headers: {
-        Authorization: "Bearer " + localStorage.getItem('token'),
-        'Content-Type': 'multipart/form-data'
-    }
-};
 
 function requestLogin(creds) {
     return {
@@ -108,14 +103,6 @@ export function logoutUser() {
     }
 }
 
-const apiGetCall = async endpoint => {
-    return await api.get(endpoint, apiConfig);
-};
-
-const apiPostCall = async (endpoint, data) => {
-    return await api.post(endpoint, data, apiConfig);
-};
-
 export const fetchImages = (endpoint) => dispatch => {
     apiGetCall(endpoint).then(response => {
         dispatch({type: MEDIA_REQUEST, payload: response.data});
@@ -147,4 +134,12 @@ export const uploadMedia = (endpoint, data) => dispatch => {
     }).catch(error => {
         dispatch({type: MEDIA_POST_FAIL, message: error.message})
     }).finally(dispatch({type: MEDIA_POST_SUCCESS}));
+};
+
+export const deleteMedia = (endpoint, mediaID) => dispatch => {
+    apiDeleteCall(endpoint).then(response => {
+        dispatch({type: MEDIA_DELETE_DONE, message: response.data, mediaDeleteID: mediaID})
+    }).catch(error => {
+        dispatch({type: MEDIA_DELETE_FAIL, message: error.message})
+    })
 };

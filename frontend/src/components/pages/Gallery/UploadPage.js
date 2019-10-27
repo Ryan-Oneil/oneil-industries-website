@@ -1,51 +1,17 @@
 import React from 'react';
-import { Field, reduxForm } from 'redux-form';
+import { Field, reduxForm, reset } from 'redux-form';
 import {fetchAlbum, uploadMedia} from "../../../actions";
 import {connect} from "react-redux";
 import "../../../assets/css/layout.css"
+import {renderFileField, renderInput} from "../../formElements";
 
 class UploadPage extends React.Component {
 
     constructor(props) {
         super(props);
 
-        this.props.medias.albums = props.dispatch(fetchAlbum(`/gallery/myalbums/${props.user}/names`));
+        this.props.medias.albums = props.fetchAlbum(`/gallery/myalbums/${props.user}/names`);
     }
-
-    renderError({error, touched}) {
-        if (touched && error) {
-            return (
-                <div className="ui error message">
-                    {<div className="header">{error}</div>}
-                </div>
-            );
-        }
-    }
-
-    renderInput = ( {input, label, meta, type}) => {
-        const className = `field ${meta.error && meta.touched ? `error` : ``}`;
-
-        return (
-            <div className={className}>
-                <input {...input} autoComplete="off" type={type} placeholder={label}/>
-                {this.renderError(meta)}
-            </div>
-        );
-    };
-
-    //Need a custom render field for file with redux due to errors
-    renderFileField = ({ input, type, meta}) => {
-        delete input.value;
-
-        const className = `field ${meta.error && meta.touched ? `error` : ``}`;
-
-        return (
-            <div className={className}>
-                <input {...input} type={type}/>
-                {this.renderError(meta)}
-            </div>
-        )
-    };
 
     renderAlbums = () => {
         if (this.props.medias.albums) {
@@ -58,10 +24,9 @@ class UploadPage extends React.Component {
     };
 
     onSubmit = (formValues) => {
-        const dispatch = this.props.dispatch;
-
         if (!this.props.medias.isPosting) {
-            dispatch(uploadMedia("/gallery/upload", formValues));
+            this.props.uploadMedia("/gallery/upload", formValues);
+            this.props.reset('upload');
         }
     };
 
@@ -77,11 +42,11 @@ class UploadPage extends React.Component {
                                 Upload your Media
                             </h1>
                             <label className="textFormat">Choose File from your Computer</label>
-                            <Field name="file" type="file" component={this.renderFileField} />
+                            <Field name="file" type="file" component={renderFileField} />
                             <label className="textFormat">Media Name</label>
                             <Field
                                 name="name"
-                                component={this.renderInput}
+                                component={renderInput}
                                 label="Enter Media name"
                                 type="text"
                             />
@@ -127,9 +92,9 @@ const mapStateToProps = (state) => ({
     medias: state.medias
 });
 
-
 UploadPage = connect(
-    mapStateToProps
+    mapStateToProps,
+    {uploadMedia, fetchAlbum, reset}
 )(UploadPage);
 
 export default reduxForm({

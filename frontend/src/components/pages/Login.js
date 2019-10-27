@@ -3,43 +3,9 @@ import { Field, reduxForm } from 'redux-form';
 import logo from '../../assets/images/oi-logo.png';
 import {loginUser} from "../../actions";
 import '../../assets/css/layout.css';
+import {renderIconInput} from "../formElements";
 
 class Login extends React.Component {
-
-    constructor(props) {
-        super(props);
-
-        //If user is already logged in redirect to their profile
-        if (this.props.isAuthenticated) {
-            this.props.history.push('/profile');
-        }
-    }
-
-    renderError({error, touched}) {
-        if (touched && error) {
-            return (
-                <div className="ui error message">
-                    {<div className="header">{error}</div>}
-                </div>
-            );
-        }
-    }
-
-    renderInput = ( {input, label, meta, iconType, type}) => {
-        const className = `field ${meta.error && meta.touched ? `error` : ``}`;
-        const iconClassName = `${iconType} icon`;
-
-        return (
-            <div className={className}>
-                <div className="ui left icon input">
-                    <i className={iconClassName}/>
-                    <input {...input} autoComplete="off" type={type} placeholder={label}/>
-
-                </div>
-                {this.renderError(meta)}
-            </div>
-        );
-    };
 
     onSubmit = (formValues) => {
         const dispatch = this.props.dispatch;
@@ -49,7 +15,10 @@ class Login extends React.Component {
     };
 
     render() {
-
+        //If user is already logged in redirect to their profile
+        if (this.props.isAuthenticated) {
+            this.props.history.push('/profile');
+        }
         const { errorMessage } = this.props;
 
         return (
@@ -63,14 +32,14 @@ class Login extends React.Component {
                                 </h1>
                             <Field
                                 name="username"
-                                component={this.renderInput}
+                                component={renderIconInput}
                                 label="Enter Username"
                                 iconType= "user"
                                 type="text"
                             />
                             <Field
                                 name="password"
-                                component={this.renderInput}
+                                component={renderIconInput}
                                 label="Enter Password"
                                 iconType= "lock"
                                 type="password"

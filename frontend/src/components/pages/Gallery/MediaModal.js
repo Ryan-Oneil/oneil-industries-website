@@ -8,6 +8,8 @@ class MediaModal extends React.Component {
 
         this.setWrapperRef = this.setWrapperRef.bind(this);
         this.handleClickOutside = this.handleClickOutside.bind(this);
+        this.thumbnailSrc = "http://localhost:8080/api/gallery/media/thumbnail/";
+        this.fullMediaSrc = "http://localhost:8080/api/gallery/media/"
     }
 
     componentDidMount() {
@@ -31,18 +33,17 @@ class MediaModal extends React.Component {
     }
 
     renderImage = (media) => {
-        const src = `http://localhost:8080/api/gallery/media/thumbnail/${media.id}`;
 
         return (
-            <img className="ui centered image" src={src} onClick={this.handleShowDialog}/>
+            <a href={`${this.fullMediaSrc + media.id}`}>
+                <img alt={media.name} className="ui centered image" src={`${this.thumbnailSrc + media.id}`} onClick={this.handleShowDialog}/>
+            </a>
         )
     };
 
     renderVideo = (media) => {
-        const src = `http://localhost:8080/api/gallery/media/${media.id}`;
-
         return (
-            <video className="centerVideo" src={src} onClick={this.handleShowDialog} height="400" width="400" controls/>
+            <video className="centerVideo" src={`${this.fullMediaSrc + media.id}`} onClick={this.handleShowDialog} height="400" width="400" controls/>
         )
     };
 
@@ -68,10 +69,10 @@ class MediaModal extends React.Component {
                         <p>Uploader: {media.uploader}</p>
                         <p>Uploaded: {media.dateAdded}</p>
                     </div>
+                    {this.props.children}
                 </div>
             </div>
         )
     }
 }
-
 export default MediaModal;

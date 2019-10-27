@@ -1,6 +1,6 @@
 import {
     ALBUM_FAILURE,
-    ALBUM_REQUEST,
+    ALBUM_REQUEST, MEDIA_DELETE_DONE, MEDIA_DELETE_FAIL,
     MEDIA_FAILURE,
     MEDIA_POST_FAIL,
     MEDIA_POST_SENT,
@@ -25,6 +25,13 @@ export default (state = [], action) => {
         }
         case MEDIA_POST_FAIL: {
             return {...state, mediaPostMessage: action.message, isPosting: false};
+        }
+        case MEDIA_DELETE_DONE: {
+            const mediaID = action.mediaDeleteID;
+            return {...state, mediasList: state.mediasList.filter(media => media.id !== mediaID)};
+        }
+        case MEDIA_DELETE_FAIL: {
+            return {...state, deleteError: action.message};
         }
         case ALBUM_REQUEST: {
             return {...state, albums: action.payload};

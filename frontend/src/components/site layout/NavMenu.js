@@ -21,9 +21,6 @@ class NavMenu extends React.Component {
                         Contact
                     </Link>
                     <DropDownNav/>
-                    {/*<Link to="/images" className="item">*/}
-                    {/*    Images*/}
-                    {/*</Link>*/}
                     <Link to="/" className="item">
                         Services
                     </Link>

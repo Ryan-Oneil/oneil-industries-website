@@ -14,7 +14,7 @@ class Media extends React.Component {
         return (
             <div className="ui">
                 <h2 className="ui center aligned header">{media.name}</h2>
-                <img src={src} onClick={this.handleShowDialog}/>
+                <img alt={media.name} src={src} onClick={this.handleShowDialog}/>
             </div>
         )
     };
@@ -47,8 +47,9 @@ class Media extends React.Component {
             {this.state.isOpen && (<MediaModal
                 media={media}
                 src={src}
-                closeModal = {() => this.handleShowDialog()}
-            />)}
+                closeModal = {() => this.handleShowDialog()}>
+                {this.props.children}
+            </MediaModal>)}
         </div>
     }
 }

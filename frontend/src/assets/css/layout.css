@@ -52,3 +52,9 @@
     display: block;
     margin: 0 auto;
 }
+.centerButton {
+    display: flex!important;
+    margin-left: auto!important;
+    margin-right: auto!important;
+    margin-top: 20px!important;
+}

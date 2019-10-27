@@ -11,6 +11,7 @@ import Login from "./pages/Login";
 import {connect} from "react-redux";
 import Images from "./pages/Gallery/GalleryPage";
 import UploadPage from "./pages/Gallery/UploadPage";
+import UserGalleryPage from "./pages/Gallery/UserGalleryPage";
 
 class App extends React.Component {
 
@@ -31,13 +32,15 @@ class App extends React.Component {
                                 <Route path="/about" exact component={About}/>
                                 <Route path="/contact" exact component={Contact}/>
                                 <Route path="/images" exact render={() => (
-                                        <Images
-                                        dispatch={dispatch}
-                                    />)
+                                        <Images/>)
                                 }/>
                                 <Route path="/images/upload" exact render={() => (
                                     <UploadPage
-                                        dispatch={dispatch}
+                                        user={user}
+                                    />)
+                                }/>
+                                <Route path="/images/mygallery" exact render={() => (
+                                    <UserGalleryPage
                                         user={user}
                                     />)
                                 }/>
@@ -53,15 +56,12 @@ class App extends React.Component {
                         </BrowserRouter>
                     </div>
                 </div>
-
                 <Footer/>
             </div>
         );
     }
 }
-
-function mapStateToProps(state) {
-
+const mapStateToProps = (state) => {
     const { auth } = state;
     const { isAuthenticated, errorMessage, user } = auth;
 
@@ -70,6 +70,6 @@ function mapStateToProps(state) {
         errorMessage,
         user
     }
-}
+};
 
 export default connect(mapStateToProps)(App);

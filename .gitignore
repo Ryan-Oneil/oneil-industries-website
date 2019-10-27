@@ -5,3 +5,5 @@ backend/src/main/webapp/
 frontend/README.md
 *.xml
 *.iml
+*.txt
+frontend/public/favicon.ico
