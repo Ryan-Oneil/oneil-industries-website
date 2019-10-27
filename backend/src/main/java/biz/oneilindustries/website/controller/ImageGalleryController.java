@@ -101,10 +101,10 @@ public class ImageGalleryController {
         return request.getLocalName() + "/gallery/images/" + galleryUpload.getFile().getOriginalFilename();
     }
 
-    @DeleteMapping("/delete/{mediaFileName}")
-    public ResponseEntity deleteMedia(@PathVariable String mediaFileName, Authentication user) {
+    @DeleteMapping("/media/delete/{mediaInt}")
+    public ResponseEntity deleteMedia(@PathVariable int mediaInt, Authentication user, HttpServletRequest request) {
 
-        Media media = mediaService.getMediaFileName(mediaFileName);
+        Media media = mediaService.getMedia(mediaInt);
 
         mediaService.deleteMedia(media.getId());
 
@@ -113,7 +113,6 @@ public class ImageGalleryController {
 
     @GetMapping("/medias/user/{username}")
     public List<Media> showUserMedias(Authentication user, @PathVariable String username, HttpServletRequest request) {
-
         return mediaService.getMediasByUser(username);
     }
 

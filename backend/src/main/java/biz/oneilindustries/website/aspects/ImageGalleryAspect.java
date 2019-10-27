@@ -88,26 +88,25 @@ public class ImageGalleryAspect {
         }
     }
 
-    @Before("displayMedia()")
-    public void before(JoinPoint joinPoint) throws FileNotFoundException {
-
-        Object[] args = joinPoint.getArgs();
-
-        int mediaID = (int) args[0];
-        Authentication user = (Authentication) args[1];
-
-        Media media = mediaService.getMedia(mediaID);
-
-//        File serverFile = new File(GALLERY_IMAGES_DIRECTORY  + user.getName() + "/" + media.getFileName());
+//    @Before("displayMedia()")
+//    public void before(JoinPoint joinPoint) throws FileNotFoundException {
 //
-//        if (!serverFile.exists() || !serverFile.isFile()) {
-//            throw new FileNotFoundException(media.getFileName() + FILE_NOT_EXISTS_ERROR_MESSAGE);
+//        Object[] args = joinPoint.getArgs();
+//
+//        int mediaID = (int) args[0];
+//        Authentication user = (Authentication) args[1];
+//
+//        Media media = mediaService.getMedia(mediaID);
+////        File serverFile = new File(GALLERY_IMAGES_DIRECTORY  + user.getName() + "/" + media.getFileName());
+////
+////        if (!serverFile.exists() || !serverFile.isFile()) {
+////            throw new FileNotFoundException(media.getFileName() + FILE_NOT_EXISTS_ERROR_MESSAGE);
+////        }
+//
+//        if (media.getLinkStatus().equalsIgnoreCase("private") && ( user == null || !user.getName().equalsIgnoreCase(media.getUploader())) ) {
+//            throw new NotAuthorisedException(NO_PERMISSION);
 //        }
-
-        if (media.getLinkStatus().equalsIgnoreCase("private") && ( user == null || !user.getName().equalsIgnoreCase(media.getUploader())) ) {
-            throw new NotAuthorisedException(NO_PERMISSION);
-        }
-    }
+//    }
 
     @Before("showUserMedia()")
     public void checkPermission(JoinPoint joinPoint) {
@@ -128,14 +127,14 @@ public class ImageGalleryAspect {
 
         Object[] args = joinPoint.getArgs();
 
-        String mediaFileName = (String) args[0];
+        int mediaInt = (int) args[0];
         Authentication user = (Authentication) args[1];
         HttpServletRequest request = (HttpServletRequest) args[2];
 
-        Media media = mediaService.getMediaFileName(mediaFileName);
+        Media media = mediaService.getMedia(mediaInt);
 
         if (media == null) {
-            throw new FileNotFoundException(mediaFileName + FILE_NOT_EXISTS_ERROR_MESSAGE);
+            throw new FileNotFoundException(FILE_NOT_EXISTS_ERROR_MESSAGE);
         }
         if (!media.getUploader().equals(user.getName()) && !request.isUserInRole(ADMIN_ROLE)) {
             throw new NotAuthorisedException(user.getName() + NO_PERMISSION);

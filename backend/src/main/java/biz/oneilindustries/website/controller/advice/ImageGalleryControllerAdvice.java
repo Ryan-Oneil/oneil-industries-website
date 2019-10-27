@@ -16,7 +16,7 @@ public class ImageGalleryControllerAdvice {
     @ExceptionHandler(MediaException.class)
     public ResponseEntity handleException(MediaException error) {
         return ResponseEntity
-                .status(HttpStatus.FORBIDDEN)
+                .status(HttpStatus.BAD_REQUEST)
                 .body(error.getMessage());
     }
     //IOException
@@ -30,7 +30,7 @@ public class ImageGalleryControllerAdvice {
     @ExceptionHandler(FileNotFoundException.class)
     public ResponseEntity handleException(FileNotFoundException error) {
         return ResponseEntity
-                .status(HttpStatus.FORBIDDEN)
+                .status(HttpStatus.NOT_FOUND)
                 .body(error.getMessage());
     }
 
