@@ -9,6 +9,7 @@ import biz.oneilindustries.website.gallery.MediaAlbum;
 import biz.oneilindustries.website.service.AlbumService;
 import biz.oneilindustries.website.service.MediaService;
 import biz.oneilindustries.website.validation.GalleryUpload;
+import biz.oneilindustries.website.validation.UpdatedAlbum;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -29,8 +30,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -181,17 +183,17 @@ public class ImageGalleryController {
         return new AlbumCreator(mediaService).createAlbum(album);
     }
 
-    @PostMapping("/myalbums/update/{albumName}")
-    public ResponseEntity updateAlbum(@PathVariable String albumName, Authentication user, HttpServletRequest request, @RequestParam String newAlbumName, @RequestParam boolean showUnlistedImages) {
+    @PutMapping("/myalbums/update/{albumName}")
+    public ResponseEntity updateAlbum(@PathVariable String albumName, Authentication user, HttpServletRequest request, @RequestBody UpdatedAlbum updatedAlbum) {
 
         Album album = albumService.getAlbumByName(albumName);
 
-        album.setName(newAlbumName);
-        album.setShowUnlistedImages(showUnlistedImages);
+        album.setName(updatedAlbum.getName());
+        album.setShowUnlistedImages(updatedAlbum.isShowUnlistedImages());
 
         albumService.saveAlbum(album);
 
-        return ResponseEntity.ok(HttpStatus.OK);
+        return ResponseEntity.ok(album);
     }
 
     @PostMapping("/myalbums/delete/{albumName}")
