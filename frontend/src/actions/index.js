@@ -1,4 +1,4 @@
-import {apiDeleteCall, apiGetCall, apiPostCall} from "../apis/api";
+import {apiDeleteCall, apiGetCall, apiPostCall, apiPutCall} from "../apis/api";
 
 export const LOGIN_REQUEST = 'LOGIN_REQUEST';
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
@@ -19,6 +19,7 @@ export const MEDIA_DELETE_DONE = 'MEDIA_DELETE_DONE';
 
 export const ALBUM_REQUEST = 'ALBUM_REQUEST';
 export const ALBUM_FAILURE = 'ALBUM_FAILURE';
+export const ALBUM_EDIT_PUT = 'ALBUM_EDIT_PUT';
 
 const API_URL = "http://localhost:8080";
 
@@ -125,6 +126,15 @@ export const fetchUserImages = (endpoint) => dispatch => {
 export const fetchAlbum = (endpoint) => dispatch => {
     apiGetCall(endpoint).then(response => {
         dispatch({type: ALBUM_REQUEST, payload: response.data});
+    }).catch(error => {
+            dispatch({type: ALBUM_FAILURE, message: error});
+        }
+    );
+};
+
+export const updateAlbum = (endpoint, payload) => dispatch => {
+    apiPutCall(endpoint, payload).then(response => {
+        dispatch({type: ALBUM_EDIT_PUT, album: response.data});
     }).catch(error => {
             dispatch({type: ALBUM_FAILURE, message: error});
         }

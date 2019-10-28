@@ -1,4 +1,5 @@
 import {
+    ALBUM_EDIT_PUT,
     ALBUM_FAILURE,
     ALBUM_REQUEST, MEDIA_DELETE_DONE, MEDIA_DELETE_FAIL,
     MEDIA_FAILURE,
@@ -38,6 +39,16 @@ export default (state = [], action) => {
         }
         case ALBUM_REQUEST: {
             return {...state, albums: action.payload};
+        }
+        case ALBUM_EDIT_PUT: {
+            return {...state, albums: state.albums.map(mediaAlbum => {
+                    if (mediaAlbum.album.id === action.album.id) {
+                        mediaAlbum.album.name = action.album.name;
+                        mediaAlbum.album.showUnlistedImages = action.album.showUnlistedImages;
+                        return mediaAlbum;
+                    }
+                    return mediaAlbum;
+                }),}
         }
         case ALBUM_FAILURE: {
             return action.message;

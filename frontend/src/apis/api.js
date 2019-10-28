@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const apiConfig = {
     headers: {
-        Authorization: localStorage.getItem('token') ? "Bearer " + localStorage.getItem('token') : "none"
+        Authorization: localStorage.getItem('token') ? localStorage.getItem('token') : "none"
     }
 };
 
@@ -16,6 +16,10 @@ export const apiGetCall = async endpoint => {
 
 export const apiPostCall = async (endpoint, data) => {
     return await baseApi.post(endpoint, data, apiConfig);
+};
+
+export const apiPutCall = async (endpoint, data) => {
+    return await baseApi.put(endpoint, data, apiConfig);
 };
 
 export const apiDeleteCall = async (endpoint) => {
