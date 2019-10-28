@@ -3,6 +3,7 @@ import Media from "./Media";
 import {connect} from "react-redux";
 import {fetchAlbum} from "../../../actions";
 import Modal from "./Modal";
+import EditForm from "../../formElements/editAlbumForm";
 
 class UserAlbumsPage extends React.Component {
 
@@ -14,7 +15,6 @@ class UserAlbumsPage extends React.Component {
 
     componentDidMount() {
         if (!this.props.medias.albums) {
-            console.log("Fetching albums");
             this.props.fetchAlbum(`/gallery/myalbums/${this.props.user}`);
         }
     }
@@ -60,8 +60,9 @@ class UserAlbumsPage extends React.Component {
                         <Media media={this.state.album.media[0]} renderVideoControls={true}/>
                     </div>
                     <div className="centerText">
-                        <p>Creator: {this.state.album.album.creator}</p>
-                        {this.props.children}
+                        <EditForm album={this.state.album.album}
+                                  initialValues={{'name': this.state.album.album.name,
+                            'showUnlistedImages' : this.state.album.album.showUnlistedImages}}/>
                     </div>
                 </Modal>)}
             </div>
