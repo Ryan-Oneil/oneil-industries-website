@@ -37,7 +37,7 @@ class Modal extends React.Component {
             <div ref={this.setWrapperRef} className="imageModal ui modal visible active">
                 <i className="closeModal close icon" onClick={closeModal}/>
                 <h1 className="ui center aligned header">{title}</h1>
-                <div className="content">
+                <div className="scrolling content">
                         {this.props.children}
                 </div>
             </div>

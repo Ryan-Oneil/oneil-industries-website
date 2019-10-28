@@ -30,9 +30,9 @@ class Media extends React.Component {
     };
 
     render() {
-        const {media, renderVideoControls} = this.props;
+        const {media, renderVideoControls, onClick} = this.props;
 
-        return <div className="column imageBox" key={media.id}>
+        return <div className="column imageBox" key={media.id} onClick={onClick}>
             {this.renderMedia(media, renderVideoControls)}
         </div>
     }
