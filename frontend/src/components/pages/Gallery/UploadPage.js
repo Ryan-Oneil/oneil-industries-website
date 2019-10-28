@@ -9,14 +9,16 @@ class UploadPage extends React.Component {
 
     constructor(props) {
         super(props);
-        this.props.medias.albums = props.fetchAlbum(`/gallery/myalbums/${props.user}/names`);
+        if (!this.props.medias.albums) {
+            this.props.medias.albums = props.fetchAlbum(`/gallery/myalbums/${props.user}`);
+        }
     }
 
     renderAlbums = () => {
         if (this.props.medias.albums) {
-            return this.props.medias.albums.map(album => {
+            return this.props.medias.albums.map(MediaAlbum => {
                 return (
-                    <option value={album} key={album}>{album}</option>
+                    <option value={MediaAlbum.album.name} key={MediaAlbum.album.id}>{MediaAlbum.album.name}</option>
                 );
             })
         }

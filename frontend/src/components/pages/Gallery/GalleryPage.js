@@ -15,7 +15,9 @@ class GalleryPage extends React.Component {
     };
 
     componentDidMount() {
-        this.props.fetchImages("/gallery/medias");
+        if (!this.props.medias.mediasList) {
+            this.props.fetchImages("/gallery/medias");
+        }
     }
 
     renderErrorMessage = () => {
@@ -33,9 +35,9 @@ class GalleryPage extends React.Component {
         if (this.props.medias.mediasList) {
             return this.props.medias.mediasList.map(media => {
                 return (
-                    <div className="column imageBox" key={media.id} onClick={this.handleShowDialog.bind(this, media)}>
+                    <div className="column imageBox" key={media.id} >
                         <h1 className="ui center aligned header">{media.name}</h1>
-                        <Media media={media}/>
+                        <Media media={media} onClick={this.handleShowDialog.bind(this, media)}/>
                     </div>
                 );
             })

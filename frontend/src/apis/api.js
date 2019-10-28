@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const apiConfig = {
     headers: {
-        Authorization: "Bearer " + localStorage.getItem('token'),
+        Authorization: localStorage.getItem('token') ? "Bearer " + localStorage.getItem('token') : "none"
     }
 };
 

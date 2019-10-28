@@ -8,6 +8,7 @@ export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
 export const LOGOUT_FAILURE = 'LOGOUT_FAILURE';
 
 export const MEDIA_REQUEST = 'MEDIA_REQUEST';
+export const USER_MEDIA_REQUEST = 'USER_MEDIA_REQUEST';
 export const MEDIA_SUCCESS = 'MEDIA_SUCCESS';
 export const MEDIA_FAILURE = 'MEDIA_FAILURE';
 export const MEDIA_POST_SENT = 'MEDIA_POST_SENT';
@@ -106,6 +107,15 @@ export function logoutUser() {
 export const fetchImages = (endpoint) => dispatch => {
     apiGetCall(endpoint).then(response => {
         dispatch({type: MEDIA_REQUEST, payload: response.data});
+    }).catch(error => {
+            dispatch({type: MEDIA_FAILURE, message: error});
+        }
+    );
+};
+
+export const fetchUserImages = (endpoint) => dispatch => {
+    apiGetCall(endpoint).then(response => {
+        dispatch({type: USER_MEDIA_REQUEST, payload: response.data});
     }).catch(error => {
             dispatch({type: MEDIA_FAILURE, message: error});
         }

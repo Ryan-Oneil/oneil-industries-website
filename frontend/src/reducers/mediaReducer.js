@@ -5,7 +5,7 @@ import {
     MEDIA_POST_FAIL,
     MEDIA_POST_SENT,
     MEDIA_POST_SUCCESS,
-    MEDIA_REQUEST
+    MEDIA_REQUEST, USER_MEDIA_REQUEST
 } from "../actions";
 
 export default (state = [], action) => {
@@ -13,6 +13,9 @@ export default (state = [], action) => {
     switch (action.type) {
         case MEDIA_REQUEST: {
             return {...state, mediasList: action.payload};
+        }
+        case USER_MEDIA_REQUEST: {
+            return {...state, userMediasList: action.payload};
         }
         case MEDIA_FAILURE: {
             return action.message;

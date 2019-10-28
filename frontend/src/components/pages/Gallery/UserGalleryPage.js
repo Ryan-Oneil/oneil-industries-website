@@ -1,6 +1,6 @@
 import React from 'react';
 import {connect} from "react-redux";
-import {deleteMedia, fetchImages} from "../../../actions";
+import {deleteMedia, fetchUserImages} from "../../../actions";
 import Media from "./Media";
 import '../../../assets/css/layout.css';
 import Modal from "./Modal";
@@ -14,7 +14,9 @@ class UserGalleryPage extends React.Component {
     };
 
     componentDidMount() {
-        this.props.fetchImages(`/gallery/medias/user/${this.props.user}`);
+        if (!this.props.medias.userMediasList) {
+            this.props.fetchUserImages(`/gallery/medias/user/${this.props.user}`);
+        }
     }
 
     renderErrorMessage = () => {
@@ -29,12 +31,12 @@ class UserGalleryPage extends React.Component {
         if (this.props.medias.message) {
             return this.renderErrorMessage();
         }
-        if (this.props.medias.mediasList) {
-            return this.props.medias.mediasList.map(media => {
+        if (this.props.medias.userMediasList) {
+            return this.props.medias.userMediasList.map(media => {
                 return (
-                    <div className="column imageBox" key={media.id} onClick={this.handleShowDialog.bind(this, media)}>
+                    <div className="column imageBox" key={media.id}>
                         <h1 className="ui center aligned header">{media.name}</h1>
-                        <Media media={media} />
+                        <Media media={media} onClick={this.handleShowDialog.bind(this, media)}/>
                     </div>
                 );
             })
@@ -79,5 +81,5 @@ const mapStateToProps = (state) => {
 
 export default connect(
     mapStateToProps,
-    { fetchImages, deleteMedia }
+    { fetchUserImages, deleteMedia }
 )(UserGalleryPage);
