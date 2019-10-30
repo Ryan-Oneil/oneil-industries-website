@@ -16,6 +16,8 @@ export const MEDIA_POST_FAIL = 'MEDIA_POST_FAIL';
 export const MEDIA_POST_SUCCESS = 'MEDIA_POST_SUCCESS';
 export const MEDIA_DELETE_FAIL = 'MEDIA_DELETE_FAIL';
 export const MEDIA_DELETE_DONE = 'MEDIA_DELETE_DONE';
+export const MEDIA_UPDATE_SENT = 'MEDIA_UPDATE_SENT';
+export const MEDIA_UPDATE_FAIL = 'MEDIA_UPDATE_FAIL';
 
 export const ALBUM_REQUEST = 'ALBUM_REQUEST';
 export const ALBUM_FAILURE = 'ALBUM_FAILURE';
@@ -123,7 +125,7 @@ export const fetchUserImages = (endpoint) => dispatch => {
     );
 };
 
-export const fetchAlbum = (endpoint) => dispatch => {
+export const fetchAlbums = (endpoint) => dispatch => {
     apiGetCall(endpoint).then(response => {
         dispatch({type: ALBUM_REQUEST, payload: response.data});
     }).catch(error => {
@@ -161,5 +163,13 @@ export const deleteMedia = (endpoint, mediaID) => dispatch => {
         dispatch({type: MEDIA_DELETE_DONE, message: response.data, mediaDeleteID: mediaID})
     }).catch(error => {
         dispatch({type: MEDIA_DELETE_FAIL, message: error.message})
+    })
+};
+
+export const updateMedia = (endpoint, data) => dispatch => {
+    apiPutCall(endpoint, data).then(response => {
+        dispatch({type: MEDIA_UPDATE_SENT, media: response.data})
+    }).catch(error => {
+        dispatch({type: MEDIA_UPDATE_FAIL, message: error.message})
     })
 };

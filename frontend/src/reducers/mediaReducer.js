@@ -6,7 +6,7 @@ import {
     MEDIA_POST_FAIL,
     MEDIA_POST_SENT,
     MEDIA_POST_SUCCESS,
-    MEDIA_REQUEST, USER_MEDIA_REQUEST
+    MEDIA_REQUEST, MEDIA_UPDATE_FAIL, MEDIA_UPDATE_SENT, updateMedia, USER_MEDIA_REQUEST
 } from "../actions";
 
 export default (state = [], action) => {
@@ -37,6 +37,17 @@ export default (state = [], action) => {
         case MEDIA_DELETE_FAIL: {
             return {...state, deleteError: action.message};
         }
+        case MEDIA_UPDATE_SENT: {
+            let userMediasList = state.userMediasList.map(media => changeMedia(media, action.media));
+            
+            if (state.mediasList) {
+                return {...state, userMediasList, mediasList: state.mediasList.map(media => changeMedia(media, action.media))}
+            }
+            return {...state, userMediasList}
+        }
+        case MEDIA_UPDATE_FAIL: {
+            return {...state, updateError: action.message}
+        }
         case ALBUM_REQUEST: {
             return {...state, albums: action.payload};
         }
@@ -57,4 +68,11 @@ export default (state = [], action) => {
             return state;
         }
     }
+};
+
+const changeMedia = (media, action) => {
+    if (media.id === action.media.id) {
+        return action.media;
+    }
+    return media;
 };
