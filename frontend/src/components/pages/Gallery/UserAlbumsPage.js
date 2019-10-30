@@ -1,9 +1,10 @@
 import React from 'react';
-import Media from "./Media";
+import Media from "./Elements/Media";
 import {connect} from "react-redux";
-import {fetchAlbum} from "../../../actions";
-import Modal from "./Modal";
+import {fetchAlbums} from "../../../actions";
+import Modal from "./Elements/Modal";
 import EditForm from "../../formElements/editAlbumForm";
+import {renderErrorMessage} from "../../ErrorMessage";
 
 class UserAlbumsPage extends React.Component {
 
@@ -19,17 +20,9 @@ class UserAlbumsPage extends React.Component {
         }
     }
 
-    renderErrorMessage = () => {
-        return (
-            <div className="three column">
-                <div className="ui error center aligned header">{this.props.medias.message}</div>
-            </div>
-        )
-    };
-
     renderList = () => {
         if (this.props.medias.message) {
-            return this.renderErrorMessage();
+            return renderErrorMessage(this.props.medias.message);
         }
         if (this.props.medias.albums) {
             return this.props.medias.albums.map(album => {
@@ -75,5 +68,5 @@ const mapStateToProps = (state) => {
 
 export default connect(
     mapStateToProps,
-    { fetchAlbum }
+    { fetchAlbum: fetchAlbums }
 )(UserAlbumsPage);

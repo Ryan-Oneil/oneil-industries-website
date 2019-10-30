@@ -1,30 +1,38 @@
 import React from 'react';
-import {fetchImages} from "../../../actions";
-import {connect} from "react-redux";
-
-import '../../../assets/css/images.css';
 import Media from "./Elements/Media";
-import Modal from "./Elements/Modal";
 import RenderMedias from "./Elements/RenderMedias";
+import Modal from "./Elements/Modal";
+import {apiGetCall} from "../../../apis/api";
 
-class GalleryPage extends React.Component {
+class AlbumPage extends React.Component {
 
-    state = { isModalOpen: false };
+    state = { isModalOpen: false, album : null, message: null };
 
     handleShowDialog = (media) => {
         this.setState({ isOpen: !this.state.isOpen, media });
     };
 
     componentDidMount() {
-        if (!this.props.medias.mediasList) {
-            this.props.fetchImages("/gallery/medias");
-        }
+        const { match: { params } } = this.props;
+        // Don't really need redux in this single component so manually getting and storing in local state
+        apiGetCall(`/gallery/album/${params.albumName}`).then(response => {
+            this.setState({album: response.data});
+        }).catch(error => {
+            this.setState({message: error.message});
+            }
+        );
     }
 
     render() {
+        const { match: { params } } = this.props;
         return (
-            <div className="ui three column grid">
-                {RenderMedias(this.props.medias, this.handleShowDialog)}
+            <div>
+                <h1 className="ui center aligned header">
+                    Album : {params.albumName}
+                </h1>
+                <div className="ui three column grid">
+                    {RenderMedias(this.state.album, this.state.message, this.handleShowDialog)}
+                </div>
                 {this.state.isOpen && (<Modal
                     title={this.state.media.name}
                     closeModal = {() => this.handleShowDialog()}
@@ -43,12 +51,4 @@ class GalleryPage extends React.Component {
         );
     }
 }
-
-const mapStateToProps = (state) => {
-    return {medias: state.medias};
-};
-
-export default connect(
-    mapStateToProps,
-    { fetchImages }
-)(GalleryPage);
+export default AlbumPage;

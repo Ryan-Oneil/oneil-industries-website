@@ -1,5 +1,5 @@
 import React from "react";
-import '../../../assets/css/images.css';
+import '../../../../assets/css/images.css';
 
 class Modal extends React.Component {
 

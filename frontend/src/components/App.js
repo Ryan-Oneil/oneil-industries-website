@@ -13,7 +13,7 @@ import Images from "./pages/Gallery/GalleryPage";
 import UploadPage from "./pages/Gallery/UploadPage";
 import UserGalleryPage from "./pages/Gallery/UserGalleryPage";
 import {PrivateRoute} from "./PrivateRoute";
-import Album from "./pages/Gallery/Album";
+import Album from "./pages/Gallery/AlbumPage";
 import UserAlbumsPage from "./pages/Gallery/UserAlbumsPage";
 
 class App extends React.Component {

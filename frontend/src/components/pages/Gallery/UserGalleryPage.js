@@ -1,9 +1,13 @@
 import React from 'react';
 import {connect} from "react-redux";
-import {deleteMedia, fetchUserImages} from "../../../actions";
-import Media from "./Media";
+import _ from 'lodash';
+
+import {deleteMedia, fetchAlbums, fetchUserImages} from "../../../actions";
+import Media from "./Elements/Media";
 import '../../../assets/css/layout.css';
-import Modal from "./Modal";
+import Modal from "./Elements/Modal";
+import EditImageForm from "../../formElements/EditImageForm";
+import RenderMedias from "./Elements/RenderMedias";
 
 class UserGalleryPage extends React.Component {
 
@@ -14,33 +18,17 @@ class UserGalleryPage extends React.Component {
     };
 
     componentDidMount() {
+        if (!this.props.medias.albums) {
+            this.props.medias.albums = this.props.fetchAlbum(`/gallery/myalbums/${this.props.user}`);
+        }
         if (!this.props.medias.userMediasList) {
             this.props.fetchUserImages(`/gallery/medias/user/${this.props.user}`);
         }
     }
 
-    renderErrorMessage = () => {
-        return (
-            <div className="three column">
-                <div className="ui error center aligned header">{this.props.medias.message}</div>
-            </div>
-        )
-    };
-
-    renderList = () => {
-        if (this.props.medias.message) {
-            return this.renderErrorMessage();
-        }
-        if (this.props.medias.userMediasList) {
-            return this.props.medias.userMediasList.map(media => {
-                return (
-                    <div className="column imageBox" key={media.id}>
-                        <h1 className="ui center aligned header">{media.name}</h1>
-                        <Media media={media} onClick={this.handleShowDialog.bind(this, media)}/>
-                    </div>
-                );
-            })
-        }
+    returnAlbumName = (media) => {
+        let album = _.find(this.props.medias.albums, (mediaAlbum) => { return mediaAlbum.album.id === media.albumID });
+        return album ? album.album.name : "none";
     };
 
     render() {
@@ -50,22 +38,27 @@ class UserGalleryPage extends React.Component {
                     {this.props.user}'s Gallery
                 </h1>
                 <div className="ui three column grid">
-                    {this.renderList()}
+                    {RenderMedias(this.props.medias, this.handleShowDialog)}
                     {this.state.isOpen && (<Modal
                         title={this.state.media.name}
                         closeModal = {() => this.handleShowDialog()}
                     >
                         <div className="image">
-                            <Media media={this.state.media} renderVideoControls={true}/>
-                        </div>
-                        <div className="centerText">
-                            <p>Uploader: {this.state.media.uploader}</p>
-                            <p>Uploaded: {this.state.media.dateAdded}</p>
+                            <a href={`http://localhost:8080/api/gallery/media/${this.state.media.id}`}>
+                                <Media media={this.state.media} renderVideoControls={true}/>
+                            </a>
                         </div>
                         <button value="Delete" className="centerButton ui negative button center aligned"
                                 onClick={() => this.props.deleteMedia(`/gallery/media/delete/${this.state.media.id}`, this.state.media.id)}>
                             Delete
                         </button>
+                        <EditImageForm
+                            media={this.state.media}
+                            initialValues={{'name': this.state.media.name,
+                                'linkStatus' : this.state.media.linkStatus,
+                                'album': this.returnAlbumName(this.state.media)}}
+                        />
+
                         {this.props.medias.deleteError && <div className="ui error message">
                             {<div className="header">{this.props.medias.deleteError}</div>}
                         </div>}
@@ -81,5 +74,5 @@ const mapStateToProps = (state) => {
 
 export default connect(
     mapStateToProps,
-    { fetchUserImages, deleteMedia }
+    { fetchUserImages, deleteMedia, fetchAlbum: fetchAlbums }
 )(UserGalleryPage);

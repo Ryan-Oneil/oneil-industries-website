@@ -1,6 +1,6 @@
 import React from 'react';
 import { Field, reduxForm, reset } from 'redux-form';
-import {fetchAlbum, uploadMedia} from "../../../actions";
+import {fetchAlbums, uploadMedia} from "../../../actions";
 import {connect} from "react-redux";
 import "../../../assets/css/layout.css"
 import {renderFileField, renderInput} from "../../formElements";
@@ -95,7 +95,7 @@ const mapStateToProps = (state) => ({
 
 UploadPage = connect(
     mapStateToProps,
-    {uploadMedia, fetchAlbum, reset}
+    {uploadMedia, fetchAlbum: fetchAlbums, reset}
 )(UploadPage);
 
 export default reduxForm({

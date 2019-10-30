@@ -10,8 +10,8 @@ class EditAlbumForm extends React.Component {
     };
 
     render() {
-        const { errorMessage } = this.props;
-
+        const { submitting, errorMessage } = this.props;
+        console.log(this.props);
         return (
             <div className="ui one column stackable center aligned page grid">
                 <div className="column twelve wide">
@@ -37,7 +37,7 @@ class EditAlbumForm extends React.Component {
                             {errorMessage && <div className="ui error message">
                                 {<div className="header">{errorMessage}</div>}
                             </div>}
-                            <button className="ui fluid large navColor submit button">Confirm</button>
+                            <button className="ui fluid large navColor submit button" disabled={submitting}>Confirm</button>
                         </div>
                     </form>
                 </div>
