@@ -6,7 +6,7 @@ import {deleteMedia, fetchAlbums, fetchUserImages} from "../../../actions";
 import Media from "./Elements/Media";
 import '../../../assets/css/layout.css';
 import Modal from "./Elements/Modal";
-import EditImageForm from "../../formElements/EditImageForm";
+import EditMediaForm from "../../formElements/EditMediaForm";
 import RenderMedias from "./Elements/RenderMedias";
 
 class UserGalleryPage extends React.Component {
@@ -52,7 +52,7 @@ class UserGalleryPage extends React.Component {
                                 onClick={() => this.props.deleteMedia(`/gallery/media/delete/${this.state.media.id}`, this.state.media.id)}>
                             Delete
                         </button>
-                        <EditImageForm
+                        <EditMediaForm
                             media={this.state.media}
                             initialValues={{'name': this.state.media.name,
                                 'linkStatus' : this.state.media.linkStatus,
