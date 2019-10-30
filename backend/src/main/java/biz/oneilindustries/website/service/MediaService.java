@@ -130,8 +130,8 @@ public class MediaService {
     }
 
     @Transactional
-    public void updateMedia(GalleryUpload galleryUpload, Album album, String mediaFileName) {
-        Media media = getMediaFileName(mediaFileName);
+    public Media updateMedia(GalleryUpload galleryUpload, Album album, int mediaID) {
+        Media media = getMedia(mediaID);
 
         media.setName(galleryUpload.getName());
         media.setLinkStatus(galleryUpload.getPrivacy());
@@ -142,6 +142,7 @@ public class MediaService {
             media.setAlbumID(null);
         }
         saveMedia(media);
+        return media;
     }
 
     @Transactional

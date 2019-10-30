@@ -27,7 +27,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -118,17 +117,17 @@ public class ImageGalleryController {
         return mediaService.getMediasByUser(username);
     }
 
-    @PostMapping("/update/{mediaFileName}")
-    public ResponseEntity updateMedia(@PathVariable String mediaFileName, Authentication user, HttpServletRequest request, @ModelAttribute("GalleryUpload") @Valid GalleryUpload galleryUpload)  {
+    @PutMapping("/media/update/{mediaID}")
+    public ResponseEntity updateMedia(@PathVariable int mediaID, Authentication user, HttpServletRequest request, @RequestBody @Valid GalleryUpload galleryUpload)  {
 
         Album album = null;
 
         if (!galleryUpload.getAlbumName().equalsIgnoreCase("none")) {
             album = albumService.updateAlbum(galleryUpload,user.getName());
         }
-        mediaService.updateMedia(galleryUpload,album,mediaFileName);
+        Media media = mediaService.updateMedia(galleryUpload,album, mediaID);
 
-        return ResponseEntity.ok(HttpStatus.OK);
+        return ResponseEntity.ok(media);
     }
 
     @GetMapping("/album/{albumName}")
@@ -188,7 +187,7 @@ public class ImageGalleryController {
 
         Album album = albumService.getAlbumByName(albumName);
 
-        album.setName(updatedAlbum.getName());
+        album.setName(updatedAlbum.getNewAlbumName());
         album.setShowUnlistedImages(updatedAlbum.isShowUnlistedImages());
 
         albumService.saveAlbum(album);

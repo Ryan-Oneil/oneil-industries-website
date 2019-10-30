@@ -1,23 +1,23 @@
 package biz.oneilindustries.website.validation;
 
 public class UpdatedAlbum {
-    private String name;
+    private String newAlbumName;
     private boolean showUnlistedImages;
 
     public UpdatedAlbum() {
     }
 
-    public UpdatedAlbum(String name, boolean showUnlistedImages) {
-        this.name = name;
+    public UpdatedAlbum(String newAlbumName, boolean showUnlistedImages) {
+        this.newAlbumName = newAlbumName;
         this.showUnlistedImages = showUnlistedImages;
     }
 
-    public String getName() {
-        return name;
+    public String getNewAlbumName() {
+        return newAlbumName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setNewAlbumName(String newAlbumName) {
+        this.newAlbumName = newAlbumName;
     }
 
     public boolean isShowUnlistedImages() {
