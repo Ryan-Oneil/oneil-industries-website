@@ -26,13 +26,13 @@ class UploadPage extends React.Component {
 
     onSubmit = (formValues) => {
         if (!this.props.medias.isPosting) {
-            this.props.uploadMedia("/gallery/upload", formValues);
-            this.props.reset('upload');
+            return this.props.uploadMedia("/gallery/upload", formValues);
+            //this.props.reset('upload');
         }
     };
 
     render() {
-        const { errorMessage } = this.props;
+        const { submitting, errorMessage } = this.props;
 
         return (
             <div className="ui one column stackable center aligned page grid">
@@ -65,7 +65,7 @@ class UploadPage extends React.Component {
                             {errorMessage && <div className="ui error message">
                                 {<div className="header">{errorMessage}</div>}
                             </div>}
-                            <button className="ui fluid large navColor submit button">Upload</button>
+                            <button className="ui fluid large navColor submit button" disabled={submitting}>Upload</button>
                             {this.props.medias.mediaPostMessage && <div className="ui message">
                                 {<div className="header">{this.props.medias.mediaPostMessage}</div>}
                             </div>}

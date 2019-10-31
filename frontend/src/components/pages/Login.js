@@ -11,7 +11,7 @@ class Login extends React.Component {
         const dispatch = this.props.dispatch;
         const creds = { username: formValues.username.trim(), password: formValues.password.trim()};
 
-        dispatch(loginUser(creds));
+        return dispatch(loginUser(creds));
     };
 
     render() {
@@ -19,7 +19,7 @@ class Login extends React.Component {
         if (this.props.isAuthenticated) {
             this.props.history.push('/profile');
         }
-        const { errorMessage } = this.props;
+        const { submitting, errorMessage } = this.props;
 
         return (
             <div className="ui one column stackable center aligned page grid">
@@ -47,7 +47,7 @@ class Login extends React.Component {
                             {errorMessage && <div className="ui error message">
                                 {<div className="header">{errorMessage}</div>}
                             </div>}
-                            <button className="ui fluid large navColor submit button">Login</button>
+                            <button className="ui fluid large navColor submit button" disabled={submitting}>Login</button>
                         </div>
                     </form>
                 </div>

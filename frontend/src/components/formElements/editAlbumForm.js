@@ -6,7 +6,7 @@ import {updateAlbum} from "../../actions";
 class EditAlbumForm extends React.Component {
 
     onSubmit = (formValues) => {
-        this.props.updateAlbum(`/gallery/myalbums/update/${this.props.album.name}`, formValues);
+        return this.props.updateAlbum(`/gallery/myalbums/update/${this.props.album.name}`, formValues);
     };
 
     render() {

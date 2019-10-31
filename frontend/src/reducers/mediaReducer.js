@@ -6,8 +6,8 @@ import {
     MEDIA_POST_FAIL,
     MEDIA_POST_SENT,
     MEDIA_POST_SUCCESS,
-    MEDIA_REQUEST, MEDIA_UPDATE_FAIL, MEDIA_UPDATE_SENT, updateMedia, USER_MEDIA_REQUEST
-} from "../actions";
+    MEDIA_REQUEST, MEDIA_UPDATE_FAIL, MEDIA_UPDATE_SENT, USER_MEDIA_REQUEST
+} from "../actions/types";
 
 export default (state = [], action) => {
 

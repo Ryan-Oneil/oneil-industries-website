@@ -16,7 +16,7 @@ class EditMediaForm extends React.Component {
     };
 
     onSubmit = (formValues) => {
-        this.props.updateMedia(`/gallery/media/update/${this.props.media.id}`, formValues);
+        return this.props.updateMedia(`/gallery/media/update/${this.props.media.id}`, formValues);
     };
 
     render() {

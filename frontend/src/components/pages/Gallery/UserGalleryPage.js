@@ -38,7 +38,7 @@ class UserGalleryPage extends React.Component {
                     {this.props.user}'s Gallery
                 </h1>
                 <div className="ui three column grid">
-                    {RenderMedias(this.props.medias, this.handleShowDialog)}
+                    {RenderMedias(this.props.medias.userMediasList,this.props.medias.message, this.handleShowDialog)}
                     {this.state.isOpen && (<Modal
                         title={this.state.media.name}
                         closeModal = {() => this.handleShowDialog()}
