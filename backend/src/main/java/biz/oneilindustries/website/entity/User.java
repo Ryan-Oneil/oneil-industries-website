@@ -101,7 +101,6 @@ public class User implements UserDetails {
         if (this.customAuthorities == null) {
             this.customAuthorities = new ArrayList<>();
         }
-        authority.setUsername(this.username);
         this.customAuthorities.add(authority);
     }
 

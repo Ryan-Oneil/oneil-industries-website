@@ -14,9 +14,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,7 +40,7 @@ public class LoginController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity registerUser(@ModelAttribute("LoginForm") @Valid LoginForm loginForm, HttpServletRequest request) {
+    public ResponseEntity registerUser(@RequestBody @Valid LoginForm loginForm, HttpServletRequest request) {
 
         User user = userService.getUser(loginForm.getName());
 
@@ -60,7 +60,7 @@ public class LoginController {
         eventPublisher.publishEvent(new OnRegistrationCompleteEvent
             (newUser, request.getLocale(), appUrl));
 
-        return ResponseEntity.ok(HttpStatus.OK);
+        return ResponseEntity.ok("An email has been sent");
     }
 
     @GetMapping("/registrationConfirm{token}")

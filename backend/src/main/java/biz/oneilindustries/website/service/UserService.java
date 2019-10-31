@@ -67,7 +67,7 @@ public class UserService {
     public User registerUser(LoginForm loginForm) {
         String encryptedPassword = passwordEncoder.encode(loginForm.getPassword());
 
-        Authority authority = new Authority("ROLE_UNREGISTERED");
+        Authority authority = new Authority(loginForm.getName(), "ROLE_UNREGISTERED");
 
         User user = new User(loginForm.getName(),encryptedPassword,0,loginForm.getEmail());
 

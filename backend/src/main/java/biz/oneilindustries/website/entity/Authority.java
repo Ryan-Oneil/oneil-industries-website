@@ -8,15 +8,18 @@ import java.util.Objects;
 @Entity(name = "authorities")
 public class Authority implements GrantedAuthority {
 
-    @Id
+
     //@ManyToOne(fetch = FetchType.LAZY)
     //@JoinColumn(name = "username")
+    @Id
+    private int id;
 
     private String username;
 
     private String authority;
 
-    public Authority(String authority) {
+    public Authority(String username, String authority) {
+        this.username = username;
         this.authority = authority;
     }
 
