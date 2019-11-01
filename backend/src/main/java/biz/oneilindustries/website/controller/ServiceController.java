@@ -1,12 +1,11 @@
 package biz.oneilindustries.website.controller;
 
-import biz.oneilindustries.services.teamspeak.CustomChannel;
 import biz.oneilindustries.website.entity.ServiceToken;
+import biz.oneilindustries.website.pojo.CustomChannel;
 import biz.oneilindustries.website.service.ManagerService;
 import com.github.theholywaffle.teamspeak3.api.wrapper.Ban;
 import com.github.theholywaffle.teamspeak3.api.wrapper.ServerGroup;
 import java.util.List;
-import net.dv8tion.jda.api.entities.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,17 +26,17 @@ public class ServiceController {
         this.managerService = managerService;
     }
 
-    @GetMapping("/teamspeak")
+    @GetMapping("public/teamspeak")
     public List<CustomChannel> getActiveTeamspeakChannels() {
         return managerService.getTeamspeakChannelUsers();
     }
 
-    @GetMapping("/discord")
-    public List<Category> getActiveDiscordChannels() {
+    @GetMapping("public/discord")
+    public List<CustomChannel> getActiveDiscordChannels() {
         return managerService.getDiscordCategories();
     }
 
-    @GetMapping("/confirm")
+    @GetMapping("public/confirm")
     public ResponseEntity confirmService(@RequestParam("token") String token) {
 
         ServiceToken serviceToken = managerService.getServicetoken(token);

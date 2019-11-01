@@ -1,6 +1,5 @@
-package biz.oneilindustries.services.teamspeak;
+package biz.oneilindustries.website.pojo;
 
-import com.github.theholywaffle.teamspeak3.api.wrapper.Client;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,13 +7,13 @@ public class CustomChannel {
 
     private String name;
 
-    private int channelID;
+    private String channelID;
 
     private int parentChannelID;
 
-    private List<Client> usersInChannel;
+    private List<ServiceClient> usersInChannel;
 
-    public CustomChannel(String name, int channelID, int parentChannelID) {
+    public CustomChannel(String name, String channelID, int parentChannelID) {
         this.name = name;
         if (name.contains("spacer")) {
             this.name = "";
@@ -24,7 +23,7 @@ public class CustomChannel {
         this.usersInChannel = new ArrayList<>();
     }
 
-    public void addClient(Client client) {
+    public void addClient(ServiceClient client) {
         this.usersInChannel.add(client);
     }
 
@@ -36,19 +35,19 @@ public class CustomChannel {
         this.name = name;
     }
 
-    public int getChannelID() {
+    public String getChannelID() {
         return channelID;
     }
 
-    public void setChannelID(int channelID) {
+    public void setChannelID(String channelID) {
         this.channelID = channelID;
     }
 
-    public List<Client> getUsersInChannel() {
+    public List<ServiceClient> getUsersInChannel() {
         return usersInChannel;
     }
 
-    public void setUsersInChannel(List<Client> usersInChannel) {
+    public void setUsersInChannel(List<ServiceClient> usersInChannel) {
         this.usersInChannel = usersInChannel;
     }
 
