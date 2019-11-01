@@ -70,8 +70,8 @@ const isAuth = () => {
     if (!token) {
         return false;
     }
-    if (!(token.exp >= Date.now())) {
+    if (!(token.exp <= Date.now())) {
         localStorage.removeItem('token');
     }
-    return token.exp >= Date.now();
+    return token.exp <= Date.now();
 };
