@@ -48,3 +48,14 @@ export const renderError =({error, touched}) => {
         );
     }
 };
+
+export const renderTextArea = ( {input, label, meta}) => {
+    const className = `field ${meta.error && meta.touched ? `error` : ``}`;
+
+    return (
+        <div className={className}>
+            <textarea {...input} autoComplete="off" rows="10" cols="40" placeholder={label}/>
+            {renderError(meta)}
+        </div>
+    );
+};
