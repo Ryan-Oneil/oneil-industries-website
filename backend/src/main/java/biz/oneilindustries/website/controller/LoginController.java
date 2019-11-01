@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/auth")
 public class LoginController {
 
     //Add regex to check username is clean
@@ -78,8 +78,8 @@ public class LoginController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @PostMapping("/forgotPassword")
-    public ResponseEntity sendResetToken(@RequestParam String email) {
+    @PostMapping("/forgotPassword/{email}")
+    public ResponseEntity sendResetToken(@PathVariable String email) {
 
         User user = userService.getUserByEmail(email);
 
@@ -91,7 +91,7 @@ public class LoginController {
         userService.generateResetToken(user,token);
         emailSender.sendSimpleEmail(user.getEmail(),"Password Reset","Reset Password Link " + " http://oneilindustries.biz" + "/changePassword?token=" + token,"Oneil-Industries",null);
 
-        return ResponseEntity.ok(HttpStatus.OK);
+        return ResponseEntity.ok("Password reset email has been sent");
     }
 
     @PostMapping("/newPassword")
