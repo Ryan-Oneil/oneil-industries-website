@@ -1,5 +1,12 @@
 import {
-    LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE, LOGOUT_SUCCESS
+    LOGIN_REQUEST,
+    LOGIN_SUCCESS,
+    LOGIN_FAILURE,
+    LOGOUT_SUCCESS,
+    REGISTER_SUCCESS,
+    REGISTER_FAIL,
+    RESET_PASSWORD_SENT,
+    RESET_PASSWORD_FAIL
 } from '../actions/types'
 
 export default function auth(state = {
@@ -27,6 +34,18 @@ export default function auth(state = {
                 isAuthenticated: false,
                 user: ""
             });
+        case REGISTER_SUCCESS: {
+            return {...state, isRegistered: true, message: action.message};
+        }
+        case REGISTER_FAIL: {
+            return {...state, errorMessage: action.errorMessage}
+        }
+        case RESET_PASSWORD_SENT: {
+            return {...state, hasSentResetEmail: true, message: action.message, errorMessage: null}
+        }
+        case RESET_PASSWORD_FAIL: {
+            return {...state, errorMessage: action.errorMessage}
+        }
         default:
             return state
     }

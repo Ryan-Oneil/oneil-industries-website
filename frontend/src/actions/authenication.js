@@ -3,7 +3,7 @@ import {
     LOGIN_REQUEST,
     LOGIN_SUCCESS,
     LOGOUT_REQUEST,
-    LOGOUT_SUCCESS
+    LOGOUT_SUCCESS, REGISTER_FAIL, REGISTER_SUCCESS, RESET_PASSWORD_FAIL, RESET_PASSWORD_SENT
 } from "./types";
 import {apiPostCall} from "../apis/api";
 
@@ -51,11 +51,9 @@ export const loginUser = (creds) => dispatch => {
     return new Promise((resolve, reject) => {
         apiPostCall(API_URL + '/login', creds).then(response => {
             dispatch(requestLogin(creds));
-            // If login was successful, set the token in local storage
             const token = response.headers['authorization'];
 
             localStorage.setItem('token', token);
-            // Dispatch the success action
             dispatch(receiveLogin(token));
             resolve(response);
         }).catch(error => {
@@ -70,6 +68,18 @@ export const loginUser = (creds) => dispatch => {
     })
 };
 
+export const registerUser = (creds) => dispatch => {
+    return new Promise((resolve, reject) => {
+        apiPostCall(API_URL + '/api/auth/register', creds).then(response => {
+            dispatch({type: REGISTER_SUCCESS, message: response.data});
+            resolve(response);
+        }).catch(error => {
+            dispatch({type: REGISTER_FAIL, errorMessage: error.message});
+            reject(error);
+        })
+    })
+};
+
 export function logoutUser() {
     return dispatch => {
         dispatch(requestLogout());
@@ -77,3 +87,19 @@ export function logoutUser() {
         dispatch(receiveLogout());
     }
 }
+
+export const resetPassword = (email) => dispatch => {
+    return new Promise((resolve, reject) => {
+        apiPostCall(API_URL + '/api/auth/forgotPassword/'+ email).then(response => {
+            dispatch({type: RESET_PASSWORD_SENT, message: response.data});
+            resolve(response);
+        }).catch((error) => {
+            if (error.response) {
+                dispatch({type: RESET_PASSWORD_FAIL, errorMessage: error.response.data});
+            } else {
+                dispatch({type: RESET_PASSWORD_FAIL, errorMessage: error.message});
+            }
+            reject(error);
+        })
+    })
+};
