@@ -18,7 +18,7 @@ class AlbumPage extends React.Component {
         apiGetCall(`/gallery/album/${params.albumName}`).then(response => {
             this.setState({album: response.data});
         }).catch(error => {
-            this.setState({message: error.message});
+                this.setState({message: error.message});
             }
         );
     }
@@ -30,8 +30,10 @@ class AlbumPage extends React.Component {
                 <h1 className="ui center aligned header">
                     Album : {params.albumName}
                 </h1>
-                <div className="ui three column grid">
-                    {RenderMedias(this.state.album, this.state.message, this.handleShowDialog)}
+                <div className="ui container">
+                    <div className="ui four column grid">
+                        {RenderMedias(this.state.album, this.state.message, this.handleShowDialog)}
+                    </div>
                 </div>
                 {this.state.isOpen && (<Modal
                     title={this.state.media.name}

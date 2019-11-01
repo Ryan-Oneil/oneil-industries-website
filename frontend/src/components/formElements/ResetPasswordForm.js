@@ -32,8 +32,6 @@ class ResetPasswordForm extends React.Component {
                         iconType= "envelope"
                         type="email"
                     />
-                    <p>Remembered your password?  <button className="buttonLink" onClick={login}>Login</button></p>
-                    <p>Don't have an account?  <button className="buttonLink" onClick={signUp}>Sign up</button></p>
                     {errorMessage && <div className="ui error message">
                         {<div className="header">{errorMessage}</div>}
                     </div>}
@@ -41,6 +39,8 @@ class ResetPasswordForm extends React.Component {
                         {<div className="header">{message}</div>}
                     </div>}
                     <button className="ui fluid large navColor submit button" disabled={submitting || hasSentResetEmail}>Reset</button>
+                    <p>Remembered your password?  <button className="buttonLink" onClick={login}>Login</button></p>
+                    <p>Don't have an account?  <button className="buttonLink" onClick={signUp}>Sign up</button></p>
                 </div>
             </form>
         );

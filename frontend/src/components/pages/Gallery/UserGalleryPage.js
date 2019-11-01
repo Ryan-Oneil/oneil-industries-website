@@ -37,33 +37,36 @@ class UserGalleryPage extends React.Component {
                 <h1 className="ui center aligned header">
                     {this.props.user}'s Gallery
                 </h1>
-                <div className="ui three column grid">
-                    {RenderMedias(this.props.medias.userMediasList,this.props.medias.message, this.handleShowDialog)}
-                    {this.state.isOpen && (<Modal
-                        title={this.state.media.name}
-                        closeModal = {() => this.handleShowDialog()}
-                    >
-                        <div className="image">
-                            <a href={`http://localhost:8080/api/gallery/media/${this.state.media.id}`}>
-                                <Media media={this.state.media} renderVideoControls={true}/>
-                            </a>
-                        </div>
-                        <button value="Delete" className="centerButton ui negative button center aligned"
-                                onClick={() => this.props.deleteMedia(`/gallery/media/delete/${this.state.media.id}`, this.state.media.id)}>
-                            Delete
-                        </button>
-                        <EditMediaForm
-                            media={this.state.media}
-                            initialValues={{'name': this.state.media.name,
-                                'linkStatus' : this.state.media.linkStatus,
-                                'album': this.returnAlbumName(this.state.media)}}
-                        />
+                <div className="ui container">
+                    <div className="ui four column grid">
+                        {RenderMedias(this.props.medias.userMediasList,this.props.medias.message, this.handleShowDialog)}
 
-                        {this.props.medias.deleteError && <div className="ui error message">
-                            {<div className="header">{this.props.medias.deleteError}</div>}
-                        </div>}
-                    </Modal>)}
+                    </div>
                 </div>
+                {this.state.isOpen && (<Modal
+                    title={this.state.media.name}
+                    closeModal = {() => this.handleShowDialog()}
+                >
+                    <div className="image">
+                        <a href={`http://localhost:8080/api/gallery/media/${this.state.media.id}`}>
+                            <Media media={this.state.media} renderVideoControls={true}/>
+                        </a>
+                    </div>
+                    <button value="Delete" className="centerButton ui negative button center aligned"
+                            onClick={() => this.props.deleteMedia(`/gallery/media/delete/${this.state.media.id}`, this.state.media.id)}>
+                        Delete
+                    </button>
+                    <EditMediaForm
+                        media={this.state.media}
+                        initialValues={{'name': this.state.media.name,
+                            'linkStatus' : this.state.media.linkStatus,
+                            'album': this.returnAlbumName(this.state.media)}}
+                    />
+
+                    {this.props.medias.deleteError && <div className="ui error message">
+                        {<div className="header">{this.props.medias.deleteError}</div>}
+                    </div>}
+                </Modal>)}
             </div>
         );
     }

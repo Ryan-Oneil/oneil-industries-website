@@ -48,14 +48,16 @@ class Login extends React.Component {
                         iconType= "lock"
                         type="password"
                     />
-                    <p>Don't have an account? <button className="buttonLink" onClick={this.showRegisterForm}>Sign up</button></p>
-                    <p>Forgot your password? <button className="buttonLink" onClick={()=> {this.setState({showingForm: "forgotPassword"})}}>Reset Password</button></p>
+
                     {errorMessage && <div className="ui error message">
                         {<div className="header">{errorMessage}</div>}
                     </div>}
                     <button className="ui fluid large navColor submit button" disabled={submitting}>Login</button>
+                    <p>Don't have an account? <button className="buttonLink" onClick={this.showRegisterForm}>Sign up</button></p>
+                    <p>Forgot your password? <button className="buttonLink" onClick={()=> {this.setState({showingForm: "forgotPassword"})}}>Reset Password</button></p>
                 </div>
             </form>
+
         )
     };
 

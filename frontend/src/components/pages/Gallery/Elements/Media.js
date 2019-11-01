@@ -18,11 +18,7 @@ class Media extends React.Component {
     renderVideo = (media, renderVideoControls) => {
         const src = `http://localhost:8080/api/gallery/media/${media.id}`;
 
-        return (
-            <div className="ui">
-                <video className="centerVideo" src={src}  controls={renderVideoControls} height="400" width="400"/>
-            </div>
-        )
+        return <video className="centerVideo" src={src}  controls={renderVideoControls} height="400" width="400"/>;
     };
 
     renderMedia = (media, renderVideoControls)=> {

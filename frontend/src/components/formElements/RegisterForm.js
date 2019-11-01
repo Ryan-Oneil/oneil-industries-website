@@ -46,7 +46,6 @@ class RegisterForm extends React.Component {
                         iconType= "envelope"
                         type="email"
                     />
-                    <p>Already have an account?  <button className="buttonLink" onClick={changeState}>Login</button></p>
                     {errorMessage && <div className="ui error message">
                         {<div className="header">{errorMessage}</div>}
                     </div>}
@@ -54,6 +53,7 @@ class RegisterForm extends React.Component {
                         {<div className="header">{message}</div>}
                     </div>}
                     <button className="ui fluid large navColor submit button" disabled={submitting || isRegistered}>Register</button>
+                    <p>Already have an account?  <button className="buttonLink" onClick={changeState}>Login</button></p>
                 </div>
             </form>
         );

@@ -42,8 +42,10 @@ class UserAlbumsPage extends React.Component {
                 <h1 className="ui center aligned header">
                     {this.props.user}'s Albums
                 </h1>
-                <div className="ui three column grid">
-                    {this.renderList()}
+                <div className="ui container">
+                    <div className="ui four column grid">
+                        {this.renderList()}
+                    </div>
                 </div>
                 {this.state.isOpen && (<Modal
                     title={this.state.album.album.name}
@@ -55,7 +57,7 @@ class UserAlbumsPage extends React.Component {
                     <div className="centerText">
                         <EditForm album={this.state.album.album}
                                   initialValues={{'name': this.state.album.album.name,
-                            'showUnlistedImages' : this.state.album.album.showUnlistedImages}}/>
+                                      'showUnlistedImages' : this.state.album.album.showUnlistedImages}}/>
                     </div>
                 </Modal>)}
             </div>

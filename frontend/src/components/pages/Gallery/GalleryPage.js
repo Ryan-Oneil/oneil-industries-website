@@ -23,8 +23,12 @@ class GalleryPage extends React.Component {
 
     render() {
         return (
-            <div className="ui three column grid">
-                {RenderMedias(this.props.medias.mediasList,this.props.medias.message, this.handleShowDialog)}
+            <div>
+                <div className="ui container">
+                    <div className="ui four column grid">
+                        {RenderMedias(this.props.medias.mediasList,this.props.medias.message, this.handleShowDialog)}
+                    </div>
+                </div>
                 {this.state.isOpen && (<Modal
                     title={this.state.media.name}
                     closeModal = {() => this.handleShowDialog()}

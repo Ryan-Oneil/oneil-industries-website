@@ -16,6 +16,7 @@ import {PrivateRoute} from "./PrivateRoute";
 import Album from "./pages/Gallery/AlbumPage";
 import UserAlbumsPage from "./pages/Gallery/UserAlbumsPage";
 import NotFound from "./pages/NotFound";
+import Services from "./pages/Services";
 
 class App extends React.Component {
 
@@ -31,7 +32,7 @@ class App extends React.Component {
                                 isAuthenticated={isAuthenticated}
                                 dispatch={dispatch}
                             />
-                            <div className="ui container">
+                            <div>
                                 <Switch>
                                 <Route path="/" exact component={Home}/>
                                 <Route path="/about" exact component={About}/>
@@ -63,6 +64,7 @@ class App extends React.Component {
                                         isAuthenticated={isAuthenticated}
                                     />)
                                 }/>
+                                <Route path="/services" exact component={Services}/>
                                 <Route path="*">
                                     <NotFound/>
                                 </Route>

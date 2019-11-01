@@ -70,3 +70,34 @@
 .buttonLink:hover{
     text-decoration:underline;
 }
+
+.teamspeakList {
+    /*width: 20% !important;*/
+    display: inline-block !important;;
+    text-align: left !important;;
+    background: #FFFFFF !important;;
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24) !important;;
+    height: 50% !important;;
+    max-height: 50% !important;;
+    overflow: auto !important;;
+    margin: 20px !important;;
+}
+.teamspeakList h2 {
+    text-align: center;
+}
+.user{
+    padding-left: 30px;
+}
+.subChannel{
+    padding-left: 20px;
+}
+.channel {
+
+}
+
+.channel p, .subChannel p, .user p {
+    margin: 5px;
+}
+.channel img, .subChannel img, .user img {
+    vertical-align: middle;
+}
