@@ -58,3 +58,15 @@
     margin-right: auto!important;
     margin-top: 20px!important;
 }
+.buttonLink {
+    background:none!important;
+    border:none;
+    padding:0!important;
+
+    font-family:arial,sans-serif;
+    color:#069;
+    cursor:pointer;
+}
+.buttonLink:hover{
+    text-decoration:underline;
+}

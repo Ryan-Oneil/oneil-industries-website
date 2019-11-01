@@ -11,7 +11,6 @@ class EditAlbumForm extends React.Component {
 
     render() {
         const { submitting, errorMessage } = this.props;
-        console.log(this.props);
         return (
             <div className="ui one column stackable center aligned page grid">
                 <div className="column twelve wide">
