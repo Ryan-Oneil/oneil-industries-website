@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Route} from 'react-router-dom';
+import {BrowserRouter, Route, Switch} from 'react-router-dom';
 
 import Header from './site layout/Header';
 import NavMenu from "./site layout/NavMenu";
@@ -15,6 +15,7 @@ import UserGalleryPage from "./pages/Gallery/UserGalleryPage";
 import {PrivateRoute} from "./PrivateRoute";
 import Album from "./pages/Gallery/AlbumPage";
 import UserAlbumsPage from "./pages/Gallery/UserAlbumsPage";
+import NotFound from "./pages/NotFound";
 
 class App extends React.Component {
 
@@ -31,6 +32,7 @@ class App extends React.Component {
                                 dispatch={dispatch}
                             />
                             <div className="ui container">
+                                <Switch>
                                 <Route path="/" exact component={Home}/>
                                 <Route path="/about" exact component={About}/>
                                 <Route path="/contact" exact component={Contact}/>
@@ -61,6 +63,10 @@ class App extends React.Component {
                                         isAuthenticated={isAuthenticated}
                                     />)
                                 }/>
+                                <Route path="*">
+                                    <NotFound/>
+                                </Route>
+                                </Switch>
                             </div>
                         </BrowserRouter>
                     </div>
