@@ -10,8 +10,8 @@ import {
 } from '../actions/types'
 
 export default function auth(state = {
-    isAuthenticated: localStorage.getItem('token') ? true : false,
-    user: getUserNameFromJWT()
+    isAuthenticated: isAuth(),
+    user: decodeJWT().user
 }, action) {
     switch (action.type) {
         case LOGIN_REQUEST:
@@ -51,13 +51,27 @@ export default function auth(state = {
     }
 }
 
-const getUserNameFromJWT = () => {
+const decodeJWT = () => {
     const token = localStorage.getItem('token');
 
     if (!token) {
         return "";
     }
+
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace('-', '+').replace('_', '/');
-    return JSON.parse(window.atob(base64)).user;
+
+    return JSON.parse(window.atob(base64))
+};
+
+const isAuth = () => {
+    const token = decodeJWT();
+
+    if (!token) {
+        return false;
+    }
+    if (!(token.exp >= Date.now())) {
+        localStorage.removeItem('token');
+    }
+    return token.exp >= Date.now();
 };
