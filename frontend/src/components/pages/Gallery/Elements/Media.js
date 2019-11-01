@@ -1,4 +1,5 @@
 import React from 'react';
+import LazyLoad from 'react-lazyload';
 
 class Media extends React.Component {
 
@@ -7,7 +8,9 @@ class Media extends React.Component {
 
         return (
             <div className="image">
-                <img alt={media.name} className="ui centered image" src={src}/>
+                <LazyLoad>
+                    <img alt={media.name} className="ui centered image" src={src}/>
+                </LazyLoad>
             </div>
         )
     };
