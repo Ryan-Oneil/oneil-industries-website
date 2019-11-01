@@ -9,11 +9,10 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,8 +26,8 @@ public class ContactController {
     @Autowired
     private ContactService contactService;
 
-    @PostMapping("/contact")
-    public ResponseEntity sendContact(@ModelAttribute("ContactForm") @Valid ContactForm contactForm, BindingResult result, HttpServletRequest request) {
+    @PostMapping("/send")
+    public ResponseEntity sendContact(@RequestBody @Valid ContactForm contactForm, BindingResult result, HttpServletRequest request) {
 
         if (result.hasErrors()) {
             return ResponseEntity.badRequest().body(result.getAllErrors().toString());
@@ -41,7 +40,7 @@ public class ContactController {
         }
         contactService.registerFeedback(contactForm, getClientIpAddr(request).toString());
 
-        return ResponseEntity.ok(HttpStatus.OK);
+        return ResponseEntity.ok("Email has been sent!");
     }
 
     private static InetAddress getClientIpAddr(HttpServletRequest request) {
