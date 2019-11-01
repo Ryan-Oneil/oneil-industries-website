@@ -8,6 +8,7 @@ import {
     MEDIA_REQUEST, MEDIA_UPDATE_FAIL, MEDIA_UPDATE_SENT, USER_MEDIA_REQUEST
 } from "./types";
 export * from './authenication';
+export * from './contact';
 
 export const fetchImages = (endpoint) => dispatch => {
     apiGetCall(endpoint).then(response => {
