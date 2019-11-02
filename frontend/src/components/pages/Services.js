@@ -2,6 +2,7 @@ import React from 'react';
 import {connect} from "react-redux";
 import {getDiscordActiveList, getTeamspeakActiveList} from "../../actions/services";
 import ServiceList from "../ServiceList";
+import {renderErrorMessage} from "../ErrorMessage";
 
 class Services extends React.Component {
 
@@ -27,6 +28,7 @@ class Services extends React.Component {
                         {this.props.services.activeTSList && <ServiceList services={this.props.services.activeDiscord}/>}
                     </div>
                 </div>
+                {this.props.services.errorMessage && renderErrorMessage(this.props.services.errorMessage)}
             </div>
         )
     }

@@ -28,8 +28,10 @@ class UserAlbumsPage extends React.Component {
             return this.props.medias.albums.map(album => {
                 return (
                     <div className="column imageBox" key={album.album.id}>
-                        <h1 className="ui centered header">{album.album.name}</h1>
-                        <Media media={album.media[0]} onClick={this.handleShowDialog.bind(this, album)}/>
+                        <div className="ui card">
+                            <Media media={album.media[0]} onClick={this.handleShowDialog.bind(this, album)}/>
+                            <h1 className="ui centered header">{album.album.name}</h1>
+                        </div>
                     </div>
                 );
             })

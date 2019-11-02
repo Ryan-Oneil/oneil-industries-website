@@ -51,6 +51,7 @@
 .centerVideo {
     display: block;
     margin: 0 auto;
+    max-width: 100%;
 }
 .centerButton {
     display: flex!important;

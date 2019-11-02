@@ -1,4 +1,4 @@
-import {apiGetCall, apiPostCall} from "../apis/api";
+import {apiGetCall} from "../apis/api";
 import {
     SERVICES_DISCORD_GET_ACTIVE_LIST_FAIL, SERVICES_DISCORD_GET_ACTIVE_LIST_SENT,
     SERVICES_TEAMSPEAK_GET_ACTIVE_LIST_FAIL,

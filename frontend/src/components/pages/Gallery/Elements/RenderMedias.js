@@ -9,9 +9,11 @@ export default (mediasList, message, mediaOnClick) => {
     if (mediasList) {
         return mediasList.map(media => {
             return (
-                <div className="column imageBox" key={media.id} >
-                    <h1 className="ui center aligned header">{media.name}</h1>
-                    <Media media={media} onClick={mediaOnClick.bind(this, media)}/>
+                <div className="column" key={media.id} >
+                    <div className="ui card">
+                        <Media media={media} onClick={mediaOnClick.bind(this, media)}/>
+                        <h1 className="ui center aligned header">{media.name}</h1>
+                    </div>
                 </div>
             );
         })
