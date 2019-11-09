@@ -41,7 +41,7 @@ public class AdminController {
         List<UpdatedUser> users = new ArrayList<>();
 
         for (User user : userService.getUsers()) {
-            users.add(new UpdatedUser(user.getUsername(), user.getEmail(), user.getAuthorities().get(0).getAuthority(), user.getEnabled()));
+            users.add(new UpdatedUser(user.getUsername(), null, user.getEmail(), user.getAuthorities().get(0).getAuthority(), user.getEnabled()));
         }
         return users;
     }
@@ -55,7 +55,7 @@ public class AdminController {
         }
         //Create a new hashmap containing all this information and return the map for JSON
         HashMap<String, Object> userInformation = new HashMap<>();
-        userInformation.put("user", new UpdatedUser(user.getUsername(),user.getEmail(),user.getAuthorities().get(0).getAuthority(),user.getEnabled()));
+        userInformation.put("user", new UpdatedUser(user.getUsername(), null, user.getEmail(),user.getAuthorities().get(0).getAuthority(),user.getEnabled()));
         userInformation.put("mediaCount", mediaService.getTotalMediaCountByUser(username));
         userInformation.put("albumCount", albumService.getAlbumCountByUser(username));
         userInformation.put("discordProfiles", userService.getUserDiscordProfiles(username));

@@ -1,23 +1,39 @@
 package biz.oneilindustries.website.validation;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 
 public class UpdatedUser {
 
     @NotNull
     private String username;
+
+    @Null
+    private String password;
+
     @NotNull
     private String email;
-    @NotNull
-    private String role;
-    @NotNull
-    private int enabled;
 
-    public UpdatedUser(@NotNull String username, @NotNull String email, @NotNull String role, @NotNull int enabled) {
+    private String role;
+
+    private Integer enabled;
+
+    public UpdatedUser(@NotNull String username, String password, @NotNull String email, String role, Integer enabled) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.role = role;
+        this.enabled = enabled;
+    }
+
+    public UpdatedUser(@NotNull String username, @NotNull String email, String role, Integer enabled) {
         this.username = username;
         this.email = email;
         this.role = role;
         this.enabled = enabled;
+    }
+
+    public UpdatedUser() {
     }
 
     public String getUsername() {
@@ -44,11 +60,19 @@ public class UpdatedUser {
         this.role = role;
     }
 
-    public int getEnabled() {
+    public Integer getEnabled() {
         return enabled;
     }
 
-    public void setEnabled(int enabled) {
+    public void setEnabled(Integer enabled) {
         this.enabled = enabled;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

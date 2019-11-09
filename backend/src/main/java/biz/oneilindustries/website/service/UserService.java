@@ -86,12 +86,26 @@ public class UserService {
             throw new UsernameNotFoundException(name + " doesn't exists");
         }
 
-        user.setUsername(updatedUser.getUsername());
-        user.setEmail(updatedUser.getEmail());
-        user.setEnabled(updatedUser.getEnabled());
+        if (updatedUser.getUsername() != null) {
+            user.setUsername(updatedUser.getUsername());
+        }
+
+        if (updatedUser.getEmail() != null) {
+            user.setEmail(updatedUser.getEmail());
+        }
+
+        if (updatedUser.getEnabled() != null) {
+            user.setEnabled(updatedUser.getEnabled());
+        }
+
+        if (updatedUser.getPassword() != null) {
+            user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+        }
 
         //For my system I want users to only have one role/authority at a time
-        user.getCustomAuthorities().get(0).setAuthority(updatedUser.getRole());
+        if (updatedUser.getRole() != null) {
+            user.getCustomAuthorities().get(0).setAuthority(updatedUser.getRole());
+        }
 
         saveUser(user);
     }

@@ -5,8 +5,10 @@ import biz.oneilindustries.website.entity.TeamspeakUser;
 import biz.oneilindustries.website.entity.User;
 import biz.oneilindustries.website.exception.NotAuthorisedException;
 import biz.oneilindustries.website.exception.ServiceProfileException;
+import biz.oneilindustries.website.pojo.ServiceClient;
 import biz.oneilindustries.website.service.ManagerService;
 import biz.oneilindustries.website.service.UserService;
+import biz.oneilindustries.website.validation.UpdatedUser;
 import com.github.theholywaffle.teamspeak3.api.wrapper.Client;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,13 +16,13 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import net.dv8tion.jda.api.entities.Member;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,24 +46,28 @@ public class UserProfileController {
     public ResponseEntity showUserProfileHome(Authentication user) {
 
         HashMap<String, Object> userDetails = new HashMap<>();
-        userDetails.put("user", userService.getUser(user.getName()));
+
+        User userProfile = userService.getUser(user.getName());
+        userProfile.setPassword(null);
+
+        userDetails.put("user", userProfile);
         userDetails.put("userDiscord", userService.getUserDiscordProfiles(user.getName()));
         userDetails.put("userTeamspeak", userService.getUserTeamspeakProfile(user.getName()));
 
-        List<Client> tsClients = new ArrayList<>();
+        List<ServiceClient> tsClients = new ArrayList<>();
         List<String> registeredClients = userService.getTeamspeakUUIDs();
 
         for (Client client : managerService.getTSClients()) {
             if (!registeredClients.contains(client.getUniqueIdentifier())) {
-                tsClients.add(client);
+                tsClients.add(new ServiceClient(client.getNickname(), client.getUniqueIdentifier()));
             }
         }
         registeredClients = userService.getDiscordUUIDs();
-        List<Member> discordClients = new ArrayList<>();
+        List<ServiceClient> discordClients = new ArrayList<>();
 
         for (Member member : managerService.getDiscordMembers()) {
             if (!registeredClients.contains(member.getId())) {
-                discordClients.add(member);
+                discordClients.add(new ServiceClient(member.getEffectiveName(), member.getId()));
             }
         }
         userDetails.put("teamspeakUsers", tsClients);
@@ -71,26 +77,21 @@ public class UserProfileController {
     }
 
     @PostMapping("/profile/update")
-    public ResponseEntity updateUserDetails(@RequestParam String email, @RequestParam(required = false) String password, Authentication authentication) {
+    public ResponseEntity updateUserDetails(@RequestBody UpdatedUser updatedUser, Authentication authentication) {
 
         User user = userService.getUser(authentication.getName());
 
         if (user == null) {
             throw new UsernameNotFoundException("User not found");
         }
-        User checkEmail = userService.getUserByEmail(email);
+        User checkEmail = userService.getUserByEmail(updatedUser.getEmail());
 
-        if ( checkEmail != null && !email.equalsIgnoreCase(user.getEmail())) {
+        if ( checkEmail != null && !updatedUser.getEmail().equalsIgnoreCase(user.getEmail())) {
             return ResponseEntity.badRequest().body("Email already registered");
         }
-        user.setEmail(email);
+        userService.updateUser(updatedUser, authentication.getName());
 
-        if (password != null && !password.isEmpty()) {
-            userService.changeUserPassword(user,password);
-        }
-        userService.saveUser(user);
-
-        return ResponseEntity.ok(HttpStatus.OK);
+        return ResponseEntity.ok("Successfully updated account details");
     }
 
     @PostMapping("/profile/servicesAdd")
