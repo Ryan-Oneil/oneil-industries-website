@@ -4,6 +4,7 @@ import '../../assets/css/layout.css';
 import {renderInput, renderTextArea} from "../formElements";
 import {connect} from "react-redux";
 import {sendContactForm} from "../../actions";
+import {renderErrorMessage, renderPositiveMessage} from "../Message";
 
 class Contact extends React.Component {
 
@@ -17,7 +18,7 @@ class Contact extends React.Component {
         const { errorMessage, message, contactFormSent } = this.props.contact;
 
         return (
-            <div className="ui container">
+            <div className="ui container marginPadding">
                 <div className="ui segment">
                     <h1 className="ui center aligned header">Contact Oneil Industries</h1>
                     <form onSubmit={this.props.handleSubmit(this.onSubmit)} className="ui form error">
@@ -41,12 +42,8 @@ class Contact extends React.Component {
                             component={renderTextArea}
                             label="Enter Message"
                         />
-                        {errorMessage && <div className="ui error message">
-                            {<div className="header">{errorMessage}</div>}
-                        </div>}
-                        {message && <div className="ui positive message">
-                            {<div className="header">{message}</div>}
-                        </div>}
+                        {errorMessage && renderErrorMessage(errorMessage)}
+                        {message && renderPositiveMessage(message)}
                         <button className="ui button primary centerButton" disabled={submitting || contactFormSent}>Submit</button>
                     </form>
                 </div>

@@ -4,6 +4,7 @@ import {fetchAlbums, uploadMedia} from "../../../actions";
 import {connect} from "react-redux";
 import "../../../assets/css/layout.css"
 import {renderFileField, renderInput} from "../../formElements";
+import {renderErrorMessage, renderPositiveMessage} from "../../Message";
 
 class UploadPage extends React.Component {
 
@@ -27,7 +28,6 @@ class UploadPage extends React.Component {
     onSubmit = (formValues) => {
         if (!this.props.medias.isPosting) {
             return this.props.uploadMedia("/gallery/upload", formValues);
-            //this.props.reset('upload');
         }
     };
 
@@ -35,7 +35,7 @@ class UploadPage extends React.Component {
         const { submitting, errorMessage } = this.props;
 
         return (
-            <div className="ui one column stackable center aligned page grid">
+            <div className="ui one column stackable center aligned page grid marginPadding">
                 <div className="column twelve wide">
                     <form onSubmit={this.props.handleSubmit(this.onSubmit)} className="ui form error">
                         <div className="ui segment">
@@ -62,13 +62,9 @@ class UploadPage extends React.Component {
                                 <option value="none">None</option>
                                 {this.renderAlbums()}
                             </Field>
-                            {errorMessage && <div className="ui error message">
-                                {<div className="header">{errorMessage}</div>}
-                            </div>}
+                            {errorMessage && renderErrorMessage(errorMessage)}
                             <button className="ui fluid large navColor submit button" disabled={submitting}>Upload</button>
-                            {this.props.medias.mediaPostMessage && <div className="ui message">
-                                {<div className="header">{this.props.medias.mediaPostMessage}</div>}
-                            </div>}
+                            {this.props.medias.mediaPostMessage && renderPositiveMessage(this.props.medias.mediaPostMessage)}
                         </div>
                     </form>
                 </div>

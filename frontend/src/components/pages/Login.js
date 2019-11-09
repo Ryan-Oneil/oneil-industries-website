@@ -6,6 +6,7 @@ import '../../assets/css/layout.css';
 import {renderIconInput} from "../formElements";
 import RegisterForm from "../formElements/RegisterForm";
 import ResetPasswordForm from "../formElements/ResetPasswordForm";
+import {renderErrorMessage} from "../Message";
 
 class Login extends React.Component {
 
@@ -28,7 +29,7 @@ class Login extends React.Component {
 
     renderLoginForm = ({errorMessage, submitting}) => {
         return (
-            <form onSubmit={this.props.handleSubmit(this.onSubmit)} className="ui form error">
+            <form onSubmit={this.props.handleSubmit(this.onSubmit)} className="ui form error marginPadding">
                 <div className="ui segment">
                     <img src={logo} alt="Login Logo" className="ui centered small image"/>
                     <h1 className="textColorScheme">
@@ -49,9 +50,7 @@ class Login extends React.Component {
                         type="password"
                     />
 
-                    {errorMessage && <div className="ui error message">
-                        {<div className="header">{errorMessage}</div>}
-                    </div>}
+                    {errorMessage && renderErrorMessage(errorMessage)}
                     <button className="ui fluid large navColor submit button" disabled={submitting}>Login</button>
                     <p>Don't have an account? <button className="buttonLink" onClick={this.showRegisterForm}>Sign up</button></p>
                     <p>Forgot your password? <button className="buttonLink" onClick={()=> {this.setState({showingForm: "forgotPassword"})}}>Reset Password</button></p>

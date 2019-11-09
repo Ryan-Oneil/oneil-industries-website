@@ -4,12 +4,14 @@ import  authReducer  from './authReducer';
 import mediaReducer from "./mediaReducer";
 import contactReducer from "./contactReducer";
 import serviceReducer from "./serviceReducer";
+import profileReducer from "./profileReducer";
 
 export default combineReducers({
     auth: authReducer,
     form: formReducer,
     medias: mediaReducer,
     contact: contactReducer,
-    services: serviceReducer
+    services: serviceReducer,
+    profile: profileReducer
 })
 

@@ -35,10 +35,10 @@ export default function auth(state = {
                 user: ""
             });
         case REGISTER_SUCCESS: {
-            return {...state, isRegistered: true, message: action.message};
+            return {...state, isRegistered: true, message: action.message, errorMessage: ""};
         }
         case REGISTER_FAIL: {
-            return {...state, errorMessage: action.errorMessage}
+            return {...state, errorMessage: action.errorMessage, message: ""}
         }
         case RESET_PASSWORD_SENT: {
             return {...state, hasSentResetEmail: true, message: action.message, errorMessage: null}
@@ -70,8 +70,10 @@ const isAuth = () => {
     if (!token) {
         return false;
     }
-    if (!(token.exp <= Date.now())) {
+
+    if (Date.now() > token.exp * 1000) {
         localStorage.removeItem('token');
+        return false;
     }
-    return token.exp <= Date.now();
+    return true;
 };

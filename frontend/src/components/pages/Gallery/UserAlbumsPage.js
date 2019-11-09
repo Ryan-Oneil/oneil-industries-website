@@ -4,7 +4,7 @@ import {connect} from "react-redux";
 import {fetchAlbums} from "../../../actions";
 import Modal from "./Elements/Modal";
 import EditForm from "../../formElements/editAlbumForm";
-import {renderErrorMessage} from "../../ErrorMessage";
+import {renderErrorMessage} from "../../Message";
 
 class UserAlbumsPage extends React.Component {
 
@@ -40,7 +40,7 @@ class UserAlbumsPage extends React.Component {
 
     render() {
         return (
-            <div>
+            <div className="marginPadding">
                 <h1 className="ui center aligned header">
                     {this.props.user}'s Albums
                 </h1>
@@ -58,7 +58,7 @@ class UserAlbumsPage extends React.Component {
                     </div>
                     <div className="centerText">
                         <EditForm album={this.state.album.album}
-                                  initialValues={{'name': this.state.album.album.name,
+                                  initialValues={{'newAlbumName': this.state.album.album.name,
                                       'showUnlistedImages' : this.state.album.album.showUnlistedImages}}/>
                     </div>
                 </Modal>)}

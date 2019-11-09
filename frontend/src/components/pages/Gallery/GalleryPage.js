@@ -23,7 +23,7 @@ class GalleryPage extends React.Component {
 
     render() {
         return (
-            <div>
+            <div className="marginPadding">
                 <div className="ui container">
                     <div className="ui four column grid">
                         {RenderMedias(this.props.medias.mediasList,this.props.medias.message, this.handleShowDialog)}
@@ -35,7 +35,7 @@ class GalleryPage extends React.Component {
                 >
                     <div className="image">
                         <a href={`http://localhost:8080/api/gallery/media/${this.state.media.id}`}>
-                            <Media media={this.state.media} renderVideoControls={true}/>
+                            <Media media={this.state.media} renderVideoControls={true} fullSize={true}/>
                         </a>
                     </div>
                     <div className="centerText">

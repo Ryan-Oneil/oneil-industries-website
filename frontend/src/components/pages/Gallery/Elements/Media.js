@@ -4,12 +4,13 @@ import LazyLoad from 'react-lazyload';
 class Media extends React.Component {
 
     renderImage = (media) => {
-        const src = `http://localhost:8080/api/gallery/media/thumbnail/${media.id}`;
+        const baseSrc = 'http://localhost:8080/api/gallery/media';
+        const endpoint = `${this.props.fullSize ? "" : "/thumbnail"}/${media.id}`;
 
         return (
             <div className="image">
                 <LazyLoad>
-                    <img alt={media.name} className="ui centered image" src={src}/>
+                    <img alt={media.name} className="ui centered image" src={baseSrc + endpoint}/>
                 </LazyLoad>
             </div>
         )
@@ -21,7 +22,9 @@ class Media extends React.Component {
         return <video className="centerVideo" src={src}  controls={renderVideoControls}/>;
     };
 
-    renderMedia = (media, renderVideoControls)=> {
+    renderMedia = ()=> {
+        const {media, renderVideoControls} = this.props;
+
         if (media.mediaType === "video") {
             return this.renderVideo(media, renderVideoControls)
         }
@@ -29,10 +32,10 @@ class Media extends React.Component {
     };
 
     render() {
-        const {media, renderVideoControls, onClick} = this.props;
+        const {onClick, media} = this.props;
 
         return <div className="column imageBox" key={media.id} onClick={onClick}>
-            {this.renderMedia(media, renderVideoControls)}
+            {this.renderMedia()}
         </div>
     }
 }

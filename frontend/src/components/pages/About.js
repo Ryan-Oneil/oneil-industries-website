@@ -4,7 +4,7 @@ const About = () => {
     return (
         <div className="ui container">
 
-            <div className="ui container">
+            <div className="ui container marginPadding">
                 <h1 className="ui center aligned header">Oneil Industries</h1>
                 <p className="ui">What started as a random joke on a Garry's Mod server. Now turned into a simplistic friendly community that provides the necessary hosted services to its members.</p>
 

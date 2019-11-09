@@ -2,6 +2,8 @@ import React from 'react';
 import {Field, reduxForm} from "redux-form";
 import {connect} from "react-redux";
 import {updateMedia} from "../../actions";
+import {renderInput} from "./index";
+import {renderErrorMessage} from "../Message";
 
 class EditMediaForm extends React.Component {
 
@@ -33,7 +35,7 @@ class EditMediaForm extends React.Component {
                             <label className="textFormat">Media Name</label>
                             <Field
                                 name="name"
-                                component="input"
+                                component={renderInput}
                                 type="text"
                             />
                             <label className="textFormat">Link Status</label>
@@ -49,9 +51,7 @@ class EditMediaForm extends React.Component {
                                 <option value="none">None</option>
                                 {this.renderAlbums()}
                             </Field>
-                            {errorMessage && <div className="ui error message">
-                                {<div className="header">{errorMessage}</div>}
-                            </div>}
+                            {errorMessage && renderErrorMessage(errorMessage)}
                             <button className="ui fluid large navColor submit button" disabled={submitting}>Confirm</button>
                         </div>
                     </form>

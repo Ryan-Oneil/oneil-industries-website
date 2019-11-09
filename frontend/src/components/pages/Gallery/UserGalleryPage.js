@@ -8,6 +8,7 @@ import '../../../assets/css/layout.css';
 import Modal from "./Elements/Modal";
 import EditMediaForm from "../../formElements/EditMediaForm";
 import RenderMedias from "./Elements/RenderMedias";
+import {renderErrorMessage} from "../../Message";
 
 class UserGalleryPage extends React.Component {
 
@@ -33,14 +34,13 @@ class UserGalleryPage extends React.Component {
 
     render() {
         return (
-            <div>
+            <div className="marginPadding">
                 <h1 className="ui center aligned header">
                     {this.props.user}'s Gallery
                 </h1>
                 <div className="ui container">
                     <div className="ui four column grid">
                         {RenderMedias(this.props.medias.userMediasList,this.props.medias.message, this.handleShowDialog)}
-
                     </div>
                 </div>
                 {this.state.isOpen && (<Modal
@@ -62,10 +62,7 @@ class UserGalleryPage extends React.Component {
                             'linkStatus' : this.state.media.linkStatus,
                             'album': this.returnAlbumName(this.state.media)}}
                     />
-
-                    {this.props.medias.deleteError && <div className="ui error message">
-                        {<div className="header">{this.props.medias.deleteError}</div>}
-                    </div>}
+                    {this.props.medias.deleteError && renderErrorMessage(this.props.medias.deleteError)}
                 </Modal>)}
             </div>
         );

@@ -5,6 +5,7 @@ import '../../assets/css/layout.css';
 import {renderIconInput} from "../formElements";
 import {connect} from "react-redux";
 import {registerUser} from "../../actions";
+import {renderErrorMessage, renderPositiveMessage} from "../Message";
 
 class RegisterForm extends React.Component {
 
@@ -46,12 +47,8 @@ class RegisterForm extends React.Component {
                         iconType= "envelope"
                         type="email"
                     />
-                    {errorMessage && <div className="ui error message">
-                        {<div className="header">{errorMessage}</div>}
-                    </div>}
-                    {message && <div className="ui positive message">
-                        {<div className="header">{message}</div>}
-                    </div>}
+                    {errorMessage && renderErrorMessage(errorMessage)}
+                    {message && renderPositiveMessage(message)}
                     <button className="ui fluid large navColor submit button" disabled={submitting || isRegistered}>Register</button>
                     <p>Already have an account?  <button className="buttonLink" onClick={changeState}>Login</button></p>
                 </div>

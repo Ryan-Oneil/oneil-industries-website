@@ -1,4 +1,4 @@
-import {renderErrorMessage} from "../../../ErrorMessage";
+import {renderErrorMessage} from "../../../Message";
 import Media from "./Media";
 import React from "react";
 

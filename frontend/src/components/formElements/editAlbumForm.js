@@ -2,6 +2,8 @@ import React from 'react';
 import {Field, reduxForm} from "redux-form";
 import {connect} from "react-redux";
 import {updateAlbum} from "../../actions";
+import {renderErrorMessage} from "../Message";
+import {renderInput} from "./index";
 
 class EditAlbumForm extends React.Component {
 
@@ -21,8 +23,8 @@ class EditAlbumForm extends React.Component {
                             </h1>
                             <label className="textFormat">Album Name</label>
                             <Field
-                                name="name"
-                                component="input"
+                                name="newAlbumName"
+                                component={renderInput}
                                 type="text"
                             />
                             <label className="textFormat">Show unlisted images</label>
@@ -33,9 +35,7 @@ class EditAlbumForm extends React.Component {
                                 <option value="true">Yes</option>
                                 <option value="false">No</option>
                             </Field>
-                            {errorMessage && <div className="ui error message">
-                                {<div className="header">{errorMessage}</div>}
-                            </div>}
+                            {errorMessage && renderErrorMessage(errorMessage)}
                             <button className="ui fluid large navColor submit button" disabled={submitting}>Confirm</button>
                         </div>
                     </form>

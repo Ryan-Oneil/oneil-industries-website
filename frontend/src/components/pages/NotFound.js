@@ -4,7 +4,7 @@ export default () => {
     let location = useLocation();
 
     return (
-        <div>
+        <div className="marginPadding">
             <h1 className="ui center aligned header">404 - {location.pathname} doesn't exist</h1>
         </div>
     );

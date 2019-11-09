@@ -9,7 +9,7 @@ class NavMenu extends React.Component {
         const { dispatch, isAuthenticated } = this.props;
 
         return (
-            <div className="ui nav navColor inverted secondary pointing massive menu">
+            <div className="ui removePadding navColor inverted secondary pointing massive menu">
                 <div className="ui container">
                     <Link to="/" className="item">
                         Home
@@ -24,7 +24,9 @@ class NavMenu extends React.Component {
                     <Link to="/services" className="item">
                         Services
                     </Link>
-
+                    <Link to="/profile" className="item">
+                        Profile
+                    </Link>
                     <div className="right menu">
 
                         {!isAuthenticated &&
@@ -33,7 +35,8 @@ class NavMenu extends React.Component {
                         </Link>
                         }
                         {isAuthenticated &&
-                        <button className="item" onClick={() => (dispatch(logoutUser()))}>Logout</button>}
+                        <button className="item" onClick={() => (dispatch(logoutUser()))}>Logout</button>
+                        }
                     </div>
                 </div>
             </div>

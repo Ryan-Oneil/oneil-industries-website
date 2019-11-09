@@ -38,11 +38,9 @@
 #root {
     height: 100%;
 }
-
 .fullHeight {
     height: 100%;
 }
-
 .textFormat {
     font-weight: 600;
     color: #666;
@@ -101,4 +99,13 @@
 }
 .channel img, .subChannel img, .user img {
     vertical-align: middle;
+}
+.userNav {
+    justify-content: center;
+}
+.marginPadding {
+    margin: 1rem 0!important;
+}
+.removePadding {
+    margin: 0!important;
 }

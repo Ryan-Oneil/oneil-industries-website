@@ -26,7 +26,7 @@ class AlbumPage extends React.Component {
     render() {
         const { match: { params } } = this.props;
         return (
-            <div>
+            <div className="marginPadding">
                 <h1 className="ui center aligned header">
                     Album : {params.albumName}
                 </h1>
