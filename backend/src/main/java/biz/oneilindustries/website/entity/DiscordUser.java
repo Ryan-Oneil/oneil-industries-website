@@ -20,14 +20,14 @@ public class DiscordUser {
     private String uuid;
 
     @Column(name = "discord_name")
-    private String discordName;
+    private String serviceUsername;
 
     private int activated;
 
-    public DiscordUser(String username, String uuid, String discordName) {
+    public DiscordUser(String username, String uuid, String serviceUsername) {
         this.username = username;
         this.uuid = uuid;
-        this.discordName = discordName;
+        this.serviceUsername = serviceUsername;
     }
 
     public DiscordUser() {
@@ -57,12 +57,12 @@ public class DiscordUser {
         this.uuid = uuid;
     }
 
-    public String getDiscordName() {
-        return discordName;
+    public String getServiceUsername() {
+        return serviceUsername;
     }
 
-    public void setDiscordName(String discordName) {
-        this.discordName = discordName;
+    public void setServiceUsername(String serviceUsername) {
+        this.serviceUsername = serviceUsername;
     }
 
     public int getActivated() {
