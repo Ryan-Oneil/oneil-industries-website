@@ -111,37 +111,41 @@ public class ManagerService {
     }
 
     @Transactional
-    public void addDiscordService(String uuid, String user, String discordName) {
+    public DiscordUser addDiscordService(String user, ServiceClient serviceClient) {
 
-        DiscordUser exists = userService.getDiscordUUID(uuid);
+        DiscordUser exists = userService.getDiscordUUID(serviceClient.getUuid());
 
         if (exists != null) {
             throw new ServiceProfileException(ACCOUNT_ALREADY_REGISTERED);
         }
-        DiscordUser discordUser = new DiscordUser(user, uuid, discordName);
+        DiscordUser discordUser = new DiscordUser(user, serviceClient.getUuid(), serviceClient.getName());
         userService.saveUserDiscordProfile(discordUser);
 
-        ServiceToken serviceToken = new ServiceToken(UUID.randomUUID().toString(), uuid,"discord");
+        ServiceToken serviceToken = new ServiceToken(UUID.randomUUID().toString(), serviceClient.getUuid(),"discord");
         saveServiceToken(serviceToken);
 
-        sendDiscordPrivateMessage(uuid, SERVICE_CONFIRMATION_MESSAGE + serviceToken.getTokenUUID() + CLAIMED_BY + user);
+        sendDiscordPrivateMessage(serviceClient.getUuid(), SERVICE_CONFIRMATION_MESSAGE + serviceToken.getTokenUUID() + CLAIMED_BY + user);
+
+        return discordUser;
     }
 
     @Transactional
-    public void addTeamspeakService(String uuid, String user, String teamspeakName) {
+    public TeamspeakUser addTeamspeakService(String user, ServiceClient serviceClient) {
 
-        TeamspeakUser exists = userService.getTeamspeakUUID(uuid);
+        TeamspeakUser exists = userService.getTeamspeakUUID(serviceClient.getUuid());
 
         if (exists != null) {
             throw new ServiceProfileException(ACCOUNT_ALREADY_REGISTERED);
         }
-        TeamspeakUser teamspeakUser = new TeamspeakUser(user, uuid, teamspeakName);
+        TeamspeakUser teamspeakUser = new TeamspeakUser(user, serviceClient.getUuid(), serviceClient.getName());
         userService.saveUserTeamspeakProfile(teamspeakUser);
 
-        ServiceToken serviceToken = new ServiceToken(UUID.randomUUID().toString(), uuid,"teamspeak");
+        ServiceToken serviceToken = new ServiceToken(UUID.randomUUID().toString(), serviceClient.getUuid(),"teamspeak");
         saveServiceToken(serviceToken);
 
-        sendTeamspeakPrivateMessage(uuid, SERVICE_CONFIRMATION_MESSAGE + serviceToken.getTokenUUID() + CLAIMED_BY + user);
+        sendTeamspeakPrivateMessage(serviceClient.getUuid(), SERVICE_CONFIRMATION_MESSAGE + serviceToken.getTokenUUID() + CLAIMED_BY + user);
+
+        return teamspeakUser;
     }
 
     @Transactional
