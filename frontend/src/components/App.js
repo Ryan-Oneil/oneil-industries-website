@@ -17,6 +17,7 @@ import Album from "./pages/Gallery/AlbumPage";
 import UserAlbumsPage from "./pages/Gallery/UserAlbumsPage";
 import NotFound from "./pages/NotFound";
 import Services from "./pages/Services";
+import ProfilePage from "./pages/ProfilePage";
 
 class App extends React.Component {
 
@@ -65,6 +66,11 @@ class App extends React.Component {
                                     />)
                                 }/>
                                 <Route path="/services" exact component={Services}/>
+                                    <PrivateRoute path="/profile" exact
+                                                  component={ProfilePage}
+                                                  isAuthenticated={isAuthenticated}
+                                                  user={user}
+                                    />
                                 <Route path="*">
                                     <NotFound/>
                                 </Route>
