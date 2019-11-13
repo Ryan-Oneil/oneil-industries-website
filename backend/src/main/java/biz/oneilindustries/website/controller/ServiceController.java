@@ -2,10 +2,16 @@ package biz.oneilindustries.website.controller;
 
 import biz.oneilindustries.website.entity.ServiceToken;
 import biz.oneilindustries.website.pojo.CustomChannel;
+import biz.oneilindustries.website.pojo.ServiceClient;
 import biz.oneilindustries.website.service.ManagerService;
+import biz.oneilindustries.website.service.UserService;
 import com.github.theholywaffle.teamspeak3.api.wrapper.Ban;
+import com.github.theholywaffle.teamspeak3.api.wrapper.Client;
 import com.github.theholywaffle.teamspeak3.api.wrapper.ServerGroup;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import net.dv8tion.jda.api.entities.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +26,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class ServiceController {
 
     private final ManagerService managerService;
+    private final UserService userService;
 
     @Autowired
-    public ServiceController(ManagerService managerService) {
+    public ServiceController(ManagerService managerService, UserService userService) {
         this.managerService = managerService;
+        this.userService = userService;
     }
 
     @GetMapping("public/teamspeak")
@@ -34,6 +42,33 @@ public class ServiceController {
     @GetMapping("public/discord")
     public List<CustomChannel> getActiveDiscordChannels() {
         return managerService.getDiscordCategories();
+    }
+
+    @GetMapping("/public/unregistered")
+    public ResponseEntity getUnRegisteredServerClients() {
+
+        HashMap<String, Object> unRegisteredClients = new HashMap<>();
+
+        List<ServiceClient> tsClients = new ArrayList<>();
+        List<String> registeredClients = userService.getTeamspeakUUIDs();
+
+        for (Client client : managerService.getTSClients()) {
+            if (!registeredClients.contains(client.getUniqueIdentifier())) {
+                tsClients.add(new ServiceClient(client.getNickname(), client.getUniqueIdentifier()));
+            }
+        }
+        registeredClients = userService.getDiscordUUIDs();
+        List<ServiceClient> discordClients = new ArrayList<>();
+
+        for (Member member : managerService.getDiscordMembers()) {
+            if (!registeredClients.contains(member.getId())) {
+                discordClients.add(new ServiceClient(member.getEffectiveName(), member.getId()));
+            }
+        }
+        unRegisteredClients.put("teamspeakUsers", tsClients);
+        unRegisteredClients.put("discordUsers", discordClients);
+
+        return ResponseEntity.ok(unRegisteredClients);
     }
 
     @GetMapping("public/confirm")
