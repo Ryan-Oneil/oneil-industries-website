@@ -16,6 +16,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -33,8 +34,8 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public Authentication attemptAuthentication(HttpServletRequest req,
         HttpServletResponse res) throws AuthenticationException {
         try {
-            biz.oneilindustries.website.entity.User creds = new ObjectMapper()
-                .readValue(req.getInputStream(), biz.oneilindustries.website.entity.User.class);
+            User creds = new ObjectMapper()
+                .readValue(req.getInputStream(), User.class);
 
             //Exposes the JWT Bearer token to the front-end
             res.setHeader("Access-Control-Expose-Headers", "Authorization");
@@ -59,5 +60,15 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
             .sign(HMAC512(SECRET.getBytes()));
         res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
+    }
+
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed)
+        throws IOException, ServletException {
+
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType(MediaType.TEXT_PLAIN_VALUE);
+        response.getWriter().print(failed.getMessage());
+        response.getWriter().flush();
     }
 }
