@@ -1,6 +1,6 @@
 import React from "react";
-import channelIcon from '../assets/images/teamspeakChat.png';
-import userIcon from '../assets/images/user.png';
+import channelIcon from '../../assets/images/teamspeakChat.png';
+import userIcon from '../../assets/images/user.png';
 
 export default (serviceList) => {
     if (serviceList.services) {

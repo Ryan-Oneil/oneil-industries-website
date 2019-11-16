@@ -12,7 +12,7 @@ import {
 } from "../../actions/profile";
 import Modal from "./Gallery/Elements/Modal";
 import DetailBox from "../DetailBox";
-import UserServiceTable from "../UserServiceTable";
+import UserServiceTable from "../Services/UserServiceTable";
 import {renderErrorMessage} from "../Message";
 import AddServiceClientForm from "../formElements/AddServiceClientForm";
 

@@ -13,6 +13,9 @@ class AddServiceClientForm extends React.Component {
     }
 
     onSubmit = (formValues) => {
+
+        if (!formValues.position) return false;
+
         const newServiceClient = this.state.serviceList[formValues.position];
 
         this.setState({serviceList: this.state.serviceList.filter(serviceClient => serviceClient !== newServiceClient)});
