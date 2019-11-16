@@ -40,7 +40,7 @@ public class RegistrationListener implements
         String recipientAddress = user.getEmail();
         String subject = "Registration Confirmation";
         String confirmationUrl
-                = event.getAppUrl() + "/registrationConfirm?token=" + token;
+                = event.getAppUrl() + "/registrationConfirm/" + token;
         String message = messages.getMessage("message.regSucc", null, event.getLocale());
 
         emailSender.sendSimpleEmail(recipientAddress,subject,message + " http://oneilindustries.biz" + confirmationUrl,"Oneil_Industries", null);

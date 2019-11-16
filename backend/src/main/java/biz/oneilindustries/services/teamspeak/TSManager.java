@@ -64,7 +64,7 @@ public class TSManager {
         Rank.setTeamspeakServerRoles(ts3Api.getServerGroups());
         ServerGroup serverGroup = Rank.getRequiredTeamspeakRole(roleName);
 
-        ts3Api.addClientToServerGroup(ts3Api.getClientByUId(uuid).getDatabaseId(), serverGroup.getId());
+        ts3Api.addClientToServerGroup(serverGroup.getId(), ts3Api.getClientByUId(uuid).getDatabaseId());
     }
 
     public void removeUserRoles(String uuid) {

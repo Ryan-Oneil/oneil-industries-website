@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 @Aspect
 public class ServiceAspect {
 
-    private static final String DEFAULT_ROLE = "oneil";
+    private static final String DEFAULT_ROLE = "member";
 
     private final ManagerService managerService;
 

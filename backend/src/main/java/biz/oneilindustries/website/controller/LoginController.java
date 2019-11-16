@@ -88,7 +88,7 @@ public class LoginController {
         String token = UUID.randomUUID().toString();
 
         userService.generateResetToken(user,token);
-        emailSender.sendSimpleEmail(user.getEmail(),"Password Reset","Reset Password Link " + " http://oneilindustries.biz" + "/changePassword?token=" + token,"Oneil-Industries",null);
+        emailSender.sendSimpleEmail(user.getEmail(),"Password Reset","Reset Password Link " + " http://oneilindustries.biz" + "/changePassword/" + token,"Oneil-Industries",null);
 
         return ResponseEntity.ok("Password reset email has been sent");
     }

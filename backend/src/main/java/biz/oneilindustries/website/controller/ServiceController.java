@@ -80,7 +80,7 @@ public class ServiceController {
         return ResponseEntity.ok(unRegisteredClients);
     }
 
-    @PostMapping("/profile/addservice/{service}")
+    @PostMapping("/user/addservice/{service}")
     public ResponseEntity addUserService(@PathVariable String service, @RequestBody ServiceClient serviceClient, Authentication user, HttpServletRequest request) {
 
         if (request.isUserInRole("ROLE_UNREGISTERED")) {
@@ -96,7 +96,7 @@ public class ServiceController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Service not found");
     }
 
-    @DeleteMapping("/profile/service/teamspeak/delete/{id}")
+    @DeleteMapping("/user/teamspeak/delete/{id}")
     public ResponseEntity deleteUserTeamspeakService(@PathVariable int id, Authentication user, HttpServletRequest request) {
 
         TeamspeakUser teamspeakUser = userService.getTeamspeakByID(id);
@@ -112,7 +112,7 @@ public class ServiceController {
         return ResponseEntity.ok("Teamspeak account has been unregistered");
     }
 
-    @DeleteMapping("/profile/service/discord/delete/{id}")
+    @DeleteMapping("/user/discord/delete/{id}")
     public ResponseEntity deleteUserDiscordService(@PathVariable int id, Authentication user, HttpServletRequest request) {
         DiscordUser discordUser = userService.getDiscordById(id);
 
@@ -127,8 +127,8 @@ public class ServiceController {
         return ResponseEntity.ok("Discord account has been unregistered");
     }
 
-    @GetMapping("/public/confirm")
-    public ResponseEntity confirmService(@RequestParam("token") String token) {
+    @PostMapping("/user/confirm/{token}")
+    public ResponseEntity confirmService(@PathVariable String token) {
 
         ServiceToken serviceToken = managerService.getServicetoken(token);
 
@@ -137,7 +137,7 @@ public class ServiceController {
         }
         managerService.confirmService(serviceToken);
 
-        return ResponseEntity.ok(HttpStatus.OK);
+        return ResponseEntity.ok("Service client has been verified!");
     }
 
     //Admin services API
