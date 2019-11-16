@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -63,19 +62,19 @@ public class LoginController {
         return ResponseEntity.ok("An email has been sent");
     }
 
-    @GetMapping("/registrationConfirm{token}")
-    public ResponseEntity confirmRegistration(@PathVariable("token") String token) {
+    @PostMapping("/registrationConfirm/{token}")
+    public ResponseEntity confirmRegistration(@PathVariable String token) {
 
         VerificationToken verificationToken = userService.getToken(token);
 
-        User user = verificationToken.getUser();
+        User user = verificationToken.getUsername();
 
         userService.deleteVerificationToken(verificationToken);
 
         user.setEnabled(1);
         userService.saveUser(user);
 
-        return ResponseEntity.ok(HttpStatus.OK);
+        return ResponseEntity.ok("Account has been successfully verified!");
     }
 
     @PostMapping("/forgotPassword/{email}")
@@ -84,7 +83,7 @@ public class LoginController {
         User user = userService.getUserByEmail(email);
 
         if (user == null) {
-            return ResponseEntity.badRequest().body("Invalid Email");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid Email");
         }
         String token = UUID.randomUUID().toString();
 
