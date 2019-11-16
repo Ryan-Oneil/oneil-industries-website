@@ -1,8 +1,10 @@
 package biz.oneilindustries.website.exception;
 
-public class TooManyLoginAttempts extends RuntimeException {
+import org.springframework.security.core.AuthenticationException;
 
-    public TooManyLoginAttempts(String message) {
-        super(message);
+public class TooManyLoginAttempts extends AuthenticationException {
+
+    public TooManyLoginAttempts(String msg) {
+        super(msg);
     }
 }

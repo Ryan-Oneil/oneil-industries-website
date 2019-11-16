@@ -29,7 +29,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         String ip = getClientIP();
 
         if (loginAttemptService.isBlocked(ip)) {
-            throw new TooManyLoginAttempts("blocked");
+            throw new TooManyLoginAttempts("Too many login attempts");
         }
 
         User user = userService.getUser(username);
