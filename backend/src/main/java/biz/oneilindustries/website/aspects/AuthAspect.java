@@ -16,7 +16,7 @@ import java.util.Date;
 
 @Component
 @Aspect
-public class LoginAspect {
+public class AuthAspect {
 
     @Autowired
     private UserService userService;
@@ -24,7 +24,7 @@ public class LoginAspect {
     @Pointcut("execution(* biz.oneilindustries.website.controller.LoginController.confirmRegistration(..))")
     private void confirmRegisterToken() {}
 
-    @Pointcut("execution(* biz.oneilindustries.website.controller.LoginController.confirmNewPassword(..))")
+    @Pointcut("execution(* biz.oneilindustries.website.controller.LoginController.setNewPassword(..))")
     private void confirmPasswordToken() {}
 
     @Pointcut("execution(* biz.oneilindustries.website.controller.LoginController.setNewPassword(..))")
@@ -55,7 +55,6 @@ public class LoginAspect {
     }
 
     public void performTokenCheck(boolean validToken) {
-
         if (!validToken) {
             throw new TokenException("Invalid token");
         }

@@ -11,7 +11,6 @@ import biz.oneilindustries.website.service.MediaService;
 import biz.oneilindustries.website.validation.GalleryUpload;
 import biz.oneilindustries.website.validation.UpdatedAlbum;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -24,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -66,7 +64,6 @@ public class ImageGalleryController {
     private void displayMedia(HttpServletResponse response, int mediaID, String directory) throws IOException {
 
         Media media = mediaService.getMedia(mediaID);
-
         String imageName = media.getFileName();
 
         File serverFile = new File(directory + media.getUploader() + "/" + imageName);
@@ -131,7 +128,7 @@ public class ImageGalleryController {
     }
 
     @GetMapping("/album/{albumName}")
-    public List<Media> showAlbum(@PathVariable String albumName, Model model) throws FileNotFoundException {
+    public List<Media> showAlbum(@PathVariable String albumName) {
         Album album = albumService.getAlbumByName(albumName);
 
         if (album == null) {
@@ -146,9 +143,6 @@ public class ImageGalleryController {
             }
         }
         albumMedia.removeAll(removedMedia);
-
-        model.addAttribute("albumMedias", albumMedia);
-        model.addAttribute("album", album);
 
         return albumMedia;
     }

@@ -32,7 +32,7 @@ public class DiscordManager {
 
         guild = DiscordBot.getGuild();
 
-        guild.getJDA().getUserById(uuid).openPrivateChannel().queue((channel) -> channel.sendMessage(message).queue());
+        guild.getJDA().getUserById(uuid).openPrivateChannel().queue(channel -> channel.sendMessage(message).queue());
     }
 
     public String getUserName(String uuid) {

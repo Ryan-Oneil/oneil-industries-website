@@ -9,6 +9,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,11 +33,10 @@ public class ContactController {
         if (result.hasErrors()) {
             return ResponseEntity.badRequest().body(result.getAllErrors().toString());
         }
-
         List<FeedBack> feedBacks = contactService.getIPFeedbackPastDay(getClientIpAddr(request).toString());
 
         if (feedBacks.size() >= MAX_FORMS_PER_DAY) {
-            return ResponseEntity.status(403).body("Reached maximum contact form count within 24 hours");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Reached maximum contact form count within 24 hours");
         }
         contactService.registerFeedback(contactForm, getClientIpAddr(request).toString());
 

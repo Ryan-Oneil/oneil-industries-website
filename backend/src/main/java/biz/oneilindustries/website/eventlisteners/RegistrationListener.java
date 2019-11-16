@@ -15,7 +15,7 @@ import java.util.UUID;
 public class RegistrationListener implements
         ApplicationListener<OnRegistrationCompleteEvent> {
 
-    private static final String RECIEVER_EMAIL = "blackielifegfgaming@gmail.com";
+    private static final String RECEIVER_EMAIL = "blackielifegfgaming@gmail.com";
 
     @Autowired
     private UserService service;
@@ -44,6 +44,6 @@ public class RegistrationListener implements
         String message = messages.getMessage("message.regSucc", null, event.getLocale());
 
         emailSender.sendSimpleEmail(recipientAddress,subject,message + " http://oneilindustries.biz" + confirmationUrl,"Oneil_Industries", null);
-        emailSender.sendSimpleEmail(RECIEVER_EMAIL, "New User","A new user has registered to Oneil Industries","Oneil_Industries", null);
+        emailSender.sendSimpleEmail(RECEIVER_EMAIL, "New User","A new user has registered to Oneil Industries","Oneil_Industries", null);
     }
 }

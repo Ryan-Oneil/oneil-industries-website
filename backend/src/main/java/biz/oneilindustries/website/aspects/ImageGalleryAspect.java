@@ -26,7 +26,6 @@ public class ImageGalleryAspect {
     private final AlbumService albumService;
 
     private static final String FILE_NOT_EXISTS_ERROR_MESSAGE = ": Does not exist on this server";
-    private static final String GALLERY_IMAGES_DIRECTORY = "E:/images/";
     private static final String NO_PERMISSION = "You don't have the permission to access this resource";
     private static final String ADMIN_ROLE = "ROLE_ADMIN";
 
@@ -89,7 +88,7 @@ public class ImageGalleryAspect {
     }
 
     @Before("displayMedia()")
-    public void before(JoinPoint joinPoint) throws FileNotFoundException {
+    public void before(JoinPoint joinPoint) {
 
         Object[] args = joinPoint.getArgs();
 
