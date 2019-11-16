@@ -18,6 +18,7 @@ import UserAlbumsPage from "./pages/Gallery/UserAlbumsPage";
 import NotFound from "./pages/NotFound";
 import Services from "./pages/Services";
 import ProfilePage from "./pages/ProfilePage";
+import EmailConfirmationPage from "./pages/EmailConfirmationPage";
 
 class App extends React.Component {
 
@@ -71,6 +72,11 @@ class App extends React.Component {
                                                   isAuthenticated={isAuthenticated}
                                                   user={user}
                                     />
+                                    <Route path="/confirmEmail/:token" render={(props) => (
+                                        <EmailConfirmationPage
+                                            {...props}
+                                            endpoint="/auth/registrationConfirm/"/>)}
+                                           />
                                 <Route path="*">
                                     <NotFound/>
                                 </Route>
