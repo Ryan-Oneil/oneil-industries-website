@@ -20,7 +20,7 @@ class AddServiceClientForm extends React.Component {
 
         this.setState({serviceList: this.state.serviceList.filter(serviceClient => serviceClient !== newServiceClient)});
 
-        return this.props.addService("/user/profile/addservice/", this.props.service, newServiceClient);
+        return this.props.addService("/services/user/addservice/", this.props.service, newServiceClient);
     };
 
     renderServiceClient = () => {

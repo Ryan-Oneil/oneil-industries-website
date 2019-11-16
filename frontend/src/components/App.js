@@ -77,6 +77,11 @@ class App extends React.Component {
                                             {...props}
                                             endpoint="/auth/registrationConfirm/"/>)}
                                            />
+                                    <Route path="/services/confirm/:token" render={(props) => (
+                                        <EmailConfirmationPage
+                                            {...props}
+                                            endpoint="/services/user/confirm/"/>)}
+                                    />
                                 <Route path="*">
                                     <NotFound/>
                                 </Route>
