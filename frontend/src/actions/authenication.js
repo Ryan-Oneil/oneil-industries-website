@@ -61,10 +61,13 @@ export const loginUser = (creds) => dispatch => {
             dispatch(receiveLogin(token));
             resolve(response);
         }).catch(error => {
-                let message = error.message;
+                let message = "";
 
-                if (error.response && error.response.status === 403) message = "Invalid login details";
-
+                if (error.response) {
+                    message = error.response.data;
+                } else {
+                    message = error.message;
+                }
                 dispatch(loginError(message));
                 reject(message);
             }
