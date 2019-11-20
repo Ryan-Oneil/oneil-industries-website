@@ -6,7 +6,6 @@ import biz.oneilindustries.website.exception.MediaException;
 import biz.oneilindustries.website.exception.NotAuthorisedException;
 import biz.oneilindustries.website.service.AlbumService;
 import biz.oneilindustries.website.service.MediaService;
-import biz.oneilindustries.website.validation.GalleryUpload;
 import java.io.FileNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import org.aspectj.lang.JoinPoint;
@@ -16,7 +15,6 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
 @Component
 @Aspect
@@ -35,7 +33,7 @@ public class ImageGalleryAspect {
         this.albumService = albumService;
     }
 
-    @Pointcut("execution(* biz.oneilindustries.website.controller.ImageGalleryController.getMedia*(..))")
+    @Pointcut("execution(* biz.oneilindustries.website.controller.ImageGalleryController.stream*(..))")
     private void displayMedia() {}
 
     @Pointcut("execution(* biz.oneilindustries.website.controller.ImageGalleryController.showUser*(..))")
@@ -66,35 +64,14 @@ public class ImageGalleryAspect {
     @Pointcut("manageAlbum() || updateAlbum() || deleteAlbum()")
     private void combinedAlbums() {}
 
-    @Pointcut("execution(* biz.oneilindustries.website.controller.ImageGalleryController.uploadMediaAPI(..))")
-    private void uploadAPI() {}
-
-    @Before("uploadAPI()")
-    public void performValidation(JoinPoint joinpoint) {
-
-        GalleryUpload galleryUpload = (GalleryUpload) joinpoint.getArgs()[0];
-
-        MultipartFile file = galleryUpload.getFile();
-
-        if (file.getSize() == 0) {
-            throw new MediaException("File not found");
-        }
-
-        Media doesMediaExistsAlready = mediaService.getMediaFileName(file.getOriginalFilename());
-
-        if (doesMediaExistsAlready != null) {
-            throw new MediaException(file.getOriginalFilename() + " Already exists in database");
-        }
-    }
-
     @Before("displayMedia()")
     public void before(JoinPoint joinPoint) {
 
         Object[] args = joinPoint.getArgs();
 
-        int mediaID = (int) args[0];
+        String mediaName = (String) args[0];
 
-        Media media = mediaService.getMedia(mediaID);
+        Media media = mediaService.getMediaFileName(mediaName);
 
         if (media == null) {
             throw new MediaException("Media doesn't exist");
