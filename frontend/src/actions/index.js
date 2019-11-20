@@ -55,12 +55,13 @@ export const uploadMedia = (endpoint, data) => dispatch => {
     let postData = new FormData();
 
     postData.append("file", data.file[0]);
-    postData.append("name", data.name);
-    postData.append("privacy", data.linkStatus);
-    postData.append("albumName", data.album);
+
+    const options = {
+        params: {name: data.name, privacy: data.linkStatus, albumName: data.album}
+    };
 
     return new Promise((resolve, reject) => {
-        apiPostCall(endpoint, postData).then(response => {
+        apiPostCall(endpoint, postData, options).then(response => {
             dispatch({type: MEDIA_POST_SENT, message: response.data});
             resolve(response);
         }).catch(error => {

@@ -20,8 +20,8 @@ export const apiGetCall = async endpoint => {
     return await baseApi.get(endpoint);
 };
 
-export const apiPostCall = async (endpoint, data) => {
-    return await baseApi.post(endpoint, data);
+export const apiPostCall = async (endpoint, data, options) => {
+    return await baseApi.post(endpoint, data, options);
 };
 
 export const apiPutCall = async (endpoint, data) => {

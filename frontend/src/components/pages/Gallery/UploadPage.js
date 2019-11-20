@@ -26,9 +26,7 @@ class UploadPage extends React.Component {
     };
 
     onSubmit = (formValues) => {
-        if (!this.props.medias.isPosting) {
-            return this.props.uploadMedia("/gallery/upload", formValues);
-        }
+        return this.props.uploadMedia("/gallery/upload", formValues);
     };
 
     render() {
