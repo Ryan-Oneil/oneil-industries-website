@@ -34,7 +34,7 @@ class GalleryPage extends React.Component {
                     closeModal = {() => this.handleShowDialog()}
                 >
                     <div className="image">
-                        <a href={`http://localhost:8080/api/gallery/media/${this.state.media.id}`}>
+                        <a href={`http://localhost:8080/api/gallery/${this.state.media.mediaType}/${this.state.media.fileName}`}>
                             <Media media={this.state.media} renderVideoControls={true} fullSize={true}/>
                         </a>
                     </div>

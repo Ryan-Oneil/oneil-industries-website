@@ -4,8 +4,8 @@ import LazyLoad from 'react-lazyload';
 class Media extends React.Component {
 
     renderImage = (media) => {
-        const baseSrc = 'http://localhost:8080/api/gallery/media';
-        const endpoint = `${this.props.fullSize ? "" : "/thumbnail"}/${media.id}`;
+        const baseSrc = 'http://localhost:8080/api/gallery/image';
+        const endpoint = `${this.props.fullSize ? "" : "/thumbnail"}/${media.fileName}`;
 
         return (
             <div className="image">
@@ -17,7 +17,7 @@ class Media extends React.Component {
     };
 
     renderVideo = (media, renderVideoControls) => {
-        const src = `http://localhost:8080/api/gallery/media/${media.id}`;
+        const src = `http://localhost:8080/api/gallery/video/${media.fileName}`;
 
         return <video className="centerVideo" src={src}  controls={renderVideoControls}/>;
     };

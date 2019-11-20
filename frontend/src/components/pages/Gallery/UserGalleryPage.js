@@ -48,8 +48,8 @@ class UserGalleryPage extends React.Component {
                     closeModal = {() => this.handleShowDialog()}
                 >
                     <div className="image">
-                        <a href={`http://localhost:8080/api/gallery/media/${this.state.media.id}`}>
-                            <Media media={this.state.media} renderVideoControls={true}/>
+                        <a href={`http://localhost:8080/api/gallery/${this.state.media.mediaType}/${this.state.media.fileName}`}>
+                            <Media media={this.state.media} renderVideoControls={true} fullSize={true}/>
                         </a>
                     </div>
                     <button value="Delete" className="centerButton ui negative button center aligned"
