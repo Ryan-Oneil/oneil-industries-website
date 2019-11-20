@@ -11,45 +11,45 @@ import {
 } from "./types";
 import {apiPostCall} from "../apis/api";
 
-const API_URL = "http://localhost:8080";
+const API_URL = "http://192.168.0.15:8080";
 
-function requestLogin(creds) {
+const requestLogin = (creds) => {
     return {
         type: LOGIN_REQUEST,
         isAuthenticated: false,
         creds
     }
-}
+};
 
-function receiveLogin(token) {
+const receiveLogin = (token) => {
     return {
         type: LOGIN_SUCCESS,
         isAuthenticated: true,
         token: token
     }
-}
+};
 
-function loginError(message) {
+const loginError = (message) => {
     return {
         type: LOGIN_FAILURE,
         isAuthenticated: false,
         message
     }
-}
+};
 
-function requestLogout() {
+const requestLogout = () => {
     return {
         type: LOGOUT_REQUEST,
         isAuthenticated: true
     }
-}
+};
 
-function receiveLogout() {
+const receiveLogout = () => {
     return {
         type: LOGOUT_SUCCESS,
         isAuthenticated: false
     }
-}
+};
 
 export const loginUser = (creds) => dispatch => {
     return new Promise((resolve, reject) => {
@@ -87,13 +87,13 @@ export const registerUser = (creds) => dispatch => {
     })
 };
 
-export function logoutUser() {
+export const logoutUser = () => {
     return dispatch => {
         dispatch(requestLogout());
         localStorage.removeItem('token');
         dispatch(receiveLogout());
     }
-}
+};
 
 export const resetPassword = (email) => dispatch => {
     return new Promise((resolve, reject) => {
