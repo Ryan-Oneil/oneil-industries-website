@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ManagerService {
 
-    private static final String SERVICE_CONFIRMATION_MESSAGE = "This account has been registered on OneilIndustries.biz please confirm with this link http://oneilindustries.biz/services/confirm?token=";
+    private static final String SERVICE_CONFIRMATION_MESSAGE = "This account has been registered on OneilIndustries.biz please confirm with this link http://oneilindustries.biz/services/confirm/";
     private static final String ACCOUNT_ALREADY_REGISTERED = "This account is already registered to another user";
     private static final String CLAIMED_BY = "\nClaimed by ";
 
