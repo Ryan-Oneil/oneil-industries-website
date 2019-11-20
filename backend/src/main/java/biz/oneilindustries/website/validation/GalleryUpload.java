@@ -1,13 +1,12 @@
 package biz.oneilindustries.website.validation;
 
-import org.springframework.web.multipart.MultipartFile;
-
+import java.io.File;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 public class GalleryUpload {
 
-    private MultipartFile file;
+    private File file;
 
     @NotNull
     private String name;
@@ -21,7 +20,7 @@ public class GalleryUpload {
 
     private Boolean showUnlistedImages;
 
-    public GalleryUpload(MultipartFile file, @NotNull String name, String privacy, String albumName, String newAlbumName, Boolean showUnlistedImages) {
+    public GalleryUpload(File file, @NotNull String name, String privacy, String albumName, String newAlbumName, Boolean showUnlistedImages) {
         this.file = file;
         this.name = name;
         this.privacy = privacy;
@@ -30,14 +29,21 @@ public class GalleryUpload {
         this.showUnlistedImages = showUnlistedImages;
     }
 
+    public GalleryUpload(File file, @NotNull String name, String privacy, String albumName) {
+        this.file = file;
+        this.name = name;
+        this.privacy = privacy;
+        this.albumName = albumName;
+    }
+
     public GalleryUpload() {
     }
 
-    public MultipartFile getFile() {
+    public File getFile() {
         return file;
     }
 
-    public void setFile(MultipartFile file) {
+    public void setFile(File file) {
         this.file = file;
     }
 

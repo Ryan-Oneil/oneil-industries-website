@@ -5,15 +5,15 @@ import biz.oneilindustries.website.entity.Album;
 import biz.oneilindustries.website.entity.Media;
 import biz.oneilindustries.website.filecreater.FileHandler;
 import biz.oneilindustries.website.validation.GalleryUpload;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.transaction.Transactional;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import javax.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class MediaService {
@@ -75,40 +75,20 @@ public class MediaService {
     }
 
     @Transactional
-    public void registerMedia(GalleryUpload galleryUpload, String user, Album album) {
+    public void registerMedia(GalleryUpload galleryUpload, String user, Album album) throws IOException {
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         LocalDate localDate = LocalDate.now();
 
-        Media media = new Media(galleryUpload.getName(), galleryUpload.getFile().getOriginalFilename() ,galleryUpload.getPrivacy(),user, localDate.format(dtf));
+        Media media = new Media(galleryUpload.getName(), galleryUpload.getFile().getName() ,galleryUpload.getPrivacy(),user, localDate.format(dtf));
 
         if (album != null) {
             media.setAlbumID(album.getId());
         }
 
-        if (FileHandler.isImageFile(galleryUpload.getFile().getOriginalFilename())) {
+        if (FileHandler.isImageFile(galleryUpload.getFile().getName())) {
             media.setMediaType("image");
-        }else if (FileHandler.isVideoFile(galleryUpload.getFile().getContentType())) {
-            media.setMediaType("video");
-        }
-        saveMedia(media);
-    }
-
-    @Transactional
-    public void registerMedia(MultipartFile file, String user, String privacy) {
-
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        LocalDate localDate = LocalDate.now();
-
-        if (privacy == null || privacy.isEmpty() || !privacySettings.contains(privacy)) {
-            privacy = "unlisted";
-        }
-
-        Media media = new Media(file.getName(), file.getOriginalFilename() , privacy, user, localDate.format(dtf));
-
-        if (FileHandler.isImageFile(file.getOriginalFilename())) {
-            media.setMediaType("image");
-        }else if (FileHandler.isVideoFile(file.getContentType())) {
+        } else if (FileHandler.isVideoFile(Files.probeContentType(galleryUpload.getFile().toPath()))) {
             media.setMediaType("video");
         }
         saveMedia(media);
