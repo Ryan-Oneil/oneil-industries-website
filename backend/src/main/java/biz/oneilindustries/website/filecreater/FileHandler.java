@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import javax.imageio.ImageIO;
-import org.springframework.web.multipart.MultipartFile;
+import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.io.FileUtils;
 
 public class FileHandler {
 
@@ -18,23 +20,25 @@ public class FileHandler {
     private FileHandler() {
     }
 
-    public static void writeFile(MultipartFile file, String dest, String uploader) throws IOException {
-        String extension = getExtensionType(file.getOriginalFilename());
+    public static File writeFile(FileItemStream file, String orignalFileName, String dest, String uploader) throws IOException {
+        String extension = getExtensionType(orignalFileName);
+
+        String fileName = UUID.randomUUID().toString() + "." + extension;
 
         File destFolder = new File(dest + uploader + "/");
 
         if (!destFolder.exists()) {
             destFolder.mkdir();
         }
+        File newFile = new File(dest + uploader + "/" + fileName);
+        //Copy file to new file
+        FileUtils.copyInputStreamToFile(file.openStream(), newFile);
 
         //If file is image
         if (isImageFile(extension)) {
-            ImageThumbnailWriter.writeImage(file,dest, extension, uploader);
+            ImageThumbnailWriter.writeImage(newFile,dest, extension, uploader);
         }
-
-        File newFile = new File(dest + uploader + "/" + file.getOriginalFilename());
-        //Copy file to new file
-        file.transferTo(newFile);
+        return newFile;
     }
 
     public static String getExtensionType(String originalFileName) {

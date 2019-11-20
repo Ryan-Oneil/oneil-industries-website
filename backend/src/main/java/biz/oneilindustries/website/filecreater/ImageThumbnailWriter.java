@@ -1,13 +1,10 @@
 package biz.oneilindustries.website.filecreater;
 
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import javax.imageio.ImageIO;
 
 public class ImageThumbnailWriter {
 
@@ -16,8 +13,8 @@ public class ImageThumbnailWriter {
 
     private static final int IMAGE_RESIZE_SIZE = 400;
 
-    public static void writeImage(MultipartFile image,String dest, String extension, String uploader) throws IOException {
-        BufferedImage src = ImageIO.read(new ByteArrayInputStream(image.getBytes()));
+    public static void writeImage(File image,String dest, String extension, String uploader) throws IOException {
+        BufferedImage src = ImageIO.read(image);
 
         File destFolder = new File(dest + "/thumbnail/" + uploader + "/");
 
@@ -25,7 +22,7 @@ public class ImageThumbnailWriter {
             destFolder.mkdir();
         }
 
-        File thumbnailDestination = new File(dest + "/thumbnail/" + uploader + "/" + image.getOriginalFilename());
+        File thumbnailDestination = new File(dest + "/thumbnail/" + uploader + "/" + image.getName());
 
         //Writes thumbnail
         write(getThumbnailImage(src),extension,thumbnailDestination);
