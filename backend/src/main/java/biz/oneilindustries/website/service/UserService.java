@@ -140,8 +140,13 @@ public class UserService {
 
         PasswordResetToken passwordResetToken = passwordTokenDAO.getTokenByUser(user.getUsername());
 
-        if (passwordResetToken != null && !isExpired(passwordResetToken.getExpiryDate())) {
-            return passwordResetToken.getToken();
+        if (passwordResetToken != null) {
+            if (!isExpired(passwordResetToken.getExpiryDate())) {
+                return passwordResetToken.getToken();
+            }else {
+                //Deletes from database if the existing token is expired
+                deletePasswordResetToken(passwordResetToken);
+            }
         }
         String token = UUID.randomUUID().toString();
 
