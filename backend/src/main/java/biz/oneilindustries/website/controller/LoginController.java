@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 public class LoginController {
 
-    //Add regex to check username is clean
     private final UserService userService;
 
     private final ApplicationEventPublisher eventPublisher;

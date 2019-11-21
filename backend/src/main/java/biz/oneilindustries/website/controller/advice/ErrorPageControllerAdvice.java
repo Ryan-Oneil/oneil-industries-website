@@ -3,6 +3,7 @@ package biz.oneilindustries.website.controller.advice;
 import biz.oneilindustries.website.exception.ServiceProfileException;
 import biz.oneilindustries.website.exception.TokenException;
 import biz.oneilindustries.website.exception.TooManyLoginAttempts;
+import biz.oneilindustries.website.exception.UserException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -29,6 +30,11 @@ public class ErrorPageControllerAdvice {
 
     @ExceptionHandler(ServiceProfileException.class)
     public ResponseEntity serverProfileException(ServiceProfileException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(UserException.class)
+    public ResponseEntity userException(UserException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 }

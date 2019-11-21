@@ -9,6 +9,7 @@ import biz.oneilindustries.website.entity.PasswordResetToken;
 import biz.oneilindustries.website.entity.TeamspeakUser;
 import biz.oneilindustries.website.entity.User;
 import biz.oneilindustries.website.entity.VerificationToken;
+import biz.oneilindustries.website.exception.UserException;
 import biz.oneilindustries.website.validation.LoginForm;
 import biz.oneilindustries.website.validation.UpdatedUser;
 import java.util.Calendar;
@@ -24,6 +25,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
 
+    public static final String USERNAME_REGEX = "^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$";
+
     @Autowired
     private UserDAO dao;
 
@@ -35,7 +38,6 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-
 
     @Transactional
     public List<User> getUsers() {
@@ -64,6 +66,10 @@ public class UserService {
 
     @Transactional
     public User registerUser(LoginForm loginForm) {
+
+        if (!loginForm.getName().matches(USERNAME_REGEX)) {
+            throw new UserException("Username may only contain a-Z . _");
+        }
         String encryptedPassword = passwordEncoder.encode(loginForm.getPassword());
 
         Authority authority = new Authority(loginForm.getName(), "ROLE_UNREGISTERED");
