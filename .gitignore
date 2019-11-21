@@ -7,3 +7,4 @@ frontend/README.md
 *.iml
 *.txt
 frontend/public/favicon.ico
+backend/src/main/resources/application.properties
