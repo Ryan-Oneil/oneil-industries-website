@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,6 +28,9 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "username", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true  )
     private List<Authority> customAuthorities;
+
+    @OneToOne(mappedBy = "username", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private Quota storeQuota;
 
     public User(String username, String password) {
         this.username = username;
@@ -128,5 +132,13 @@ public class User implements UserDetails {
             ", enabled=" + enabled +
             ", email='" + email + '\'' +
             '}';
+    }
+
+    public Quota getStoreQuota() {
+        return storeQuota;
+    }
+
+    public void setStoreQuota(Quota storeQuota) {
+        this.storeQuota = storeQuota;
     }
 }
