@@ -9,18 +9,17 @@ import biz.oneilindustries.website.entity.PasswordResetToken;
 import biz.oneilindustries.website.entity.TeamspeakUser;
 import biz.oneilindustries.website.entity.User;
 import biz.oneilindustries.website.entity.VerificationToken;
-import biz.oneilindustries.website.exception.TokenException;
 import biz.oneilindustries.website.validation.LoginForm;
 import biz.oneilindustries.website.validation.UpdatedUser;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 
 @Service
 public class UserService {
@@ -137,17 +136,19 @@ public class UserService {
     }
 
     @Transactional
-    public void generateResetToken(User user, String token) {
+    public String generateResetToken(User user) {
 
         PasswordResetToken passwordResetToken = passwordTokenDAO.getTokenByUser(user.getUsername());
 
         if (passwordResetToken != null && !isExpired(passwordResetToken.getExpiryDate())) {
-            throw new TokenException("A reset link has already been emailed to you");
+            return passwordResetToken.getToken();
         }
+        String token = UUID.randomUUID().toString();
 
         passwordResetToken = new PasswordResetToken(token,user);
-
         passwordTokenDAO.saveToken(passwordResetToken);
+
+        return token;
     }
 
     @Transactional

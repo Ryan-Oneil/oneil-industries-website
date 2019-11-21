@@ -6,7 +6,6 @@ import biz.oneilindustries.website.eventlisteners.OnRegistrationCompleteEvent;
 import biz.oneilindustries.website.service.EmailSender;
 import biz.oneilindustries.website.service.UserService;
 import biz.oneilindustries.website.validation.LoginForm;
-import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,9 +84,8 @@ public class LoginController {
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid Email");
         }
-        String token = UUID.randomUUID().toString();
-
-        userService.generateResetToken(user,token);
+        //Will generate a new token or send a previously generated one if exists and not expired
+        String token = userService.generateResetToken(user);
         emailSender.sendSimpleEmail(user.getEmail(),"Password Reset","Reset Password Link " + " http://oneilindustries.biz" + "/changePassword/" + token,"Oneil-Industries",null);
 
         return ResponseEntity.ok("Password reset email has been sent");
