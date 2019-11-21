@@ -31,6 +31,11 @@ public class FileHandler {
             destFolder.mkdir();
         }
         File newFile = new File(dest + uploader + "/" + fileName);
+
+        //Checks the randomly generated file name doesn't already exists and keeps changing till string is unique
+        while (newFile.exists()) {
+            newFile = new File(dest + uploader + "/" + UUID.randomUUID().toString());
+        }
         //Copy file to new file
         FileUtils.copyInputStreamToFile(file.openStream(), newFile);
 
