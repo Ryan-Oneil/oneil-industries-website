@@ -3,12 +3,14 @@ package biz.oneilindustries.website.controller;
 import biz.oneilindustries.website.config.ResourceHandler;
 import biz.oneilindustries.website.entity.Album;
 import biz.oneilindustries.website.entity.Media;
+import biz.oneilindustries.website.entity.Quota;
 import biz.oneilindustries.website.exception.MediaException;
 import biz.oneilindustries.website.filecreater.FileHandler;
 import biz.oneilindustries.website.gallery.AlbumCreator;
 import biz.oneilindustries.website.gallery.MediaAlbum;
 import biz.oneilindustries.website.service.AlbumService;
 import biz.oneilindustries.website.service.MediaService;
+import biz.oneilindustries.website.service.UserService;
 import biz.oneilindustries.website.validation.GalleryUpload;
 import biz.oneilindustries.website.validation.UpdatedAlbum;
 import java.io.File;
@@ -26,6 +28,7 @@ import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadBase.InvalidContentTypeException;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
@@ -49,12 +52,15 @@ public class ImageGalleryController {
     private static final String GALLERY_IMAGES_DIRECTORY = "E:/images/";
     private final MediaService mediaService;
     private final AlbumService albumService;
+    private final UserService userService;
     private final ResourceHandler handler;
 
     @Autowired
-    public ImageGalleryController(MediaService mediaService, AlbumService albumService, ResourceHandler handler) {
+    public ImageGalleryController(MediaService mediaService, AlbumService albumService, UserService userService,
+        ResourceHandler handler) {
         this.mediaService = mediaService;
         this.albumService = albumService;
+        this.userService = userService;
         this.handler = handler;
     }
 
@@ -112,7 +118,15 @@ public class ImageGalleryController {
     public String uploadMediaAPI(@RequestParam String name, @RequestParam String privacy, @RequestParam String albumName, Authentication user, HttpServletRequest request)
         throws IOException, FileUploadException {
 
+        //Calculates the amount of storage the user can still use
+        Quota userStorageLimit = userService.getQuotaByUsername(user.getName());
+        long storageLeft = (userStorageLimit.getMax() * FileUtils.ONE_GB) - userStorageLimit.getUsed();
+
         ServletFileUpload upload = new ServletFileUpload();
+        //Limits the file upload the the users remaining quota
+        if (!userStorageLimit.IgnoreQuota()) {
+            upload.setSizeMax(storageLeft >= 0 ? storageLeft : 0);
+        }
         FileItemIterator iterator;
 
         try {
@@ -132,6 +146,7 @@ public class ImageGalleryController {
             album = albumService.registerAlbum(galleryUpload, user.getName());
         }
         mediaService.registerMedia(galleryUpload, user.getName(), album);
+        userService.increaseUsedAmount(userStorageLimit, media.length());
 
         return request.getLocalName() + "/gallery/images/" + galleryUpload.getFile().getName();
     }

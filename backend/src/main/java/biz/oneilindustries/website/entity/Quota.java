@@ -2,17 +2,15 @@ package biz.oneilindustries.website.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "quota")
 public class Quota {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-
+    @Column(name = "username")
     private String username;
 
     //Storage space used in KBs
@@ -27,19 +25,16 @@ public class Quota {
     public Quota() {
     }
 
+    public Quota(String username, long used) {
+        this.username = username;
+        this.used = used;
+    }
+
     public Quota(String username, long used, int max, boolean ignoreQuota) {
         this.username = username;
         this.used = used;
         this.max = max;
         this.ignoreQuota = ignoreQuota;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getUsername() {
@@ -66,11 +61,15 @@ public class Quota {
         this.max = max;
     }
 
-    public boolean isIgnoreQuota() {
+    public boolean IgnoreQuota() {
         return ignoreQuota;
     }
 
     public void setIgnoreQuota(boolean ignoreQuota) {
         this.ignoreQuota = ignoreQuota;
+    }
+
+    public void increaseUsed(long amount) {
+        this.used += amount;
     }
 }

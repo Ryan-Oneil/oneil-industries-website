@@ -6,6 +6,7 @@ import biz.oneilindustries.website.dao.UserDAO;
 import biz.oneilindustries.website.entity.Authority;
 import biz.oneilindustries.website.entity.DiscordUser;
 import biz.oneilindustries.website.entity.PasswordResetToken;
+import biz.oneilindustries.website.entity.Quota;
 import biz.oneilindustries.website.entity.TeamspeakUser;
 import biz.oneilindustries.website.entity.User;
 import biz.oneilindustries.website.entity.VerificationToken;
@@ -71,12 +72,14 @@ public class UserService {
             throw new UserException("Username may only contain a-Z . _");
         }
         String encryptedPassword = passwordEncoder.encode(loginForm.getPassword());
+        String username = loginForm.getName();
 
-        Authority authority = new Authority(loginForm.getName(), "ROLE_UNREGISTERED");
+        Authority authority = new Authority(username, "ROLE_UNREGISTERED");
 
-        User user = new User(loginForm.getName(),encryptedPassword,0,loginForm.getEmail());
+        User user = new User(username, encryptedPassword,0, loginForm.getEmail());
 
         user.addAuthority(authority);
+        user.setStoreQuota(new Quota(username, 0));
 
         saveUser(user);
 
@@ -243,5 +246,18 @@ public class UserService {
     @Transactional
     public void deleteDiscordUUID(DiscordUser discordUser) {
         dao.deleteDiscordUUID(discordUser);
+    }
+
+    @Transactional
+    public Quota getQuotaByUsername(String username) {
+        return dao.getQuotaByUsername(username);
+    }
+
+    @Transactional
+    public void increaseUsedAmount(Quota quota, long amount) {
+
+        quota.increaseUsed(amount);
+
+        dao.saveQuota(quota);
     }
 }

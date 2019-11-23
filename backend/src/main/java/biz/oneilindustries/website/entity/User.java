@@ -9,6 +9,7 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class User implements UserDetails {
 
     @Id
+    @Column(name = "username")
     private String username;
 
     private String password;
@@ -29,7 +31,8 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "username", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true  )
     private List<Authority> customAuthorities;
 
-    @OneToOne(mappedBy = "username", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @PrimaryKeyJoinColumn
     private Quota storeQuota;
 
     public User(String username, String password) {
@@ -42,6 +45,24 @@ public class User implements UserDetails {
         this.password = password;
         this.enabled = enabled;
         this.email = email;
+    }
+
+    public User(String username, String password, int enabled, String email, Quota storeQuota) {
+        this.username = username;
+        this.password = password;
+        this.enabled = enabled;
+        this.email = email;
+        this.storeQuota = storeQuota;
+    }
+
+    public User(String username, String password, int enabled, String email,
+        List<Authority> customAuthorities, Quota storeQuota) {
+        this.username = username;
+        this.password = password;
+        this.enabled = enabled;
+        this.email = email;
+        this.customAuthorities = customAuthorities;
+        this.storeQuota = storeQuota;
     }
 
     public User() {

@@ -1,5 +1,6 @@
 package biz.oneilindustries.website.validation;
 
+import biz.oneilindustries.website.entity.Quota;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 
@@ -18,12 +19,16 @@ public class UpdatedUser {
 
     private Integer enabled;
 
-    public UpdatedUser(@NotNull String username, String password, @NotNull String email, String role, Integer enabled) {
+    private Quota quota;
+
+    public UpdatedUser(@NotNull String username, String password, @NotNull String email, String role, Integer enabled,
+        Quota quota) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.role = role;
         this.enabled = enabled;
+        this.quota = quota;
     }
 
     public UpdatedUser(@NotNull String username, @NotNull String email, String role, Integer enabled) {
@@ -74,5 +79,13 @@ public class UpdatedUser {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Quota getQuota() {
+        return quota;
+    }
+
+    public void setQuota(Quota quota) {
+        this.quota = quota;
     }
 }

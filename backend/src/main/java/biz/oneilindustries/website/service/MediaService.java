@@ -6,12 +6,11 @@ import biz.oneilindustries.website.entity.Media;
 import biz.oneilindustries.website.filecreater.FileHandler;
 import biz.oneilindustries.website.validation.GalleryUpload;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import javax.transaction.Transactional;
+import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,15 +18,6 @@ import org.springframework.stereotype.Service;
 public class MediaService {
 
     private final MediaDAO dao;
-
-    private static List<String> privacySettings;
-
-    static {
-        privacySettings = new ArrayList<>();
-        privacySettings.add("unlisted");
-        privacySettings.add("private");
-        privacySettings.add("public");
-    }
 
     @Autowired
     public MediaService(MediaDAO dao) {
@@ -85,10 +75,10 @@ public class MediaService {
         if (album != null) {
             media.setAlbumID(album.getId());
         }
-
+        Tika tika = new Tika();
         if (FileHandler.isImageFile(galleryUpload.getFile().getName())) {
             media.setMediaType("image");
-        } else if (FileHandler.isVideoFile(Files.probeContentType(galleryUpload.getFile().toPath()))) {
+        } else if (FileHandler.isVideoFile(tika.detect(galleryUpload.getFile()))) {
             media.setMediaType("video");
         }
         saveMedia(media);

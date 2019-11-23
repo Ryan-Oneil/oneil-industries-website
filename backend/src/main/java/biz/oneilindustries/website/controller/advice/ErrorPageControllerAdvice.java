@@ -4,6 +4,7 @@ import biz.oneilindustries.website.exception.ServiceProfileException;
 import biz.oneilindustries.website.exception.TokenException;
 import biz.oneilindustries.website.exception.TooManyLoginAttempts;
 import biz.oneilindustries.website.exception.UserException;
+import org.apache.commons.fileupload.FileUploadBase.SizeLimitExceededException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -15,7 +16,7 @@ public class ErrorPageControllerAdvice {
 
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity handleNoHandlerFoundException(NoHandlerFoundException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getRequestURL() + " Not Found");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getRequestURL() + " Not Found");
     }
 
     @ExceptionHandler(TooManyLoginAttempts.class)
@@ -25,7 +26,7 @@ public class ErrorPageControllerAdvice {
 
     @ExceptionHandler(TokenException.class)
     public ResponseEntity tokenException(TokenException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
     @ExceptionHandler(ServiceProfileException.class)
@@ -36,5 +37,10 @@ public class ErrorPageControllerAdvice {
     @ExceptionHandler(UserException.class)
     public ResponseEntity userException(UserException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(SizeLimitExceededException.class)
+    public ResponseEntity fileUploadSizeException() {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You've reached your maximum storage capacity");
     }
 }

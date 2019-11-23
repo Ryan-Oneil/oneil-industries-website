@@ -1,6 +1,7 @@
 package biz.oneilindustries.website.dao;
 
 import biz.oneilindustries.website.entity.DiscordUser;
+import biz.oneilindustries.website.entity.Quota;
 import biz.oneilindustries.website.entity.TeamspeakUser;
 import biz.oneilindustries.website.entity.User;
 import org.hibernate.Session;
@@ -161,5 +162,22 @@ public class UserDAO {
         Query<String> query = currentSession.createQuery("select uuid from DiscordUser");
 
         return query.getResultList();
+    }
+
+    public Quota getQuotaByUsername(String username) {
+
+        Session currentSession = sessionFactory.getCurrentSession();
+
+        Query query = currentSession.createQuery("from Quota where username=:username", Quota.class);
+        query.setParameter("username", username);
+
+        return (Quota) query.uniqueResult();
+    }
+
+    public void saveQuota(Quota quota) {
+
+        Session currentSession = sessionFactory.getCurrentSession();
+
+        currentSession.saveOrUpdate(quota);
     }
 }
