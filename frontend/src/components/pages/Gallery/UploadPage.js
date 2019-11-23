@@ -63,6 +63,7 @@ class UploadPage extends React.Component {
                             {errorMessage && renderErrorMessage(errorMessage)}
                             <button className="ui fluid large navColor submit button" disabled={submitting}>Upload</button>
                             {this.props.medias.mediaPostMessage && renderPositiveMessage(this.props.medias.mediaPostMessage)}
+                            {this.props.medias.mediaErrorMessage && renderErrorMessage(this.props.medias.mediaErrorMessage)}
                         </div>
                     </form>
                 </div>

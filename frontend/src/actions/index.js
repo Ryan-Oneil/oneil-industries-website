@@ -65,8 +65,12 @@ export const uploadMedia = (endpoint, data) => dispatch => {
             dispatch({type: MEDIA_POST_SENT, message: response.data});
             resolve(response);
         }).catch(error => {
-            dispatch({type: MEDIA_POST_FAIL, message: error.message});
-            reject(error.message);
+            if (error.response) {
+                dispatch({type: MEDIA_POST_FAIL, message: error.response.data});
+            } else {
+                dispatch({type: MEDIA_POST_FAIL, message: error.message});
+            }
+            reject(error);
         }).finally(dispatch({type: MEDIA_POST_SUCCESS}));
     });
 };

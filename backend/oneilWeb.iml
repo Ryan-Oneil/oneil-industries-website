@@ -126,5 +126,6 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: net.sf.trove4j:trove4j:3.0.3" level="project" />
     <orderEntry type="library" name="Maven: com.auth0:java-jwt:3.4.0" level="project" />
     <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.11" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.tika:tika-core:1.18" level="project" />
   </component>
 </module>

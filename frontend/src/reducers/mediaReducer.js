@@ -22,13 +22,13 @@ export default (state = [], action) => {
             return action.message;
         }
         case MEDIA_POST_SENT: {
-            return {...state, mediaPostMessage: action.message, isPosting: true};
+            return {...state, mediaPostMessage: action.message, isPosting: true, mediaErrorMessage: ""};
         }
         case MEDIA_POST_SUCCESS: {
             return {...state, isPosting: false};
         }
         case MEDIA_POST_FAIL: {
-            return {...state, mediaPostMessage: action.message, isPosting: false};
+            return {...state, mediaErrorMessage: action.message, isPosting: false, mediaPostMessage: ""};
         }
         case MEDIA_DELETE_DONE: {
             const mediaID = action.mediaDeleteID;
