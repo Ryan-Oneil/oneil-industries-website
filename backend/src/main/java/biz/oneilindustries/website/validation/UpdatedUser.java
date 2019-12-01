@@ -17,11 +17,11 @@ public class UpdatedUser {
 
     private String role;
 
-    private Integer enabled;
+    private Boolean enabled;
 
     private Quota quota;
 
-    public UpdatedUser(@NotNull String username, String password, @NotNull String email, String role, Integer enabled,
+    public UpdatedUser(@NotNull String username, String password, @NotNull String email, String role, Boolean enabled,
         Quota quota) {
         this.username = username;
         this.password = password;
@@ -31,7 +31,7 @@ public class UpdatedUser {
         this.quota = quota;
     }
 
-    public UpdatedUser(@NotNull String username, @NotNull String email, String role, Integer enabled) {
+    public UpdatedUser(@NotNull String username, @NotNull String email, String role, Boolean enabled) {
         this.username = username;
         this.email = email;
         this.role = role;
@@ -65,11 +65,11 @@ public class UpdatedUser {
         this.role = role;
     }
 
-    public Integer getEnabled() {
+    public Boolean getEnabled() {
         return enabled;
     }
 
-    public void setEnabled(Integer enabled) {
+    public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
 

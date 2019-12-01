@@ -76,7 +76,7 @@ public class UserService {
 
         Authority authority = new Authority(username, "ROLE_UNREGISTERED");
 
-        User user = new User(username, encryptedPassword,0, loginForm.getEmail());
+        User user = new User(username, encryptedPassword,false, loginForm.getEmail());
 
         user.addAuthority(authority);
         user.setStoreQuota(new Quota(username, 0));
@@ -255,8 +255,14 @@ public class UserService {
 
     @Transactional
     public void increaseUsedAmount(Quota quota, long amount) {
-
         quota.increaseUsed(amount);
+
+        dao.saveQuota(quota);
+    }
+
+    @Transactional
+    public void decreaseUsedAmount(Quota quota, long amount) {
+        quota.decreaseUsed(amount);
 
         dao.saveQuota(quota);
     }

@@ -23,7 +23,7 @@ public class User implements UserDetails {
 
     private String password;
 
-    private int enabled;
+    private boolean enabled;
 
     @Column(name = "email")
     private String email;
@@ -40,14 +40,14 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    public User(String username, String password, int enabled, String email) {
+    public User(String username, String password, boolean enabled, String email) {
         this.username = username;
         this.password = password;
         this.enabled = enabled;
         this.email = email;
     }
 
-    public User(String username, String password, int enabled, String email, Quota storeQuota) {
+    public User(String username, String password, boolean enabled, String email, Quota storeQuota) {
         this.username = username;
         this.password = password;
         this.enabled = enabled;
@@ -55,7 +55,7 @@ public class User implements UserDetails {
         this.storeQuota = storeQuota;
     }
 
-    public User(String username, String password, int enabled, String email,
+    public User(String username, String password, boolean enabled, String email,
         List<Authority> customAuthorities, Quota storeQuota) {
         this.username = username;
         this.password = password;
@@ -85,7 +85,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return this.enabled == 1;
+        return this.enabled;
     }
 
     public String getUsername() {
@@ -104,11 +104,11 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    public int getEnabled() {
+    public boolean getEnabled() {
         return enabled;
     }
 
-    public void setEnabled(int enabled) {
+    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 

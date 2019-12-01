@@ -81,7 +81,7 @@ public class ImageGalleryController {
 
     @GetMapping("/video/{videoName}")
     public void streamVideo(@PathVariable String videoName, Authentication user, HttpServletResponse response, HttpServletRequest request)
-        throws ServletException, IOException {
+        throws ServletException {
 
         Media media = mediaService.getMediaFileName(videoName);
 
@@ -124,7 +124,7 @@ public class ImageGalleryController {
 
         ServletFileUpload upload = new ServletFileUpload();
         //Limits the file upload the the users remaining quota
-        if (!userStorageLimit.IgnoreQuota()) {
+        if (!userStorageLimit.isIgnoreQuota()) {
             upload.setSizeMax(storageLeft >= 0 ? storageLeft : 0);
         }
         FileItemIterator iterator;
@@ -152,12 +152,23 @@ public class ImageGalleryController {
     }
 
     @DeleteMapping("/media/delete/{mediaInt}")
-    public ResponseEntity deleteMedia(@PathVariable int mediaInt, Authentication user, HttpServletRequest request) {
+    public ResponseEntity deleteMedia(@PathVariable int mediaInt, Authentication user, HttpServletRequest request) throws IOException {
 
         Media media = mediaService.getMedia(mediaInt);
+        Quota quota = userService.getQuotaByUsername(user.getName());
 
+        File mediaFile = new File(GALLERY_IMAGES_DIRECTORY + media.getUploader() + "/" + media.getFileName());
+        long mediaSize = 0;
+
+        if (mediaFile.exists()) {
+            mediaSize = mediaFile.length();
+            Files.delete(mediaFile.toPath());
+        }
         mediaService.deleteMedia(media.getId());
 
+        if (quota != null && mediaSize > 0) {
+            userService.decreaseUsedAmount(quota, mediaSize);
+        }
         return ResponseEntity.ok(HttpStatus.OK);
     }
 

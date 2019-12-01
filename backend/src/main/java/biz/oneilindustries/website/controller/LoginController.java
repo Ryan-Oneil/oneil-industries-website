@@ -69,7 +69,7 @@ public class LoginController {
 
         userService.deleteVerificationToken(verificationToken);
 
-        user.setEnabled(1);
+        user.setEnabled(true);
         userService.saveUser(user);
 
         return ResponseEntity.ok("Account has been successfully verified!");

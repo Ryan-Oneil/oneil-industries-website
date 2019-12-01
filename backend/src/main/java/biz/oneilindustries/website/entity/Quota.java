@@ -61,7 +61,7 @@ public class Quota {
         this.max = max;
     }
 
-    public boolean IgnoreQuota() {
+    public boolean isIgnoreQuota() {
         return ignoreQuota;
     }
 
@@ -71,5 +71,9 @@ public class Quota {
 
     public void increaseUsed(long amount) {
         this.used += amount;
+    }
+
+    public void decreaseUsed(long amount) {
+        this.used -= amount;
     }
 }
