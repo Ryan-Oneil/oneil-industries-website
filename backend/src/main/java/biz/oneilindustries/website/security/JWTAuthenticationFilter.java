@@ -2,8 +2,8 @@ package biz.oneilindustries.website.security;
 
 import static biz.oneilindustries.website.security.SecurityConstants.EXPIRATION_TIME;
 import static biz.oneilindustries.website.security.SecurityConstants.HEADER_STRING;
+import static biz.oneilindustries.website.security.SecurityConstants.REFRESH_TOKEN_PREFIX;
 import static biz.oneilindustries.website.security.SecurityConstants.SECRET;
-import static biz.oneilindustries.website.security.SecurityConstants.TOKEN_PREFIX;
 import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
 
 import biz.oneilindustries.website.entity.User;
@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
@@ -52,19 +51,18 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain, Authentication auth)
-        throws IOException, ServletException {
-
+    protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain, Authentication auth) {
         String token = JWT.create()
+            .withSubject("refreshToken")
             .withClaim("user", ((User) auth.getPrincipal()).getUsername())
             .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
             .sign(HMAC512(SECRET.getBytes()));
-        res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
+        res.addHeader(HEADER_STRING, REFRESH_TOKEN_PREFIX + token);
     }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed)
-        throws IOException, ServletException {
+        throws IOException {
 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.TEXT_PLAIN_VALUE);

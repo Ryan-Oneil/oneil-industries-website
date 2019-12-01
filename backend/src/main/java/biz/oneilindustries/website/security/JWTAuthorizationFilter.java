@@ -5,30 +5,28 @@ import static biz.oneilindustries.website.security.SecurityConstants.HEADER_STRI
 import static biz.oneilindustries.website.security.SecurityConstants.SECRET;
 import static biz.oneilindustries.website.security.SecurityConstants.TOKEN_PREFIX;
 
-import biz.oneilindustries.website.entity.User;
-import biz.oneilindustries.website.service.UserService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
-    private UserService userService;
-
-    public JWTAuthorizationFilter(AuthenticationManager authManager, ApplicationContext ctx) {
+    public JWTAuthorizationFilter(AuthenticationManager authManager) {
         super(authManager);
-        userService = ctx.getBean(UserService.class);
     }
 
     @Override
@@ -48,22 +46,37 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
         String token = request.getHeader(HEADER_STRING);
 
-        if (token != null) {
-            // parse the token.
-            DecodedJWT decodedToken = JWT.require(Algorithm.HMAC512(SECRET.getBytes()))
+        if (token == null) {
+            return null;
+        }
+        // parse the token.
+        DecodedJWT decodedToken;
+        try {
+            decodedToken = JWT.require(Algorithm.HMAC512(SECRET.getBytes()))
                 .build()
                 .verify(token.replace(TOKEN_PREFIX, ""));
-
-            if (decodedToken.getExpiresAt().before(new Date())) {
-                return null;
-            }
-            String user = decodedToken.getClaim("user").asString();
-
-            if (user != null) {
-                User userDetails = userService.getUser(user);
-                return new UsernamePasswordAuthenticationToken(user, null, userDetails.getAuthorities());
-            }
+        }catch (JWTVerificationException e) {
             return null;
+        }
+
+        if (!decodedToken.getSubject().equalsIgnoreCase("authToken")) {
+            return null;
+        }
+
+        if (decodedToken.getExpiresAt().before(new Date())) {
+            return null;
+        }
+        String user = decodedToken.getClaim("user").asString();
+        String role = decodedToken.getClaim("role").asString();
+
+        if (!decodedToken.getClaim("enabled").asBoolean()) {
+            return null;
+        }
+
+        if (user != null) {
+            ArrayList<GrantedAuthority> authorities = new ArrayList<>();
+            authorities.add(new SimpleGrantedAuthority(role));
+            return new UsernamePasswordAuthenticationToken(user, null, authorities);
         }
         return null;
     }

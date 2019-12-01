@@ -4,6 +4,7 @@ import biz.oneilindustries.website.exception.ServiceProfileException;
 import biz.oneilindustries.website.exception.TokenException;
 import biz.oneilindustries.website.exception.TooManyLoginAttempts;
 import biz.oneilindustries.website.exception.UserException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.apache.commons.fileupload.FileUploadBase.SizeLimitExceededException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,5 +43,10 @@ public class ErrorPageControllerAdvice {
     @ExceptionHandler(SizeLimitExceededException.class)
     public ResponseEntity fileUploadSizeException() {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You've reached your maximum storage capacity");
+    }
+
+    @ExceptionHandler(JWTVerificationException.class)
+    public ResponseEntity jwtException(JWTVerificationException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 }
