@@ -1,9 +1,12 @@
 package biz.oneilindustries.website.service;
 
+import static biz.oneilindustries.website.security.SecurityConstants.SECRET;
+import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
+
 import biz.oneilindustries.website.dao.ResetPasswordTokenDAO;
 import biz.oneilindustries.website.dao.TokenDAO;
 import biz.oneilindustries.website.dao.UserDAO;
-import biz.oneilindustries.website.entity.Authority;
+import biz.oneilindustries.website.entity.ApiToken;
 import biz.oneilindustries.website.entity.DiscordUser;
 import biz.oneilindustries.website.entity.PasswordResetToken;
 import biz.oneilindustries.website.entity.Quota;
@@ -13,6 +16,7 @@ import biz.oneilindustries.website.entity.VerificationToken;
 import biz.oneilindustries.website.exception.UserException;
 import biz.oneilindustries.website.validation.LoginForm;
 import biz.oneilindustries.website.validation.UpdatedUser;
+import com.auth0.jwt.JWT;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -74,14 +78,12 @@ public class UserService {
         String encryptedPassword = passwordEncoder.encode(loginForm.getPassword());
         String username = loginForm.getName();
 
-        Authority authority = new Authority(username, "ROLE_UNREGISTERED");
+        User user = new User(username, encryptedPassword,false, loginForm.getEmail(), "ROLE_UNREGISTERED");
 
-        User user = new User(username, encryptedPassword,false, loginForm.getEmail());
-
-        user.addAuthority(authority);
-        user.setStoreQuota(new Quota(username, 0));
+        Quota quota = new Quota(loginForm.getName(), 0, 25, false);
 
         saveUser(user);
+        saveUserQuota(quota);
 
         return user;
     }
@@ -112,9 +114,8 @@ public class UserService {
 
         //For my system I want users to only have one role/authority at a time
         if (updatedUser.getRole() != null) {
-            user.getCustomAuthorities().get(0).setAuthority(updatedUser.getRole());
+            user.setRole(updatedUser.getRole());
         }
-
         saveUser(user);
     }
 
@@ -254,6 +255,11 @@ public class UserService {
     }
 
     @Transactional
+    public void saveUserQuota(Quota quota) {
+        dao.saveQuota(quota);
+    }
+
+    @Transactional
     public void increaseUsedAmount(Quota quota, long amount) {
         quota.increaseUsed(amount);
 
@@ -265,5 +271,32 @@ public class UserService {
         quota.decreaseUsed(amount);
 
         dao.saveQuota(quota);
+    }
+
+    @Transactional
+    public ApiToken getApiTokensByUsername(String username) {
+        return dao.getApiTokensByUsername(username);
+    }
+
+    @Transactional
+    public ApiToken generateApiToken(String username) {
+        // Creates a non expiring user jwt with limited access. Currently can only upload media
+        String token = JWT.create()
+            .withSubject("authToken")
+            .withClaim("user", username)
+            .withClaim("role", "ROLE_LIMITED_API")
+            .withClaim("enabled", true)
+            .sign(HMAC512(SECRET.getBytes()));
+
+        ApiToken apiToken = new ApiToken(username, token);
+
+        dao.saveApiToken(apiToken);
+
+        return apiToken;
+    }
+
+    @Transactional
+    public void deleteApiToken(ApiToken apiToken) {
+        dao.deleteApiToken(apiToken);
     }
 }

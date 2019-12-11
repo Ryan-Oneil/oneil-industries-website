@@ -1,16 +1,20 @@
 package biz.oneilindustries.website.dao;
 
+import static biz.oneilindustries.website.security.SecurityConstants.SECRET;
+import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
+
+import biz.oneilindustries.website.entity.ApiToken;
 import biz.oneilindustries.website.entity.DiscordUser;
 import biz.oneilindustries.website.entity.Quota;
 import biz.oneilindustries.website.entity.TeamspeakUser;
 import biz.oneilindustries.website.entity.User;
+import com.auth0.jwt.JWT;
+import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public class UserDAO {
@@ -35,15 +39,18 @@ public class UserDAO {
 
         Session currentSession = sessionFactory.getCurrentSession();
 
-        return currentSession.get(User.class, username);
+        Query query = currentSession.createQuery("from users where username =:username",User.class);
+        query.setParameter("username", username);
+
+        return (User) query.uniqueResult();
     }
 
     public User getUserByEmail(String email) {
 
         Session currentSession = sessionFactory.getCurrentSession();
 
-        Query query = currentSession.createQuery("from users where email =:email",User.class);
-        query.setParameter("email",email);
+        Query query = currentSession.createQuery("from users where email =:email", User.class);
+        query.setParameter("email", email);
 
         return (User) query.uniqueResult();
     }
@@ -179,5 +186,26 @@ public class UserDAO {
         Session currentSession = sessionFactory.getCurrentSession();
 
         currentSession.saveOrUpdate(quota);
+    }
+
+    public ApiToken getApiTokensByUsername(String user) {
+        Session currentSession = sessionFactory.getCurrentSession();
+
+        Query query = currentSession.createQuery("from ApiToken where username=:username", ApiToken.class);
+        query.setParameter("username", user);
+
+        return (ApiToken) query.uniqueResult();
+    }
+
+    public void saveApiToken(ApiToken apiToken) {
+        Session currentSession = sessionFactory.getCurrentSession();
+
+        currentSession.saveOrUpdate(apiToken);
+    }
+
+    public void deleteApiToken(ApiToken apiToken) {
+        Session currentSession = sessionFactory.getCurrentSession();
+
+        currentSession.delete(apiToken);
     }
 }

@@ -1,5 +1,6 @@
 package biz.oneilindustries.website.controller;
 
+import biz.oneilindustries.website.entity.ApiToken;
 import biz.oneilindustries.website.entity.User;
 import biz.oneilindustries.website.service.UserService;
 import biz.oneilindustries.website.validation.UpdatedUser;
@@ -33,7 +34,8 @@ public class UserProfileController {
         User userProfile = userService.getUser(user.getName());
         userProfile.setPassword(null);
 
-        userDetails.put("user", userProfile);
+        userDetails.put("user", new UpdatedUser(userProfile.getUsername(), userProfile.getEmail(), userProfile.getRole(), userProfile.getEnabled()));
+        userDetails.put("storageQuota", userService.getQuotaByUsername(userProfile.getUsername()));
         userDetails.put("userDiscord", userService.getUserDiscordProfiles(user.getName()));
         userDetails.put("userTeamspeak", userService.getUserTeamspeakProfile(user.getName()));
 
@@ -58,5 +60,17 @@ public class UserProfileController {
         return ResponseEntity.ok("Successfully updated account details");
     }
 
+    @GetMapping("/profile/getAPIToken")
+    public ResponseEntity generateAPIJWT(Authentication authentication) {
 
+        ApiToken apiToken = userService.getApiTokensByUsername(authentication.getName());
+
+        //Deletes existing token
+        if (apiToken != null) {
+            userService.deleteApiToken(apiToken);
+        }
+        apiToken = userService.generateApiToken(authentication.getName());
+
+        return ResponseEntity.ok(apiToken.getToken());
+    }
 }

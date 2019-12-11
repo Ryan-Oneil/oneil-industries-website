@@ -63,7 +63,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
             return null;
         }
 
-        if (decodedToken.getExpiresAt().before(new Date())) {
+        if (decodedToken.getExpiresAt() != null && decodedToken.getExpiresAt().before(new Date())) {
             return null;
         }
         String user = decodedToken.getClaim("user").asString();

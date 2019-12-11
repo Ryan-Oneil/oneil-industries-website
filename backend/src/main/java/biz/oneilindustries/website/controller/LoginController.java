@@ -85,22 +85,22 @@ public class LoginController {
         }
         //Will generate a new token or send a previously generated one if exists and not expired
         String token = userService.generateResetToken(user);
-        emailSender.sendSimpleEmail(user.getEmail(),"Password Reset","Reset Password Link " + " http://oneilindustries.biz" + "/changePassword/" + token,"Oneil-Industries",null);
+        emailSender.sendSimpleEmail(user.getEmail(),"Password Reset","Reset Password Link " + " http://oneilindustries.biz" + "/resetPassword/" + token,"Oneil-Industries",null);
 
         return ResponseEntity.ok("Password reset email has been sent");
     }
 
-    @PostMapping("/newPassword")
-    public ResponseEntity setNewPassword(@RequestParam("token") String token, @RequestParam String password) {
+    @PostMapping("/newPassword/{token}")
+    public ResponseEntity setNewPassword(@PathVariable String token, @RequestParam String password) {
 
         User user = userService.getResetToken(token).getUsername();
 
         if (user == null) {
-            return ResponseEntity.badRequest().body("Invalid token");
+            return ResponseEntity.badRequest().body("Invalid Password Reset Token");
         }
         userService.deletePasswordResetToken(userService.getResetToken(token));
         userService.changeUserPassword(user, password);
 
-        return ResponseEntity.ok(HttpStatus.OK);
+        return ResponseEntity.ok("Password has been changed");
     }
 }

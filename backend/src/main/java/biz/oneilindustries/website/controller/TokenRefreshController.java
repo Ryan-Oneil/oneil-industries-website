@@ -14,7 +14,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,7 +30,7 @@ public class TokenRefreshController {
         this.userService = userService;
     }
 
-    @GetMapping("/refresh")
+    @PostMapping("/refresh")
     public String refreshToken(@RequestBody String refreshToken) {
         // parse the token.
         DecodedJWT decodedToken = JWT.require(Algorithm.HMAC512(SECRET.getBytes()))
@@ -49,7 +49,7 @@ public class TokenRefreshController {
         if (user == null) {
             throw new UsernameNotFoundException("Username not found");
         }
-        return JWT.create()
+        return "Bearer " + JWT.create()
             .withSubject("authToken")
             .withClaim("user", user.getUsername())
             .withClaim("role", user.getAuthorities().get(0).getAuthority())
