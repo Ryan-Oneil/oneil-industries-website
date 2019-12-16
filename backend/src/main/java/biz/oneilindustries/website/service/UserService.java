@@ -15,6 +15,7 @@ import biz.oneilindustries.website.entity.User;
 import biz.oneilindustries.website.entity.VerificationToken;
 import biz.oneilindustries.website.exception.UserException;
 import biz.oneilindustries.website.validation.LoginForm;
+import biz.oneilindustries.website.validation.UpdatedQuota;
 import biz.oneilindustries.website.validation.UpdatedUser;
 import com.auth0.jwt.JWT;
 import java.util.Calendar;
@@ -112,7 +113,6 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
         }
 
-        //For my system I want users to only have one role/authority at a time
         if (updatedUser.getRole() != null) {
             user.setRole(updatedUser.getRole());
         }
@@ -257,6 +257,18 @@ public class UserService {
     @Transactional
     public void saveUserQuota(Quota quota) {
         dao.saveQuota(quota);
+    }
+
+    @Transactional
+    public void updateUserQuota(UpdatedQuota updatedQuota, String username) {
+        Quota quota = getQuotaByUsername(username);
+
+        if (quota == null) {
+            throw new UserException("No user found");
+        }
+        quota.setIgnoreQuota(updatedQuota.isIgnoreQuota());
+        quota.setMax(updatedQuota.getMax());
+        saveUserQuota(quota);
     }
 
     @Transactional

@@ -10,7 +10,6 @@ import javax.persistence.Table;
 public class Quota {
 
     @Id
-    @Column(name = "username")
     private String username;
 
     //Storage space used in KBs
