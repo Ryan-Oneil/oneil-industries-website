@@ -13,9 +13,12 @@ public class ApiToken {
 
     private String token;
 
-    public ApiToken(String username, String token) {
+    private String uuid;
+
+    public ApiToken(String username, String token, String uuid) {
         this.username = username;
         this.token = token;
+        this.uuid = uuid;
     }
 
     public ApiToken() {
@@ -35,5 +38,13 @@ public class ApiToken {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 }

@@ -61,6 +61,11 @@ public class UserProfileController {
     }
 
     @GetMapping("/profile/getAPIToken")
+    public ResponseEntity getAPIJWT(Authentication authentication) {
+        return ResponseEntity.ok(userService.getApiTokensByUsername(authentication.getName()).getToken());
+    }
+
+    @GetMapping("/profile/generateAPIToken")
     public ResponseEntity generateAPIJWT(Authentication authentication) {
 
         ApiToken apiToken = userService.getApiTokensByUsername(authentication.getName());
@@ -72,5 +77,10 @@ public class UserProfileController {
         apiToken = userService.generateApiToken(authentication.getName());
 
         return ResponseEntity.ok(apiToken.getToken());
+    }
+
+    @GetMapping("/profile/getShareX")
+    public ResponseEntity generateShareXFile(Authentication authentication) {
+        return ResponseEntity.ok(userService.generateShareXAPIFile(authentication.getName()));
     }
 }

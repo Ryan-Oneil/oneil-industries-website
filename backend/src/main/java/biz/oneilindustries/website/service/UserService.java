@@ -18,12 +18,15 @@ import biz.oneilindustries.website.validation.LoginForm;
 import biz.oneilindustries.website.validation.UpdatedQuota;
 import biz.oneilindustries.website.validation.UpdatedUser;
 import com.auth0.jwt.JWT;
+import java.io.File;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -286,21 +289,31 @@ public class UserService {
     }
 
     @Transactional
+    @Cacheable("apiToken")
+    public List<String> getApiTokensUUIDByUser(String username) {
+        return dao.getApiTokensUUIDByUser(username);
+    }
+
+    @Transactional
     public ApiToken getApiTokensByUsername(String username) {
         return dao.getApiTokensByUsername(username);
     }
 
     @Transactional
+    @CachePut(value = "apiToken", key = "#result.uuid")
     public ApiToken generateApiToken(String username) {
         // Creates a non expiring user jwt with limited access. Currently can only upload media
+        String uuid = UUID.randomUUID().toString();
+
         String token = JWT.create()
-            .withSubject("authToken")
+            .withSubject("apiToken")
             .withClaim("user", username)
             .withClaim("role", "ROLE_LIMITED_API")
             .withClaim("enabled", true)
+            .withClaim("uuid", uuid)
             .sign(HMAC512(SECRET.getBytes()));
 
-        ApiToken apiToken = new ApiToken(username, token);
+        ApiToken apiToken = new ApiToken(username, token, uuid);
 
         dao.saveApiToken(apiToken);
 
@@ -310,5 +323,37 @@ public class UserService {
     @Transactional
     public void deleteApiToken(ApiToken apiToken) {
         dao.deleteApiToken(apiToken);
+    }
+
+    @Transactional
+    public String generateShareXAPIFile(String username) {
+        String fileLocation = "E:/media/" + username + "/";
+
+        File file = new File(fileLocation);
+        if (!file.exists()) {
+            file.mkdir();
+        }
+        ApiToken apiToken = getApiTokensByUsername(username);
+
+        if (apiToken == null) {
+            apiToken = generateApiToken(username);
+        }
+        //Returns a shareX custom uploader config template
+        return "{\n"
+                + "  \"Name\": \"Oneil Industries\",\n"
+                + "  \"DestinationType\": \"ImageUploader, TextUploader, FileUploader\",\n"
+                + "  \"RequestMethod\": \"POST\",\n"
+                + "  \"RequestURL\": \"http://localhost:8080/api/gallery/upload\",\n"
+                + "  \"Parameters\": {\n"
+                + "    \"name\": \"%h.%mi.%s-%d.%mo.%yy\",\n"
+                + "    \"privacy\": \"unlisted\",\n"
+                + "    \"albumName\": \"none\"\n"
+                + "  },\n"
+                + "  \"Headers\": {\n"
+                + "\"Authorization\": \"Bearer " + apiToken.getToken()
+                + "  \"\n},\n"
+                + "  \"Body\": \"MultipartFormData\",\n"
+                + "  \"FileFormName\": \"file\"\n"
+                + "}";
     }
 }
