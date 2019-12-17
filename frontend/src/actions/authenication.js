@@ -3,7 +3,7 @@ import {
     LOGIN_REQUEST,
     LOGIN_SUCCESS,
     LOGOUT_REQUEST,
-    LOGOUT_SUCCESS,
+    LOGOUT_SUCCESS, NEW_PASSWORD_FAIL, NEW_PASSWORD_SENT,
     REGISTER_FAIL,
     REGISTER_SUCCESS,
     RESET_PASSWORD_FAIL,
@@ -11,7 +11,7 @@ import {
 } from "./types";
 import {apiPostCall} from "../apis/api";
 
-const API_URL = "http://192.168.0.15:8080";
+const API_URL = "http://localhost:8080";
 
 const requestLogin = (creds) => {
     return {
@@ -57,7 +57,7 @@ export const loginUser = (creds) => dispatch => {
             dispatch(requestLogin(creds));
             const token = response.headers['authorization'];
 
-            localStorage.setItem('token', token);
+            localStorage.setItem('refreshToken', token);
             dispatch(receiveLogin(token));
             resolve(response);
         }).catch(error => {
@@ -90,7 +90,8 @@ export const registerUser = (creds) => dispatch => {
 export const logoutUser = () => {
     return dispatch => {
         dispatch(requestLogout());
-        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('authToken');
         dispatch(receiveLogout());
     }
 };
@@ -105,6 +106,27 @@ export const resetPassword = (email) => dispatch => {
                 dispatch({type: RESET_PASSWORD_FAIL, errorMessage: error.response.data});
             } else {
                 dispatch({type: RESET_PASSWORD_FAIL, errorMessage: error.message});
+            }
+            reject(error);
+        })
+    })
+};
+
+export const changePassword = (token, password) => dispatch => {
+
+    const options = {
+        params: {password: password}
+    };
+
+    return new Promise((resolve, reject) => {
+        apiPostCall(API_URL + '/api/auth/newPassword/'+ token, null, options).then(response => {
+            dispatch({type: NEW_PASSWORD_SENT, message: response.data});
+            resolve(response);
+        }).catch((error) => {
+            if (error.response) {
+                dispatch({type: NEW_PASSWORD_FAIL, errorMessage: error.response.data});
+            } else {
+                dispatch({type: NEW_PASSWORD_FAIL, errorMessage: error.message});
             }
             reject(error);
         })
