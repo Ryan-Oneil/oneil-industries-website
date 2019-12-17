@@ -9,7 +9,11 @@ import {
     MEDIA_REQUEST, MEDIA_UPDATE_FAIL, MEDIA_UPDATE_SENT, USER_MEDIA_REQUEST
 } from "../actions/types";
 
-export default (state = [], action) => {
+export default (state = {
+    mediasList: [],
+    userMediasList: [],
+    albums: []
+}, action) => {
 
     switch (action.type) {
         case MEDIA_REQUEST: {
@@ -32,7 +36,7 @@ export default (state = [], action) => {
         }
         case MEDIA_DELETE_DONE: {
             const mediaID = action.mediaDeleteID;
-            return {...state, mediasList: state.mediasList.filter(media => media.id !== mediaID)};
+            return {...state, userMediasList: state.userMediasList.filter(media => media.id !== mediaID)};
         }
         case MEDIA_DELETE_FAIL: {
             return {...state, deleteError: action.message};

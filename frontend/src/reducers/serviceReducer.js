@@ -5,7 +5,10 @@ import {
     SERVICES_TEAMSPEAK_GET_ACTIVE_LIST_SENT
 } from '../actions/types';
 
-export default (state = [], action) => {
+export default (state = {
+    activeTSList: [],
+    activeDiscord: []
+}, action) => {
 
     switch (action.type) {
         case SERVICES_TEAMSPEAK_GET_ACTIVE_LIST_SENT: {
