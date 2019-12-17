@@ -1,41 +1,48 @@
 import React from 'react';
-import {Link} from "react-router-dom";
+import {NavLink} from "react-router-dom";
 import '../../assets/css/layout.css';
 import {logoutUser} from "../../actions";
 import DropDownNav from "./DropDownNav";
+import {connect} from "react-redux";
 
 class NavMenu extends React.Component {
     render() {
-        const { dispatch, isAuthenticated } = this.props;
+        const { isAuthenticated, role } = this.props.auth;
+        const isAdmin = role === "ROLE_ADMIN" && isAuthenticated;
 
         return (
-            <div className="ui removePadding navColor inverted secondary pointing massive menu">
+            <div className="ui removePadding navColor inverted huge menu removeCircleBorder">
                 <div className="ui container">
-                    <Link to="/" className="item">
-                        Home
-                    </Link>
-                    <Link to="/about" className="item">
-                        About
-                    </Link>
-                    <Link to="/contact" className="item">
-                        Contact
-                    </Link>
-                    <DropDownNav/>
-                    <Link to="/services" className="item">
-                        Services
-                    </Link>
-                    <Link to="/profile" className="item">
-                        Profile
-                    </Link>
+                    <div className="right menu">
+                        <NavLink to="/" className="header item" exact={true}>
+                            Home
+                        </NavLink>
+                        <NavLink to="/contact" className="header item">
+                            Contact
+                        </NavLink>
+                        <DropDownNav/>
+                        <NavLink to="/services" className="header item">
+                            Services
+                        </NavLink>
+                        {isAuthenticated && <NavLink to="/profile" className="header item">
+                            Profile
+                        </NavLink>}
+                        {isAdmin && <NavLink to="/admin" className="header item">
+                            Admin
+                        </NavLink>}
+                    </div>
+
                     <div className="right menu">
 
                         {!isAuthenticated &&
-                        <Link to="/login" className="item">
+                        <NavLink to="/login" className="header item">
                             Login
-                        </Link>
+                        </NavLink>
                         }
                         {isAuthenticated &&
-                        <button className="item" onClick={() => (dispatch(logoutUser()))}>Logout</button>
+                            <div className="item">
+                                <button className="ui button navColor navTextColor" onClick={() => (this.props.logoutUser())}>Logout</button>
+                            </div>
                         }
                     </div>
                 </div>
@@ -43,4 +50,11 @@ class NavMenu extends React.Component {
         );
     }
 }
-export default NavMenu;
+const mapStateToProps = (state) => {
+    return {auth: state.auth};
+};
+
+export default connect(
+    mapStateToProps,
+    {logoutUser}
+)(NavMenu);

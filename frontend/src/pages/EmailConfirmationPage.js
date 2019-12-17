@@ -1,6 +1,6 @@
 import React from 'react';
-import {apiPostCall} from "../../apis/api";
-import {renderErrorMessage, renderPositiveMessage} from "../Message";
+import {apiPostCall} from "../apis/api";
+import {renderErrorMessage, renderPositiveMessage} from "../components/Message";
 
 class EmailConfirmationPage extends React.Component {
 

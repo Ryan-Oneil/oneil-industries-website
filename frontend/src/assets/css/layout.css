@@ -1,3 +1,14 @@
+body {
+    background-color: #f0f3f6;
+}
+.bottomFooter {
+    position: fixed!important;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    z-index: 10;
+}
+
 .lightBlack{
     background-color: #363636 !important;
 }
@@ -18,22 +29,25 @@
 }
 
 .maindiv {
+    margin-top: 150px;
+    margin-bottom: 100px;
     min-height: 90%;
     position: relative;
+    background-color: #f0f3f6;
 }
 
-.maindiv:before {
-    content: '';
-    display: block;
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: url('../../components/site layout/images/oneilFactory.png') no-repeat center bottom;
-    opacity: 0.9;
-}
+/*.maindiv:before {*/
+/*    content: '';*/
+/*    display: block;*/
+/*    position: absolute;*/
+/*    width: 100%;*/
+/*    height: 100%;*/
+/*    background: url('../../components/site layout/images/oneilFactory.png') no-repeat center bottom;*/
+/*    opacity: 0.9;*/
+/*}*/
 
 .mainpage{
-    position: relative;
+    /*position: relative;*/
 }
 #root {
     height: 100%;
@@ -84,11 +98,11 @@
 .teamspeakList h2 {
     text-align: center;
 }
-.user{
-    padding-left: 30px;
-}
 .subChannel{
     padding-left: 20px;
+}
+.teamspeakList .user{
+padding-left: 30px;
 }
 .channel {
 
@@ -108,4 +122,69 @@
 }
 .removePadding {
     margin: 0!important;
+}
+
+.removeTopPadding {
+    padding-top: 0!important;
+}
+
+.capFirstLetter:first-letter {
+    text-transform:capitalize;
+}
+.navTextColor {
+    color: rgba(255,255,255,.9)!important;
+}
+.modalBackground {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width:100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+}
+#dashboardSideMenu {
+    position: fixed;
+    top: 115px;
+    height: 100vh;
+    background-color: rgb(27, 36, 48);
+    padding-left: 0;
+    padding-right: 0;
+    z-index: 5;
+}
+
+#dashboardSideMenu .ui.menu > a.item {
+    padding: 10px 20px;
+    line-height: 20px;
+    color: rgb(238, 238, 238);
+    border-radius: 0 !important;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+#dashboardSideMenu .ui.menu > a.item.active {
+    background-color: rgb(18, 24, 32);
+    border: none !important;
+}
+
+#dashboardSideMenu .ui.menu > a.item:hover {
+    background: rgba(0, 0, 0, 0.08);
+}
+.dashboardHeader {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: rgb(238, 238, 238);
+    background-color: rgb(35, 47, 62);
+    font-family: "Nunito Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    min-height: 56px;
+    padding: 20px;
+}
+.removeCircleBorder {
+    border-radius: 0!important;
+}
+.fixedHeader {
+    width: 100%;
+    top: 0;
+    left: 0;
+    position: fixed;
+    z-index: 100;
 }

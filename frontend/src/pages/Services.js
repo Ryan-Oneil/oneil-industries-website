@@ -1,8 +1,8 @@
 import React from 'react';
 import {connect} from "react-redux";
-import {getDiscordActiveList, getTeamspeakActiveList} from "../../actions/services";
-import ServiceList from "../Services/ServiceList";
-import {renderErrorMessage} from "../Message";
+import {getDiscordActiveList, getTeamspeakActiveList} from "../actions/services";
+import ServiceList from "../components/Services/ServiceList";
+import {renderErrorMessage} from "../components/Message";
 
 class Services extends React.Component {
 
@@ -15,7 +15,7 @@ class Services extends React.Component {
 
     render() {
         return (
-            <div className="ui two column stackable center aligned page grid marginPadding">
+            <div className="ui two column stackable center aligned page grid">
                 <div className="column eight wide">
                     <div className="teamspeakList ui segment ">
                         <h1 className="ui center aligned header"><a href="ts3server://oneilindustries.biz/?port=9987">Connect to Teamspeak</a></h1>

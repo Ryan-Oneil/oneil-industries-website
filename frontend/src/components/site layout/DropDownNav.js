@@ -33,8 +33,8 @@ class DropDownNav extends React.Component {
 
     render() {
         return (
-            <div className="ui showDisplay pointing dropdown link" onMouseOver={() => this.setState({showNavMenu: true})}>
-                <Link to="/images" className="item" >Images<i className="dropdown icon removeMargin"/></Link>
+            <div className="ui dropdown item" onMouseOver={() => this.setState({showNavMenu: true})}>
+                <Link to="/images" className="" >Images<i className="dropdown icon"/></Link>
 
                 {this.state.showNavMenu && <div className="menu showDisplay" ref={this.setWrapperRef} onMouseLeave={() => this.setState({showNavMenu: false})}>
                     <Link to="/images/upload" className="item">Upload</Link>

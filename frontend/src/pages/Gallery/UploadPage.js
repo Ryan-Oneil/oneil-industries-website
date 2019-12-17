@@ -1,18 +1,16 @@
 import React from 'react';
 import { Field, reduxForm, reset } from 'redux-form';
-import {fetchAlbums, uploadMedia} from "../../../actions";
+import {fetchAlbums, uploadMedia} from "../../actions";
 import {connect} from "react-redux";
-import "../../../assets/css/layout.css"
-import {renderFileField, renderInput} from "../../formElements";
-import {renderErrorMessage, renderPositiveMessage} from "../../Message";
+import "../../assets/css/layout.css"
+import {renderFileField, renderInput} from "../../components/formElements";
+import {renderErrorMessage, renderPositiveMessage} from "../../components/Message";
 
 class UploadPage extends React.Component {
 
     constructor(props) {
         super(props);
-        if (!this.props.medias.albums) {
-            this.props.medias.albums = props.fetchAlbum(`/gallery/myalbums/${props.user}`);
-        }
+        this.props.medias.albums = props.fetchAlbum(`/gallery/myalbums/${props.user}`);
     }
 
     renderAlbums = () => {

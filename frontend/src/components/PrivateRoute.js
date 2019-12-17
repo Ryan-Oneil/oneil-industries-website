@@ -1,12 +1,16 @@
-import React from "react";
-import {Redirect, Route} from 'react-router-dom';
+import React, { Fragment } from "react";
+import {Redirect} from 'react-router-dom';
+import {connect} from "react-redux";
 
-export const PrivateRoute = ({isAuthenticated, user,  component: Component, ...rest}) => {
-    return (
-        <Route {...rest} render={props => (
-            isAuthenticated ?
-                <Component {...props} user={user} />
-                : <Redirect to="/login" />
-        )} />
-    );
+const PrivateRoute = (props) => {
+    const {isAuthenticated} = props.auth;
+
+    return (<Fragment>
+        {isAuthenticated ? props.children : <Redirect to="/login"/>}
+    </Fragment>)
 };
+
+const mapStateToProps = (state) => {
+    return {auth: state.auth};
+};
+export default connect(mapStateToProps)(PrivateRoute);

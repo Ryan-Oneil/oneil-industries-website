@@ -5,7 +5,7 @@ class DetailBox extends React.Component {
     render() {
         const {header} = this.props;
         return (
-            <div>
+            <div className="ui raised segments">
                 <div className="ui left aligned attached segment textFormat">
                     <h2>{header}</h2>
                 </div>

@@ -2,13 +2,13 @@ import React from 'react';
 import {connect} from "react-redux";
 import _ from 'lodash';
 
-import {deleteMedia, fetchAlbums, fetchUserImages} from "../../../actions";
-import Media from "./Elements/Media";
-import '../../../assets/css/layout.css';
-import Modal from "./Elements/Modal";
-import EditMediaForm from "../../formElements/EditMediaForm";
-import RenderMedias from "./Elements/RenderMedias";
-import {renderErrorMessage} from "../../Message";
+import {deleteMedia, fetchAlbums, fetchUserImages} from "../../actions";
+import Media from "../../components/Gallery/Media";
+import '../../assets/css/layout.css';
+import Modal from "../../components/Gallery/Modal";
+import EditMediaForm from "../../components/formElements/EditMediaForm";
+import RenderMedias from "../../components/Gallery/RenderMedias";
+import {renderErrorMessage} from "../../components/Message";
 
 class UserGalleryPage extends React.Component {
 
@@ -19,12 +19,8 @@ class UserGalleryPage extends React.Component {
     };
 
     componentDidMount() {
-        if (!this.props.medias.albums) {
-            this.props.medias.albums = this.props.fetchAlbum(`/gallery/myalbums/${this.props.user}`);
-        }
-        if (!this.props.medias.userMediasList) {
-            this.props.fetchUserImages(`/gallery/medias/user/${this.props.user}`);
-        }
+        this.props.medias.albums = this.props.fetchAlbum(`/gallery/myalbums/${this.props.user}`);
+        this.props.fetchUserImages(`/gallery/medias/user/${this.props.user}`);
     }
 
     returnAlbumName = (media) => {
@@ -53,7 +49,10 @@ class UserGalleryPage extends React.Component {
                         </a>
                     </div>
                     <button value="Delete" className="centerButton ui negative button center aligned"
-                            onClick={() => this.props.deleteMedia(`/gallery/media/delete/${this.state.media.id}`, this.state.media.id)}>
+                            onClick={() => {
+                                this.props.deleteMedia(`/gallery/media/delete/${this.state.media.id}`, this.state.media.id);
+                                this.setState({isOpen: false});
+                            }}>
                         Delete
                     </button>
                     <EditMediaForm

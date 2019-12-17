@@ -1,8 +1,8 @@
 import React from 'react';
-import Media from "./Elements/Media";
-import RenderMedias from "./Elements/RenderMedias";
-import Modal from "./Elements/Modal";
-import {apiGetCall} from "../../../apis/api";
+import Media from "../../components/Gallery/Media";
+import RenderMedias from "../../components/Gallery/RenderMedias";
+import Modal from "../../components/Gallery/Modal";
+import {apiGetCall} from "../../apis/api";
 
 class AlbumPage extends React.Component {
 

@@ -1,10 +1,10 @@
 import React from 'react';
-import Media from "./Elements/Media";
+import Media from "../../components/Gallery/Media";
 import {connect} from "react-redux";
-import {fetchAlbums} from "../../../actions";
-import Modal from "./Elements/Modal";
-import EditForm from "../../formElements/editAlbumForm";
-import {renderErrorMessage} from "../../Message";
+import {fetchAlbums} from "../../actions";
+import Modal from "../../components/Gallery/Modal";
+import EditForm from "../../components/formElements/editAlbumForm";
+import {renderErrorMessage} from "../../components/Message";
 
 class UserAlbumsPage extends React.Component {
 
@@ -15,9 +15,7 @@ class UserAlbumsPage extends React.Component {
     };
 
     componentDidMount() {
-        if (!this.props.medias.albums) {
-            this.props.fetchAlbum(`/gallery/myalbums/${this.props.user}`);
-        }
+        this.props.fetchAlbum(`/gallery/myalbums/${this.props.user}`);
     }
 
     renderList = () => {

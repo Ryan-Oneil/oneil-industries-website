@@ -1,5 +1,6 @@
 import React from "react";
-import '../../../../assets/css/images.css';
+import '../../assets/css/images.css';
+
 
 class Modal extends React.Component {
 
@@ -34,11 +35,13 @@ class Modal extends React.Component {
         const { closeModal, title} = this.props;
 
         return (
-            <div ref={this.setWrapperRef} className="imageModal ui modal visible active">
-                <i className="closeModal close icon" onClick={closeModal}/>
-                <h1 className="ui center aligned header">{title}</h1>
-                <div className="scrolling content">
+            <div className="modalBackground">
+                <div ref={this.setWrapperRef} className="imageModal ui modal visible active">
+                    <i className="closeModal close icon" onClick={closeModal}/>
+                    <h1 className="ui center aligned header">{title}</h1>
+                    <div className="scrolling content">
                         {this.props.children}
+                    </div>
                 </div>
             </div>
         )

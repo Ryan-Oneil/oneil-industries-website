@@ -1,10 +1,10 @@
 import React from 'react';
 import { Field, reduxForm } from 'redux-form';
-import '../../assets/css/layout.css';
-import {renderInput, renderTextArea} from "../formElements";
+import '../assets/css/layout.css';
+import {renderInput, renderTextArea} from "../components/formElements";
 import {connect} from "react-redux";
-import {sendContactForm} from "../../actions";
-import {renderErrorMessage, renderPositiveMessage} from "../Message";
+import {sendContactForm} from "../actions";
+import {renderErrorMessage, renderPositiveMessage} from "../components/Message";
 
 class Contact extends React.Component {
 
