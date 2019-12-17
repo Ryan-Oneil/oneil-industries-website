@@ -6,12 +6,13 @@ import {
     REGISTER_SUCCESS,
     REGISTER_FAIL,
     RESET_PASSWORD_SENT,
-    RESET_PASSWORD_FAIL
+    RESET_PASSWORD_FAIL, NEW_PASSWORD_SENT, NEW_PASSWORD_FAIL
 } from '../actions/types'
 
 export default function auth(state = {
     isAuthenticated: isAuth(),
-    user: decodeJWT().user
+    user: decodeJWT('authToken').user,
+    role: decodeJWT('authToken').role
 }, action) {
     switch (action.type) {
         case LOGIN_REQUEST:
@@ -41,18 +42,24 @@ export default function auth(state = {
             return {...state, errorMessage: action.errorMessage, message: ""}
         }
         case RESET_PASSWORD_SENT: {
-            return {...state, hasSentResetEmail: true, message: action.message, errorMessage: null}
+            return {...state, hasSentResetEmail: true, message: action.message, errorMessage: ""}
         }
         case RESET_PASSWORD_FAIL: {
             return {...state, errorMessage: action.errorMessage}
+        }
+        case NEW_PASSWORD_SENT: {
+            return {...state, message: action.message, errorMessage: "", passwordReset: true}
+        }
+        case NEW_PASSWORD_FAIL: {
+            return {...state, message: "", errorMessage: action.errorMessage}
         }
         default:
             return state
     }
 }
 
-const decodeJWT = () => {
-    const token = localStorage.getItem('token');
+const decodeJWT = (tokenType) => {
+    const token = localStorage.getItem(tokenType);
 
     if (!token) {
         return "";
@@ -65,14 +72,14 @@ const decodeJWT = () => {
 };
 
 const isAuth = () => {
-    const token = decodeJWT();
+    const token = decodeJWT('refreshToken');
 
     if (!token) {
         return false;
     }
 
     if (Date.now() > token.exp * 1000) {
-        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
         return false;
     }
     return true;

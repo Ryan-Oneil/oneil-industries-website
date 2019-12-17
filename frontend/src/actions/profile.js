@@ -1,8 +1,13 @@
 import {apiDeleteCall, apiGetCall, apiPostCall} from "../apis/api";
 import {
     UPDATE_USER_DETAILS_FAIL,
-    UPDATE_USER_DETAILS_SENT,
+    UPDATE_USER_DETAILS_SENT, USER_PROFILE_GENERATE_API_TOKEN,
+    USER_PROFILE_GENERATE_API_TOKEN_FAIL,
+    USER_PROFILE_GENERATE_SHAREX_CONFIG,
+    USER_PROFILE_GENERATE_SHAREX_CONFIG_FAIL,
     USER_PROFILE_GET,
+    USER_PROFILE_GET_API_TOKENS,
+    USER_PROFILE_GET_API_TOKENS_FAIL,
     USER_PROFILE_GET_FAIL,
     USER_PROFILE_SERVICE_ADD_DISCORD,
     USER_PROFILE_SERVICE_ADD_FAIL,
@@ -21,7 +26,12 @@ export const getUserProfile = (endpoint) => dispatch => {
             resolve(response);
         }).catch(error => {
                 if (error.response) {
-                    dispatch({type: USER_PROFILE_GET_FAIL, errorMessage: error.response.data});
+                    let errorMessage = error.response.data;
+
+                    if (errorMessage.message) {
+                        errorMessage = errorMessage.message;
+                    }
+                    dispatch({type: USER_PROFILE_GET_FAIL, errorMessage: errorMessage});
                 } else {
                     dispatch({type: USER_PROFILE_GET_FAIL, errorMessage: error.message});
                 }
@@ -91,6 +101,43 @@ export const deleteUserService = (endpoint, serviceID, service) => dispatch => {
             dispatch({type: USER_PROFILE_SERVICE_DELETE_FAIL, errorMessage: error.response.data});
         } else {
             dispatch({type: USER_PROFILE_SERVICE_DELETE_FAIL, errorMessage: error.message});
+        }
+    })
+};
+
+export const getAPIToken = endpoint => dispatch => {
+    apiGetCall(endpoint).then(response => {
+        dispatch({type: USER_PROFILE_GET_API_TOKENS, payload: response.data});
+    }).catch(error => {
+        if (error.response) {
+            dispatch({type: USER_PROFILE_GET_API_TOKENS_FAIL, errorMessage: error.response.data});
+        } else {
+            dispatch({type: USER_PROFILE_GET_API_TOKENS_FAIL, errorMessage: error.message});
+        }
+    })
+};
+
+export const generateShareXConfig = endpoint => dispatch => {
+    apiGetCall(endpoint).then(response => {
+        dispatch({type: USER_PROFILE_GENERATE_SHAREX_CONFIG, payload: response.data});
+    }).catch(error => {
+        if (error.response) {
+            dispatch({type: USER_PROFILE_GENERATE_SHAREX_CONFIG_FAIL, errorMessage: error.response.data});
+        } else {
+            dispatch({type: USER_PROFILE_GENERATE_SHAREX_CONFIG_FAIL, errorMessage: error.message});
+        }
+    })
+};
+
+export const generateAPIToken = endpoint => dispatch => {
+    apiGetCall(endpoint).then(response => {
+        dispatch({type: USER_PROFILE_GENERATE_API_TOKEN, payload: response.data});
+        generateShareXConfig("/user/profile/getShareX");
+    }).catch(error => {
+        if (error.response) {
+            dispatch({type: USER_PROFILE_GENERATE_API_TOKEN_FAIL, errorMessage: error.response.data});
+        } else {
+            dispatch({type: USER_PROFILE_GENERATE_API_TOKEN_FAIL, errorMessage: error.message});
         }
     })
 };

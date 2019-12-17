@@ -5,6 +5,7 @@ import mediaReducer from "./mediaReducer";
 import contactReducer from "./contactReducer";
 import serviceReducer from "./serviceReducer";
 import profileReducer from "./profileReducer";
+import adminReducer from "./adminReducer";
 
 export default combineReducers({
     auth: authReducer,
@@ -12,6 +13,7 @@ export default combineReducers({
     medias: mediaReducer,
     contact: contactReducer,
     services: serviceReducer,
-    profile: profileReducer
+    profile: profileReducer,
+    admin: adminReducer
 })
 
