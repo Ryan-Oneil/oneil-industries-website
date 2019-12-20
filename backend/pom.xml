@@ -20,6 +20,27 @@
 		<version>2.1.6.RELEASE</version>
 	</parent>
 
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+			<configuration>
+				<mainClass>biz.oneilindustries.website.config.AppConfig</mainClass>
+			</configuration>
+
+			<executions>
+				<execution>
+					<goals>
+						<goal>repackage</goal>
+					</goals>
+				</execution>
+			</executions>
+
+		</plugin>
+	</plugins>
+</build>
+
 	<repositories>
 		<repository>
 			<id>jcenter</id>
@@ -102,7 +123,7 @@
 		<dependency>
 			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
-			<version>6.0.17.Final</version>
+			<version>6.1.0.Final</version>
 		</dependency>
 
 		<dependency>
