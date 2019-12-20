@@ -1,14 +1,10 @@
 package biz.oneilindustries.website.dao;
 
-import static biz.oneilindustries.website.security.SecurityConstants.SECRET;
-import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
-
 import biz.oneilindustries.website.entity.ApiToken;
 import biz.oneilindustries.website.entity.DiscordUser;
 import biz.oneilindustries.website.entity.Quota;
 import biz.oneilindustries.website.entity.TeamspeakUser;
 import biz.oneilindustries.website.entity.User;
-import com.auth0.jwt.JWT;
 import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;

@@ -2,13 +2,12 @@ package biz.oneilindustries.website.controller.advice;
 
 import biz.oneilindustries.website.exception.MediaException;
 import biz.oneilindustries.website.exception.NotAuthorisedException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 @ControllerAdvice
 public class ImageGalleryControllerAdvice {
@@ -17,13 +16,6 @@ public class ImageGalleryControllerAdvice {
     public ResponseEntity handleException(MediaException error) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(error.getMessage());
-    }
-    //IOException
-    @ExceptionHandler(IOException.class)
-    public ResponseEntity handleException(IOException error) {
-        return ResponseEntity
-                .status(HttpStatus.FORBIDDEN)
                 .body(error.getMessage());
     }
 
@@ -39,5 +31,13 @@ public class ImageGalleryControllerAdvice {
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .body(error.getMessage());
+    }
+
+    //IOException
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity handleException(IOException error) {
+        return ResponseEntity
+            .status(HttpStatus.FORBIDDEN)
+            .body(error.getMessage());
     }
 }

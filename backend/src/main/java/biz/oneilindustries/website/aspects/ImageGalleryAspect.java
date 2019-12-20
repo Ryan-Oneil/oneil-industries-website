@@ -23,7 +23,7 @@ public class ImageGalleryAspect {
     private final MediaService mediaService;
     private final AlbumService albumService;
 
-    private static final String FILE_NOT_EXISTS_ERROR_MESSAGE = ": Does not exist on this server";
+    private static final String FILE_NOT_EXISTS_ERROR_MESSAGE = "Media does not exist on this server";
     private static final String NO_PERMISSION = "You don't have the permission to access this resource";
     private static final String ADMIN_ROLE = "ROLE_ADMIN";
 
@@ -93,7 +93,7 @@ public class ImageGalleryAspect {
     }
 
     @Before("combinedMediaManagement()")
-    public void checkMedia(JoinPoint joinPoint) throws FileNotFoundException {
+    public void checkMedia(JoinPoint joinPoint) {
 
         Object[] args = joinPoint.getArgs();
 
@@ -104,7 +104,7 @@ public class ImageGalleryAspect {
         Media media = mediaService.getMedia(mediaInt);
 
         if (media == null) {
-            throw new FileNotFoundException(FILE_NOT_EXISTS_ERROR_MESSAGE);
+            throw new MediaException(FILE_NOT_EXISTS_ERROR_MESSAGE);
         }
         if (!media.getUploader().equals(user.getName()) && !request.isUserInRole(ADMIN_ROLE)) {
             throw new NotAuthorisedException(user.getName() + NO_PERMISSION);

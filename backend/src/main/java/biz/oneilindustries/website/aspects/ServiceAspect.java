@@ -7,8 +7,8 @@ import biz.oneilindustries.website.service.ManagerService;
 import biz.oneilindustries.website.service.UserService;
 import java.util.List;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ public class ServiceAspect {
         this.userService = userService;
     }
 
-    @Before("execution(* biz.oneilindustries.website.service.UserService.saveUserDiscordProfile(..))")
+    @After("execution(* biz.oneilindustries.website.service.UserService.saveUserDiscordProfile(..))")
     private void updateDiscord(JoinPoint joinPoint) {
 
         DiscordUser user = (DiscordUser) joinPoint.getArgs()[0];
@@ -39,7 +39,7 @@ public class ServiceAspect {
         }
     }
 
-    @Before("execution(* biz.oneilindustries.website.service.UserService.deleteDiscordUUID(..))")
+    @After("execution(* biz.oneilindustries.website.service.UserService.deleteDiscordUUID(..))")
     private void deleteDiscord(JoinPoint joinPoint) {
 
         DiscordUser user = (DiscordUser) joinPoint.getArgs()[0];
@@ -47,7 +47,7 @@ public class ServiceAspect {
         deleteDiscordRoles(user);
     }
 
-    @Before("execution(* biz.oneilindustries.website.service.UserService.saveUserTeamspeakProfile(..))")
+    @After("execution(* biz.oneilindustries.website.service.UserService.saveUserTeamspeakProfile(..))")
     private void updateTeamspeak(JoinPoint joinPoint) {
 
         TeamspeakUser teamspeakUser = (TeamspeakUser) joinPoint.getArgs()[0];
@@ -57,7 +57,7 @@ public class ServiceAspect {
         }
     }
 
-    @Before("execution(* biz.oneilindustries.website.service.UserService.deleteTeamspeakUUID(..))")
+    @After("execution(* biz.oneilindustries.website.service.UserService.deleteTeamspeakUUID(..))")
     private void deleteTeamspeak(JoinPoint joinPoint) {
 
         TeamspeakUser teamspeakUser = (TeamspeakUser) joinPoint.getArgs()[0];
@@ -65,7 +65,7 @@ public class ServiceAspect {
         deleteTeamspeakRoles(teamspeakUser);
     }
 
-    @Before("execution(* biz.oneilindustries.website.service.UserService.saveUser(..))")
+    @After("execution(* biz.oneilindustries.website.service.UserService.saveUser(..))")
     public void userUpdate(JoinPoint joinPoint) {
 
         User user = (User) joinPoint.getArgs()[0];
