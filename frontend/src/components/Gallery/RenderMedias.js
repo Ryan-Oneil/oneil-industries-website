@@ -2,7 +2,7 @@ import { renderErrorMessage } from "../Message";
 import Media from "./Media";
 import React from "react";
 
-export default (mediasList, message, mediaOnClick) => {
+export default (mediasList, message, mediaOnClick, displayUploader) => {
   if (message) {
     return renderErrorMessage(message);
   }
@@ -12,7 +12,13 @@ export default (mediasList, message, mediaOnClick) => {
         <div className="column" key={media.id}>
           <div className="ui card">
             <Media media={media} onClick={mediaOnClick.bind(this, media)} />
-            <h1 className="ui center aligned header">{media.name}</h1>
+            <div className="content centerText">
+              {displayUploader && (
+                <div className="header">{media.uploader}</div>
+              )}
+              {!displayUploader && <div className="header">{media.name}</div>}
+              <div className="description">{media.dateAdded}</div>
+            </div>
           </div>
         </div>
       );

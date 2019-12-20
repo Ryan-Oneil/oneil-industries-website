@@ -36,7 +36,8 @@ class GalleryPage extends React.Component {
               {RenderMedias(
                 this.props.medias.mediasList,
                 this.props.medias.message,
-                this.handleShowDialog
+                this.handleShowDialog,
+                true
               )}
             </div>
           </div>
