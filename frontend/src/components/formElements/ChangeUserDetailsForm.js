@@ -1,43 +1,58 @@
 import React from "react";
-import { Field, reduxForm } from 'redux-form'
-import {renderInput} from "./index";
-import {renderErrorMessage, renderPositiveMessage} from "../Message";
+import { Field, reduxForm } from "redux-form";
+import { renderInput } from "./index";
+import { renderErrorMessage } from "../Message";
+import { connect } from "react-redux";
+import { changeUserDetails } from "../../actions/profile";
 
-const ChangeUserDetailsForm = props => {
-    const { handleSubmit, pristine, submitting } = props;
+class ChangeUserDetailsForm extends React.Component {
+  onSubmit = formValues => {
+    return this.props.changeUserDetails(formValues, "/user/profile/update");
+  };
+
+  render() {
+    const { pristine, submitting, error } = this.props;
 
     return (
-        <form onSubmit={handleSubmit} className="ui form error">
-            <label>Email</label>
-            <Field name="email"
-                   component={renderInput}
-                   type="email"
-                   label="Email"
-            />
-            <label>Password</label>
-            <Field name="password"
-                   component={renderInput}
-                   type="password"
-                   label="Password"
-            />
-            {props.children}
-            <button className="ui fluid large navColor submit button" disabled={submitting || pristine}>Update Account</button>
-            {props.errorMessage && renderErrorMessage(props.errorMessage)}
-            {props.message && renderPositiveMessage(props.message)}
-        </form>
-    )
+      <form
+        onSubmit={this.props.handleSubmit(this.onSubmit)}
+        className="ui form error"
+      >
+        <label>Email</label>
+        <Field
+          name="email"
+          component={renderInput}
+          type="email"
+          label="Email"
+        />
+        <label>Password</label>
+        <Field
+          name="password"
+          component={renderInput}
+          type="password"
+          label="Password"
+        />
+        {error && renderErrorMessage(error)}
+        <button
+          className="ui fluid large navColor submit button"
+          disabled={submitting || pristine}
+        >
+          Update Account
+        </button>
+      </form>
+    );
+  }
+}
+
+const validate = formValues => {
+  const errors = {};
+
+  if (!formValues.email) {
+    errors.email = "You must enter a Email";
+  }
+  return errors;
 };
 
-const validate = (formValues) => {
-    const errors = {};
-
-    if (!formValues.email) {
-        errors.email = "You must enter a Email";
-    }
-    return errors;
-};
-
-export default reduxForm({
-    form: 'changeUserDetails',
-    validate
-})(ChangeUserDetailsForm)
+export default connect(null, { changeUserDetails })(
+  reduxForm({ form: "changeUserDetails", validate })(ChangeUserDetailsForm)
+);

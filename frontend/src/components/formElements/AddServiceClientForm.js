@@ -1,56 +1,71 @@
-import React from 'react';
-import {Field, reduxForm} from "redux-form";
-import {renderErrorMessage} from "../Message";
-import {connect} from "react-redux";
-import {updateAlbum} from "../../actions";
+import React from "react";
+import { Field, reduxForm } from "redux-form";
+import { renderErrorMessage } from "../Message";
+import { connect } from "react-redux";
+import { updateAlbum } from "../../actions";
 
 class AddServiceClientForm extends React.Component {
+  state = { serviceList: [] };
 
-    state = {serviceList: []};
+  componentDidMount() {
+    this.setState({ serviceList: this.props.serviceList });
+  }
 
-    componentDidMount() {
-        this.setState({serviceList: this.props.serviceList})
-    }
+  onSubmit = formValues => {
+    if (!formValues.position) return false;
 
-    onSubmit = (formValues) => {
+    const newServiceClient = this.state.serviceList[formValues.position];
 
-        if (!formValues.position) return false;
+    this.setState({
+      serviceList: this.state.serviceList.filter(
+        serviceClient => serviceClient !== newServiceClient
+      )
+    });
 
-        const newServiceClient = this.state.serviceList[formValues.position];
+    return this.props.addService(
+      "/services/user/addservice/",
+      this.props.service,
+      newServiceClient
+    );
+  };
 
-        this.setState({serviceList: this.state.serviceList.filter(serviceClient => serviceClient !== newServiceClient)});
+  renderServiceClient = () => {
+    return this.state.serviceList.map((serviceClient, index) => {
+      return (
+        <option value={index} key={index}>
+          {serviceClient.name}
+        </option>
+      );
+    });
+  };
 
-        return this.props.addService("/services/user/addservice/", this.props.service, newServiceClient);
-    };
+  render() {
+    const { service, submitting, pristine, error } = this.props;
 
-    renderServiceClient = () => {
-        return this.state.serviceList.map((serviceClient, index) => {
-            return (
-                <option value={index} key={index}>{serviceClient.name}</option>
-            );
-        })
-    };
-
-    render() {
-        const {service, submitting, errorMessage} = this.props;
-
-        return (
-            <form onSubmit={this.props.handleSubmit(this.onSubmit)} className="ui form error">
-                <div className="ui segment">
-                    <h3 className="ui centered aligned header">{service} client</h3>
-                    <Field name="position" component="select" className="field">
-                        <option value=""/>
-                        {this.renderServiceClient()}
-                    </Field>
-                    {errorMessage && renderErrorMessage(errorMessage)}
-                    <button className="ui fluid large navColor submit button" disabled={submitting}>Confirm</button>
-                </div>
-            </form>
-        )
-    }
+    return (
+      <form
+        onSubmit={this.props.handleSubmit(this.onSubmit)}
+        className="ui form error"
+      >
+        <div className="ui segment">
+          <h3 className="ui centered aligned header">{service} client</h3>
+          <Field name="position" component="select" className="field">
+            <option value="" />
+            {this.renderServiceClient()}
+          </Field>
+          {error && renderErrorMessage(error)}
+          <button
+            className="ui fluid large navColor submit button"
+            disabled={submitting || pristine}
+          >
+            Confirm
+          </button>
+        </div>
+      </form>
+    );
+  }
 }
 
-export default connect(
-    null,
-    { updateAlbum }
-)(reduxForm({ form: "addServiceClient" })(AddServiceClientForm));
+export default connect(null, { updateAlbum })(
+  reduxForm({ form: "addServiceClient" })(AddServiceClientForm)
+);
