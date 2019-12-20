@@ -3,13 +3,12 @@ package biz.oneilindustries.website.eventlisteners;
 import biz.oneilindustries.website.entity.User;
 import biz.oneilindustries.website.service.EmailSender;
 import biz.oneilindustries.website.service.UserService;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
-
-import java.util.UUID;
 
 @Component
 public class RegistrationListener implements
@@ -40,10 +39,11 @@ public class RegistrationListener implements
         String recipientAddress = user.getEmail();
         String subject = "Registration Confirmation";
         String confirmationUrl
-                = event.getAppUrl() + "/registrationConfirm/" + token;
+                = event.getAppUrl() + "/confirmEmail/" + token;
+
         String message = messages.getMessage("message.regSucc", null, event.getLocale());
 
-        emailSender.sendSimpleEmail(recipientAddress,subject,message + " http://oneilindustries.biz" + confirmationUrl,"Oneil_Industries", null);
+        emailSender.sendSimpleEmail(recipientAddress,subject,message + " " + confirmationUrl,"Oneil_Industries", null);
         emailSender.sendSimpleEmail(RECEIVER_EMAIL, "New User","A new user has registered to Oneil Industries","Oneil_Industries", null);
     }
 }

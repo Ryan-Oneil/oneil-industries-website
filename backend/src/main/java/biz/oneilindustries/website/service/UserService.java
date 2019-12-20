@@ -1,5 +1,6 @@
 package biz.oneilindustries.website.service;
 
+import static biz.oneilindustries.website.config.AppConfig.BACK_END_URL;
 import static biz.oneilindustries.website.security.SecurityConstants.SECRET;
 import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
 
@@ -13,6 +14,7 @@ import biz.oneilindustries.website.entity.Quota;
 import biz.oneilindustries.website.entity.TeamspeakUser;
 import biz.oneilindustries.website.entity.User;
 import biz.oneilindustries.website.entity.VerificationToken;
+import biz.oneilindustries.website.exception.TokenException;
 import biz.oneilindustries.website.exception.UserException;
 import biz.oneilindustries.website.validation.LoginForm;
 import biz.oneilindustries.website.validation.UpdatedQuota;
@@ -336,14 +338,14 @@ public class UserService {
         ApiToken apiToken = getApiTokensByUsername(username);
 
         if (apiToken == null) {
-            apiToken = generateApiToken(username);
+            throw new TokenException("Generate a api token first");
         }
         //Returns a shareX custom uploader config template
         return "{\n"
                 + "  \"Name\": \"Oneil Industries\",\n"
                 + "  \"DestinationType\": \"ImageUploader, TextUploader, FileUploader\",\n"
                 + "  \"RequestMethod\": \"POST\",\n"
-                + "  \"RequestURL\": \"http://localhost:8080/api/gallery/upload\",\n"
+                + "  \"RequestURL\": \"" + BACK_END_URL + "/api/gallery/upload\",\n"
                 + "  \"Parameters\": {\n"
                 + "    \"name\": \"%h.%mi.%s-%d.%mo.%yy\",\n"
                 + "    \"privacy\": \"unlisted\",\n"

@@ -1,5 +1,8 @@
 package biz.oneilindustries.website.controller;
 
+import static biz.oneilindustries.website.config.AppConfig.BACK_END_URL;
+import static biz.oneilindustries.website.config.AppConfig.GALLERY_IMAGES_DIRECTORY;
+
 import biz.oneilindustries.website.config.ResourceHandler;
 import biz.oneilindustries.website.entity.Album;
 import biz.oneilindustries.website.entity.Media;
@@ -49,7 +52,6 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 @RequestMapping("/api/gallery")
 public class ImageGalleryController {
 
-    private static final String GALLERY_IMAGES_DIRECTORY = "E:/images/";
     private final MediaService mediaService;
     private final AlbumService albumService;
     private final UserService userService;
@@ -135,11 +137,9 @@ public class ImageGalleryController {
             throw new MediaException("No file uploaded");
         }
         FileItemStream item = iterator.next();
-
         File media = FileHandler.writeFile(item, item.getName(), GALLERY_IMAGES_DIRECTORY, user.getName());
 
         GalleryUpload galleryUpload = new GalleryUpload(media, name, privacy, albumName);
-
         Album album = null;
 
         if (!galleryUpload.getAlbumName().equalsIgnoreCase("none")) {
@@ -148,7 +148,7 @@ public class ImageGalleryController {
         mediaService.registerMedia(galleryUpload, user.getName(), album);
         userService.increaseUsedAmount(userStorageLimit, media.length());
 
-        return request.getLocalName() + "/gallery/images/" + galleryUpload.getFile().getName();
+        return BACK_END_URL + "/api/gallery/image/" + galleryUpload.getFile().getName();
     }
 
     @DeleteMapping("/media/delete/{mediaInt}")
@@ -257,7 +257,6 @@ public class ImageGalleryController {
         Album album = albumService.getAlbumByName(albumName);
 
         mediaService.resetMediaAlbumIDs(album);
-
         albumService.deleteAlbum(album.getId());
 
         return ResponseEntity.ok(HttpStatus.OK);

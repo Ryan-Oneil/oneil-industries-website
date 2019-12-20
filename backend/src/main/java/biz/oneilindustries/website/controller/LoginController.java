@@ -1,5 +1,7 @@
 package biz.oneilindustries.website.controller;
 
+import static biz.oneilindustries.website.config.AppConfig.FRONT_END_URL;
+
 import biz.oneilindustries.website.entity.User;
 import biz.oneilindustries.website.entity.VerificationToken;
 import biz.oneilindustries.website.eventlisteners.OnRegistrationCompleteEvent;
@@ -53,9 +55,8 @@ public class LoginController {
 
         User newUser = userService.registerUser(loginForm);
 
-        String appUrl = request.getContextPath();
         eventPublisher.publishEvent(new OnRegistrationCompleteEvent
-            (newUser, request.getLocale(), appUrl));
+            (newUser, request.getLocale(), FRONT_END_URL));
 
         return ResponseEntity.ok("An email has been sent");
     }
@@ -85,7 +86,7 @@ public class LoginController {
         }
         //Will generate a new token or send a previously generated one if exists and not expired
         String token = userService.generateResetToken(user);
-        emailSender.sendSimpleEmail(user.getEmail(),"Password Reset","Reset Password Link " + " http://oneilindustries.biz" + "/resetPassword/" + token,"Oneil-Industries",null);
+        emailSender.sendSimpleEmail(user.getEmail(),"Password Reset","Reset Password Link " + FRONT_END_URL + "/resetPassword/" + token,"Oneil-Industries",null);
 
         return ResponseEntity.ok("Password reset email has been sent");
     }

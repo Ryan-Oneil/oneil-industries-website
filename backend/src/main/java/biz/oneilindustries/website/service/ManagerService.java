@@ -1,5 +1,7 @@
 package biz.oneilindustries.website.service;
 
+import static biz.oneilindustries.website.config.AppConfig.FRONT_END_URL;
+
 import biz.oneilindustries.services.discord.DiscordManager;
 import biz.oneilindustries.website.pojo.CustomChannel;
 import biz.oneilindustries.services.teamspeak.TSManager;
@@ -26,7 +28,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class ManagerService {
 
-    private static final String SERVICE_CONFIRMATION_MESSAGE = "This account has been registered on OneilIndustries.biz please confirm with this link http://oneilindustries.biz/services/confirm/";
+    private static final String SERVICE_CONFIRMATION_MESSAGE = "This account has been registered on OneilIndustries.biz please confirm with this link " + FRONT_END_URL
+        +"/services/confirm/";
     private static final String ACCOUNT_ALREADY_REGISTERED = "This account is already registered to another user";
     private static final String CLAIMED_BY = "\nClaimed by ";
 
@@ -77,7 +80,7 @@ public class ManagerService {
     public List<CustomChannel> getDiscordCategories() {
         List<CustomChannel> discordChannels = new ArrayList<>();
 
-        //Inefficient but sadly I can't just sent the api wrapper's objects due to jackson and mapping issues
+        //Inefficient but sadly I can't just send the api wrapper's objects due to jackson and mapping issues
         for (Category category: discordManager.getCategories()) {
             for (VoiceChannel channel: category.getVoiceChannels()) {
                 CustomChannel discordChannel = new CustomChannel(channel.getName(), channel.getId(), 0);
