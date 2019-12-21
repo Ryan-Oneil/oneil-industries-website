@@ -46,7 +46,7 @@ class Login extends React.Component {
 
   render() {
     if (this.props.auth.isAuthenticated) {
-      this.props.history.goBack();
+      this.props.history.push("/");
     }
     return (
       <div className="ui one column stackable center aligned page grid">

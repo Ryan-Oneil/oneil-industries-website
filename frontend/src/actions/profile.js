@@ -207,25 +207,24 @@ export const generateShareXConfig = endpoint => dispatch => {
       if (error.response) {
         dispatch({
           type: USER_PROFILE_GENERATE_SHAREX_CONFIG_FAIL,
-          errorMessage: error.response.data
+          shareXError: error.response.data
         });
       } else {
         dispatch({
           type: USER_PROFILE_GENERATE_SHAREX_CONFIG_FAIL,
-          errorMessage: error.message
+          shareXError: error.message
         });
       }
     });
 };
 
 export const generateAPIToken = endpoint => dispatch => {
-  apiGetCall(endpoint)
+  return apiGetCall(endpoint)
     .then(response => {
       dispatch({
         type: USER_PROFILE_GENERATE_API_TOKEN,
         payload: response.data
       });
-      generateShareXConfig("/user/profile/getShareX");
     })
     .catch(error => {
       if (error.response) {

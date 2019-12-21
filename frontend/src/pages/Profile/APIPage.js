@@ -7,6 +7,7 @@ import {
 } from "../../actions/profile";
 import DetailBox from "../../components/DetailBox";
 import { CopyToClipboard } from "react-copy-to-clipboard";
+import { loginUser } from "../../actions";
 
 class APIPage extends React.Component {
   state = { apiButtonText: "Copy", shareXButtonText: "Copy" };
@@ -23,7 +24,7 @@ class APIPage extends React.Component {
   }
 
   render() {
-    const { apiToken, shareXConfig } = this.props.profile;
+    const { apiToken, shareXConfig, shareXError } = this.props.profile;
 
     return (
       <div className="ui padded grid">
@@ -49,7 +50,11 @@ class APIPage extends React.Component {
             <button
               className="ui centerButton primary button"
               onClick={() => {
-                this.props.generateAPIToken("/user/profile/generateAPIToken");
+                this.props
+                  .generateAPIToken("/user/profile/generateAPIToken")
+                  .then(() =>
+                    this.props.generateShareXConfig("/user/profile/getShareX")
+                  );
               }}
             >
               Generate
@@ -58,17 +63,18 @@ class APIPage extends React.Component {
         </div>
         <div className="ui six wide column">
           <DetailBox header="ShareX Config">
-            {shareXConfig && (
-              <div>
-                <div className="ui form">
-                  <div className="field">
-                    <textarea readOnly value={JSON.stringify(shareXConfig)} />
-                  </div>
+            <div>
+              <div className="ui form">
+                <div className="field">
+                  <textarea
+                    readOnly
+                    value={JSON.stringify(shareXConfig || shareXError)}
+                  />
                 </div>
               </div>
-            )}
+            </div>
             <CopyToClipboard
-              text={JSON.stringify(shareXConfig)}
+              text={JSON.stringify(shareXConfig || shareXError)}
               onCopy={() => this.setState({ shareXButtonText: "Copied" })}
             >
               <button className="ui teal right labeled icon centerButton button">

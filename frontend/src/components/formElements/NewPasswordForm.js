@@ -14,10 +14,11 @@ class NewPasswordForm extends React.Component {
     return this.props.changePassword(token, formValues.password.trim());
   };
 
-  componentDidMount() {
+  componentDidUpdate() {
     let token = this.props.match.params.token;
+    const { submitSucceeded } = this.props;
 
-    if (this.props.auth.passwordReset) {
+    if (this.props.auth.passwordReset || submitSucceeded) {
       this.props.history.push("/login");
     }
 
@@ -27,7 +28,7 @@ class NewPasswordForm extends React.Component {
   }
 
   render() {
-    const { submitting, error } = this.props;
+    const { submitting, error, submitSucceeded } = this.props;
     const { message } = this.props.auth;
 
     return (
@@ -55,7 +56,7 @@ class NewPasswordForm extends React.Component {
               {message && renderPositiveMessage(message)}
               <button
                 className="ui fluid large navColor submit button"
-                disabled={submitting}
+                disabled={submitting || submitSucceeded}
               >
                 Confirm
               </button>

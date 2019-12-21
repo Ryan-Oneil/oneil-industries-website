@@ -2,6 +2,7 @@ import {
   UPDATE_USER_DETAILS_SENT,
   USER_PROFILE_GENERATE_API_TOKEN,
   USER_PROFILE_GENERATE_SHAREX_CONFIG,
+  USER_PROFILE_GENERATE_SHAREX_CONFIG_FAIL,
   USER_PROFILE_GET,
   USER_PROFILE_GET_API_TOKENS,
   USER_PROFILE_GET_FAIL,
@@ -96,7 +97,10 @@ export default (
       return { ...state, apiToken: action.payload };
     }
     case USER_PROFILE_GENERATE_SHAREX_CONFIG: {
-      return { ...state, shareXConfig: action.payload };
+      return { ...state, shareXConfig: action.payload, shareXError: "" };
+    }
+    case USER_PROFILE_GENERATE_SHAREX_CONFIG_FAIL: {
+      return { ...state, shareXError: action.shareXError };
     }
     case USER_PROFILE_GENERATE_API_TOKEN: {
       return { ...state, apiToken: action.payload };

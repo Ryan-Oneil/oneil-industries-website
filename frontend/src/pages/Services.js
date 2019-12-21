@@ -21,7 +21,7 @@ class Services extends React.Component {
         <div className="column eight wide">
           <div className="teamspeakList ui segment ">
             <h1 className="ui center aligned header">
-              <a href="ts3server://oneilindustries.biz/?port=9987">
+              <a href="ts3server://ts.oneilindustries.biz/?port=9987">
                 Connect to Teamspeak
               </a>
             </h1>
@@ -33,7 +33,7 @@ class Services extends React.Component {
         <div className="column eight wide">
           <div className="teamspeakList ui segment ">
             <h1 className="ui center aligned header">
-              <a href="https://discord.gg/TSYe5vX">Connect to Discord</a>
+              <a href="https://discord.gg/dZSKaaX">Connect to Discord</a>
             </h1>
             {this.props.services.activeTSList && (
               <ServiceList services={this.props.services.activeDiscord} />
