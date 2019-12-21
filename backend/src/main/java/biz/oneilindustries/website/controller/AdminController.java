@@ -1,7 +1,6 @@
 package biz.oneilindustries.website.controller;
 
 import biz.oneilindustries.website.entity.User;
-import biz.oneilindustries.website.service.AlbumService;
 import biz.oneilindustries.website.service.MediaService;
 import biz.oneilindustries.website.service.RoleService;
 import biz.oneilindustries.website.service.UserService;
@@ -28,15 +27,12 @@ public class AdminController {
 
     private final UserService userService;
     private final MediaService mediaService;
-    private final AlbumService albumService;
     private final RoleService roleService;
 
     @Autowired
-    public AdminController(UserService userService, MediaService mediaService, AlbumService albumService,
-        RoleService roleService) {
+    public AdminController(UserService userService, MediaService mediaService, RoleService roleService) {
         this.userService = userService;
         this.mediaService = mediaService;
-        this.albumService = albumService;
         this.roleService = roleService;
     }
 
@@ -62,8 +58,6 @@ public class AdminController {
         HashMap<String, Object> userInformation = new HashMap<>();
         userInformation.put("details", new UpdatedUser(user.getUsername(), "*", user.getEmail(), user.getRole(), user.getEnabled()));
         userInformation.put("storageQuota", userService.getQuotaByUsername(username));
-        userInformation.put("mediaCount", mediaService.getTotalMediaCountByUser(username));
-        userInformation.put("albumCount", albumService.getAlbumCountByUser(username));
         userInformation.put("discordProfiles", userService.getUserDiscordProfiles(username));
         userInformation.put("teamspeakProfiles", userService.getUserTeamspeakProfile(username));
 

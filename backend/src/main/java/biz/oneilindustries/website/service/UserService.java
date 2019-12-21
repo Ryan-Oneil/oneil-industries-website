@@ -107,6 +107,13 @@ public class UserService {
         }
 
         if (updatedUser.getEmail() != null) {
+            if (!updatedUser.getEmail().equals(user.getEmail())) {
+                User isEmailTaken = getUserByEmail(updatedUser.getEmail());
+
+                if (isEmailTaken != null) {
+                    throw new UserException("Email is already registered to another user");
+                }
+            }
             user.setEmail(updatedUser.getEmail());
         }
 

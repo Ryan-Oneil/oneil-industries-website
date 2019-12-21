@@ -42,6 +42,11 @@ public class UserProfileController {
         return ResponseEntity.ok(userDetails);
     }
 
+    @GetMapping("/profile/storageQuota")
+    public ResponseEntity getUserSpaceQuota(Authentication user) {
+        return ResponseEntity.ok(userService.getQuotaByUsername(user.getName()));
+    }
+
     @PostMapping("/profile/update")
     public ResponseEntity updateUserDetails(@RequestBody UpdatedUser updatedUser, Authentication authentication) {
 
