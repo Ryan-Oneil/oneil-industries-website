@@ -36,6 +36,7 @@ public class TSBot {
         });
         final TS3Query query = new TS3Query(config);
         query.connect();
+        api = query.getApi();
     }
 
     private static void connectToServer(TS3Api api, String tsUsername, String tsPassword) {
