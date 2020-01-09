@@ -1,11 +1,15 @@
 package biz.oneilindustries.website.controller.advice;
 
+import biz.oneilindustries.website.exception.MediaException;
+import biz.oneilindustries.website.exception.MediaApprovalException;
+import biz.oneilindustries.website.exception.NotAuthorisedException;
 import biz.oneilindustries.website.exception.ServiceProfileException;
 import biz.oneilindustries.website.exception.TokenException;
 import biz.oneilindustries.website.exception.TooManyLoginAttempts;
 import biz.oneilindustries.website.exception.UserException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.github.theholywaffle.teamspeak3.api.exception.TS3QueryShutDownException;
+import java.io.FileNotFoundException;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileUploadBase.SizeLimitExceededException;
 import org.springframework.http.HttpStatus;
@@ -56,6 +60,35 @@ public class ErrorPageControllerAdvice {
     public ResponseEntity ts3BotException() {
         return ResponseEntity.status(HttpServletResponse.SC_INTERNAL_SERVER_ERROR).body("Teamspeak services bot is down");
     }
+
+    @ExceptionHandler(MediaException.class)
+    public ResponseEntity mediaNotFound(MediaException error) {
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(error.getMessage());
+    }
+
+    @ExceptionHandler(MediaApprovalException.class)
+    public ResponseEntity mediaMissingPublicApproval(MediaApprovalException error) {
+        return ResponseEntity
+            .status(HttpStatus.FORBIDDEN)
+            .body(error.getMessage());
+    }
+
+    @ExceptionHandler(FileNotFoundException.class)
+    public ResponseEntity handleException(FileNotFoundException error) {
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(error.getMessage());
+    }
+
+    @ExceptionHandler(NotAuthorisedException.class)
+    public ResponseEntity handleException(NotAuthorisedException error) {
+        return ResponseEntity
+            .status(HttpStatus.FORBIDDEN)
+            .body(error.getMessage());
+    }
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity handleAll(Exception ex) {
