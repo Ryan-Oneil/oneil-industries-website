@@ -2,6 +2,7 @@ package biz.oneilindustries.website.controller;
 
 import static biz.oneilindustries.website.config.AppConfig.BACK_END_URL;
 import static biz.oneilindustries.website.config.AppConfig.GALLERY_IMAGES_DIRECTORY;
+import static biz.oneilindustries.website.security.SecurityConstants.TRUSTED_ROLES;
 
 import biz.oneilindustries.website.config.ResourceHandler;
 import biz.oneilindustries.website.entity.Album;
@@ -11,6 +12,7 @@ import biz.oneilindustries.website.exception.MediaException;
 import biz.oneilindustries.website.filecreater.FileHandler;
 import biz.oneilindustries.website.gallery.AlbumCreator;
 import biz.oneilindustries.website.gallery.MediaAlbum;
+import biz.oneilindustries.website.pojo.AlbumDetails;
 import biz.oneilindustries.website.service.AlbumService;
 import biz.oneilindustries.website.service.MediaService;
 import biz.oneilindustries.website.service.UserService;
@@ -37,6 +39,7 @@ import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,7 +52,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 @RestController
-@RequestMapping("/api/gallery")
+@RequestMapping("/gallery")
 public class ImageGalleryController {
 
     private final MediaService mediaService;
@@ -119,6 +122,7 @@ public class ImageGalleryController {
     @PostMapping("/upload")
     public String uploadMediaAPI(@RequestParam String name, @RequestParam String privacy, @RequestParam String albumName, Authentication user, HttpServletRequest request)
         throws IOException, FileUploadException {
+        boolean needsApproval = false;
 
         //Calculates the amount of storage the user can still use
         Quota userStorageLimit = userService.getQuotaByUsername(user.getName());
@@ -131,12 +135,14 @@ public class ImageGalleryController {
         }
         FileItemIterator iterator;
 
+        //Gets the uploaded file from request
         try {
             iterator = upload.getItemIterator(request);
         } catch (InvalidContentTypeException e) {
             throw new MediaException("No file uploaded");
         }
         FileItemStream item = iterator.next();
+        //Writes the file
         File media = FileHandler.writeFile(item, item.getName(), GALLERY_IMAGES_DIRECTORY, user.getName());
 
         GalleryUpload galleryUpload = new GalleryUpload(media, name, privacy, albumName);
@@ -145,10 +151,18 @@ public class ImageGalleryController {
         if (!galleryUpload.getAlbumName().equalsIgnoreCase("none")) {
             album = albumService.registerAlbum(galleryUpload, user.getName());
         }
-        mediaService.registerMedia(galleryUpload, user.getName(), album);
+        String returnMessage = BACK_END_URL + "/api/gallery/image/" + galleryUpload.getFile().getName();
+
+        if (privacy.equalsIgnoreCase("public") && !CollectionUtils.containsAny(user.getAuthorities(),TRUSTED_ROLES)) {
+            galleryUpload.setPrivacy("unlisted");
+            needsApproval = true;
+            returnMessage = "The media will need to be approved by an admin to be made public. It will remain unlisted until approved";
+        }
+
+        mediaService.registerMedia(galleryUpload, user.getName(), album, needsApproval);
         userService.increaseUsedAmount(userStorageLimit, media.length());
 
-        return BACK_END_URL + "/api/gallery/image/" + galleryUpload.getFile().getName();
+        return returnMessage;
     }
 
     @DeleteMapping("/media/delete/{mediaInt}")
@@ -179,15 +193,20 @@ public class ImageGalleryController {
 
     @PutMapping("/media/update/{mediaID}")
     public ResponseEntity updateMedia(@PathVariable int mediaID, Authentication user, HttpServletRequest request, @RequestBody @Valid GalleryUpload galleryUpload)  {
-
         Album album = null;
 
         if (!galleryUpload.getAlbumName().equalsIgnoreCase("none")) {
             album = albumService.updateAlbum(galleryUpload,user.getName());
         }
-        Media media = mediaService.updateMedia(galleryUpload,album, mediaID);
 
-        return ResponseEntity.ok(media);
+        if (galleryUpload.getPrivacy().equalsIgnoreCase("public") && !CollectionUtils.containsAny(user.getAuthorities(), TRUSTED_ROLES)) {
+            galleryUpload.setPrivacy("unlisted");
+            mediaService.requestPublicApproval(mediaID, galleryUpload.getName(), album);
+            return ResponseEntity.ok("Adding or updating a public media will require admin approval. Once approved your media changes will be live");
+        }
+        mediaService.updateMedia(galleryUpload,album, mediaID);
+
+        return ResponseEntity.ok("Successfully updated media");
     }
 
     @GetMapping("/album/{albumName}")
@@ -210,9 +229,9 @@ public class ImageGalleryController {
         return albumMedia;
     }
 
-    @GetMapping("/myalbums/{username}/names")
-    public List<String> showUserAlbumNames(Authentication user, @PathVariable String username, HttpServletRequest request) {
-        return albumService.getAlbumNamesByUser(username);
+    @GetMapping("/myalbums/{username}/details")
+    public List<AlbumDetails> showUserAlbumNames(Authentication user, @PathVariable String username, HttpServletRequest request) {
+        return albumService.getAlbumDetailsByCreator(username);
     }
 
     @GetMapping("/myalbums/{username}")

@@ -48,6 +48,10 @@ public class Media {
         this.dateAdded = dateAdded;
     }
 
+    public Media(int mediaID) {
+        this.id = mediaID;
+    }
+
     public Media() {
     }
 

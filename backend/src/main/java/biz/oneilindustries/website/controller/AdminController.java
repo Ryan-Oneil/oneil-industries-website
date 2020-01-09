@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController()
-@RequestMapping("/api/admin")
+@RequestMapping("/admin")
 public class AdminController {
 
     private final UserService userService;
@@ -36,6 +36,8 @@ public class AdminController {
         this.roleService = roleService;
     }
 
+    // User related admin apis
+
     @GetMapping("/users")
     public List<UpdatedUser> showUsers() {
 
@@ -47,8 +49,13 @@ public class AdminController {
         return users;
     }
 
+    @GetMapping("/users/roles")
+    public ResponseEntity getRoles() {
+        return ResponseEntity.ok(roleService.getRoles());
+    }
+
     @GetMapping("/user/{username}")
-    public ResponseEntity manageUser(@PathVariable String username) {
+    public ResponseEntity getUserAccountInformation(@PathVariable String username) {
         User user = userService.getUser(username);
 
         if (user == null) {
@@ -64,28 +71,50 @@ public class AdminController {
         return ResponseEntity.ok(userInformation);
     }
 
-    @PutMapping("/updateUser/{username}")
+    @PutMapping("/user/{username}/update/details")
     public ResponseEntity updateUser(@RequestBody @Valid UpdatedUser updatedUser, @PathVariable String username) {
         userService.updateUser(updatedUser,username);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @PutMapping("/updateUserQuota/{username}")
+    @PutMapping("/user/{username}/update/quota")
     public ResponseEntity updateUserQuota(@RequestBody @Valid UpdatedQuota updatedQuota, @PathVariable String username) {
         userService.updateUserQuota(updatedQuota, username);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
-    @GetMapping("/user/{username}/hideMedia")
+
+    @GetMapping("/user/{username}/medias/hide")
     public ResponseEntity hideUserMedia(@PathVariable String username) {
         mediaService.hideAllMedia(username);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @GetMapping("/roles")
-    public ResponseEntity getRoles() {
-        return ResponseEntity.ok(roleService.getRoles());
+    //Media related admin apis
+
+    @GetMapping("/medias")
+    public ResponseEntity getAllMedias() {
+        return ResponseEntity.ok(mediaService.getMedias());
+    }
+
+    @GetMapping("/medias/pendingApproval")
+    public ResponseEntity getMediasRequiringApproval() {
+        return ResponseEntity.ok(mediaService.getMediaApprovalsByStatus("pending"));
+    }
+
+    @PutMapping("/media/{approvalMediaID}/approve")
+    public ResponseEntity approveMediaApproval(@PathVariable int approvalMediaID) {
+        mediaService.approvePublicMedia(approvalMediaID);
+
+        return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    @PutMapping("/media/{approvalMediaID}/deny")
+    public ResponseEntity denyMediaApproval(@PathVariable int approvalMediaID) {
+        mediaService.setMediaApprovalStatus(approvalMediaID, "denied");
+
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 }

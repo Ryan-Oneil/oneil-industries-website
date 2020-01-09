@@ -1,13 +1,13 @@
 package biz.oneilindustries.website.dao;
 
 import biz.oneilindustries.website.entity.Media;
+import biz.oneilindustries.website.entity.PublicMediaApproval;
+import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public class MediaDAO {
@@ -76,6 +76,12 @@ public class MediaDAO {
         currentSession.saveOrUpdate(media);
     }
 
+    public void saveMediaApproval(PublicMediaApproval media) {
+        Session currentSession = sessionFactory.getCurrentSession();
+
+        currentSession.saveOrUpdate(media);
+    }
+
     public void deleteMedia(int id) {
         Session currentSession = sessionFactory.getCurrentSession();
 
@@ -91,5 +97,39 @@ public class MediaDAO {
         query.setParameter("username",user);
 
         return (long) query.uniqueResult();
+    }
+
+    public List<PublicMediaApproval> getMediaApprovals() {
+        Session currentSession = sessionFactory.getCurrentSession();
+
+        Query query = currentSession.createQuery("from PublicMediaApproval", PublicMediaApproval.class);
+
+        return query.getResultList();
+    }
+
+    public List<PublicMediaApproval> getMediaApprovalsByStatus(String status) {
+        Session currentSession = sessionFactory.getCurrentSession();
+
+        Query query = currentSession.createQuery("from PublicMediaApproval where status=: status", PublicMediaApproval.class);
+        query.setParameter("status", status);
+
+        return query.getResultList();
+    }
+
+    public PublicMediaApproval getMediaApprovalByMediaID(int mediaID) {
+        Session currentSession = sessionFactory.getCurrentSession();
+
+        Query query = currentSession.createQuery("from PublicMediaApproval where media_id=: mediaID", PublicMediaApproval.class);
+        query.setParameter("mediaID", mediaID);
+
+        return (PublicMediaApproval) query.uniqueResult();
+    }
+
+    public void deleteMediaApproval(int id) {
+        Session currentSession = sessionFactory.getCurrentSession();
+
+        Query query = currentSession.createQuery("delete from PublicMediaApproval where id=:id");
+        query.setParameter("id",id);
+        query.executeUpdate();
     }
 }

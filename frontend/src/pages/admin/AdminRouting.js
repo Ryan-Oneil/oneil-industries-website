@@ -1,15 +1,23 @@
 import React from "react";
 import { connect } from "react-redux";
-import { getUsers } from "../../actions/admin";
+import { getMediaApprovals } from "../../actions/admin";
 import { NavLink, Route, Switch } from "react-router-dom";
 import Users from "./Users";
 import ManageUser from "./ManageUser";
 import PrivateRoute from "../../components/PrivateRoute";
 import SideBarNav from "../../components/site layout/SideBarNav";
+import Media from "./Media/MediaAdmin";
+import SubNavMenu from "../../components/site layout/SubNavMenu";
+import Approval from "./Media/Approval";
+import Stats from "./Stats";
 
-class Admin extends React.Component {
-  constructor(props) {
-    super(props);
+class AdminRouting extends React.Component {
+  componentDidMount() {
+    const { isAuthenticated, role } = this.props.auth;
+
+    if (!isAuthenticated || role !== "ROLE_ADMIN") {
+      this.props.history.push("/");
+    }
   }
 
   render() {
@@ -29,20 +37,40 @@ class Admin extends React.Component {
             <i className="icon cog" />
             Settings
           </NavLink>
+          <SubNavMenu header="Media Gallery" icon="images outline">
+            <NavLink
+              to={`${match.path}/media`}
+              exact
+              className="item subMenuItem"
+            >
+              <i className="icon images outline" />
+              Medias
+            </NavLink>
+            <NavLink
+              to={`${match.path}/media/approval`}
+              exact
+              className="item subMenuItem"
+            >
+              <i className="icon check" />
+              Approvals
+            </NavLink>
+          </SubNavMenu>
         </SideBarNav>
 
         <div className="sixteen wide mobile thirteen wide tablet thirteen wide computer right floated column">
           <Switch>
             <PrivateRoute>
-              <Route exact path={match.path}>
-                <div className="two wide column">
-                  <h3>Under construction</h3>
-                </div>
-              </Route>
+              <Route exact path={match.path} component={Stats} />
               <Route exact path={`${match.path}/users`} component={Users} />
               <Route
                 path={`${match.path}/users/:user`}
                 component={ManageUser}
+              />
+              <Route exact path={`${match.path}/media`} component={Media} />
+              <Route
+                exact
+                path={`${match.path}/media/approval`}
+                component={Approval}
               />
             </PrivateRoute>
           </Switch>
@@ -52,7 +80,7 @@ class Admin extends React.Component {
   }
 }
 const mapStateToProps = state => {
-  return { admin: state.admin };
+  return { admin: state.admin, auth: state.auth };
 };
 
-export default connect(mapStateToProps, { getUsers })(Admin);
+export default connect(mapStateToProps, { getMediaApprovals })(AdminRouting);
