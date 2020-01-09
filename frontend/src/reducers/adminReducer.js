@@ -1,4 +1,7 @@
 import {
+  ADMIN_APPROVE_PUBLIC_MEDIA,
+  ADMIN_DENY_PUBLIC_MEDIA,
+  ADMIN_GET_PENDING_PUBLIC_MEDIA_APPROVALS,
   ADMIN_GET_ROLES,
   ADMIN_GET_USER_DETAIL,
   ADMIN_GET_USER_DETAIL_FAIL,
@@ -13,6 +16,7 @@ export default (
     roles: [],
     users: [],
     user: "",
+    mediaApprovals: [],
     errorMessage: "",
     message: ""
   },
@@ -20,7 +24,14 @@ export default (
 ) => {
   switch (action.type) {
     case ADMIN_GET_USERS: {
-      return { ...state, users: action.payload, errorMessage: "" };
+      return {
+        ...state,
+        users: action.payload.filter(user => {
+          user.role = user.role.replace("ROLE_", "");
+          return user;
+        }),
+        errorMessage: ""
+      };
     }
     case ADMIN_GET_USERS_FAIL: {
       return { ...state, errorMessage: action.errorMessage };
@@ -29,6 +40,10 @@ export default (
       return { ...state, roles: action.payload, errorMessage: "" };
     }
     case ADMIN_GET_USER_DETAIL: {
+      action.payload.details.role = action.payload.details.role.replace(
+        "ROLE_",
+        ""
+      );
       return { ...state, user: action.payload, errorMessage: "" };
     }
     case ADMIN_GET_USER_DETAIL_FAIL: {
@@ -50,8 +65,22 @@ export default (
         }
       };
     }
+    case ADMIN_GET_PENDING_PUBLIC_MEDIA_APPROVALS: {
+      return { ...state, mediaApprovals: action.payload };
+    }
+    case ADMIN_DENY_PUBLIC_MEDIA:
+    case ADMIN_APPROVE_PUBLIC_MEDIA: {
+      return {
+        ...state,
+        mediaApprovals: filterApprovals(action.approvalID, state.mediaApprovals)
+      };
+    }
     default: {
       return state;
     }
   }
+};
+
+const filterApprovals = (approvalID, state) => {
+  return state.filter(approval => approval.id !== approvalID);
 };

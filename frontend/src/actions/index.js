@@ -14,8 +14,9 @@ import {
   MEDIA_POST_SENT,
   MEDIA_POST_SUCCESS,
   MEDIA_REQUEST,
+  MEDIA_RESET_MESSAGES,
   MEDIA_UPDATE_SENT,
-  USER_MEDIA_REQUEST
+  SET_ACTIVE_MEDIA_MODAL
 } from "./types";
 import { SubmissionError } from "redux-form";
 export * from "./authenication";
@@ -25,16 +26,6 @@ export const fetchImages = endpoint => dispatch => {
   apiGetCall(endpoint)
     .then(response => {
       dispatch({ type: MEDIA_REQUEST, payload: response.data });
-    })
-    .catch(error => {
-      dispatch({ type: MEDIA_FAILURE, message: error });
-    });
-};
-
-export const fetchUserImages = endpoint => dispatch => {
-  apiGetCall(endpoint)
-    .then(response => {
-      dispatch({ type: USER_MEDIA_REQUEST, payload: response.data });
     })
     .catch(error => {
       dispatch({ type: MEDIA_FAILURE, message: error });
@@ -102,10 +93,20 @@ export const deleteMedia = (endpoint, mediaID) => dispatch => {
     });
 };
 
-export const updateMedia = (endpoint, data) => dispatch => {
+export const updateMedia = (endpoint, data, mediaID) => dispatch => {
+  const updatedMedia = {
+    id: mediaID,
+    name: data.name,
+    linkStatus: data.privacy
+  };
+
   return apiPutCall(endpoint, data)
     .then(response => {
-      dispatch({ type: MEDIA_UPDATE_SENT, media: response.data });
+      dispatch({
+        type: MEDIA_UPDATE_SENT,
+        media: updatedMedia,
+        message: response.data
+      });
     })
     .catch(error => {
       if (error.response) {
@@ -114,4 +115,18 @@ export const updateMedia = (endpoint, data) => dispatch => {
         throw new SubmissionError({ _error: error.message });
       }
     });
+};
+
+export const clearMessages = () => {
+  return {
+    type: MEDIA_RESET_MESSAGES
+  };
+};
+
+//Sets active media from the global media list
+export const setActiveMediaForModal = mediaID => {
+  return {
+    type: SET_ACTIVE_MEDIA_MODAL,
+    mediaID
+  };
 };

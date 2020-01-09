@@ -1,5 +1,11 @@
 import { apiGetCall, apiPutCall } from "../apis/api";
-import { ADMIN_GET_USERS_FAIL, ADMIN_GET_USERS } from "./types";
+import {
+  ADMIN_GET_USERS_FAIL,
+  ADMIN_GET_USERS,
+  ADMIN_GET_PENDING_PUBLIC_MEDIA_APPROVALS,
+  ADMIN_APPROVE_PUBLIC_MEDIA,
+  ADMIN_DENY_PUBLIC_MEDIA
+} from "./types";
 import { ADMIN_GET_ROLES } from "./types";
 import { ADMIN_GET_USER_DETAIL } from "./types";
 import { ADMIN_GET_USER_DETAIL_FAIL } from "./types";
@@ -58,7 +64,7 @@ export const updateUserDetails = (endpoint, data, user) => dispatch => {
     enabled: data.enabled
   };
 
-  return apiPutCall(endpoint + user, updatedUser)
+  return apiPutCall(endpoint, updatedUser)
     .then(() => {
       dispatch({ type: ADMIN_UPDATE_USER_DETAILS, user: updatedUser });
     })
@@ -83,4 +89,25 @@ export const updateUserQuota = (endpoint, data) => dispatch => {
         throw new SubmissionError({ _error: error.message });
       }
     });
+};
+
+export const getMediaApprovals = endpoint => dispatch => {
+  apiGetCall(endpoint).then(response => {
+    dispatch({
+      type: ADMIN_GET_PENDING_PUBLIC_MEDIA_APPROVALS,
+      payload: response.data
+    });
+  });
+};
+
+export const approvePublicMedia = (endpoint, mediaApprovalID) => dispatch => {
+  apiPutCall(endpoint).then(() => {
+    dispatch({ type: ADMIN_APPROVE_PUBLIC_MEDIA, approvalID: mediaApprovalID });
+  });
+};
+
+export const denyPublicMedia = (endpoint, mediaApprovalID) => dispatch => {
+  apiPutCall(endpoint).then(() => {
+    dispatch({ type: ADMIN_DENY_PUBLIC_MEDIA, approvalID: mediaApprovalID });
+  });
 };
