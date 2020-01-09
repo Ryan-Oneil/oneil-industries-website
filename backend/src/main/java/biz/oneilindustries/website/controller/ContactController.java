@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/contact")
+@RequestMapping("/contact")
 public class ContactController {
 
     private static final int MAX_FORMS_PER_DAY = 3;

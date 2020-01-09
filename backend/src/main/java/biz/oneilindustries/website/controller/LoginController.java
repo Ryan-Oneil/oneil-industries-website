@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 public class LoginController {
 
     private final UserService userService;
@@ -58,7 +58,7 @@ public class LoginController {
         eventPublisher.publishEvent(new OnRegistrationCompleteEvent
             (newUser, request.getLocale(), FRONT_END_URL));
 
-        return ResponseEntity.ok("An email has been sent");
+        return ResponseEntity.ok("A confirmation email has been sent. You will need to confirm it before you can login");
     }
 
     @PostMapping("/registrationConfirm/{token}")

@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/services")
+@RequestMapping("/services")
 public class ServiceController {
 
     private static final String ADMIN_ROLE = "ROLE_ADMIN";
