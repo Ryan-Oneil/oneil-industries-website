@@ -7,24 +7,24 @@ import {
   MEDIA_FAILURE,
   MEDIA_POST_SENT,
   MEDIA_REQUEST,
+  MEDIA_RESET_MESSAGES,
   MEDIA_UPDATE_SENT,
-  USER_MEDIA_REQUEST
+  SET_ACTIVE_MEDIA_MODAL
 } from "../actions/types";
+import _ from "lodash";
 
 export default (
   state = {
     mediasList: [],
-    userMediasList: [],
-    albums: []
+    albums: [],
+    mediaUpdateMessage: "",
+    activeMedia: {}
   },
   action
 ) => {
   switch (action.type) {
     case MEDIA_REQUEST: {
       return { ...state, mediasList: action.payload };
-    }
-    case USER_MEDIA_REQUEST: {
-      return { ...state, userMediasList: action.payload };
     }
     case MEDIA_FAILURE: {
       return action.message;
@@ -37,11 +37,10 @@ export default (
       };
     }
     case MEDIA_DELETE_DONE: {
-      const mediaID = action.mediaDeleteID;
       return {
         ...state,
-        userMediasList: state.userMediasList.filter(
-          media => media.id !== mediaID
+        mediasList: state.mediasList.filter(
+          media => media.id !== action.mediaDeleteID
         )
       };
     }
@@ -49,20 +48,14 @@ export default (
       return { ...state, deleteError: action.message };
     }
     case MEDIA_UPDATE_SENT: {
-      let userMediasList = state.userMediasList.map(media =>
-        changeMedia(media, action.media)
-      );
-
-      if (state.mediasList) {
-        return {
-          ...state,
-          userMediasList,
-          mediasList: state.mediasList.map(media =>
-            changeMedia(media, action.media)
-          )
-        };
-      }
-      return { ...state, userMediasList };
+      return {
+        ...state,
+        mediaUpdateMessage: action.message,
+        mediasList: state.mediasList.map(media =>
+          changeMedia(media, action.media)
+        ),
+        activeMedia: changeMedia(state.activeMedia, action.media)
+      };
     }
     case ALBUM_REQUEST: {
       return { ...state, albums: action.payload };
@@ -84,6 +77,17 @@ export default (
     case ALBUM_FAILURE: {
       return action.message;
     }
+    case MEDIA_RESET_MESSAGES: {
+      return { ...state, mediaUpdateMessage: "" };
+    }
+    case SET_ACTIVE_MEDIA_MODAL: {
+      return {
+        ...state,
+        activeMedia: _.find(state.mediasList, media => {
+          return media.id === action.mediaID;
+        })
+      };
+    }
     default: {
       return state;
     }
@@ -92,7 +96,11 @@ export default (
 
 const changeMedia = (media, actionMedia) => {
   if (media.id === actionMedia.id) {
-    return actionMedia;
+    return {
+      ...media,
+      name: actionMedia.name,
+      linkStatus: actionMedia.linkStatus
+    };
   }
   return media;
 };

@@ -59,7 +59,7 @@ export const loginUser = creds => dispatch => {
 };
 
 export const registerUser = creds => dispatch => {
-  return apiPostCall(BASE_URL + "/api/auth/register", creds)
+  return apiPostCall(BASE_URL + "/auth/register", creds)
     .then(response => {
       dispatch({ type: REGISTER_SUCCESS, message: response.data });
     })
@@ -82,7 +82,7 @@ export const logoutUser = () => {
 };
 
 export const resetPassword = email => dispatch => {
-  return apiPostCall(BASE_URL + "/api/auth/forgotPassword/" + email)
+  return apiPostCall(BASE_URL + "/auth/forgotPassword/" + email)
     .then(response => {
       dispatch({ type: RESET_PASSWORD_SENT, message: response.data });
     })
@@ -100,7 +100,7 @@ export const changePassword = (token, password) => dispatch => {
     params: { password: password }
   };
 
-  return apiPostCall(BASE_URL + "/api/auth/newPassword/" + token, null, options)
+  return apiPostCall(BASE_URL + "/auth/newPassword/" + token, null, options)
     .then(response => {
       dispatch({ type: NEW_PASSWORD_SENT, message: response.data });
     })

@@ -29,15 +29,18 @@ class Users extends React.Component {
 
   render() {
     const tableHeaders = ["username", "email", "role", "enabled", "Manage"];
+    const { users } = this.props.admin;
 
     return (
-      <div className="ten wide column">
-        {this.props.admin.users && (
-          <SearchAbleTable
-            headings={tableHeaders}
-            rows={this.renderUserRows(this.props.admin.users, tableHeaders)}
-          />
-        )}
+      <div className="ui padded grid">
+        <div className="thirteen wide column">
+          {users && (
+            <SearchAbleTable
+              headings={tableHeaders}
+              rows={this.renderUserRows(users, tableHeaders)}
+            />
+          )}
+        </div>
       </div>
     );
   }

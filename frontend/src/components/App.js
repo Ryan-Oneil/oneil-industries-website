@@ -7,15 +7,15 @@ import Footer from "./site layout/Footer";
 import Home from "../pages/Home";
 import Contact from "../pages/Contact";
 import Login from "../pages/Login";
-import Images from "../pages/Gallery/GalleryPage";
+import Images from "../pages/Gallery/GalleryRouting";
 import Album from "../pages/Gallery/AlbumPage";
 import NotFound from "../pages/NotFound";
 import Services from "../pages/Services";
-import ProfilePage from "../pages/Profile/ProfilePage";
 import EmailConfirmationPage from "../pages/EmailConfirmationPage";
 import NewPasswordForm from "./formElements/NewPasswordForm";
-import Admin from "../pages/admin/Admin";
+import Admin from "../pages/admin/AdminRouting";
 import PrivateRoute from "./PrivateRoute";
+import ProfileRouting from "../pages/Profile/ProfileRouting";
 
 class App extends React.Component {
   render() {
@@ -56,7 +56,7 @@ class App extends React.Component {
               />
               <Route path="/resetPassword/:token" component={NewPasswordForm} />
               <PrivateRoute path="/profile">
-                <Route path="/profile" component={ProfilePage} />
+                <Route path="/profile" component={ProfileRouting} />
               </PrivateRoute>
 
               <PrivateRoute path="/admin">

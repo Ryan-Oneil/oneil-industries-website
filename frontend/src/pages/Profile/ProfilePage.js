@@ -12,11 +12,6 @@ import Modal from "../../components/Gallery/Modal";
 import DetailBox from "../../components/DetailBox";
 import { renderErrorMessage } from "../../components/Message";
 import { displayBytesInReadableForm } from "../../functions";
-import ManageServices from "./ManageServices";
-import SideBarNav from "../../components/site layout/SideBarNav";
-import { NavLink, Route, Switch } from "react-router-dom";
-import PrivateRoute from "../../components/PrivateRoute";
-import APIPage from "./APIPage";
 
 class ProfilePage extends React.Component {
   state = { showAccountModal: false };
@@ -34,13 +29,12 @@ class ProfilePage extends React.Component {
     });
   };
 
-  renderAccount() {
-    const { user, storageQuota } = this.props.profile;
+  render() {
+    const { user, storageQuota, errorMessage } = this.props.profile;
 
     return (
       <div className="ui padded grid">
-        {this.props.profile.errorMessage &&
-          renderErrorMessage(this.props.profile.errorMessage)}
+        {errorMessage && renderErrorMessage(errorMessage)}
         {user && (
           <div className="ui six wide column">
             <DetailBox header="Account Details">
@@ -96,44 +90,6 @@ class ProfilePage extends React.Component {
             </div>
           </Modal>
         )}
-      </div>
-    );
-  }
-
-  render() {
-    const { match } = this.props;
-
-    return (
-      <div className="ui padded equal width grid">
-        <SideBarNav headerText="Profile Dashboard" headerIcon="hdd">
-          <NavLink to={match.path} className="item" exact={true}>
-            <i className="icon chart user" />
-            Account
-          </NavLink>
-          <NavLink to={`${match.path}/services`} className="item">
-            <i className="icon globe" />
-            Services
-          </NavLink>
-          <NavLink to={`${match.path}/api`} className="item">
-            <i className="icon server" />
-            Api
-          </NavLink>
-        </SideBarNav>
-        <div className="sixteen wide mobile thirteen wide tablet thirteen wide computer right floated column">
-          <Switch>
-            <PrivateRoute>
-              <Route exact path={match.path}>
-                {this.renderAccount()}
-              </Route>
-              <Route
-                exact
-                path={`${match.path}/services`}
-                component={ManageServices}
-              />
-              <Route exact path={`${match.path}/api`} component={APIPage} />
-            </PrivateRoute>
-          </Switch>
-        </div>
       </div>
     );
   }
