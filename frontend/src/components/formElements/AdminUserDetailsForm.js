@@ -8,35 +8,32 @@ import { getRoles, updateUserDetails } from "../../actions/admin";
 class AdminUserDetailsForm extends React.Component {
   constructor(props) {
     super(props);
-    this.props.getRoles("/admin/roles");
+    this.props.getRoles("/admin/users/roles");
   }
 
   onSubmit = formValues => {
     const { details } = this.props.admin.user;
 
     return this.props.updateUserDetails(
-      "/admin/updateUser/",
+      `/admin/user/${details.username}/update/details/`,
       formValues,
       details.username
     );
   };
 
   render() {
-    const { pristine, submitting, error } = this.props;
+    const { pristine, submitting, error, handleSubmit } = this.props;
     const { details } = this.props.admin.user;
 
     const roleDropDowns = this.props.admin.roles.map(role => {
       return (
         <option key={role.id} value={role.role}>
-          {role.role}
+          {role.role.replace("ROLE_", "")}
         </option>
       );
     });
     return (
-      <form
-        onSubmit={this.props.handleSubmit(this.onSubmit)}
-        className="ui form error"
-      >
+      <form onSubmit={handleSubmit(this.onSubmit)} className="ui form error">
         <label>Email</label>
         <Field
           name="email"

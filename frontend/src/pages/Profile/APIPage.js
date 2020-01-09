@@ -7,7 +7,6 @@ import {
 } from "../../actions/profile";
 import DetailBox from "../../components/DetailBox";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import { loginUser } from "../../actions";
 
 class APIPage extends React.Component {
   state = { apiButtonText: "Copy", shareXButtonText: "Copy" };

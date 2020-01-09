@@ -13,21 +13,19 @@ import { getUserStorage } from "../../actions/profile";
 class UploadPage extends React.Component {
   constructor(props) {
     super(props);
-    this.props.fetchAlbums(`/gallery/myalbums/${props.user}`);
+    this.props.fetchAlbums(`/gallery/myalbums/${this.props.auth.user}`);
     this.props.getUserStorage("/user/profile/storageQuota");
   }
   state = { reachedUploadLimit: false };
 
   renderAlbums = () => {
-    if (this.props.medias.albums) {
-      return this.props.medias.albums.map(MediaAlbum => {
-        return (
-          <option value={MediaAlbum.album.name} key={MediaAlbum.album.id}>
-            {MediaAlbum.album.name}
-          </option>
-        );
-      });
-    }
+    return this.props.medias.albums.map(MediaAlbum => {
+      return (
+        <option value={MediaAlbum.album.name} key={MediaAlbum.album.id}>
+          {MediaAlbum.album.name}
+        </option>
+      );
+    });
   };
 
   onSubmit = formValues => {
@@ -51,6 +49,7 @@ class UploadPage extends React.Component {
 
   render() {
     const { submitting, error } = this.props;
+    const { mediaPostMessage } = this.props.medias;
 
     return (
       <div className="ui one column stackable center aligned page grid marginPadding">
@@ -97,8 +96,7 @@ class UploadPage extends React.Component {
               >
                 Upload
               </button>
-              {this.props.medias.mediaPostMessage &&
-                renderPositiveMessage(this.props.medias.mediaPostMessage)}
+              {mediaPostMessage && renderPositiveMessage(mediaPostMessage)}
             </div>
           </form>
         </div>
@@ -121,7 +119,8 @@ const validate = formValues => {
 
 const mapStateToProps = state => ({
   medias: state.medias,
-  profile: state.profile
+  profile: state.profile,
+  auth: state.auth
 });
 
 UploadPage = connect(mapStateToProps, {

@@ -22,29 +22,25 @@ import {
 import { SubmissionError } from "redux-form";
 
 export const getUserProfile = endpoint => dispatch => {
-  return new Promise((resolve, reject) => {
-    apiGetCall(endpoint)
-      .then(response => {
-        dispatch({ type: USER_PROFILE_GET, payload: response.data });
-        resolve(response);
-      })
-      .catch(error => {
-        if (error.response) {
-          let errorMessage = error.response.data;
+  return apiGetCall(endpoint)
+    .then(response => {
+      dispatch({ type: USER_PROFILE_GET, payload: response.data });
+    })
+    .catch(error => {
+      if (error.response) {
+        let errorMessage = error.response.data;
 
-          if (errorMessage.message) {
-            errorMessage = errorMessage.message;
-          }
-          dispatch({ type: USER_PROFILE_GET_FAIL, errorMessage: errorMessage });
-        } else {
-          dispatch({
-            type: USER_PROFILE_GET_FAIL,
-            errorMessage: error.message
-          });
+        if (errorMessage.message) {
+          errorMessage = errorMessage.message;
         }
-        reject(error);
-      });
-  });
+        dispatch({ type: USER_PROFILE_GET_FAIL, errorMessage: errorMessage });
+      } else {
+        dispatch({
+          type: USER_PROFILE_GET_FAIL,
+          errorMessage: error.message
+        });
+      }
+    });
 };
 
 export const changeUserDetails = (details, endpoint) => dispatch => {

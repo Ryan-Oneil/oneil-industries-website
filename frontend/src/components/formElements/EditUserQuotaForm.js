@@ -10,21 +10,18 @@ class EditUserQuotaForm extends React.Component {
     const { details } = this.props.admin.user;
 
     return this.props.updateUserQuota(
-      `/admin/updateUserQuota/${details.username}`,
+      `/admin/user/${details.username}/update/quota`,
       formValues
     );
   };
 
   render() {
-    const { pristine, submitting, error } = this.props;
+    const { pristine, submitting, error, handleSubmit } = this.props;
     const { ignoreQuota } = this.props.admin.user.storageQuota;
 
     const option = ignoreQuota ? "false" : "true";
     return (
-      <form
-        onSubmit={this.props.handleSubmit(this.onSubmit)}
-        className="ui form error"
-      >
+      <form onSubmit={handleSubmit(this.onSubmit)} className="ui form error">
         <label>Max storage amount (In GBs):</label>
         <Field
           name="max"

@@ -40,13 +40,10 @@ class AddServiceClientForm extends React.Component {
   };
 
   render() {
-    const { service, submitting, pristine, error } = this.props;
+    const { service, submitting, pristine, error, handleSubmit } = this.props;
 
     return (
-      <form
-        onSubmit={this.props.handleSubmit(this.onSubmit)}
-        className="ui form error"
-      >
+      <form onSubmit={handleSubmit(this.onSubmit)} className="ui form error">
         <div className="ui segment">
           <h3 className="ui centered aligned header">{service} client</h3>
           <Field name="position" component="select" className="field">

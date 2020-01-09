@@ -17,11 +17,17 @@ class LoginForm extends React.Component {
   };
 
   render() {
-    const { submitting, signUp, resetPassword, error } = this.props;
+    const {
+      submitting,
+      signUp,
+      resetPassword,
+      error,
+      handleSubmit
+    } = this.props;
 
     return (
       <form
-        onSubmit={this.props.handleSubmit(this.onSubmit)}
+        onSubmit={handleSubmit(this.onSubmit)}
         className="ui form error marginPadding"
       >
         <div className="ui segment">

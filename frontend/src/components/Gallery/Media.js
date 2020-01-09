@@ -4,7 +4,7 @@ import { BASE_URL } from "../../apis/api";
 
 class Media extends React.Component {
   renderImage = media => {
-    const baseSrc = `${BASE_URL}/api/gallery/image`;
+    const baseSrc = `${BASE_URL}/gallery/image`;
     const endpoint = `${this.props.fullSize ? "" : "/thumbnail"}/${
       media.fileName
     }`;
@@ -23,7 +23,7 @@ class Media extends React.Component {
   };
 
   renderVideo = (media, renderVideoControls) => {
-    const src = `${BASE_URL}/api/gallery/video/${media.fileName}`;
+    const src = `${BASE_URL}/gallery/video/${media.fileName}`;
 
     return (
       <video className="centerVideo" src={src} controls={renderVideoControls} />

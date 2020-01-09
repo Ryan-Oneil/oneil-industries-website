@@ -1,9 +1,9 @@
 import axios from "axios";
 
-export const BASE_URL = "https://localhost:8443";
+export const BASE_URL = "https://localhost";
 
 const baseApi = axios.create({
-  baseURL: BASE_URL + "/api",
+  baseURL: BASE_URL,
   headers: {
     Authorization: localStorage.getItem("authToken")
       ? localStorage.getItem("authToken")
@@ -20,7 +20,18 @@ baseApi.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    //Prevents requests from getting stuck in a loop
+    if (
+      error.response.status === 401 &&
+      originalRequest.url === `${BASE_URL}/token/refresh`
+    ) {
+      //Insert dispatch to display error
+      return Promise.reject(new Error("Unable to get refresh Token"));
+    }
+
     if (error.response.status === 401 && !originalRequest._retry) {
+      error.config._retry = true;
+      originalRequest._retry = true;
       const refreshToken = localStorage.getItem("refreshToken");
 
       if (!refreshToken) {
@@ -41,9 +52,10 @@ baseApi.interceptors.response.use(
 
           return axios(originalRequest);
         })
-        .catch(err => {});
+        .catch(error => {
+          return Promise.reject(error);
+        });
     }
-
     return Promise.reject(error);
   }
 );

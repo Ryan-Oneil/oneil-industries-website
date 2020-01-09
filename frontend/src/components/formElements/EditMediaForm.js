@@ -1,38 +1,42 @@
 import React from "react";
 import { Field, reduxForm } from "redux-form";
 import { connect } from "react-redux";
-import { updateMedia } from "../../actions";
+import { clearMessages, updateMedia } from "../../actions";
 import { renderInput } from "./index";
-import { renderErrorMessage } from "../Message";
+import { renderErrorMessage, renderPositiveMessage } from "../Message";
 
 class EditMediaForm extends React.Component {
   renderAlbums = () => {
-    if (this.props.medias.albums) {
-      return this.props.medias.albums.map(MediaAlbum => {
-        return (
-          <option value={MediaAlbum.album.name} key={MediaAlbum.album.id}>
-            {MediaAlbum.album.name}
-          </option>
-        );
-      });
-    }
+    return this.props.medias.albums.map(MediaAlbum => {
+      return (
+        <option value={MediaAlbum.album.name} key={MediaAlbum.album.id}>
+          {MediaAlbum.album.name}
+        </option>
+      );
+    });
   };
 
   onSubmit = formValues => {
     return this.props.updateMedia(
       `/gallery/media/update/${this.props.media.id}`,
-      formValues
+      formValues,
+      this.props.media.id
     );
   };
 
+  componentWillUnmount() {
+    this.props.clearMessages();
+  }
+
   render() {
-    const { submitting, error, submitSucceeded } = this.props;
+    const { submitting, error, submitSucceeded, handleSubmit } = this.props;
+    const { mediaUpdateMessage } = this.props.medias;
 
     return (
       <div className="ui one column stackable center aligned page grid">
         <div className="column twelve wide">
           <form
-            onSubmit={this.props.handleSubmit(this.onSubmit)}
+            onSubmit={handleSubmit(this.onSubmit)}
             className="ui form error"
           >
             <div className="ui segment">
@@ -51,6 +55,7 @@ class EditMediaForm extends React.Component {
                 {this.renderAlbums()}
               </Field>
               {error && renderErrorMessage(error)}
+              {mediaUpdateMessage && renderPositiveMessage(mediaUpdateMessage)}
               <button
                 className="ui fluid large navColor submit button"
                 disabled={submitting || submitSucceeded}
@@ -77,7 +82,7 @@ const mapStateToProps = state => ({
   medias: state.medias
 });
 
-export default connect(mapStateToProps, { updateMedia })(
+export default connect(mapStateToProps, { updateMedia, clearMessages })(
   reduxForm({
     form: "editImage",
     enableReinitialize: true,

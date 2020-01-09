@@ -16,6 +16,8 @@ class Services extends React.Component {
   }
 
   render() {
+    const { activeTSList, activeDiscord, errorMessage } = this.props.services;
+
     return (
       <div className="ui two column stackable center aligned page grid">
         <div className="column eight wide">
@@ -25,9 +27,7 @@ class Services extends React.Component {
                 Connect to Teamspeak
               </a>
             </h1>
-            {this.props.services.activeTSList && (
-              <ServiceList services={this.props.services.activeTSList} />
-            )}
+            {activeTSList && <ServiceList list={activeTSList} />}
           </div>
         </div>
         <div className="column eight wide">
@@ -35,13 +35,10 @@ class Services extends React.Component {
             <h1 className="ui center aligned header">
               <a href="https://discord.gg/dZSKaaX">Connect to Discord</a>
             </h1>
-            {this.props.services.activeTSList && (
-              <ServiceList services={this.props.services.activeDiscord} />
-            )}
+            {activeDiscord && <ServiceList list={activeDiscord} />}
           </div>
         </div>
-        {this.props.services.errorMessage &&
-          renderErrorMessage(this.props.services.errorMessage)}
+        {errorMessage && renderErrorMessage(errorMessage)}
       </div>
     );
   }

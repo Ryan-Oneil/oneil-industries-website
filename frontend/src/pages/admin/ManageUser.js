@@ -35,7 +35,7 @@ class ManageUser extends React.Component {
               onSubmitSuccess={this.closeModal}
               initialValues={{
                 email: details.email,
-                role: details.role,
+                role: `ROLE_${details.role}`,
                 enabled: details.enabled
               }}
             />

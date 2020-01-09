@@ -11,13 +11,10 @@ class ChangeUserDetailsForm extends React.Component {
   };
 
   render() {
-    const { pristine, submitting, error } = this.props;
+    const { pristine, submitting, error, handleSubmit } = this.props;
 
     return (
-      <form
-        onSubmit={this.props.handleSubmit(this.onSubmit)}
-        className="ui form error"
-      >
+      <form onSubmit={handleSubmit(this.onSubmit)} className="ui form error">
         <label>Email</label>
         <Field
           name="email"

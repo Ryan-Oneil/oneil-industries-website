@@ -16,26 +16,27 @@ class NewPasswordForm extends React.Component {
 
   componentDidUpdate() {
     let token = this.props.match.params.token;
-    const { submitSucceeded } = this.props;
+    const { submitSucceeded, history } = this.props;
+    const { passwordReset, isAuthenticated } = this.props.auth;
 
-    if (this.props.auth.passwordReset || submitSucceeded) {
-      this.props.history.push("/login");
+    if (passwordReset || submitSucceeded) {
+      history.push("/login");
     }
 
-    if (!token || this.props.auth.isAuthenticated) {
-      this.props.history.push("/");
+    if (!token || isAuthenticated) {
+      history.push("/");
     }
   }
 
   render() {
-    const { submitting, error, submitSucceeded } = this.props;
+    const { submitting, error, submitSucceeded, handleSubmit } = this.props;
     const { message } = this.props.auth;
 
     return (
       <div className="ui one column stackable center aligned page grid marginPadding">
         <div className="column twelve wide">
           <form
-            onSubmit={this.props.handleSubmit(this.onSubmit)}
+            onSubmit={handleSubmit(this.onSubmit)}
             className="ui form error"
           >
             <div className="ui segment">
