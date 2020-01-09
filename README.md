@@ -10,6 +10,8 @@ The website allows the ability to upload images/videos and displays them in a ga
 
 # Current Features
 - Image/Video gallery hosting
+- Admin Dashboard
+- User Dashboard
 - Live teamspeak/discord user view
 - ShareX custom uploader API
 - Teamspeak/Discord service bot that adds user's to approved roles upon registration
