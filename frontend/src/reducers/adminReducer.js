@@ -4,9 +4,7 @@ import {
   ADMIN_GET_PENDING_PUBLIC_MEDIA_APPROVALS,
   ADMIN_GET_ROLES,
   ADMIN_GET_USER_DETAIL,
-  ADMIN_GET_USER_DETAIL_FAIL,
   ADMIN_GET_USERS,
-  ADMIN_GET_USERS_FAIL,
   ADMIN_UPDATE_USER_DETAILS,
   ADMIN_UPDATE_USER_QUOTA
 } from "../actions/types";
@@ -17,7 +15,6 @@ export default (
     users: [],
     user: "",
     mediaApprovals: [],
-    errorMessage: "",
     message: ""
   },
   action
@@ -29,25 +26,18 @@ export default (
         users: action.payload.filter(user => {
           user.role = user.role.replace("ROLE_", "");
           return user;
-        }),
-        errorMessage: ""
+        })
       };
     }
-    case ADMIN_GET_USERS_FAIL: {
-      return { ...state, errorMessage: action.errorMessage };
-    }
     case ADMIN_GET_ROLES: {
-      return { ...state, roles: action.payload, errorMessage: "" };
+      return { ...state, roles: action.payload };
     }
     case ADMIN_GET_USER_DETAIL: {
       action.payload.details.role = action.payload.details.role.replace(
         "ROLE_",
         ""
       );
-      return { ...state, user: action.payload, errorMessage: "" };
-    }
-    case ADMIN_GET_USER_DETAIL_FAIL: {
-      return { ...state, errorMessage: action.errorMessage };
+      return { ...state, user: action.payload };
     }
     case ADMIN_UPDATE_USER_DETAILS: {
       return { ...state, user: { ...state.user, details: action.user } };

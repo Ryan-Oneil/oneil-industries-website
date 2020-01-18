@@ -7,19 +7,16 @@ import {
   USER_PROFILE_GENERATE_SHAREX_CONFIG_FAIL,
   USER_PROFILE_GET,
   USER_PROFILE_GET_API_TOKENS,
-  USER_PROFILE_GET_API_TOKENS_FAIL,
-  USER_PROFILE_GET_FAIL,
   USER_PROFILE_GET_STORAGE_QUOTA,
-  USER_PROFILE_GET_STORAGE_QUOTA_FAIL,
   USER_PROFILE_SERVICE_ADD_DISCORD,
   USER_PROFILE_SERVICE_ADD_TS,
   USER_PROFILE_SERVICE_DELETE_DISCORD,
   USER_PROFILE_SERVICE_DELETE_FAIL,
   USER_PROFILE_SERVICE_DELETE_TS,
-  USER_PROFILE_SERVICE_GET_UNREGISTERED_ACCOUNTS,
-  USER_PROFILE_SERVICE_GET_UNREGISTERED_ACCOUNTS_FAIL
+  USER_PROFILE_SERVICE_GET_UNREGISTERED_ACCOUNTS
 } from "./types";
 import { SubmissionError } from "redux-form";
+import { setError } from "./errors";
 
 export const getUserProfile = endpoint => dispatch => {
   return apiGetCall(endpoint)
@@ -28,17 +25,9 @@ export const getUserProfile = endpoint => dispatch => {
     })
     .catch(error => {
       if (error.response) {
-        let errorMessage = error.response.data;
-
-        if (errorMessage.message) {
-          errorMessage = errorMessage.message;
-        }
-        dispatch({ type: USER_PROFILE_GET_FAIL, errorMessage: errorMessage });
+        dispatch(setError(error.response.data));
       } else {
-        dispatch({
-          type: USER_PROFILE_GET_FAIL,
-          errorMessage: error.message
-        });
+        dispatch(setError(error.message));
       }
     });
 };
@@ -71,15 +60,9 @@ export const getUnregisteredServiceClients = endpoint => dispatch => {
     })
     .catch(error => {
       if (error.response) {
-        dispatch({
-          type: USER_PROFILE_SERVICE_GET_UNREGISTERED_ACCOUNTS_FAIL,
-          errorMessage: error.response.data
-        });
+        dispatch(setError(error.response.data));
       } else {
-        dispatch({
-          type: USER_PROFILE_SERVICE_GET_UNREGISTERED_ACCOUNTS_FAIL,
-          errorMessage: error.message
-        });
+        dispatch(setError(error.message));
       }
     });
 };
@@ -158,15 +141,9 @@ export const getUserStorage = endpoint => dispatch => {
     })
     .catch(error => {
       if (error.response) {
-        dispatch({
-          type: USER_PROFILE_GET_STORAGE_QUOTA_FAIL,
-          errorMessage: error.response.data
-        });
+        dispatch(setError(error.response.data));
       } else {
-        dispatch({
-          type: USER_PROFILE_GET_STORAGE_QUOTA_FAIL,
-          errorMessage: error.message
-        });
+        dispatch(setError(error.message));
       }
     });
 };
@@ -178,15 +155,9 @@ export const getAPIToken = endpoint => dispatch => {
     })
     .catch(error => {
       if (error.response) {
-        dispatch({
-          type: USER_PROFILE_GET_API_TOKENS_FAIL,
-          errorMessage: error.response.data
-        });
+        dispatch(setError(error.response.data));
       } else {
-        dispatch({
-          type: USER_PROFILE_GET_API_TOKENS_FAIL,
-          errorMessage: error.message
-        });
+        dispatch(setError(error.message));
       }
     });
 };

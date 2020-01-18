@@ -2,17 +2,14 @@ import {
   UPDATE_USER_DETAILS_SENT,
   USER_PROFILE_GENERATE_API_TOKEN,
   USER_PROFILE_GENERATE_SHAREX_CONFIG,
-  USER_PROFILE_GENERATE_SHAREX_CONFIG_FAIL,
   USER_PROFILE_GET,
   USER_PROFILE_GET_API_TOKENS,
-  USER_PROFILE_GET_FAIL,
   USER_PROFILE_GET_STORAGE_QUOTA,
   USER_PROFILE_SERVICE_ADD_DISCORD,
   USER_PROFILE_SERVICE_ADD_TS,
   USER_PROFILE_SERVICE_DELETE_DISCORD,
   USER_PROFILE_SERVICE_DELETE_TS,
-  USER_PROFILE_SERVICE_GET_UNREGISTERED_ACCOUNTS,
-  USER_PROFILE_SERVICE_GET_UNREGISTERED_ACCOUNTS_FAIL
+  USER_PROFILE_SERVICE_GET_UNREGISTERED_ACCOUNTS
 } from "../actions/types";
 
 export default (
@@ -39,9 +36,6 @@ export default (
         errorMessage: ""
       };
     }
-    case USER_PROFILE_GET_FAIL: {
-      return { ...state, errorMessage: action.errorMessage };
-    }
     case UPDATE_USER_DETAILS_SENT: {
       return {
         ...state,
@@ -55,9 +49,6 @@ export default (
         discordUsers: action.payload.discordUsers,
         errorMessage: ""
       };
-    }
-    case USER_PROFILE_SERVICE_GET_UNREGISTERED_ACCOUNTS_FAIL: {
-      return { ...state, errorMessage: action.errorMessage };
     }
     case USER_PROFILE_SERVICE_ADD_DISCORD: {
       return {
@@ -98,9 +89,6 @@ export default (
     }
     case USER_PROFILE_GENERATE_SHAREX_CONFIG: {
       return { ...state, shareXConfig: action.payload, shareXError: "" };
-    }
-    case USER_PROFILE_GENERATE_SHAREX_CONFIG_FAIL: {
-      return { ...state, shareXError: action.shareXError };
     }
     case USER_PROFILE_GENERATE_API_TOKEN: {
       return { ...state, apiToken: action.payload };

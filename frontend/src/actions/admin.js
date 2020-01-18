@@ -1,6 +1,5 @@
 import { apiGetCall, apiPutCall } from "../apis/api";
 import {
-  ADMIN_GET_USERS_FAIL,
   ADMIN_GET_USERS,
   ADMIN_GET_PENDING_PUBLIC_MEDIA_APPROVALS,
   ADMIN_APPROVE_PUBLIC_MEDIA,
@@ -8,10 +7,10 @@ import {
 } from "./types";
 import { ADMIN_GET_ROLES } from "./types";
 import { ADMIN_GET_USER_DETAIL } from "./types";
-import { ADMIN_GET_USER_DETAIL_FAIL } from "./types";
 import { ADMIN_UPDATE_USER_DETAILS } from "./types";
 import { ADMIN_UPDATE_USER_QUOTA } from "./types";
 import { SubmissionError } from "redux-form";
+import { setError } from "./errors";
 
 export const getUsers = endpoint => dispatch => {
   apiGetCall(endpoint)
@@ -20,12 +19,9 @@ export const getUsers = endpoint => dispatch => {
     })
     .catch(error => {
       if (error.response) {
-        dispatch({
-          type: ADMIN_GET_USERS_FAIL,
-          errorMessage: error.response.data
-        });
+        dispatch(setError(error.response.data));
       } else {
-        dispatch({ type: ADMIN_GET_USERS_FAIL, errorMessage: error.message });
+        dispatch(setError(error.message));
       }
     });
 };
@@ -42,15 +38,9 @@ export const getUserDetail = endpoint => dispatch => {
     })
     .catch(error => {
       if (error.response) {
-        dispatch({
-          type: ADMIN_GET_USER_DETAIL_FAIL,
-          errorMessage: error.response.data
-        });
+        dispatch(setError(error.response.data));
       } else {
-        dispatch({
-          type: ADMIN_GET_USER_DETAIL_FAIL,
-          errorMessage: error.message
-        });
+        dispatch(setError(error.message));
       }
     });
 };
@@ -92,12 +82,20 @@ export const updateUserQuota = (endpoint, data) => dispatch => {
 };
 
 export const getMediaApprovals = endpoint => dispatch => {
-  apiGetCall(endpoint).then(response => {
-    dispatch({
-      type: ADMIN_GET_PENDING_PUBLIC_MEDIA_APPROVALS,
-      payload: response.data
+  apiGetCall(endpoint)
+    .then(response => {
+      dispatch({
+        type: ADMIN_GET_PENDING_PUBLIC_MEDIA_APPROVALS,
+        payload: response.data
+      });
+    })
+    .then(error => {
+      if (error.response) {
+        dispatch(setError(error.response.data));
+      } else {
+        dispatch(setError(error.message));
+      }
     });
-  });
 };
 
 export const approvePublicMedia = (endpoint, mediaApprovalID) => dispatch => {

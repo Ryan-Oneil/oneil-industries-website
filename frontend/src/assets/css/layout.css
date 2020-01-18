@@ -39,6 +39,7 @@ body {
     height: auto;
     background: #f0f3f6 url("../images/oneilFactory.png") no-repeat fixed center bottom;
 }
+
 #root {
     height: 100%;
 }
@@ -205,4 +206,12 @@ padding-left: 30px;
 }
 .rightIcon {
     float: right;
+}
+.errorModal {
+    margin: 5% auto!important;
+    left: 0!important;
+    right: 0!important;
+    position: fixed!important;
+    top: 25%!important;
+    z-index: 1000!important;
 }

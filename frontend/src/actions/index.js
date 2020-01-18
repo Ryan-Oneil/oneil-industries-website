@@ -6,11 +6,9 @@ import {
 } from "../apis/api";
 import {
   ALBUM_EDIT_PUT,
-  ALBUM_FAILURE,
   ALBUM_REQUEST,
   MEDIA_DELETE_DONE,
   MEDIA_DELETE_FAIL,
-  MEDIA_FAILURE,
   MEDIA_POST_SENT,
   MEDIA_POST_SUCCESS,
   MEDIA_REQUEST,
@@ -19,6 +17,7 @@ import {
   SET_ACTIVE_MEDIA_MODAL
 } from "./types";
 import { SubmissionError } from "redux-form";
+import { setError } from "./errors";
 export * from "./authenication";
 export * from "./contact";
 
@@ -28,7 +27,11 @@ export const fetchImages = endpoint => dispatch => {
       dispatch({ type: MEDIA_REQUEST, payload: response.data });
     })
     .catch(error => {
-      dispatch({ type: MEDIA_FAILURE, message: error });
+      if (error.response) {
+        dispatch(setError(error.response.data));
+      } else {
+        dispatch(setError(error.message));
+      }
     });
 };
 
@@ -38,7 +41,11 @@ export const fetchAlbums = endpoint => dispatch => {
       dispatch({ type: ALBUM_REQUEST, payload: response.data });
     })
     .catch(error => {
-      dispatch({ type: ALBUM_FAILURE, message: error });
+      if (error.response) {
+        dispatch(setError(error.response.data));
+      } else {
+        dispatch(setError(error.message));
+      }
     });
 };
 
@@ -50,7 +57,6 @@ export const updateAlbum = (endpoint, payload) => dispatch => {
         resolve(response);
       })
       .catch(error => {
-        dispatch({ type: ALBUM_FAILURE, message: error });
         reject(error);
       });
   });

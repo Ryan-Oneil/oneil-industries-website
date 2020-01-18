@@ -17,7 +17,7 @@ baseApi.interceptors.response.use(
     const originalRequest = error.config;
 
     if (!error.response) {
-      return Promise.reject(error);
+      return Promise.reject(new Error("API is down"));
     }
 
     //Prevents requests from getting stuck in a loop

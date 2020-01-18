@@ -1,10 +1,8 @@
 import {
   ALBUM_EDIT_PUT,
-  ALBUM_FAILURE,
   ALBUM_REQUEST,
   MEDIA_DELETE_DONE,
   MEDIA_DELETE_FAIL,
-  MEDIA_FAILURE,
   MEDIA_POST_SENT,
   MEDIA_REQUEST,
   MEDIA_RESET_MESSAGES,
@@ -25,9 +23,6 @@ export default (
   switch (action.type) {
     case MEDIA_REQUEST: {
       return { ...state, mediasList: action.payload };
-    }
-    case MEDIA_FAILURE: {
-      return action.message;
     }
     case MEDIA_POST_SENT: {
       return {
@@ -73,9 +68,6 @@ export default (
           return mediaAlbum;
         })
       };
-    }
-    case ALBUM_FAILURE: {
-      return action.message;
     }
     case MEDIA_RESET_MESSAGES: {
       return { ...state, mediaUpdateMessage: "" };
