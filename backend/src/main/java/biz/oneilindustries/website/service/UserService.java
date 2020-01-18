@@ -20,13 +20,13 @@ import biz.oneilindustries.website.validation.LoginForm;
 import biz.oneilindustries.website.validation.UpdatedQuota;
 import biz.oneilindustries.website.validation.UpdatedUser;
 import com.auth0.jwt.JWT;
-import java.io.File;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -84,7 +84,7 @@ public class UserService {
         String encryptedPassword = passwordEncoder.encode(loginForm.getPassword());
         String username = loginForm.getName();
 
-        User user = new User(username, encryptedPassword,false, loginForm.getEmail(), "ROLE_UNREGISTERED");
+        User user = new User(username.toLowerCase(), encryptedPassword,false, loginForm.getEmail(), "ROLE_UNREGISTERED");
 
         Quota quota = new Quota(loginForm.getName(), 0, 25, false);
 
@@ -298,18 +298,13 @@ public class UserService {
     }
 
     @Transactional
-    @Cacheable("apiToken")
-    public List<String> getApiTokensUUIDByUser(String username) {
-        return dao.getApiTokensUUIDByUser(username);
+    @Cacheable(value = "apiToken")
+    public ApiToken getApiTokenByUser(String username) {
+        return dao.getApiTokenUser(username);
     }
 
     @Transactional
-    public ApiToken getApiTokensByUsername(String username) {
-        return dao.getApiTokensByUsername(username);
-    }
-
-    @Transactional
-    @CachePut(value = "apiToken", key = "#result.uuid")
+    @CachePut(value = "apiToken", key = "#result.username")
     public ApiToken generateApiToken(String username) {
         // Creates a non expiring user jwt with limited access. Currently can only upload media
         String uuid = UUID.randomUUID().toString();
@@ -323,26 +318,20 @@ public class UserService {
             .sign(HMAC512(SECRET.getBytes()));
 
         ApiToken apiToken = new ApiToken(username, token, uuid);
-
         dao.saveApiToken(apiToken);
 
         return apiToken;
     }
 
     @Transactional
+    @CacheEvict(value = "apiToken", key = "#apiToken.username")
     public void deleteApiToken(ApiToken apiToken) {
         dao.deleteApiToken(apiToken);
     }
 
     @Transactional
     public String generateShareXAPIFile(String username) {
-        String fileLocation = "E:/media/" + username + "/";
-
-        File file = new File(fileLocation);
-        if (!file.exists()) {
-            file.mkdir();
-        }
-        ApiToken apiToken = getApiTokensByUsername(username);
+        ApiToken apiToken = getApiTokenByUser(username);
 
         if (apiToken == null) {
             throw new TokenException("Generate a api token first");
@@ -352,7 +341,7 @@ public class UserService {
                 + "  \"Name\": \"Oneil Industries\",\n"
                 + "  \"DestinationType\": \"ImageUploader, TextUploader, FileUploader\",\n"
                 + "  \"RequestMethod\": \"POST\",\n"
-                + "  \"RequestURL\": \"" + BACK_END_URL + "/api/gallery/upload\",\n"
+                + "  \"RequestURL\": \"" + BACK_END_URL + "/gallery/upload\",\n"
                 + "  \"Parameters\": {\n"
                 + "    \"name\": \"%h.%mi.%s-%d.%mo.%yy\",\n"
                 + "    \"privacy\": \"unlisted\",\n"

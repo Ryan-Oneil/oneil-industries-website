@@ -36,6 +36,13 @@ public class GalleryUpload {
         this.albumName = albumName;
     }
 
+    public GalleryUpload(@NotNull String name, String privacy,
+        @Size(min = 1, message = "Please enter an album names") String albumName) {
+        this.name = name;
+        this.privacy = privacy;
+        this.albumName = albumName;
+    }
+
     public GalleryUpload() {
     }
 

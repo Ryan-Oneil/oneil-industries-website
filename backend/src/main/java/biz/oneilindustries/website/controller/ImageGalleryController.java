@@ -47,7 +47,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
@@ -93,7 +92,6 @@ public class ImageGalleryController {
         File serverFile = new File(GALLERY_IMAGES_DIRECTORY + media.getUploader() + "/" + media.getFileName());
 
         response.setContentType("video/" + FileHandler.getContentType(media.getFileName()));
-
         request.setAttribute(ResourceHandler.ATTR_FILE, serverFile);
         try {
             handler.handleRequest(request, response);
@@ -120,7 +118,7 @@ public class ImageGalleryController {
     }
 
     @PostMapping("/upload")
-    public String uploadMediaAPI(@RequestParam String name, @RequestParam String privacy, @RequestParam String albumName, Authentication user, HttpServletRequest request)
+    public String uploadMediaAPI(GalleryUpload galleryUpload, Authentication user, HttpServletRequest request)
         throws IOException, FileUploadException {
         boolean needsApproval = false;
 
@@ -144,21 +142,20 @@ public class ImageGalleryController {
         FileItemStream item = iterator.next();
         //Writes the file
         File media = FileHandler.writeFile(item, item.getName(), GALLERY_IMAGES_DIRECTORY, user.getName());
+        galleryUpload.setFile(media);
 
-        GalleryUpload galleryUpload = new GalleryUpload(media, name, privacy, albumName);
         Album album = null;
 
         if (!galleryUpload.getAlbumName().equalsIgnoreCase("none")) {
             album = albumService.registerAlbum(galleryUpload, user.getName());
         }
-        String returnMessage = BACK_END_URL + "/api/gallery/image/" + galleryUpload.getFile().getName();
+        String returnMessage = BACK_END_URL + "/gallery/image/" + galleryUpload.getFile().getName();
 
-        if (privacy.equalsIgnoreCase("public") && !CollectionUtils.containsAny(user.getAuthorities(),TRUSTED_ROLES)) {
+        if (galleryUpload.getPrivacy().equalsIgnoreCase("public") && !CollectionUtils.containsAny(user.getAuthorities(),TRUSTED_ROLES)) {
             galleryUpload.setPrivacy("unlisted");
             needsApproval = true;
             returnMessage = "The media will need to be approved by an admin to be made public. It will remain unlisted until approved";
         }
-
         mediaService.registerMedia(galleryUpload, user.getName(), album, needsApproval);
         userService.increaseUsedAmount(userStorageLimit, media.length());
 

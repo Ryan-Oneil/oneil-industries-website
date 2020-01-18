@@ -1,14 +1,12 @@
 package biz.oneilindustries.website.validation;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 
 public class UpdatedUser {
 
     @NotNull
     private String username;
 
-    @Null
     private String password;
 
     @NotNull

@@ -8,3 +8,4 @@ frontend/README.md
 *.txt
 frontend/public/favicon.ico
 backend/src/main/resources/application.properties
+frontend/.idea/*

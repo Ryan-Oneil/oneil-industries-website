@@ -5,6 +5,7 @@ import static biz.oneilindustries.website.security.SecurityConstants.HEADER_STRI
 import static biz.oneilindustries.website.security.SecurityConstants.SECRET;
 import static biz.oneilindustries.website.security.SecurityConstants.TOKEN_PREFIX;
 
+import biz.oneilindustries.website.entity.ApiToken;
 import biz.oneilindustries.website.service.UserService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -13,7 +14,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -76,10 +76,10 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
         if (decodedToken.getSubject().equalsIgnoreCase("apiToken")) {
             //Checks the cached database if the api token exists
             //Slightly inefficient but since the api JWTs never expire, I need some sort of blocking system
-            List<String> apiTokenUUIDs = userService.getApiTokensUUIDByUser(decodedToken.getClaim("user").asString());
+            ApiToken apiTokenUUID = userService.getApiTokenByUser(decodedToken.getClaim("user").asString());
             String tokenUUID = decodedToken.getClaim("uuid").asString();
 
-            if (apiTokenUUIDs == null || !apiTokenUUIDs.contains(tokenUUID)) {
+            if (apiTokenUUID == null || !apiTokenUUID.getUuid().equals(tokenUUID)) {
                 return null;
             }
             return returnAuth(decodedToken);

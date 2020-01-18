@@ -36,7 +36,7 @@ public class UserDAO {
         Session currentSession = sessionFactory.getCurrentSession();
 
         Query query = currentSession.createQuery("from users where username =:username",User.class);
-        query.setParameter("username", username);
+        query.setParameter("username", username.toLowerCase());
 
         return (User) query.uniqueResult();
     }
@@ -184,16 +184,7 @@ public class UserDAO {
         currentSession.saveOrUpdate(quota);
     }
 
-    public List<String> getApiTokensUUIDByUser(String user) {
-        Session currentSession = sessionFactory.getCurrentSession();
-
-        Query query = currentSession.createQuery("select uuid from ApiToken where username=:username", String.class);
-        query.setParameter("username", user);
-
-        return query.getResultList();
-    }
-
-    public ApiToken getApiTokensByUsername(String user) {
+    public ApiToken getApiTokenUser(String user) {
         Session currentSession = sessionFactory.getCurrentSession();
 
         Query query = currentSession.createQuery("from ApiToken where username=:username", ApiToken.class);

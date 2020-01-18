@@ -67,21 +67,21 @@ public class UserProfileController {
 
     @GetMapping("/profile/getAPIToken")
     public ResponseEntity getAPIJWT(Authentication authentication) {
-        return ResponseEntity.ok(userService.getApiTokensByUsername(authentication.getName()).getToken());
+        return ResponseEntity.ok(userService.getApiTokenByUser(authentication.getName()).getToken());
     }
 
     @GetMapping("/profile/generateAPIToken")
     public ResponseEntity generateAPIJWT(Authentication authentication) {
 
-        ApiToken apiToken = userService.getApiTokensByUsername(authentication.getName());
+        ApiToken apiToken = userService.getApiTokenByUser(authentication.getName());
 
         //Deletes existing token
         if (apiToken != null) {
             userService.deleteApiToken(apiToken);
         }
-        apiToken = userService.generateApiToken(authentication.getName());
+        ApiToken token = userService.generateApiToken(authentication.getName());
 
-        return ResponseEntity.ok(apiToken.getToken());
+        return ResponseEntity.ok(token.getToken());
     }
 
     @GetMapping("/profile/getShareX")
