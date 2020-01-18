@@ -1,10 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
-import SearchAbleTable from "../../components/Table/SearchAbleTable";
 import { getUsers } from "../../actions/admin";
-import { TableRow } from "../../components/Table/Row";
-import { DataCell } from "../../components/Table/Cell";
 import { Link } from "react-router-dom";
+import { SearchAbleTable } from "../../components/Table/SearchAbleTable";
 
 class Users extends React.Component {
   constructor(props) {
@@ -12,34 +10,55 @@ class Users extends React.Component {
     this.props.getUsers("/admin/users");
   }
 
-  renderUserRows = (rows, headings) => {
+  renderUserRows = rows => {
     return rows.map(row => {
-      return (
-        <TableRow rowData={row} headings={headings} key={row.id}>
-          <DataCell>
-            <Link to={`users/${row.username}`}>
-              <i className="edit icon" />
-              Manage
-            </Link>
-          </DataCell>
-        </TableRow>
-      );
+      return {
+        username: row.username,
+        email: row.email,
+        role: row.role,
+        enabled: row.enabled ? "Enabled" : "Disabled",
+        manage: row.manage
+      };
     });
   };
 
   render() {
-    const tableHeaders = ["username", "email", "role", "enabled", "Manage"];
+    const columns = [
+      {
+        Header: "Username",
+        accessor: "username"
+      },
+      {
+        Header: "Email",
+        accessor: "email"
+      },
+      {
+        Header: "Role",
+        accessor: "role"
+      },
+      {
+        Header: "Enabled",
+        accessor: "enabled"
+      },
+      {
+        Header: "Manage",
+        Cell: ({ row }) => (
+          <Link to={`users/${row.values.username}`}>
+            <i className="edit icon" />
+            Manage
+          </Link>
+        )
+      }
+    ];
     const { users } = this.props.admin;
 
     return (
       <div className="ui padded grid">
         <div className="thirteen wide column">
-          {users && (
-            <SearchAbleTable
-              headings={tableHeaders}
-              rows={this.renderUserRows(users, tableHeaders)}
-            />
-          )}
+          <SearchAbleTable
+            columns={columns}
+            data={this.renderUserRows(users)}
+          />
         </div>
       </div>
     );
