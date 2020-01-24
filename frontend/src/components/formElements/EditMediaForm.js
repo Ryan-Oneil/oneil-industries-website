@@ -6,16 +6,6 @@ import { renderInput } from "./index";
 import { renderErrorMessage, renderPositiveMessage } from "../Message";
 
 class EditMediaForm extends React.Component {
-  renderAlbums = () => {
-    return this.props.medias.albums.map(MediaAlbum => {
-      return (
-        <option value={MediaAlbum.album.name} key={MediaAlbum.album.id}>
-          {MediaAlbum.album.name}
-        </option>
-      );
-    });
-  };
-
   onSubmit = formValues => {
     return this.props.updateMedia(
       `/gallery/media/update/${this.props.media.id}`,
@@ -49,15 +39,10 @@ class EditMediaForm extends React.Component {
                 <option value="public">Public</option>
                 <option value="private">Private</option>
               </Field>
-              <label className="textFormat">Album</label>
-              <Field name="album" component="select" className="field">
-                <option value="none">None</option>
-                {this.renderAlbums()}
-              </Field>
               {error && renderErrorMessage(error)}
               {mediaUpdateMessage && renderPositiveMessage(mediaUpdateMessage)}
               <button
-                className="ui fluid large navColor submit button"
+                className="ui fluid large buttonFormat submit button"
                 disabled={submitting || submitSucceeded}
               >
                 Confirm

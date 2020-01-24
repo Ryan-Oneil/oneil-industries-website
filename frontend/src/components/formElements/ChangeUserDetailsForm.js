@@ -31,7 +31,7 @@ class ChangeUserDetailsForm extends React.Component {
         />
         {error && renderErrorMessage(error)}
         <button
-          className="ui fluid large navColor submit button"
+          className="ui fluid large buttonFormat submit button"
           disabled={submitting || pristine}
         >
           Update Account

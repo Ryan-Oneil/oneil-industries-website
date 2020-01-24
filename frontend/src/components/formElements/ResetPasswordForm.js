@@ -21,7 +21,7 @@ class ResetPasswordForm extends React.Component {
     return (
       <form
         onSubmit={this.props.handleSubmit(this.onSubmit)}
-        className="ui form error"
+        className="ui form error textColorScheme"
       >
         <div className="ui segment">
           <img
@@ -40,7 +40,7 @@ class ResetPasswordForm extends React.Component {
           {error && renderErrorMessage(error)}
           {message && renderPositiveMessage(message)}
           <button
-            className="ui fluid large navColor submit button"
+            className="ui large buttonFormat submit button"
             disabled={submitting || hasSentResetEmail}
           >
             Reset

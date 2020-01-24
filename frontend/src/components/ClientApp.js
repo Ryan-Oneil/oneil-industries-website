@@ -1,10 +1,9 @@
 import React from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import Header from "./site layout/Header";
 import NavMenu from "./site layout/NavMenu";
 import Home from "../pages/Home";
 import Contact from "../pages/Contact";
-import Images from "../pages/Gallery/GalleryRouting";
+import Images from "../pages/Gallery/Gallery";
 import Album from "../pages/Gallery/AlbumPage";
 import Login from "../pages/Login";
 import Services from "../pages/Services";
@@ -22,7 +21,6 @@ class ClientApp extends React.Component {
       <div className="maindiv">
         <BrowserRouter>
           <div className="fixedHeader">
-            <Header />
             <NavMenu />
           </div>
 
@@ -30,8 +28,8 @@ class ClientApp extends React.Component {
             <Switch>
               <Route path="/" exact component={Home} />
               <Route path="/contact" exact component={Contact} />
-              <Route path="/images" component={Images} />
-              <Route path="/images/album/:albumName" component={Album} />
+              <Route path="/images" component={Images} exact />
+              <Route path="/gallery/album/:albumName" component={Album} />
               <Route path="/login" component={Login} />
               <Route path="/services" exact component={Services} />
 
@@ -54,8 +52,8 @@ class ClientApp extends React.Component {
                 )}
               />
               <Route path="/resetPassword/:token" component={NewPasswordForm} />
-              <PrivateRoute path="/profile">
-                <Route path="/profile" component={ProfileRouting} />
+              <PrivateRoute path="/dashboard">
+                <Route path="/dashboard" component={ProfileRouting} />
               </PrivateRoute>
 
               <PrivateRoute path="/admin">

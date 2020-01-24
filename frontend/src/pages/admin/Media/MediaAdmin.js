@@ -38,7 +38,7 @@ class MediaAdmin extends React.Component {
           <Modal title={activeMedia.name} closeModal={this.handleShowDialog}>
             <div className="image">
               <a
-                href={`${BASE_URL}/api/gallery/${activeMedia.mediaType}/${activeMedia.fileName}`}
+                href={`${BASE_URL}/gallery/${activeMedia.mediaType}/${activeMedia.fileName}`}
               >
                 <Media
                   media={activeMedia}

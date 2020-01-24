@@ -22,6 +22,7 @@ class Contact extends React.Component {
       <div className="ui container marginPadding">
         <div className="ui segment">
           <h1 className="ui center aligned header">Contact Oneil Industries</h1>
+          <div className="ui inverted divider" />
           <form
             onSubmit={this.props.handleSubmit(this.onSubmit)}
             className="ui form error"
@@ -41,7 +42,7 @@ class Contact extends React.Component {
             {error && renderErrorMessage(error)}
             {message && renderPositiveMessage(message)}
             <button
-              className="ui button primary centerButton"
+              className="ui button primary centerButton buttonFormat"
               disabled={submitting || contactFormSent || pristine}
             >
               Submit

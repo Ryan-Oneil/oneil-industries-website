@@ -13,11 +13,11 @@ body {
     background-color: #363636 !important;
 }
 .navColor {
-    background-color: #00AABB !important;
+    background-color: #FFFFFF !important;
 }
 
 .textColorScheme {
-    color: #00AABB;
+    color: #2c2f3e;
 }
 
 .showDisplay {
@@ -33,11 +33,13 @@ body {
 }
 
 .mainpage {
-    padding-top: 125px;
+    padding-top: 70px;
     margin-bottom: 30px;
     min-height: 96%;
     height: auto;
-    background: #f0f3f6 url("../images/oneilFactory.png") no-repeat fixed center bottom;
+    background: rgb(61, 76, 104);
+    color: #FFFFFF;
+    font-family: "Open Sans", Arial, Helvetica, sans-serif;
 }
 
 #root {
@@ -78,6 +80,7 @@ body {
     display: inline-block !important;;
     text-align: left !important;;
     background: #FFFFFF !important;;
+    color: #2c2f3e!important;
     box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24) !important;;
     height: 50% !important;;
     max-height: 50% !important;;
@@ -123,10 +126,6 @@ padding-left: 30px;
 .removeTopPadding {
     padding-top: 0!important;
 }
-
-.capFirstLetter:first-letter {
-    text-transform:capitalize;
-}
 .navTextColor {
     color: rgba(255,255,255,.9)!important;
 }
@@ -141,7 +140,7 @@ padding-left: 30px;
 
 #dashboardSideMenu {
     position: fixed;
-    top: 115px;
+    top: 50px;
     height: 100vh;
     background-color: rgb(27, 36, 48);
     padding-left: 0;
@@ -214,4 +213,75 @@ padding-left: 30px;
     position: fixed!important;
     top: 25%!important;
     z-index: 1000!important;
+}
+.pointerCursor {
+    cursor: pointer;
+}
+.boxOutline {
+    outline: 2px dashed black;
+    outline-offset: -10px;
+}
+.fileHover {
+    background-color: white!important;
+}
+.centerItem {
+    margin: auto 8% auto 10% !important;
+}
+.logoText {
+    color: #f92214!important;
+    white-space: nowrap;
+}
+a.removeFormat:link {
+    text-decoration: inherit;
+}
+
+a.removeFormat:visited {
+    text-decoration: inherit;
+}
+#redText a {
+    color: #2c2f3e!important;
+    font-size: 16px;
+    font-weight: 400;
+}
+#redText a:hover,#redText .active {
+    color: #f1574d!important;
+}
+#headerButton {
+    background: #f1574d;
+    padding: 8px 15px;
+    color: white!important;
+    /* padding-top: 5px; */
+    margin-left: 15px;
+    /*font-family: "Open Sans", Arial, Helvetica, sans-serif;*/
+    font-size: 16px;
+    font-weight: 400;
+}
+#secondMenu {
+    margin-right: 25%;
+}
+.buttonFormat {
+    color: #FFFFFF!important;
+    background: #f1574d!important;
+    padding-left: 10%!important;
+    padding-right: 10%!important;
+    margin-bottom: 10px!important;
+}
+.leftAlignText {
+    text-align: left!important;
+}
+.formatInfo {
+    line-height: 2.14;
+}
+.formatInfo h3 {
+    font-size: 18px;
+    line-height: 23px;
+}
+.preventTextOverflow {
+    overflow-wrap: break-word;
+}
+.whiteText {
+    color: #FFFFFF!important;
+}
+.wordWrap {
+    word-wrap: break-word;
 }

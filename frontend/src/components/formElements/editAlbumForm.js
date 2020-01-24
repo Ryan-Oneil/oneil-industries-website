@@ -8,18 +8,19 @@ import { renderInput } from "./index";
 class EditAlbumForm extends React.Component {
   onSubmit = formValues => {
     return this.props.updateAlbum(
-      `/gallery/myalbums/update/${this.props.album.name}`,
+      "/gallery/myalbums/update/",
+      this.props.album.id,
       formValues
     );
   };
 
   render() {
-    const { submitting, errorMessage } = this.props;
+    const { submitting, handleSubmit, error } = this.props;
     return (
       <div className="ui one column stackable center aligned page grid">
         <div className="column twelve wide">
           <form
-            onSubmit={this.props.handleSubmit(this.onSubmit)}
+            onSubmit={handleSubmit(this.onSubmit)}
             className="ui form error"
           >
             <div className="ui segment">
@@ -35,9 +36,9 @@ class EditAlbumForm extends React.Component {
                 <option value="true">Yes</option>
                 <option value="false">No</option>
               </Field>
-              {errorMessage && renderErrorMessage(errorMessage)}
+              {error && renderErrorMessage(error)}
               <button
-                className="ui fluid large navColor submit button"
+                className="ui fluid large navColor submit button buttonFormat"
                 disabled={submitting}
               >
                 Confirm

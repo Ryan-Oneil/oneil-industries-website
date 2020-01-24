@@ -52,7 +52,7 @@ class AddServiceClientForm extends React.Component {
           </Field>
           {error && renderErrorMessage(error)}
           <button
-            className="ui fluid large navColor submit button"
+            className="ui fluid large submit button buttonFormat"
             disabled={submitting || pristine}
           >
             Confirm

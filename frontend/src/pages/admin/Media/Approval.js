@@ -59,7 +59,7 @@ class Approval extends React.Component {
           <Modal title={media.name} closeModal={this.handleShowDialog}>
             <div className="image">
               <a
-                href={`${BASE_URL}/api/gallery/${media.mediaType}/${media.fileName}`}
+                href={`${BASE_URL}/gallery/${media.mediaType}/${media.fileName}`}
               >
                 <Media
                   media={media}

@@ -28,7 +28,7 @@ class LoginForm extends React.Component {
     return (
       <form
         onSubmit={handleSubmit(this.onSubmit)}
-        className="ui form error marginPadding"
+        className="ui form error marginPadding textColorScheme"
       >
         <div className="ui segment">
           <img
@@ -54,7 +54,7 @@ class LoginForm extends React.Component {
 
           {error && renderErrorMessage(error)}
           <button
-            className="ui fluid large navColor submit button"
+            className="ui large submit button buttonFormat"
             disabled={submitting}
           >
             Login

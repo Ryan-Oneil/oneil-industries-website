@@ -56,7 +56,7 @@ class NewPasswordForm extends React.Component {
               {error && renderErrorMessage(error)}
               {message && renderPositiveMessage(message)}
               <button
-                className="ui fluid large navColor submit button"
+                className="ui fluid large buttonFormat submit button"
                 disabled={submitting || submitSucceeded}
               >
                 Confirm

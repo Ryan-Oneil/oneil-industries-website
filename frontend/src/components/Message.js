@@ -11,7 +11,9 @@ export const renderErrorMessage = message => {
 export const renderPositiveMessage = message => {
   return (
     <div className="ui positive message bottomMargin">
-      <div className="ui center aligned header">{message}</div>
+      <div className="ui center aligned header preventTextOverflow">
+        {message}
+      </div>
     </div>
   );
 };

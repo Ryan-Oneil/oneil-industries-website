@@ -2,7 +2,6 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import "../../assets/css/layout.css";
 import { logoutUser } from "../../actions";
-import DropDownNav from "./DropDownNav";
 import { connect } from "react-redux";
 
 class NavMenu extends React.Component {
@@ -11,48 +10,59 @@ class NavMenu extends React.Component {
     const isAdmin = role === "ROLE_ADMIN";
 
     return (
-      <div className="ui removeMargin navColor inverted huge menu removeCircleBorder">
-        <div className="ui container">
-          <div className="right menu">
-            <NavLink to="/" className="header item" exact={true}>
-              Home
+      <div className="ui navColor inverted massive secondary stackable fixed menu removeCircleBorder">
+        {/*<NavLink to="/" className="centerItem removeFormat">*/}
+        <h3 className="ui header logoText centerItem">
+          <img
+            src={require("../../assets/images/fact.png")}
+            className="ui circular image"
+            alt="Factory"
+          />
+          Oneil Industries
+        </h3>
+        {/*</NavLink>*/}
+        <div className="right large menu redText" id="redText">
+          <NavLink to="/" className="header item" exact={true}>
+            Home
+          </NavLink>
+          <NavLink to="/contact" className="header item">
+            Contact
+          </NavLink>
+          <NavLink to="/images" className="header item">
+            Images
+          </NavLink>
+          <NavLink to="/services" className="header item">
+            Services
+          </NavLink>
+          {isAuthenticated && (
+            <NavLink to="/dashboard" className="header item">
+              Dashboard
             </NavLink>
-            <NavLink to="/contact" className="header item">
-              Contact
+          )}
+          {isAuthenticated && isAdmin && (
+            <NavLink to="/admin" className="header item">
+              Admin
             </NavLink>
-            <DropDownNav />
-            <NavLink to="/services" className="header item">
-              Services
-            </NavLink>
-            {isAuthenticated && (
-              <NavLink to="/profile" className="header item">
-                Profile
-              </NavLink>
-            )}
-            {isAuthenticated && isAdmin && (
-              <NavLink to="/admin" className="header item">
-                Admin
-              </NavLink>
-            )}
-          </div>
+          )}
+        </div>
 
-          <div className="right menu">
-            {!isAuthenticated && (
-              <NavLink to="/login" className="header item">
-                Login
-              </NavLink>
-            )}
-            {isAuthenticated && (
-              <div className="item">
-                <button
-                  className="ui button navColor navTextColor"
-                  onClick={() => this.props.logoutUser()}
-                >
-                  Logout
-                </button>
-              </div>
-            )}
-          </div>
+        <div className="secondary menu" id="secondMenu">
+          {!isAuthenticated && (
+            <NavLink to="/login" className="header item" id="headerButton">
+              Login
+            </NavLink>
+          )}
+          {isAuthenticated && (
+            <div className="item">
+              <button
+                className="ui button"
+                onClick={() => this.props.logoutUser()}
+                id="headerButton"
+              >
+                Logout
+              </button>
+            </div>
+          )}
         </div>
       </div>
     );

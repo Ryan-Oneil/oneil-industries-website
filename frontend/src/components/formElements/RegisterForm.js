@@ -25,7 +25,7 @@ class RegisterForm extends React.Component {
     return (
       <form
         onSubmit={this.props.handleSubmit(this.onSubmit)}
-        className="ui form error"
+        className="ui form error textColorScheme"
       >
         <div className="ui segment">
           <img
@@ -49,6 +49,13 @@ class RegisterForm extends React.Component {
             type="password"
           />
           <Field
+            name="confirmPassword"
+            component={renderIconInput}
+            label="Confirm Password"
+            iconType="lock"
+            type="password"
+          />
+          <Field
             name="email"
             component={renderIconInput}
             label="Enter Email"
@@ -58,7 +65,7 @@ class RegisterForm extends React.Component {
           {error && renderErrorMessage(error)}
           {message && renderPositiveMessage(message)}
           <button
-            className="ui fluid large navColor submit button"
+            className="ui large buttonFormat submit button"
             disabled={submitting || isRegistered}
           >
             Register
@@ -83,6 +90,11 @@ const validate = formValues => {
   }
   if (!formValues.password) {
     errors.password = "You must enter a Password";
+  }
+  if (!formValues.confirmPassword) {
+    errors.confirmPassword = "Please confirm your password";
+  } else if (formValues.confirmPassword !== formValues.password) {
+    errors.confirmPassword = "Passwords must match";
   }
   if (!formValues.email) {
     errors.email = "You must enter a Email";
