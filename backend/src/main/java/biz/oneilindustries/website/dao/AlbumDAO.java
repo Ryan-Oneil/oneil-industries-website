@@ -36,7 +36,7 @@ public class AlbumDAO {
         return query.getResultList();
     }
 
-    public Album getAlbum(int id) {
+    public Album getAlbum(String id) {
         Session currentSession = sessionFactory.getCurrentSession();
 
         return currentSession.get(Album.class,id);
@@ -57,7 +57,7 @@ public class AlbumDAO {
         currentSession.saveOrUpdate(album);
     }
 
-    public void deleteAlbum(int id) {
+    public void deleteAlbum(String id) {
         Session currentSession = sessionFactory.getCurrentSession();
 
         Query query = currentSession.createQuery("delete from Album where id=:id");

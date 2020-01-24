@@ -1,5 +1,8 @@
 package biz.oneilindustries.website.service;
 
+import static biz.oneilindustries.website.filecreater.FileHandler.getExtensionType;
+
+import biz.oneilindustries.RandomIDGen;
 import biz.oneilindustries.website.dao.MediaDAO;
 import biz.oneilindustries.website.entity.Album;
 import biz.oneilindustries.website.entity.Media;
@@ -8,12 +11,14 @@ import biz.oneilindustries.website.exception.MediaApprovalException;
 import biz.oneilindustries.website.exception.MediaException;
 import biz.oneilindustries.website.filecreater.FileHandler;
 import biz.oneilindustries.website.validation.GalleryUpload;
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.transaction.Transactional;
 import org.apache.tika.Tika;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,13 +48,21 @@ public class MediaService {
     }
 
     @Transactional
-    public List<Media> getAlbumMedias(int id) {
+    public List<Media> getAlbumMedias(String id) {
         return this.dao.getAlbumMedias(id);
     }
 
     @Transactional
     public Media getMedia(int id) {
         return dao.getMedia(id);
+    }
+
+    @Transactional
+    public Media getMediaWithAlbum(int id) {
+        Media media = dao.getMedia(id);
+        Hibernate.initialize(media.getAlbum());
+
+        return media;
     }
 
     @Transactional
@@ -73,28 +86,25 @@ public class MediaService {
     }
 
     @Transactional
-    public void registerMedia(GalleryUpload galleryUpload, String user, Album album, boolean needsApproval) throws IOException {
+    public Media registerMedia(String mediaName, String privacy, File file, String user, Album album) throws IOException {
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         LocalDate localDate = LocalDate.now();
 
-        Media media = new Media(galleryUpload.getName(), galleryUpload.getFile().getName() ,galleryUpload.getPrivacy(),user, localDate.format(dtf));
+        Media media = new Media(mediaName, file.getName() , privacy,user, localDate.format(dtf));
 
         if (album != null) {
-            media.setAlbumID(album.getId());
+            media.setAlbum(album);
         }
         Tika tika = new Tika();
-        if (FileHandler.isImageFile(galleryUpload.getFile().getName())) {
+        if (FileHandler.isImageFile(file.getName())) {
             media.setMediaType("image");
-        } else if (FileHandler.isVideoFile(tika.detect(galleryUpload.getFile()))) {
+        } else if (FileHandler.isVideoFile(tika.detect(file))) {
             media.setMediaType("video");
         }
         saveMedia(media);
 
-        if (needsApproval) {
-            PublicMediaApproval publicMedia = new PublicMediaApproval(media, album, galleryUpload.getName(), "pending");
-            saveMediaApproval(publicMedia);
-        }
+        return media;
     }
 
     @Transactional
@@ -104,10 +114,8 @@ public class MediaService {
 
     @Transactional
     public void resetMediaAlbumIDs(Album album) {
-        List<Media> albumMedia = getAlbumMedias(album.getId());
-
-        for (Media media : albumMedia) {
-            media.setAlbumID(null);
+        for (Media media : album.getMedias()) {
+            media.setAlbum(null);
             saveMedia(media);
         }
     }
@@ -120,9 +128,9 @@ public class MediaService {
         media.setLinkStatus(galleryUpload.getPrivacy());
 
         if (album != null) {
-            media.setAlbumID(album.getId());
+            media.setAlbum(album);
         }else {
-            media.setAlbumID(null);
+            media.setAlbum(null);
         }
         saveMedia(media);
     }
@@ -137,6 +145,17 @@ public class MediaService {
             media.setLinkStatus("private");
             saveMedia(media);
         }
+    }
+
+    @Transactional
+    public String generateUniqueMediaName(String originalFileName) {
+        String extension = getExtensionType(originalFileName); //
+        String fileName = RandomIDGen.GetBase62(16) + "." + extension;
+
+        while(this.getMediaFileName(fileName) != null) {
+            fileName = RandomIDGen.GetBase62(16) + "." + extension;
+        }
+        return fileName;
     }
 
     @Transactional

@@ -45,7 +45,7 @@ public class MediaDAO {
         return query.getResultList();
     }
 
-    public List<Media> getAlbumMedias(int id) {
+    public List<Media> getAlbumMedias(String id) {
         Session currentSession = sessionFactory.getCurrentSession();
 
         Query<Media> query = currentSession.createQuery("from Media where albumID =:id");

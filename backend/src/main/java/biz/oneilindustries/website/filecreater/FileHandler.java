@@ -4,11 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 import javax.imageio.ImageIO;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.io.FileUtils;
+import org.springframework.stereotype.Component;
 
+@Component
 public class FileHandler {
 
     private static List<String> supportImageFormats;
@@ -20,11 +21,8 @@ public class FileHandler {
     private FileHandler() {
     }
 
-    public static File writeFile(FileItemStream file, String orignalFileName, String dest, String uploader) throws IOException {
-        String extension = getExtensionType(orignalFileName);
-
-        String fileName = UUID.randomUUID().toString() + "." + extension;
-
+    public static File writeFile(FileItemStream file, String fileName, String dest, String uploader) throws IOException {
+        String extension = getExtensionType(fileName);
         File destFolder = new File(dest + uploader + "/");
 
         if (!destFolder.exists()) {
@@ -32,10 +30,6 @@ public class FileHandler {
         }
         File newFile = new File(dest + uploader + "/" + fileName);
 
-        //Checks the randomly generated file name doesn't already exists and keeps changing till string is unique
-        while (newFile.exists()) {
-            newFile = new File(dest + uploader + "/" + UUID.randomUUID().toString());
-        }
         //Copy file to new file
         FileUtils.copyInputStreamToFile(file.openStream(), newFile);
 

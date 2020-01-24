@@ -1,7 +1,16 @@
 package biz.oneilindustries.website.entity;
 
-import javax.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Objects;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "media")
@@ -24,19 +33,26 @@ public class Media {
     @Column(name = "date_added")
     private String dateAdded;
 
-    @Column(name = "album_id")
-    private Integer albumID;
+    @ManyToOne
+    @JoinColumn(name="album_id")
+    @JsonIgnore
+    private Album album;
 
     @Column(name = "media_type")
     private String mediaType;
 
-    public Media(String name, String fileName, String linkStatus, String uploader, String dateAdded, Integer albumID, String mediaType) {
+    @OneToOne(mappedBy = "media")
+    @JsonIgnore
+    private PublicMediaApproval publicMediaApproval;
+
+    public Media(String name, String fileName, String linkStatus, String uploader, String dateAdded,
+        Album album, String mediaType) {
         this.name = name;
         this.fileName = fileName;
         this.linkStatus = linkStatus;
         this.uploader = uploader;
         this.dateAdded = dateAdded;
-        this.albumID = albumID;
+        this.album = album;
         this.mediaType = mediaType;
     }
 
@@ -103,14 +119,6 @@ public class Media {
         this.dateAdded = dateAdded;
     }
 
-    public Integer getAlbumID() {
-        return albumID;
-    }
-
-    public void setAlbumID(Integer albumID) {
-        this.albumID = albumID;
-    }
-
     public String getMediaType() {
         return mediaType;
     }
@@ -128,7 +136,6 @@ public class Media {
                 ", linkStatus='" + linkStatus + '\'' +
                 ", uploader='" + uploader + '\'' +
                 ", dateAdded='" + dateAdded + '\'' +
-                ", albumID=" + albumID +
                 ", media='" + mediaType + '\'' +
                 '}';
     }
@@ -144,5 +151,21 @@ public class Media {
     @Override
     public int hashCode() {
         return Objects.hash(getId());
+    }
+
+    public Album getAlbum() {
+        return album;
+    }
+
+    public void setAlbum(Album album) {
+        this.album = album;
+    }
+
+    public PublicMediaApproval getPublicMediaApproval() {
+        return publicMediaApproval;
+    }
+
+    public void setPublicMediaApproval(PublicMediaApproval publicMediaApproval) {
+        this.publicMediaApproval = publicMediaApproval;
     }
 }

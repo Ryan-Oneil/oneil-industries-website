@@ -1,14 +1,18 @@
 package biz.oneilindustries.website.entity;
 
-import javax.persistence.*;
+import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "album")
 public class Album {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private String id;
 
     private String name;
 
@@ -17,7 +21,11 @@ public class Album {
     @Column(name = "show_unlisted_images")
     private boolean showUnlistedImages;
 
-    public Album(String name, String creator, boolean showUnlistedImages) {
+    @OneToMany(mappedBy = "album")
+    private List<Media> medias;
+
+    public Album(String id, String name, String creator, boolean showUnlistedImages) {
+        this.id = id;
         this.name = name;
         this.creator = creator;
         this.showUnlistedImages = showUnlistedImages;
@@ -26,11 +34,11 @@ public class Album {
     public Album() {
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -66,5 +74,13 @@ public class Album {
                 ", creator='" + creator + '\'' +
                 ", showUnlistedImages=" + showUnlistedImages +
                 '}';
+    }
+
+    public List<Media> getMedias() {
+        return medias;
+    }
+
+    public void setMedias(List<Media> medias) {
+        this.medias = medias;
     }
 }

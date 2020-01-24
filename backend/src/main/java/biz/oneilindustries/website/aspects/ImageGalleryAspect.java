@@ -120,7 +120,7 @@ public class ImageGalleryAspect {
         Authentication user = (Authentication) args[1];
         HttpServletRequest request = (HttpServletRequest) args[2];
 
-        Album album = albumService.getAlbumByName(albumName);
+        Album album = albumService.getAlbum(albumName);
 
         if (album == null) {
             throw new FileNotFoundException(albumName + FILE_NOT_EXISTS_ERROR_MESSAGE);

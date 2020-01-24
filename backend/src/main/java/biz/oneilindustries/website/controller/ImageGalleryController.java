@@ -1,6 +1,7 @@
 package biz.oneilindustries.website.controller;
 
 import static biz.oneilindustries.website.config.AppConfig.BACK_END_URL;
+import static biz.oneilindustries.website.config.AppConfig.FRONT_END_URL;
 import static biz.oneilindustries.website.config.AppConfig.GALLERY_IMAGES_DIRECTORY;
 import static biz.oneilindustries.website.security.SecurityConstants.TRUSTED_ROLES;
 
@@ -10,8 +11,6 @@ import biz.oneilindustries.website.entity.Media;
 import biz.oneilindustries.website.entity.Quota;
 import biz.oneilindustries.website.exception.MediaException;
 import biz.oneilindustries.website.filecreater.FileHandler;
-import biz.oneilindustries.website.gallery.AlbumCreator;
-import biz.oneilindustries.website.gallery.MediaAlbum;
 import biz.oneilindustries.website.pojo.AlbumDetails;
 import biz.oneilindustries.website.service.AlbumService;
 import biz.oneilindustries.website.service.MediaService;
@@ -33,7 +32,6 @@ import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadBase.InvalidContentTypeException;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
@@ -59,6 +57,9 @@ public class ImageGalleryController {
     private final UserService userService;
     private final ResourceHandler handler;
 
+    private static final String PUBLIC = "public";
+    private static final String UNLISTED = "unlisted";
+
     @Autowired
     public ImageGalleryController(MediaService mediaService, AlbumService albumService, UserService userService,
         ResourceHandler handler) {
@@ -70,7 +71,7 @@ public class ImageGalleryController {
 
     @GetMapping("/medias")
     public List<Media> showAllMedia() {
-        return mediaService.getMediaByLinkStatus("public");
+        return mediaService.getMediaByLinkStatus(PUBLIC);
     }
 
     @GetMapping("/image/{imageName}")
@@ -118,48 +119,58 @@ public class ImageGalleryController {
     }
 
     @PostMapping("/upload")
-    public String uploadMediaAPI(GalleryUpload galleryUpload, Authentication user, HttpServletRequest request)
-        throws IOException, FileUploadException {
-        boolean needsApproval = false;
-
-        //Calculates the amount of storage the user can still use
-        Quota userStorageLimit = userService.getQuotaByUsername(user.getName());
-        long storageLeft = (userStorageLimit.getMax() * FileUtils.ONE_GB) - userStorageLimit.getUsed();
+    public String uploadMediaAPI(GalleryUpload galleryUpload, Authentication user, HttpServletRequest request) throws IOException, FileUploadException {
+        ArrayList<File> files = new ArrayList<>();
+        Media newMedia = null;
+        Album album = null;
+        Quota quota = userService.getQuotaByUsername(user.getName());
+        long totalFilesSize = 0;
 
         ServletFileUpload upload = new ServletFileUpload();
         //Limits the file upload the the users remaining quota
-        if (!userStorageLimit.isIgnoreQuota()) {
-            upload.setSizeMax(storageLeft >= 0 ? storageLeft : 0);
-        }
+        upload.setSizeMax(userService.getUserRemainingStorage(quota));
         FileItemIterator iterator;
-
         //Gets the uploaded file from request
         try {
             iterator = upload.getItemIterator(request);
         } catch (InvalidContentTypeException e) {
             throw new MediaException("No file uploaded");
         }
-        FileItemStream item = iterator.next();
-        //Writes the file
-        File media = FileHandler.writeFile(item, item.getName(), GALLERY_IMAGES_DIRECTORY, user.getName());
-        galleryUpload.setFile(media);
+        while(iterator.hasNext()) {
+            FileItemStream item = iterator.next();
 
-        Album album = null;
-
-        if (!galleryUpload.getAlbumName().equalsIgnoreCase("none")) {
-            album = albumService.registerAlbum(galleryUpload, user.getName());
+            if (item.isFormField()) continue;
+            //Generates a unique id to prevent collisions
+            String fileName = mediaService.generateUniqueMediaName(item.getName());
+            //Writes the file
+            File media = FileHandler.writeFile(item, fileName,  GALLERY_IMAGES_DIRECTORY, user.getName());
+            files.add(media);
         }
-        String returnMessage = BACK_END_URL + "/gallery/image/" + galleryUpload.getFile().getName();
 
-        if (galleryUpload.getPrivacy().equalsIgnoreCase("public") && !CollectionUtils.containsAny(user.getAuthorities(),TRUSTED_ROLES)) {
-            galleryUpload.setPrivacy("unlisted");
-            needsApproval = true;
-            returnMessage = "The media will need to be approved by an admin to be made public. It will remain unlisted until approved";
+        if (galleryUpload.getAlbumName() != null) {
+            album = albumService.getAlbum(galleryUpload.getAlbumName());
+        } else if (galleryUpload.getNewAlbum() != null) {
+            album = albumService.registerAlbum(galleryUpload.getNewAlbum(), galleryUpload.getShowUnlistedImages(), user.getName());
+        } else if (files.size() > 1) {
+            album = albumService.registerRandomAlbum(user.getName());
         }
-        mediaService.registerMedia(galleryUpload, user.getName(), album, needsApproval);
-        userService.increaseUsedAmount(userStorageLimit, media.length());
 
-        return returnMessage;
+        for (File media : files) {
+            totalFilesSize += media.length();
+
+            if (galleryUpload.getPrivacy().equalsIgnoreCase(PUBLIC) && !CollectionUtils.containsAny(user.getAuthorities(), TRUSTED_ROLES)) {
+                newMedia = mediaService.registerMedia(media.getName(), UNLISTED, media, user.getName(), album);
+                mediaService.requestPublicApproval(newMedia.getId(), newMedia.getName(), album);
+                continue;
+            }
+            newMedia = mediaService.registerMedia(media.getName(), galleryUpload.getPrivacy(), media, user.getName(), album);
+        }
+        userService.increaseUsedAmount(quota, totalFilesSize);
+
+        if (album != null && files.size() > 1) {
+            return  FRONT_END_URL + "/gallery/album/" + album.getId();
+        }
+        return BACK_END_URL + "/gallery/" + newMedia.getMediaType() + "/" + newMedia.getFileName();
     }
 
     @DeleteMapping("/media/delete/{mediaInt}")
@@ -175,10 +186,17 @@ public class ImageGalleryController {
             mediaSize = mediaFile.length();
             Files.delete(mediaFile.toPath());
         }
+
+        if (media.getPublicMediaApproval() != null) {
+            mediaService.deleteMediaApproval(media.getPublicMediaApproval().getId());
+        }
         mediaService.deleteMedia(media.getId());
 
         if (quota != null && mediaSize > 0) {
             userService.decreaseUsedAmount(quota, mediaSize);
+        }
+        if (media.getAlbum() != null) {
+            albumService.deleteAlbumIfEmpty(media.getAlbum().getId());
         }
         return ResponseEntity.ok(HttpStatus.OK);
     }
@@ -192,38 +210,41 @@ public class ImageGalleryController {
     public ResponseEntity updateMedia(@PathVariable int mediaID, Authentication user, HttpServletRequest request, @RequestBody @Valid GalleryUpload galleryUpload)  {
         Album album = null;
 
-        if (!galleryUpload.getAlbumName().equalsIgnoreCase("none")) {
-            album = albumService.updateAlbum(galleryUpload,user.getName());
+        if (galleryUpload.getAlbumName() != null) {
+            album = albumService.getAlbum(galleryUpload.getAlbumName());
+        }else if (galleryUpload.getNewAlbum() != null) {
+            album = albumService.registerAlbum(galleryUpload.getNewAlbum(), galleryUpload.getShowUnlistedImages(), user.getName());
         }
 
-        if (galleryUpload.getPrivacy().equalsIgnoreCase("public") && !CollectionUtils.containsAny(user.getAuthorities(), TRUSTED_ROLES)) {
-            galleryUpload.setPrivacy("unlisted");
+        if (galleryUpload.getPrivacy().equalsIgnoreCase(PUBLIC) && !CollectionUtils.containsAny(user.getAuthorities(), TRUSTED_ROLES)) {
+            galleryUpload.setPrivacy(UNLISTED);
             mediaService.requestPublicApproval(mediaID, galleryUpload.getName(), album);
             return ResponseEntity.ok("Adding or updating a public media will require admin approval. Once approved your media changes will be live");
         }
         mediaService.updateMedia(galleryUpload,album, mediaID);
 
-        return ResponseEntity.ok("Successfully updated media");
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @GetMapping("/album/{albumName}")
-    public List<Media> showAlbum(@PathVariable String albumName) {
-        Album album = albumService.getAlbumByName(albumName);
+    @GetMapping("/album/{albumID}")
+    public Album showAlbum(@PathVariable String albumID) {
+        Album album = albumService.getAlbumWithMediaByID(albumID);
 
         if (album == null) {
-            throw new MediaException(albumName + ": Is not a valid album");
+            throw new MediaException(albumID + ": Is not a valid album");
         }
-        List<Media> albumMedia = mediaService.getAlbumMedias(album.getId());
 
-        List<Media> removedMedia = new ArrayList<>();
-        for (Media media : albumMedia) {
-            if (!album.isShowUnlistedImages() && media.getLinkStatus().equalsIgnoreCase("unlisted") || media.getLinkStatus().equalsIgnoreCase("private")) {
-                removedMedia.add(media);
+        if (!album.isShowUnlistedImages()) {
+            List<Media> removedMedia = new ArrayList<>();
+
+            for (Media media : album.getMedias()) {
+                if (media.getLinkStatus().equalsIgnoreCase(UNLISTED) || media.getLinkStatus().equalsIgnoreCase("private")) {
+                    removedMedia.add(media);
+                }
             }
+            album.getMedias().removeAll(removedMedia);
         }
-        albumMedia.removeAll(removedMedia);
-
-        return albumMedia;
+        return album;
     }
 
     @GetMapping("/myalbums/{username}/details")
@@ -232,48 +253,28 @@ public class ImageGalleryController {
     }
 
     @GetMapping("/myalbums/{username}")
-    public List<MediaAlbum> showUserAlbum(Authentication user, @PathVariable String username, HttpServletRequest request) {
-
-        List<Album> userAlbums = albumService.getAlbumsByCreator(username);
-        List<MediaAlbum> fullAlbums = new ArrayList<>();
-        AlbumCreator albumCreator = new AlbumCreator(mediaService);
-
-        for (Album album: userAlbums) {
-            MediaAlbum mediaAlbum = albumCreator.createAlbum(album);
-            if (mediaAlbum != null) {
-                fullAlbums.add(albumCreator.createAlbum(album));
-            }
-        }
-        return fullAlbums;
+    public List<Album> showUserAlbum(Authentication user, @PathVariable String username, HttpServletRequest request) {
+        return albumService.getAlbumsWithMediaByCreator(username);
     }
 
-    @GetMapping("/myalbum/{albumName}")
-    public MediaAlbum manageMyAlbums(@PathVariable String albumName,Authentication user, HttpServletRequest request) {
-
-        Album album = albumService.getAlbumByName(albumName);
-
-        return new AlbumCreator(mediaService).createAlbum(album);
+    @GetMapping("/myalbum/{albumID}")
+    public Album manageMyAlbums(@PathVariable String albumID, Authentication user, HttpServletRequest request) {
+        return albumService.getAlbumWithMediaByID(albumID);
     }
 
-    @PutMapping("/myalbums/update/{albumName}")
-    public ResponseEntity updateAlbum(@PathVariable String albumName, Authentication user, HttpServletRequest request, @RequestBody UpdatedAlbum updatedAlbum) {
+    @PutMapping("/myalbums/update/{albumID}")
+    public ResponseEntity updateAlbum(@PathVariable String albumID, Authentication user, HttpServletRequest request, UpdatedAlbum updatedAlbum) {
+        albumService.updateAlbum(albumID, updatedAlbum.getNewAlbumName(), updatedAlbum.isShowUnlistedImages());
 
-        Album album = albumService.getAlbumByName(albumName);
-
-        album.setName(updatedAlbum.getNewAlbumName());
-        album.setShowUnlistedImages(updatedAlbum.isShowUnlistedImages());
-
-        albumService.saveAlbum(album);
-
-        return ResponseEntity.ok(album);
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @PostMapping("/myalbums/delete/{albumName}")
-    public ResponseEntity deleteAlbum(@PathVariable String albumName, Authentication user, HttpServletRequest request) {
-        Album album = albumService.getAlbumByName(albumName);
+    @DeleteMapping("/myalbums/delete/{albumID}")
+    public ResponseEntity deleteAlbum(@PathVariable String albumID, Authentication user, HttpServletRequest request) {
+        Album album = albumService.getAlbumWithMediaByID(albumID);
 
         mediaService.resetMediaAlbumIDs(album);
-        albumService.deleteAlbum(album.getId());
+        albumService.deleteAlbum(albumID);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
