@@ -54,13 +54,13 @@ public class AuthAspect {
         checkExpired(passwordResetToken.getExpiryDate());
     }
 
-    public void performTokenCheck(boolean validToken) {
+    private void performTokenCheck(boolean validToken) {
         if (!validToken) {
             throw new TokenException("Invalid token");
         }
     }
 
-    public void checkExpired(Date date) {
+    private void checkExpired(Date date) {
 
         Calendar cal = Calendar.getInstance();
         if ((date.getTime() - cal.getTime().getTime()) <= 0) {

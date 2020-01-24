@@ -141,7 +141,7 @@ public class ServiceController {
     }
 
     //Admin services API
-    @PostMapping("/teamspeak/admin/kickuser")
+    @PostMapping("/admin/teamspeak/kickuser")
     public ResponseEntity kickUserTeamspeak(@RequestParam String userUUID, @RequestParam String reason) {
 
         managerService.kickUserFromServerTeamspeak(userUUID, reason);
@@ -149,17 +149,17 @@ public class ServiceController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @GetMapping("/teamspeak/admin/bans")
+    @GetMapping("/admin/teamspeak/bans")
     public List<Ban> getTeamspeakBanList() {
         return managerService.getTeamspeakBans();
     }
 
-    @GetMapping("/teamspeak/admin/servergroups")
+    @GetMapping("/admin/teamspeak/servergroups")
     public List<ServerGroup> getTeamspeakServerGroups() {
         return managerService.getTeamspeakServerGroups();
     }
 
-    @PostMapping("/teamspeak/admin/banuser")
+    @PostMapping("/admin/teamspeak/banuser")
     public ResponseEntity banUserFromTeamspeak(@RequestParam String userUUID,
         @RequestParam long time, @RequestParam String reason) {
 

@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import javax.transaction.Transactional;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -295,6 +296,25 @@ public class UserService {
         quota.decreaseUsed(amount);
 
         dao.saveQuota(quota);
+    }
+
+    @Transactional
+    public long getUserRemainingStorage(String user) {
+        Quota quota = getQuotaByUsername(user);
+
+        //Returns -1 if the user is allowed to bypass their limit
+        if (quota.isIgnoreQuota()) {
+            return -1;
+        }
+        return Math.max((quota.getMax() * FileUtils.ONE_GB) - quota.getUsed(), 0);
+    }
+    @Transactional
+    public long getUserRemainingStorage(Quota quota) {
+        //Returns -1 if the user is allowed to bypass their limit
+        if (quota.isIgnoreQuota()) {
+            return -1;
+        }
+        return Math.max((quota.getMax() * FileUtils.ONE_GB) - quota.getUsed(), 0);
     }
 
     @Transactional

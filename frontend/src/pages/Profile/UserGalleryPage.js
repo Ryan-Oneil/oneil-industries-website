@@ -1,6 +1,5 @@
 import React from "react";
 import { connect } from "react-redux";
-import _ from "lodash";
 
 import {
   deleteMedia,
@@ -15,6 +14,7 @@ import EditMediaForm from "../../components/formElements/EditMediaForm";
 import RenderMedias from "../../components/Gallery/RenderMedias";
 import { renderErrorMessage } from "../../components/Message";
 import { BASE_URL } from "../../apis/api";
+import { forceCheck } from "react-lazyload";
 
 class UserGalleryPage extends React.Component {
   state = { isModalOpen: false };
@@ -30,32 +30,24 @@ class UserGalleryPage extends React.Component {
     this.props.fetchAlbums(`/gallery/myalbums/${this.props.user}`);
     this.props.fetchImages(`/gallery/medias/user/${this.props.user}`);
   }
-
-  returnAlbumName = media => {
-    let album = _.find(this.props.medias.albums, mediaAlbum => {
-      return mediaAlbum.album.id === media.albumID;
-    });
-    return album ? album.album.name : "none";
-  };
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    //Fixes a lazy loading bug that prevents a image from being lazy loaded when it was previously created in another page
+    forceCheck();
+  }
 
   render() {
     const { activeMedia, mediasList, deleteError } = this.props.medias;
 
     return (
       <div className="marginPadding">
-        <h1 className="ui center aligned header">
-          {this.props.user}'s Gallery
-        </h1>
-        <div className="ui container">
-          <div className="ui four column centered grid">
-            {RenderMedias(mediasList, this.handleShowDialog)}
-          </div>
+        <div className="ui four column centered grid">
+          {RenderMedias(mediasList, this.handleShowDialog)}
         </div>
         {this.state.isOpen && (
           <Modal title={activeMedia.name} closeModal={this.handleShowDialog}>
             <div className="image">
               <a
-                href={`${BASE_URL}/api/gallery/${activeMedia.mediaType}/${activeMedia.fileName}`}
+                href={`${BASE_URL}/gallery/${activeMedia.mediaType}/${activeMedia.fileName}`}
               >
                 <Media
                   media={activeMedia}
@@ -81,8 +73,7 @@ class UserGalleryPage extends React.Component {
               media={activeMedia}
               initialValues={{
                 name: activeMedia.name,
-                privacy: activeMedia.linkStatus,
-                album: this.returnAlbumName(activeMedia)
+                privacy: activeMedia.linkStatus
               }}
             />
             {deleteError && renderErrorMessage(deleteError)}

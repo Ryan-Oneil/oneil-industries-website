@@ -44,6 +44,6 @@ public class RegistrationListener implements
         String message = messages.getMessage("message.regSucc", null, event.getLocale());
 
         emailSender.sendSimpleEmail(recipientAddress,subject,message + " " + confirmationUrl,"Oneil_Industries", null);
-        emailSender.sendSimpleEmail(RECEIVER_EMAIL, "New User","A new user has registered to Oneil Industries","Oneil_Industries", null);
+        emailSender.sendSimpleEmail(RECEIVER_EMAIL, "New User",user.getUsername() + " has registered to Oneil Industries","Oneil_Industries", null);
     }
 }
