@@ -89,7 +89,7 @@ export const getMediaApprovals = endpoint => dispatch => {
         payload: response.data
       });
     })
-    .then(error => {
+    .catch(error => {
       if (error.response) {
         dispatch(setError(error.response.data));
       } else {

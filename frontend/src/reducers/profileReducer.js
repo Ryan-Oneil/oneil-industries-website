@@ -20,6 +20,7 @@ export default (
     userDiscord: [],
     userTeamspeak: [],
     user: "",
+    storageQuota: [],
     canUpload: true
   },
   action

@@ -7,11 +7,12 @@ import {
   RESET_PASSWORD_SENT,
   NEW_PASSWORD_SENT
 } from "../actions/types";
+import { decodeJWT, isTokenExpired } from "../actions";
 
 export default function auth(
   state = {
     isAuthenticated: isAuth(),
-    user: decodeJWT("authToken").user,
+    user: decodeJWT("refreshToken").user,
     role: decodeJWT("authToken").role
   },
   action
@@ -64,29 +65,11 @@ export default function auth(
   }
 }
 
-const decodeJWT = tokenType => {
-  const token = localStorage.getItem(tokenType);
-
-  if (!token) {
-    return "";
-  }
-
-  const base64Url = token.split(".")[1];
-  const base64 = base64Url.replace("-", "+").replace("_", "/");
-
-  return JSON.parse(window.atob(base64));
-};
-
 const isAuth = () => {
   const token = decodeJWT("refreshToken");
 
   if (!token) {
     return false;
   }
-
-  if (Date.now() > token.exp * 1000) {
-    localStorage.removeItem("refreshToken");
-    return false;
-  }
-  return true;
+  return !isTokenExpired(token);
 };

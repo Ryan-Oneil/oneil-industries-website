@@ -1,4 +1,6 @@
 import axios from "axios";
+import { decodeJWT, isTokenExpired, logoutUser } from "../actions";
+import { store } from "../index";
 
 export const BASE_URL = "https://localhost";
 
@@ -30,12 +32,15 @@ baseApi.interceptors.response.use(
     }
 
     if (error.response.status === 401 && !originalRequest._retry) {
-      error.config._retry = true;
       originalRequest._retry = true;
       const refreshToken = localStorage.getItem("refreshToken");
 
       if (!refreshToken) {
         return Promise.reject(error);
+      }
+      if (isTokenExpired(decodeJWT("refreshToken"))) {
+        store.dispatch(logoutUser());
+        return Promise.reject(new Error("Your session has expired"));
       }
 
       return baseApi

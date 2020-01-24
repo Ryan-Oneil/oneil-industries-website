@@ -9,6 +9,7 @@ import {
 } from "./types";
 import { apiPostCall, BASE_URL } from "../apis/api";
 import { SubmissionError } from "redux-form";
+import { connect } from "react-redux";
 
 const requestLogin = creds => {
   return {
@@ -111,4 +112,21 @@ export const changePassword = (token, password) => dispatch => {
         throw new SubmissionError({ _error: error.message });
       }
     });
+};
+
+export const isTokenExpired = token => {
+  return Date.now() > token.exp * 1000;
+};
+
+export const decodeJWT = tokenType => {
+  const token = localStorage.getItem(tokenType);
+
+  if (!token) {
+    return "";
+  }
+
+  const base64Url = token.split(".")[1];
+  const base64 = base64Url.replace("-", "+").replace("_", "/");
+
+  return JSON.parse(window.atob(base64));
 };
