@@ -5,7 +5,9 @@ import {
   apiPutCall
 } from "../apis/api";
 import {
+  ALBUM_DELETE,
   ALBUM_EDIT_PUT,
+  ALBUM_MEDIA_GET,
   ALBUM_REQUEST,
   MEDIA_DELETE_DONE,
   MEDIA_DELETE_FAIL,
@@ -14,7 +16,8 @@ import {
   MEDIA_REQUEST,
   MEDIA_RESET_MESSAGES,
   MEDIA_UPDATE_SENT,
-  SET_ACTIVE_MEDIA_MODAL
+  SET_ACTIVE_MEDIA_MODAL,
+  SET_ERROR
 } from "./types";
 import { SubmissionError } from "redux-form";
 import { setError } from "./errors";
@@ -49,27 +52,42 @@ export const fetchAlbums = endpoint => dispatch => {
     });
 };
 
-export const updateAlbum = (endpoint, payload) => dispatch => {
-  return new Promise((resolve, reject) => {
-    apiPutCall(endpoint, payload)
-      .then(response => {
-        dispatch({ type: ALBUM_EDIT_PUT, album: response.data });
-        resolve(response);
-      })
-      .catch(error => {
-        reject(error);
+export const updateAlbum = (endpoint, id, payload) => dispatch => {
+  return apiPutCall(endpoint + id, payload)
+    .then(() => {
+      dispatch({
+        type: ALBUM_EDIT_PUT,
+        album: {
+          id,
+          name: payload.newAlbumName,
+          showUnlistedImages: payload.showUnlistedImages
+        }
       });
-  });
+    })
+    .catch(error => {
+      if (error.response) {
+        throw new SubmissionError({ _error: error.response.data });
+      } else {
+        throw new SubmissionError({ _error: error.message });
+      }
+    });
 };
 
-export const uploadMedia = (endpoint, data) => dispatch => {
+export const uploadMedia = (endpoint, data, files) => dispatch => {
   let postData = new FormData();
 
-  postData.append("file", data.file[0]);
+  files.forEach(media => postData.append("file", media.file, media.name));
 
-  const options = {
-    params: { name: data.name, privacy: data.linkStatus, albumName: data.album }
+  let options = {
+    params: { privacy: data.linkStatus }
   };
+
+  if (data.albumName) {
+    options.params.newAlbum = data.albumName;
+    options.params.showUnlistedImages = data.showUnlisted;
+  } else if (data.album) {
+    options.params.albumName = data.album;
+  }
 
   return apiPostCall(endpoint, postData, options)
     .then(response => {
@@ -135,4 +153,34 @@ export const setActiveMediaForModal = mediaID => {
     type: SET_ACTIVE_MEDIA_MODAL,
     mediaID
   };
+};
+
+export const deleteAlbum = (endpoint, albumID) => dispatch => {
+  apiDeleteCall(endpoint + albumID)
+    .then(() => {
+      dispatch({
+        type: ALBUM_DELETE,
+        albumDeleteID: albumID
+      });
+    })
+    .catch(error => {
+      dispatch({ type: SET_ERROR, error: error.message });
+    });
+};
+export const fetchAlbumWithImages = endpoint => dispatch => {
+  apiGetCall(endpoint)
+    .then(response => {
+      dispatch({
+        type: ALBUM_MEDIA_GET,
+        payload: response.data,
+        medias: response.data.medias
+      });
+    })
+    .catch(error => {
+      if (error.response) {
+        dispatch(setError(error.response.data));
+      } else {
+        dispatch(setError(error.message));
+      }
+    });
 };

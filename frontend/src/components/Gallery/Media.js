@@ -8,14 +8,14 @@ class Media extends React.Component {
     const endpoint = `${this.props.fullSize ? "" : "/thumbnail"}/${
       media.fileName
     }`;
-
+    //Checks if media.src exists as some pages send blobs instead or urls
     return (
       <div className="image">
         <LazyLoad>
           <img
             alt={media.name}
             className="ui centered image"
-            src={baseSrc + endpoint}
+            src={media.src ? media.src : baseSrc + endpoint}
           />
         </LazyLoad>
       </div>
@@ -24,9 +24,13 @@ class Media extends React.Component {
 
   renderVideo = (media, renderVideoControls) => {
     const src = `${BASE_URL}/gallery/video/${media.fileName}`;
-
+    //Checks if media.src exists as some pages send blobs instead or urls
     return (
-      <video className="centerVideo" src={src} controls={renderVideoControls} />
+      <video
+        className="centerVideo"
+        src={media.src ? media.src : src}
+        controls={renderVideoControls}
+      />
     );
   };
 

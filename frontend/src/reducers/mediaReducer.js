@@ -1,5 +1,7 @@
 import {
+  ALBUM_DELETE,
   ALBUM_EDIT_PUT,
+  ALBUM_MEDIA_GET,
   ALBUM_REQUEST,
   MEDIA_DELETE_DONE,
   MEDIA_DELETE_FAIL,
@@ -16,7 +18,8 @@ export default (
     mediasList: [],
     albums: [],
     mediaUpdateMessage: "",
-    activeMedia: {}
+    activeMedia: {},
+    album: {}
   },
   action
 ) => {
@@ -59,18 +62,30 @@ export default (
       return {
         ...state,
         albums: state.albums.map(mediaAlbum => {
-          if (mediaAlbum.album.id === action.album.id) {
-            mediaAlbum.album.name = action.album.name;
-            mediaAlbum.album.showUnlistedImages =
-              action.album.showUnlistedImages;
+          if (mediaAlbum.id === action.album.id) {
+            mediaAlbum.name = action.album.name;
+            mediaAlbum.showUnlistedImages = action.album.showUnlistedImages;
             return mediaAlbum;
           }
           return mediaAlbum;
         })
       };
     }
+    case ALBUM_DELETE: {
+      return {
+        ...state,
+        albums: state.albums.filter(
+          mediaAlbum => mediaAlbum.id !== action.albumDeleteID
+        )
+      };
+    }
     case MEDIA_RESET_MESSAGES: {
-      return { ...state, mediaUpdateMessage: "" };
+      return {
+        ...state,
+        mediaUpdateMessage: "",
+        mediaPostMessage: "",
+        mediaErrorMessage: ""
+      };
     }
     case SET_ACTIVE_MEDIA_MODAL: {
       return {
@@ -78,6 +93,17 @@ export default (
         activeMedia: _.find(state.mediasList, media => {
           return media.id === action.mediaID;
         })
+      };
+    }
+    case ALBUM_MEDIA_GET: {
+      return {
+        ...state,
+        mediasList: action.medias,
+        album: {
+          id: action.payload.id,
+          name: action.payload.name,
+          creator: action.payload.creator
+        }
       };
     }
     default: {

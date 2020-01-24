@@ -2,60 +2,52 @@ import React from "react";
 import Media from "../../components/Gallery/Media";
 import RenderMedias from "../../components/Gallery/RenderMedias";
 import Modal from "../../components/Gallery/Modal";
-import { apiGetCall } from "../../apis/api";
+import { BASE_URL } from "../../apis/api";
+import { connect } from "react-redux";
+import { fetchAlbumWithImages, setActiveMediaForModal } from "../../actions";
 
 class AlbumPage extends React.Component {
-  state = { isModalOpen: false, album: null, message: null };
+  state = { isOpen: false, message: null };
 
-  handleShowDialog = media => {
-    this.setState({ isOpen: !this.state.isOpen, media });
+  handleShowDialog = mediaID => {
+    this.setState({ isOpen: !this.state.isOpen });
+    this.props.setActiveMediaForModal(mediaID);
   };
 
   componentDidMount() {
     const {
       match: { params }
     } = this.props;
-    // Don't really need redux in this single component so manually getting and storing in local state
-    apiGetCall(`/gallery/album/${params.albumName}`)
-      .then(response => {
-        this.setState({ album: response.data });
-      })
-      .catch(error => {
-        this.setState({ message: error.message });
-      });
+
+    this.props.fetchAlbumWithImages(`/gallery/album/${params.albumName}`);
   }
 
   render() {
-    const {
-      match: { params }
-    } = this.props;
+    const { activeMedia, mediasList, album } = this.props.medias;
+
     return (
       <div className="marginPadding">
-        <h1 className="ui center aligned header">Album : {params.albumName}</h1>
+        <h1 className="ui center aligned header whiteText">
+          Album :{" "}
+          {album.name === album.id ? `Created by ${album.creator}` : album.name}
+        </h1>
         <div className="ui container">
           <div className="ui four column centered grid">
-            {RenderMedias(
-              this.state.album,
-              this.state.message,
-              this.handleShowDialog
-            )}
+            {RenderMedias(mediasList, this.handleShowDialog, true)}
           </div>
         </div>
         {this.state.isOpen && (
-          <Modal
-            title={this.state.media.name}
-            closeModal={() => this.handleShowDialog()}
-          >
+          <Modal title={activeMedia.name} closeModal={this.handleShowDialog}>
             <div className="image">
               <a
-                href={`http://localhost:8080/api/gallery/${this.state.media.mediaType}/${this.state.media.fileName}`}
+                href={`${BASE_URL}/gallery/${activeMedia.mediaType}/${activeMedia.fileName}`}
               >
-                <Media media={this.state.media} renderVideoControls={true} />
+                <Media media={activeMedia} renderVideoControls={true} />
               </a>
             </div>
             <div className="centerText">
-              <p>Uploader: {this.state.media.uploader}</p>
-              <p>Uploaded: {this.state.media.dateAdded}</p>
+              <p>Uploader: {activeMedia.uploader}</p>
+              <p>Uploaded: {activeMedia.dateAdded}</p>
             </div>
           </Modal>
         )}
@@ -63,4 +55,11 @@ class AlbumPage extends React.Component {
     );
   }
 }
-export default AlbumPage;
+const mapStateToProps = state => {
+  return { medias: state.medias };
+};
+
+export default connect(mapStateToProps, {
+  setActiveMediaForModal,
+  fetchAlbumWithImages
+})(AlbumPage);

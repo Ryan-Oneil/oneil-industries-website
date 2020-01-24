@@ -5,6 +5,7 @@ import { BASE_URL } from "../../apis/api";
 import Media from "../../components/Gallery/Media";
 import { connect } from "react-redux";
 import { fetchImages, setActiveMediaForModal } from "../../actions";
+import { forceCheck } from "react-lazyload";
 
 class Gallery extends React.Component {
   state = { isModalOpen: false };
@@ -16,6 +17,11 @@ class Gallery extends React.Component {
 
   componentDidMount() {
     this.props.fetchImages("/gallery/medias");
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    //Fixes a lazy loading bug that prevents a image from being lazy loaded when it was previously created in another page
+    forceCheck();
   }
 
   render() {
@@ -30,7 +36,7 @@ class Gallery extends React.Component {
           <Modal title={activeMedia.name} closeModal={this.handleShowDialog}>
             <div className="image">
               <a
-                href={`${BASE_URL}/api/gallery/${activeMedia.mediaType}/${activeMedia.fileName}`}
+                href={`${BASE_URL}/gallery/${activeMedia.mediaType}/${activeMedia.fileName}`}
               >
                 <Media
                   media={activeMedia}
