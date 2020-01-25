@@ -3,6 +3,7 @@ import {
   ADMIN_DENY_PUBLIC_MEDIA,
   ADMIN_GET_PENDING_PUBLIC_MEDIA_APPROVALS,
   ADMIN_GET_ROLES,
+  ADMIN_GET_STATS,
   ADMIN_GET_USER_DETAIL,
   ADMIN_GET_USERS,
   ADMIN_UPDATE_USER_DETAILS,
@@ -15,7 +16,15 @@ export default (
     users: [],
     user: "",
     mediaApprovals: [],
-    message: ""
+    message: "",
+    stats: {
+      remainingStorage: 0,
+      totalMedia: 0,
+      totalAlbums: 0,
+      totalUsers: 0,
+      recentUsers: [],
+      feedback: []
+    }
   },
   action
 ) => {
@@ -64,6 +73,9 @@ export default (
         ...state,
         mediaApprovals: filterApprovals(action.approvalID, state.mediaApprovals)
       };
+    }
+    case ADMIN_GET_STATS: {
+      return { ...state, stats: action.payload };
     }
     default: {
       return state;

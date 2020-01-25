@@ -3,7 +3,8 @@ import {
   ADMIN_GET_USERS,
   ADMIN_GET_PENDING_PUBLIC_MEDIA_APPROVALS,
   ADMIN_APPROVE_PUBLIC_MEDIA,
-  ADMIN_DENY_PUBLIC_MEDIA
+  ADMIN_DENY_PUBLIC_MEDIA,
+  ADMIN_GET_STATS
 } from "./types";
 import { ADMIN_GET_ROLES } from "./types";
 import { ADMIN_GET_USER_DETAIL } from "./types";
@@ -108,4 +109,18 @@ export const denyPublicMedia = (endpoint, mediaApprovalID) => dispatch => {
   apiPutCall(endpoint).then(() => {
     dispatch({ type: ADMIN_DENY_PUBLIC_MEDIA, approvalID: mediaApprovalID });
   });
+};
+
+export const getAdminStats = endpoint => dispatch => {
+  apiGetCall(endpoint)
+    .then(response => {
+      dispatch({ type: ADMIN_GET_STATS, payload: response.data });
+    })
+    .catch(error => {
+      if (error.response) {
+        dispatch(setError(error.response.data));
+      } else {
+        dispatch(setError(error.message));
+      }
+    });
 };

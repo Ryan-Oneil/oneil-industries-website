@@ -57,6 +57,11 @@ public class UserService {
     }
 
     @Transactional
+    public List<User> getRecentUsers(int amount) {
+        return this.dao.getRecentUsers(amount);
+    }
+
+    @Transactional
     public User getUser(String name) {
         return dao.getUser(name);
     }

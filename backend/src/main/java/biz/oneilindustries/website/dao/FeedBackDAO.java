@@ -19,7 +19,17 @@ public class FeedBackDAO {
 
         Session currentSession = sessionFactory.getCurrentSession();
 
-        Query<FeedBack> query = currentSession.createQuery("from FeedBack ", FeedBack.class);
+        Query<FeedBack> query = currentSession.createQuery("from FeedBack order by id desc", FeedBack.class);
+
+        return query.getResultList();
+    }
+
+    public List<FeedBack> getRecentFeedbacks(int amount) {
+
+        Session currentSession = sessionFactory.getCurrentSession();
+
+        Query<FeedBack> query = currentSession.createQuery("from FeedBack order by id desc", FeedBack.class);
+        query.setMaxResults(amount);
 
         return query.getResultList();
     }

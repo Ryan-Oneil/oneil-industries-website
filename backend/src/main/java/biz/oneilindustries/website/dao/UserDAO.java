@@ -41,6 +41,15 @@ public class UserDAO {
         return (User) query.uniqueResult();
     }
 
+    public List<User> getRecentUsers(int amount) {
+        Session currentSession = sessionFactory.getCurrentSession();
+
+        Query<User> query = currentSession.createQuery("from users order by id desc",User.class);
+        query.setMaxResults(amount);
+
+        return query.getResultList();
+    }
+
     public User getUserByEmail(String email) {
 
         Session currentSession = sessionFactory.getCurrentSession();

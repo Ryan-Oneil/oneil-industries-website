@@ -33,10 +33,6 @@ class AdminRouting extends React.Component {
             <i className="icon user" />
             Users
           </NavLink>
-          <NavLink to={`${match.path}/settings`} className="item">
-            <i className="icon cog" />
-            Settings
-          </NavLink>
           <SubNavMenu header="Media Gallery" icon="images outline">
             <NavLink
               to={`${match.path}/media`}

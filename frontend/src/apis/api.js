@@ -2,7 +2,7 @@ import axios from "axios";
 import { decodeJWT, isTokenExpired, logoutUser } from "../actions";
 import { store } from "../index";
 
-export const BASE_URL = "https://localhost";
+export const BASE_URL = process.env.REACT_APP_API_URL;
 
 const baseApi = axios.create({
   baseURL: BASE_URL,

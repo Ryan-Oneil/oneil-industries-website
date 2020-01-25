@@ -2,7 +2,7 @@ import React from "react";
 
 const Home = () => {
   return (
-    <div className="ui marginPadding">
+    <div className="ui marginPadding whiteText">
       <h1 className="ui centered inverted header">
         Oneil Industries a community dedicated to banter
       </h1>

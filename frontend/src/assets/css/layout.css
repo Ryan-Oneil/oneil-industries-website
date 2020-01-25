@@ -38,7 +38,6 @@ body {
     min-height: 96%;
     height: auto;
     background: rgb(61, 76, 104);
-    color: #FFFFFF;
     font-family: "Open Sans", Arial, Helvetica, sans-serif;
 }
 
@@ -250,9 +249,7 @@ a.removeFormat:visited {
     background: #f1574d;
     padding: 8px 15px;
     color: white!important;
-    /* padding-top: 5px; */
     margin-left: 15px;
-    /*font-family: "Open Sans", Arial, Helvetica, sans-serif;*/
     font-size: 16px;
     font-weight: 400;
 }
@@ -284,4 +281,7 @@ a.removeFormat:visited {
 }
 .wordWrap {
     word-wrap: break-word;
+}
+.card, .segment {
+    overflow: auto;
 }

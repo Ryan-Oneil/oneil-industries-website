@@ -29,6 +29,11 @@ public class ContactService {
     }
 
     @Transactional
+    public List<FeedBack> getRecentFeedbacks(int amount) {
+        return feedBackDAO.getRecentFeedbacks(amount);
+    }
+
+    @Transactional
     public List<FeedBack> getFeedbackByIP(String ip) {
         return feedBackDAO.getFeedbacksByIP(ip);
     }
