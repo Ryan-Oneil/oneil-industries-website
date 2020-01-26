@@ -2,6 +2,10 @@
 
 [Live Website](https://www.oneilindustries.biz/)
 
+# Demo
+[Demo Link](https://oneilwebsite-demo.herokuapp.com/)
+Demo user uername:user password:user
+
 The website is still a work in progress.
 
 React based front end purely based on API rest calls to the Spring boot backend
