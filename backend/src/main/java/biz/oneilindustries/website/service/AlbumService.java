@@ -7,6 +7,7 @@ import biz.oneilindustries.website.exception.MediaException;
 import biz.oneilindustries.website.pojo.AlbumDetails;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.transaction.Transactional;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,11 +82,8 @@ public class AlbumService {
 
     @Transactional
     public Album registerAlbum(String albumName, boolean showUnlisted, String user) {
-        String id = RandomIDGen.GetBase62(16);
+        String id = generateUniqueID();
 
-        while(getAlbumByName(id) != null) {
-            id = RandomIDGen.GetBase62(16);
-        }
         Album album = new Album(id, albumName, user, showUnlisted);
         saveAlbum(album);
         return album;
@@ -93,13 +91,19 @@ public class AlbumService {
 
     @Transactional
     public Album registerRandomAlbum(String user) {
-        String id = RandomIDGen.GetBase62(16);
-        while(getAlbumByName(id) != null) {
-            id = RandomIDGen.GetBase62(16);
-        }
+        String id = generateUniqueID();
+
         Album album = new Album(id, id, user, true);
         saveAlbum(album);
         return album;
+    }
+
+    private String generateUniqueID() {
+        String id = RandomIDGen.getBase62(16);
+        while(getAlbumByName(id) != null) {
+            id = RandomIDGen.getBase62(16);
+        }
+        return id;
     }
 
     @Transactional
@@ -130,5 +134,12 @@ public class AlbumService {
             albumDetails.add(new AlbumDetails(album.getId(), album.getName(), album.isShowUnlistedImages()));
         }
         return albumDetails;
+    }
+
+    @Transactional
+    public Album getOrRegisterAlbum(String albumName, boolean showUnlisted, String user) {
+        return  Optional.ofNullable(getAlbum(albumName))
+            //Album name passed didn't exist, creates a new one with the new album name passed
+            .orElseGet(() -> registerAlbum(albumName, showUnlisted, user));
     }
 }

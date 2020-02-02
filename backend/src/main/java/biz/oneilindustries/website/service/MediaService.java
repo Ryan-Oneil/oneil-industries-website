@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import javax.transaction.Transactional;
 import org.apache.tika.Tika;
 import org.hibernate.Hibernate;
@@ -93,9 +94,8 @@ public class MediaService {
 
         Media media = new Media(mediaName, file.getName() , privacy,user, localDate.format(dtf));
 
-        if (album != null) {
-            media.setAlbum(album);
-        }
+        Optional.ofNullable(album).ifPresent(media::setAlbum);
+
         Tika tika = new Tika();
         if (FileHandler.isImageFile(file.getName())) {
             media.setMediaType("image");
@@ -150,10 +150,10 @@ public class MediaService {
     @Transactional
     public String generateUniqueMediaName(String originalFileName) {
         String extension = getExtensionType(originalFileName); //
-        String fileName = RandomIDGen.GetBase62(16) + "." + extension;
+        String fileName = RandomIDGen.getBase62(16) + "." + extension;
 
         while(this.getMediaFileName(fileName) != null) {
-            fileName = RandomIDGen.GetBase62(16) + "." + extension;
+            fileName = RandomIDGen.getBase62(16) + "." + extension;
         }
         return fileName;
     }

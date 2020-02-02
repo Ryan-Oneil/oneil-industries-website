@@ -8,13 +8,11 @@ import biz.oneilindustries.website.pojo.ServiceClient;
 import biz.oneilindustries.website.service.ManagerService;
 import biz.oneilindustries.website.service.UserService;
 import com.github.theholywaffle.teamspeak3.api.wrapper.Ban;
-import com.github.theholywaffle.teamspeak3.api.wrapper.Client;
 import com.github.theholywaffle.teamspeak3.api.wrapper.ServerGroup;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
-import net.dv8tion.jda.api.entities.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,23 +55,20 @@ public class ServiceController {
     public ResponseEntity getUnRegisteredServerClients() {
 
         HashMap<String, Object> unRegisteredClients = new HashMap<>();
-
         List<ServiceClient> tsClients = new ArrayList<>();
-        List<String> registeredClients = userService.getTeamspeakUUIDs();
+        final List<String> registeredTSClients = userService.getTeamspeakUUIDs();
 
-        for (Client client : managerService.getTSClients()) {
-            if (!registeredClients.contains(client.getUniqueIdentifier())) {
-                tsClients.add(new ServiceClient(client.getNickname(), client.getUniqueIdentifier()));
-            }
-        }
-        registeredClients = userService.getDiscordUUIDs();
+        //Filters registered teamspeak clients and adds unregistered ts clients to list
+        managerService.getTSClients().stream().filter(client -> !registeredTSClients.contains(client.getUniqueIdentifier())).forEach(
+            client -> tsClients.add(new ServiceClient(client.getNickname(), client.getUniqueIdentifier())));
+
+        final List<String> registeredDiscordClients = userService.getDiscordUUIDs();
         List<ServiceClient> discordClients = new ArrayList<>();
 
-        for (Member member : managerService.getDiscordMembers()) {
-            if (!registeredClients.contains(member.getId())) {
-                discordClients.add(new ServiceClient(member.getEffectiveName(), member.getId()));
-            }
-        }
+        //Filters registered discord clients and adds unregistered discord clients to list
+        managerService.getDiscordMembers().stream().filter(member -> !registeredDiscordClients.contains(member.getId()))
+            .forEach(member -> discordClients.add(new ServiceClient(member.getEffectiveName(), member.getId())));
+
         unRegisteredClients.put("teamspeakUsers", tsClients);
         unRegisteredClients.put("discordUsers", discordClients);
 
@@ -82,10 +77,6 @@ public class ServiceController {
 
     @PostMapping("/user/addservice/{service}")
     public ResponseEntity addUserService(@PathVariable String service, @RequestBody ServiceClient serviceClient, Authentication user, HttpServletRequest request) {
-
-        if (request.isUserInRole("ROLE_UNREGISTERED")) {
-            ResponseEntity.status(HttpStatus.FORBIDDEN).body("Your account must be approved to register a service");
-        }
 
         // Returns the hibernate entity as response for frontend consumption
         if (service.equalsIgnoreCase("teamspeak")) {

@@ -1,6 +1,6 @@
 package biz.oneilindustries.services.teamspeak;
 
-import biz.oneilindustries.Rank.Rank;
+import biz.oneilindustries.rank.Rank;
 import com.github.theholywaffle.teamspeak3.TS3Api;
 import com.github.theholywaffle.teamspeak3.api.wrapper.Ban;
 import com.github.theholywaffle.teamspeak3.api.wrapper.Channel;

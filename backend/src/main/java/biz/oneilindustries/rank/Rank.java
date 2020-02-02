@@ -1,4 +1,4 @@
-package biz.oneilindustries.Rank;
+package biz.oneilindustries.rank;
 
 import com.github.theholywaffle.teamspeak3.api.wrapper.ServerGroup;
 import java.util.ArrayList;

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 public class UserDAO {
 
     private final SessionFactory sessionFactory;
+    private static final String USERNAME  = "username";
 
     @Autowired
     public UserDAO(SessionFactory sessionFactory) {
@@ -36,7 +37,7 @@ public class UserDAO {
         Session currentSession = sessionFactory.getCurrentSession();
 
         Query query = currentSession.createQuery("from users where username =:username",User.class);
-        query.setParameter("username", username.toLowerCase());
+        query.setParameter(USERNAME, username.toLowerCase());
 
         return (User) query.uniqueResult();
     }
@@ -72,7 +73,7 @@ public class UserDAO {
         Session currentSession = sessionFactory.getCurrentSession();
 
         Query query = currentSession.createQuery("delete from users where username=:username");
-        query.setParameter("username",username);
+        query.setParameter(USERNAME, username);
         query.executeUpdate();
     }
 
@@ -81,7 +82,7 @@ public class UserDAO {
         Session currentSession = sessionFactory.getCurrentSession();
 
         Query<DiscordUser> query = currentSession.createQuery("from DiscordUser where username=:username", DiscordUser.class);
-        query.setParameter("username", username);
+        query.setParameter(USERNAME, username);
 
         return query.getResultList();
     }
@@ -91,7 +92,7 @@ public class UserDAO {
         Session currentSession = sessionFactory.getCurrentSession();
 
         Query<TeamspeakUser> query = currentSession.createQuery("from TeamspeakUser where username=:username", TeamspeakUser.class);
-        query.setParameter("username", username);
+        query.setParameter(USERNAME, username);
 
         return query.getResultList();
     }
@@ -181,7 +182,7 @@ public class UserDAO {
         Session currentSession = sessionFactory.getCurrentSession();
 
         Query query = currentSession.createQuery("from Quota where username=:username", Quota.class);
-        query.setParameter("username", username);
+        query.setParameter(USERNAME, username);
 
         return (Quota) query.uniqueResult();
     }
@@ -197,7 +198,7 @@ public class UserDAO {
         Session currentSession = sessionFactory.getCurrentSession();
 
         Query query = currentSession.createQuery("from ApiToken where username=:username", ApiToken.class);
-        query.setParameter("username", user);
+        query.setParameter(USERNAME, user);
 
         return (ApiToken) query.uniqueResult();
     }

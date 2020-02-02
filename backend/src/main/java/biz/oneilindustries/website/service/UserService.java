@@ -37,7 +37,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
 
-    public static final String USERNAME_REGEX = "^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$";
+    private static final String USERNAME_REGEX = "^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$";
 
     @Autowired
     private UserDAO dao;
@@ -88,11 +88,10 @@ public class UserService {
             throw new UserException("Username may only contain a-Z . _");
         }
         String encryptedPassword = passwordEncoder.encode(loginForm.getPassword());
-        String username = loginForm.getName();
+        String username = loginForm.getName().toLowerCase();
 
-        User user = new User(username.toLowerCase(), encryptedPassword,false, loginForm.getEmail(), "ROLE_UNREGISTERED");
-
-        Quota quota = new Quota(loginForm.getName(), 0, 25, false);
+        User user = new User(username, encryptedPassword,false, loginForm.getEmail(), "ROLE_UNREGISTERED");
+        Quota quota = new Quota(username, 0, 25, false);
 
         saveUser(user);
         saveUserQuota(quota);
@@ -101,39 +100,25 @@ public class UserService {
     }
 
     @Transactional
-    public void updateUser(UpdatedUser updatedUser, String name) throws UsernameNotFoundException {
+    public void updateUser(UpdatedUser updatedUser, String name) {
         User user = getUser(name);
 
         if (user == null) {
             throw new UsernameNotFoundException(name + " doesn't exists");
         }
 
-        if (updatedUser.getUsername() != null) {
-            user.setUsername(updatedUser.getUsername());
-        }
+        if (!updatedUser.getEmail().equals(user.getEmail())) {
+            User isEmailTaken = getUserByEmail(updatedUser.getEmail());
 
-        if (updatedUser.getEmail() != null) {
-            if (!updatedUser.getEmail().equals(user.getEmail())) {
-                User isEmailTaken = getUserByEmail(updatedUser.getEmail());
-
-                if (isEmailTaken != null) {
-                    throw new UserException("Email is already registered to another user");
-                }
+            if (isEmailTaken != null) {
+                throw new UserException("Email is already registered to another user");
             }
-            user.setEmail(updatedUser.getEmail());
         }
+        user.setEmail(updatedUser.getEmail());
+        updatedUser.getEnabled().ifPresent(user::setEnabled);
+        updatedUser.getPassword().ifPresent(password -> passwordEncoder.encode(password));
+        updatedUser.getRole().ifPresent(user::setRole);
 
-        if (updatedUser.getEnabled() != null) {
-            user.setEnabled(updatedUser.getEnabled());
-        }
-
-        if (updatedUser.getPassword() != null) {
-            user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
-        }
-
-        if (updatedUser.getRole() != null) {
-            user.setRole(updatedUser.getRole());
-        }
         saveUser(user);
     }
 
@@ -363,20 +348,20 @@ public class UserService {
         }
         //Returns a shareX custom uploader config template
         return "{\n"
-                + "  \"Name\": \"Oneil Industries\",\n"
-                + "  \"DestinationType\": \"ImageUploader, TextUploader, FileUploader\",\n"
-                + "  \"RequestMethod\": \"POST\",\n"
-                + "  \"RequestURL\": \"" + BACK_END_URL + "/gallery/upload\",\n"
-                + "  \"Parameters\": {\n"
-                + "    \"name\": \"%h.%mi.%s-%d.%mo.%yy\",\n"
-                + "    \"privacy\": \"unlisted\",\n"
-                + "    \"albumName\": \"none\"\n"
-                + "  },\n"
-                + "  \"Headers\": {\n"
-                + "\"Authorization\": \"Bearer " + apiToken.getToken()
-                + "  \"\n},\n"
-                + "  \"Body\": \"MultipartFormData\",\n"
-                + "  \"FileFormName\": \"file\"\n"
-                + "}";
+            + "  \"Name\": \"Oneil Industries\",\n"
+            + "  \"DestinationType\": \"ImageUploader, TextUploader, FileUploader\",\n"
+            + "  \"RequestMethod\": \"POST\",\n"
+            + "  \"RequestURL\": \"" + BACK_END_URL + "/gallery/upload\",\n"
+            + "  \"Parameters\": {\n"
+            + "    \"name\": \"%h.%mi.%s-%d.%mo.%yy\",\n"
+            + "    \"privacy\": \"unlisted\",\n"
+            + "    \"albumName\": \"none\"\n"
+            + "  },\n"
+            + "  \"Headers\": {\n"
+            + "\"Authorization\": \"Bearer " + apiToken.getToken()
+            + "  \"\n},\n"
+            + "  \"Body\": \"MultipartFormData\",\n"
+            + "  \"FileFormName\": \"file\"\n"
+            + "}";
     }
 }

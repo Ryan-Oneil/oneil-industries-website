@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -124,7 +125,6 @@ public class ImageGalleryController {
         Media newMedia = null;
         Album album = null;
         Quota quota = userService.getQuotaByUsername(user.getName());
-        long totalFilesSize = 0;
 
         ServletFileUpload upload = new ServletFileUpload();
         //Limits the file upload the the users remaining quota
@@ -147,13 +147,13 @@ public class ImageGalleryController {
             files.add(media);
         }
 
-        if (galleryUpload.getAlbumName() != null) {
-            album = albumService.getAlbum(galleryUpload.getAlbumName());
-        } else if (galleryUpload.getNewAlbum() != null) {
-            album = albumService.registerAlbum(galleryUpload.getNewAlbum(), galleryUpload.getShowUnlistedImages(), user.getName());
+        if (galleryUpload.getAlbum().isPresent()) {
+            album = albumService.getOrRegisterAlbum(galleryUpload.getAlbum().get(), galleryUpload.getShowUnlistedImages(), user.getName());
         } else if (files.size() > 1) {
-            album = albumService.registerRandomAlbum(user.getName());
+            //Creates a random album if multiple files were uploaded without a given album
+            album =  albumService.registerRandomAlbum(user.getName());
         }
+        long totalFilesSize = 0;
 
         for (File media : files) {
             totalFilesSize += media.length();
@@ -167,7 +167,7 @@ public class ImageGalleryController {
         }
         userService.increaseUsedAmount(quota, totalFilesSize);
 
-        if (album != null && files.size() > 1) {
+        if (files.size() > 1) {
             return  FRONT_END_URL + "/gallery/album/" + album.getId();
         }
         return BACK_END_URL + "/gallery/" + newMedia.getMediaType() + "/" + newMedia.getFileName();
@@ -191,10 +191,8 @@ public class ImageGalleryController {
             mediaService.deleteMediaApproval(media.getPublicMediaApproval().getId());
         }
         mediaService.deleteMedia(media.getId());
+        userService.decreaseUsedAmount(quota, mediaSize);
 
-        if (quota != null && mediaSize > 0) {
-            userService.decreaseUsedAmount(quota, mediaSize);
-        }
         if (media.getAlbum() != null) {
             albumService.deleteAlbumIfEmpty(media.getAlbum().getId());
         }
@@ -210,10 +208,8 @@ public class ImageGalleryController {
     public ResponseEntity updateMedia(@PathVariable int mediaID, Authentication user, HttpServletRequest request, @RequestBody @Valid GalleryUpload galleryUpload)  {
         Album album = null;
 
-        if (galleryUpload.getAlbumName() != null) {
-            album = albumService.getAlbum(galleryUpload.getAlbumName());
-        }else if (galleryUpload.getNewAlbum() != null) {
-            album = albumService.registerAlbum(galleryUpload.getNewAlbum(), galleryUpload.getShowUnlistedImages(), user.getName());
+        if (galleryUpload.getAlbum().isPresent()) {
+            album = albumService.getOrRegisterAlbum(galleryUpload.getAlbum().get(), galleryUpload.getShowUnlistedImages(), user.getName());
         }
 
         if (galleryUpload.getPrivacy().equalsIgnoreCase(PUBLIC) && !CollectionUtils.containsAny(user.getAuthorities(), TRUSTED_ROLES)) {
@@ -235,14 +231,9 @@ public class ImageGalleryController {
         }
 
         if (!album.isShowUnlistedImages()) {
-            List<Media> removedMedia = new ArrayList<>();
-
-            for (Media media : album.getMedias()) {
-                if (media.getLinkStatus().equalsIgnoreCase(UNLISTED) || media.getLinkStatus().equalsIgnoreCase("private")) {
-                    removedMedia.add(media);
-                }
-            }
-            album.getMedias().removeAll(removedMedia);
+            //Removes all medias that aren't set to public
+            List<Media> publicMedias = album.getMedias().stream().filter(media -> media.getLinkStatus().equalsIgnoreCase(PUBLIC)).collect(Collectors.toList());
+            album.setMedias(publicMedias);
         }
         return album;
     }

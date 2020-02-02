@@ -1,8 +1,8 @@
 package biz.oneilindustries.website.validation;
 
 import java.io.File;
+import java.util.Optional;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 public class GalleryUpload {
 
@@ -13,34 +13,9 @@ public class GalleryUpload {
 
     private String privacy = "unlisted";
 
-    private String albumName;
-
-    private String newAlbum;
+    private String album;
 
     private Boolean showUnlistedImages;
-
-    public GalleryUpload(File file, @NotNull String name, String privacy, String albumName, String newAlbum, Boolean showUnlistedImages) {
-        this.file = file;
-        this.name = name;
-        this.privacy = privacy;
-        this.albumName = albumName;
-        this.newAlbum = newAlbum;
-        this.showUnlistedImages = showUnlistedImages;
-    }
-
-    public GalleryUpload(File file, @NotNull String name, String privacy, String albumName) {
-        this.file = file;
-        this.name = name;
-        this.privacy = privacy;
-        this.albumName = albumName;
-    }
-
-    public GalleryUpload(@NotNull String name, String privacy,
-        @Size(min = 1, message = "Please enter an album names") String albumName) {
-        this.name = name;
-        this.privacy = privacy;
-        this.albumName = albumName;
-    }
 
     public GalleryUpload() {
     }
@@ -69,20 +44,12 @@ public class GalleryUpload {
         this.privacy = privacy;
     }
 
-    public String getAlbumName() {
-        return albumName;
+    public Optional<String> getAlbum() {
+        return Optional.ofNullable(album);
     }
 
-    public void setAlbumName(String albumName) {
-        this.albumName = albumName;
-    }
-
-    public String getNewAlbum() {
-        return newAlbum;
-    }
-
-    public void setNewAlbum(String newAlbum) {
-        this.newAlbum = newAlbum;
+    public void setAlbum(String album) {
+        this.album = album;
     }
 
     public Boolean getShowUnlistedImages() {

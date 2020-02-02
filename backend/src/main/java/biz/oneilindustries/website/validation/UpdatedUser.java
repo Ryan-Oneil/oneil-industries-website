@@ -1,5 +1,6 @@
 package biz.oneilindustries.website.validation;
 
+import java.util.Optional;
 import javax.validation.constraints.NotNull;
 
 public class UpdatedUser {
@@ -50,24 +51,24 @@ public class UpdatedUser {
         this.email = email;
     }
 
-    public String getRole() {
-        return role;
+    public  Optional<String> getRole() {
+        return Optional.ofNullable(role);
     }
 
     public void setRole(String role) {
         this.role = role;
     }
 
-    public Boolean getEnabled() {
-        return enabled;
+    public  Optional<Boolean> getEnabled() {
+        return Optional.ofNullable(enabled);
     }
 
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
 
-    public String getPassword() {
-        return password;
+    public Optional<String> getPassword() {
+        return Optional.ofNullable(password);
     }
 
     public void setPassword(String password) {

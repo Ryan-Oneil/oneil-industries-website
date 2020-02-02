@@ -83,10 +83,10 @@ export const uploadMedia = (endpoint, data, files) => dispatch => {
   };
 
   if (data.albumName) {
-    options.params.newAlbum = data.albumName;
+    options.params.album = data.albumName;
     options.params.showUnlistedImages = data.showUnlisted;
   } else if (data.album) {
-    options.params.albumName = data.album;
+    options.params.album = data.album;
   }
 
   return apiPostCall(endpoint, postData, options)

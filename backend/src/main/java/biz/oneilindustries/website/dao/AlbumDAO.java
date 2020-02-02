@@ -31,7 +31,7 @@ public class AlbumDAO {
         Session currentSession = sessionFactory.getCurrentSession();
 
         Query<Album> query = currentSession.createQuery("from Album where creator=:creator", Album.class);
-        query.setParameter("creator",creator);
+        query.setParameter("creator", creator);
 
         return query.getResultList();
     }
@@ -39,14 +39,14 @@ public class AlbumDAO {
     public Album getAlbum(String id) {
         Session currentSession = sessionFactory.getCurrentSession();
 
-        return currentSession.get(Album.class,id);
+        return currentSession.get(Album.class, id);
     }
 
     public Album getAlbumByName(String albumName) {
         Session currentSession = sessionFactory.getCurrentSession();
 
         Query query = currentSession.createQuery("FROM Album where name=:albumName");
-        query.setParameter("albumName",albumName);
+        query.setParameter("albumName", albumName);
 
         return (Album) query.uniqueResult();
     }
@@ -69,7 +69,7 @@ public class AlbumDAO {
         Session currentSession = sessionFactory.getCurrentSession();
 
         Query query = currentSession.createQuery("select count(creator) from Album where creator=: username");
-        query.setParameter("username",user);
+        query.setParameter("username", user);
 
         return (long) query.uniqueResult();
     }

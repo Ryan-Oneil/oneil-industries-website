@@ -1,6 +1,6 @@
 package biz.oneilindustries.services.discord;
 
-import biz.oneilindustries.Rank.Rank;
+import biz.oneilindustries.rank.Rank;
 import java.util.ArrayList;
 import java.util.List;
 import net.dv8tion.jda.api.entities.Category;

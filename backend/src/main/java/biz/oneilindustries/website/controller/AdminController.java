@@ -51,12 +51,10 @@ public class AdminController {
 
     @GetMapping("/users")
     public List<UpdatedUser> showUsers() {
-
         List<UpdatedUser> users = new ArrayList<>();
 
-        for (User user : userService.getUsers()) {
-            users.add(new UpdatedUser(user.getUsername(), "*", user.getEmail(), user.getRole(), user.getEnabled()));
-        }
+        userService.getUsers().forEach(user -> users.add(new UpdatedUser(user.getUsername(), "*", user.getEmail(), user.getRole(), user.getEnabled())));
+
         return users;
     }
 
