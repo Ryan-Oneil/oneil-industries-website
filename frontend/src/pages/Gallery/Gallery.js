@@ -1,65 +1,66 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import RenderMedias from "../../components/Gallery/RenderMedias";
-import Modal from "../../components/Gallery/Modal";
 import { BASE_URL } from "../../apis/api";
 import Media from "../../components/Gallery/Media";
-import { connect } from "react-redux";
-import { fetchImages, setActiveMediaForModal } from "../../actions";
+import { useDispatch, useSelector } from "react-redux";
 import { forceCheck } from "react-lazyload";
+import { Modal, Row } from "antd";
+import { fetchImages } from "../../reducers/mediaReducer";
 
-class Gallery extends React.Component {
-  state = { isModalOpen: false };
+export default () => {
+  const [mediaId, setMediaId] = useState("");
+  const [activeMedia, setActiveMedia] = useState("");
+  const [mediaIds, setMediaIds] = useState([]);
+  const dispatch = useDispatch();
+  const { medias } = useSelector(state => state.medias.entities);
+  const mediaList = mediaIds.map(id => medias[id]);
 
-  handleShowDialog = mediaID => {
-    this.setState({ isOpen: !this.state.isOpen });
-    this.props.setActiveMediaForModal(mediaID);
+  const handleShowDialog = mediaID => {
+    setMediaId(mediaID);
   };
 
-  componentDidMount() {
-    this.props.fetchImages("/gallery/medias");
-  }
-
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    //Fixes a lazy loading bug that prevents a image from being lazy loaded when it was previously created in another page
-    forceCheck();
-  }
-
-  render() {
-    const { activeMedia, mediasList } = this.props.medias;
-
-    return (
-      <div className="ui container">
-        <div className="ui four column centered grid">
-          {RenderMedias(mediasList, this.handleShowDialog, true)}
-        </div>
-        {this.state.isOpen && (
-          <Modal title={activeMedia.name} closeModal={this.handleShowDialog}>
-            <div className="image">
-              <a
-                href={`${BASE_URL}/gallery/${activeMedia.mediaType}/${activeMedia.fileName}`}
-              >
-                <Media
-                  media={activeMedia}
-                  renderVideoControls={true}
-                  fullSize={true}
-                />
-              </a>
-            </div>
-            <div className="centerText">
-              <p>Uploader: {activeMedia.uploader}</p>
-              <p>Uploaded: {activeMedia.dateAdded}</p>
-            </div>
-          </Modal>
-        )}
-      </div>
+  useEffect(() => {
+    dispatch(fetchImages("/gallery/medias")).then(mediaIds =>
+      setMediaIds(mediaIds)
     );
-  }
-}
-const mapStateToProps = state => {
-  return { medias: state.medias, auth: state.auth };
-};
+  }, []);
 
-export default connect(mapStateToProps, {
-  fetchImages,
-  setActiveMediaForModal
-})(Gallery);
+  useEffect(() => {
+    setActiveMedia(medias[mediaId]);
+  }, [mediaId]);
+
+  // componentDidUpdate(prevProps, prevState, snapshot) {
+  //   //Fixes a lazy loading bug that prevents a image from being lazy loaded when it was previously created in another page
+  //   forceCheck();
+  // }
+
+  return (
+    <>
+      <Row justify="center" gutter={[32, 32]}>
+        {RenderMedias(mediaList, handleShowDialog, true)}
+      </Row>
+      {activeMedia && (
+        <Modal
+          title={activeMedia.name}
+          visible={mediaId}
+          onCancel={() => setMediaId("")}
+          footer={null}
+        >
+          <a
+            href={`${BASE_URL}/gallery/${activeMedia.mediaType}/${activeMedia.fileName}`}
+          >
+            <Media
+              media={activeMedia}
+              renderVideoControls={true}
+              fullSize={true}
+            />
+          </a>
+          <div className="centerText">
+            <p>Uploader: {activeMedia.uploader}</p>
+            <p>Uploaded: {activeMedia.dateAdded}</p>
+          </div>
+        </Modal>
+      )}
+    </>
+  );
+};

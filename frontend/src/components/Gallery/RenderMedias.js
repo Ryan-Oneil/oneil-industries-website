@@ -1,21 +1,24 @@
 import Media from "./Media";
 import React from "react";
+import { Card, Col, Divider } from "antd";
+const { Meta } = Card;
 
 export default (mediasList, mediaOnClick, displayUploader) => {
   return mediasList.map(media => {
     return (
-      <div className="column" key={media.id}>
-        <div className="ui card wordWrap">
+      <Col xs={18} sm={12} md={12} lg={8} xl={6}>
+        <Card>
           <div className="pointerCursor">
             <Media media={media} onClick={mediaOnClick.bind(this, media.id)} />
           </div>
-          <div className="content centerText">
-            {displayUploader && <div className="header">{media.uploader}</div>}
-            {!displayUploader && <div className="header">{media.name}</div>}
-            <div className="description">{media.dateAdded}</div>
-          </div>
-        </div>
-      </div>
+          <Divider />
+          <Meta
+            title={displayUploader ? media.uploader : media.name}
+            description={media.dateAdded}
+            style={{ textAlign: "center" }}
+          />
+        </Card>
+      </Col>
     );
   });
 };

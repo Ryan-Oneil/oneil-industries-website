@@ -26,7 +26,7 @@ class ResetPasswordForm extends React.Component {
         <div className="ui segment">
           <img
             src={logo}
-            alt="Login Logo"
+            alt="Login12 Logo"
             className="ui centered small image"
           />
           <h1 className="textColorScheme">Reset Password</h1>
@@ -48,7 +48,7 @@ class ResetPasswordForm extends React.Component {
           <p>
             Remembered your password?
             <button className="buttonLink" onClick={login}>
-              Login
+              Login12
             </button>
           </p>
           <p>

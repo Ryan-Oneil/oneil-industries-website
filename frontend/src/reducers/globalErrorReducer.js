@@ -1,28 +1,24 @@
-import { CLEAR_ERROR, DISABLE_ERRORS, SET_ERROR } from "../actions/types";
+import { createSlice } from "@reduxjs/toolkit";
 
-export default (
-  state = {
+export const slice = createSlice({
+  name: "globalErrors",
+  initialState: {
     error: "",
     disablePopup: false
   },
-  action
-) => {
-  switch (action.type) {
-    case SET_ERROR: {
-      //Prevents new errors from overlapping an existing error popup and checks if the user disabled popups
-      if (state.error || state.disablePopup) {
-        return { ...state };
+  reducers: {
+    setError(state, action) {
+      if (!state.error && !state.disablePopup) {
+        state.error = action.payload;
       }
-      return { ...state, error: action.error };
-    }
-    case CLEAR_ERROR: {
-      return { ...state, error: "" };
-    }
-    case DISABLE_ERRORS: {
-      return { ...state, error: "", disablePopup: true };
-    }
-    default: {
-      return state;
+    },
+    clearError(state) {
+      state.error = "";
+    },
+    disableError(state) {
+      state.disablePopup = true;
     }
   }
-};
+});
+export default slice.reducer;
+export const { setError, clearError, disableError } = slice.actions;

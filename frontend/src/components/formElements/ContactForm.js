@@ -3,21 +3,15 @@ import { Field, Formik } from "formik";
 import { InputWithErrors } from "./index";
 import { Alert, Button } from "antd";
 import { getApiError } from "../../helpers";
-import { Link } from "react-router-dom";
 import UserOutlined from "@ant-design/icons/lib/icons/UserOutlined";
 import LockOutlined from "@ant-design/icons/lib/icons/LockOutlined";
 import { useDispatch } from "react-redux";
-// import { loginUser } from "../../reducers/authReducer";
 
 export default () => {
   const dispatch = useDispatch();
 
   const onSubmit = (formValues, { setStatus }) => {
-    const creds = {
-      username: formValues.username.trim(),
-      password: formValues.password.trim()
-    };
-    // return dispatch(loginUser(creds)).catch(error =>
+    // return dispatch().catch(error =>
     //   setStatus(getApiError(error))
     // );
   };
@@ -25,8 +19,10 @@ export default () => {
   return (
     <Formik
       initialValues={{
-        username: "",
-        password: ""
+        name: "",
+        email: "",
+        subject: "",
+        message: ""
       }}
       onSubmit={onSubmit}
       validate={validate}
@@ -42,26 +38,39 @@ export default () => {
         } = props;
 
         return (
-          <form onSubmit={handleSubmit} className="login-form">
+          <form onSubmit={handleSubmit}>
             <Field
-              name="username"
+              name="name"
               as={InputWithErrors}
               type="text"
-              placeholder="Username"
+              placeholder="Name"
               prefix={<UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
-              error={errors.username}
+              error={errors.name}
             />
             <Field
-              name="password"
+              name="email"
               as={InputWithErrors}
-              type="password"
-              placeholder="Password"
+              type="email"
+              placeholder="Email"
               prefix={<LockOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
-              error={errors.password}
+              error={errors.email}
             />
-            <Link to="/resetPassword" style={{ float: "right" }}>
-              Forgot Password?
-            </Link>
+            <Field
+              name="subject"
+              as={InputWithErrors}
+              type="text"
+              placeholder="Subject"
+              prefix={<UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
+              error={errors.subject}
+            />
+            <Field
+              name="message"
+              as={InputWithErrors}
+              type="textarea"
+              placeholder="Message"
+              prefix={<UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
+              error={errors.message}
+            />
             <Button
               type="primary"
               htmlType="submit"
@@ -70,11 +79,11 @@ export default () => {
               loading={isSubmitting}
               size="large"
             >
-              {isSubmitting ? "Logging In" : "Login"}
+              {isSubmitting ? "Submit" : "Submitting"}
             </Button>
             {status && (
               <Alert
-                message="Login12 Error"
+                message="Error sending contact information"
                 description={status}
                 type="error"
                 closable
@@ -92,11 +101,17 @@ export default () => {
 const validate = values => {
   const errors = {};
 
-  if (!values.username) {
-    errors.username = "Username is required";
+  if (!values.name) {
+    errors.name = "Name is required";
   }
-  if (!values.password) {
-    errors.password = "Password is required";
+  if (!values.email) {
+    errors.email = "Email is required";
+  }
+  if (!values.subject) {
+    errors.subject = "Subject is required";
+  }
+  if (!values.message) {
+    errors.message = "Message is required";
   }
   return errors;
 };

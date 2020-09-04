@@ -1,6 +1,7 @@
 import React from "react";
 import LazyLoad from "react-lazyload";
 import { BASE_URL } from "../../apis/api";
+import { Image } from "antd";
 
 class Media extends React.Component {
   renderImage = media => {
@@ -10,15 +11,15 @@ class Media extends React.Component {
     }`;
     //Checks if media.src exists as some pages send blobs instead or urls
     return (
-      <div className="image">
-        <LazyLoad>
-          <img
-            alt={media.name}
-            className="ui centered image"
-            src={media.src ? media.src : baseSrc + endpoint}
-          />
-        </LazyLoad>
-      </div>
+      <LazyLoad>
+        <Image
+          alt={media.name}
+          src={media.src ? media.src : baseSrc + endpoint}
+          preview={false}
+          style={{ margin: "auto" }}
+          width={"100%"}
+        />
+      </LazyLoad>
     );
   };
 
@@ -47,7 +48,7 @@ class Media extends React.Component {
     const { onClick, media } = this.props;
 
     return (
-      <div className="column imageBox" key={media.id} onClick={onClick}>
+      <div className="imageBox" key={media.id} onClick={onClick}>
         {this.renderMedia()}
       </div>
     );
