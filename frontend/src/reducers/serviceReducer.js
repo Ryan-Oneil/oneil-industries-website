@@ -1,32 +1,38 @@
-import {
-  SERVICES_DISCORD_GET_ACTIVE_LIST_FAIL,
-  SERVICES_DISCORD_GET_ACTIVE_LIST_SENT,
-  SERVICES_TEAMSPEAK_GET_ACTIVE_LIST_FAIL,
-  SERVICES_TEAMSPEAK_GET_ACTIVE_LIST_SENT
-} from "../actions/types";
+import { createSlice } from "@reduxjs/toolkit";
+import { apiGetCall } from "../apis/api";
+import { setError } from "./globalErrorReducer";
+import { getApiError } from "../helpers";
 
-export default (
-  state = {
+export const getTeamspeakActiveList = () => dispatch => {
+  apiGetCall("/services/public/teamspeak")
+    .then(response => {
+      dispatch(fetchedTeamspeakList(response.data));
+    })
+    .catch(error => dispatch(setError(getApiError(error))));
+};
+
+export const getDiscordActiveList = () => dispatch => {
+  apiGetCall("/services/public/discord")
+    .then(response => {
+      dispatch(fetchedDiscordList(response.data));
+    })
+    .catch(error => dispatch(setError(getApiError(error))));
+};
+
+const slice = createSlice({
+  name: "service",
+  initialState: {
     activeTSList: [],
     activeDiscord: []
   },
-  action
-) => {
-  switch (action.type) {
-    case SERVICES_TEAMSPEAK_GET_ACTIVE_LIST_SENT: {
-      return { ...state, activeTSList: action.payload };
-    }
-    case SERVICES_TEAMSPEAK_GET_ACTIVE_LIST_FAIL: {
-      return { ...state, errorMessage: action.message };
-    }
-    case SERVICES_DISCORD_GET_ACTIVE_LIST_SENT: {
-      return { ...state, activeDiscord: action.payload };
-    }
-    case SERVICES_DISCORD_GET_ACTIVE_LIST_FAIL: {
-      return { ...state, errorMessage: action.message };
-    }
-    default: {
-      return state;
+  reducers: {
+    fetchedTeamspeakList(state, action) {
+      state.activeTSList = action.payload;
+    },
+    fetchedDiscordList(state, action) {
+      state.activeDiscord = action.payload;
     }
   }
-};
+});
+export default slice.reducer;
+export const { fetchedTeamspeakList, fetchedDiscordList } = slice.actions;
