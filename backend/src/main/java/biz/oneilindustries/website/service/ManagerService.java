@@ -3,25 +3,21 @@ package biz.oneilindustries.website.service;
 import static biz.oneilindustries.website.config.AppConfig.FRONT_END_URL;
 
 import biz.oneilindustries.services.discord.DiscordManager;
-import biz.oneilindustries.website.pojo.CustomChannel;
 import biz.oneilindustries.services.teamspeak.TSManager;
 import biz.oneilindustries.website.dao.ServiceTokenDAO;
 import biz.oneilindustries.website.entity.DiscordUser;
 import biz.oneilindustries.website.entity.ServiceToken;
 import biz.oneilindustries.website.entity.TeamspeakUser;
 import biz.oneilindustries.website.exception.ServiceProfileException;
+import biz.oneilindustries.website.pojo.CustomChannel;
 import biz.oneilindustries.website.pojo.ServiceClient;
 import com.github.theholywaffle.teamspeak3.api.wrapper.Ban;
-import com.github.theholywaffle.teamspeak3.api.wrapper.Channel;
 import com.github.theholywaffle.teamspeak3.api.wrapper.Client;
 import com.github.theholywaffle.teamspeak3.api.wrapper.ServerGroup;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import javax.transaction.Transactional;
-import net.dv8tion.jda.api.entities.Category;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,42 +51,11 @@ public class ManagerService {
     }
 
     public List<CustomChannel> getTeamspeakChannelUsers() {
-
-        List<Channel> channels = tsManager.getServerChannels();
-        List<Client> clients = tsManager.getOnlineUsers();
-
-        ArrayList<CustomChannel> customChannels = new ArrayList<>();
-
-        for (Channel channel : channels) {
-
-            CustomChannel customChannel = new CustomChannel(channel.getName(), "" + channel.getId(), channel.getParentChannelId());
-
-            if (!channel.isEmpty()) {
-                for (Client client : clients) {
-                    if (customChannel.getChannelID().equalsIgnoreCase(client.getChannelId() + "")) {
-                        customChannel.addClient(new ServiceClient(client.getNickname(), client.getUniqueIdentifier()));
-                    }
-                }
-            }
-            customChannels.add(customChannel);
-        }
-        return customChannels;
+        return tsManager.getChannelsMapped();
     }
 
     public List<CustomChannel> getDiscordCategories() {
-        List<CustomChannel> discordChannels = new ArrayList<>();
-
-        //Inefficient but sadly I can't just send the api wrapper's objects due to jackson and mapping issues
-        for (Category category: discordManager.getCategories()) {
-            for (VoiceChannel channel: category.getVoiceChannels()) {
-                CustomChannel discordChannel = new CustomChannel(channel.getName(), channel.getId(), 0);
-                for (Member member: channel.getMembers()) {
-                    discordChannel.addClient(new ServiceClient(member.getEffectiveName(), member.getId()));
-                }
-                discordChannels.add(discordChannel);
-            }
-        }
-        return discordChannels;
+        return discordManager.getChannelsMapped();
     }
 
     public List<Member> getDiscordMembers() {
