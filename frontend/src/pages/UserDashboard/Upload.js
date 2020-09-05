@@ -3,7 +3,6 @@ import DropArea from "../../components/Gallery/DropArea";
 import UploadCard from "../../components/Gallery/UploadCard";
 import { connect } from "react-redux";
 import UploadForm from "../../components/formElements/UploadForm";
-import cuid from "cuid";
 import { getUserStorage } from "../../actions/profile";
 
 const Upload = props => {
@@ -45,7 +44,6 @@ const Upload = props => {
             setMedias(prevState => [
               ...prevState,
               {
-                id: cuid(),
                 name: file.name,
                 src: e.target.result,
                 file,

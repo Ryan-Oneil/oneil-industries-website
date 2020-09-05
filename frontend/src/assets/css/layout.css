@@ -18,7 +18,10 @@ body {
 h1, h2, h3, h4, h5, h6 {
     color: white;
 }
-
+.dashboard {
+    margin-top: -50px;
+    /*height: 100vh;*/
+}
 .bottomFooter {
     position: fixed!important;
     left: 0;
@@ -107,20 +110,20 @@ h1, h2, h3, h4, h5, h6 {
     margin: 0!important;
 }
 
-.maindiv {
-    height: 100%;
-}
-
 .mainpage {
     padding-top: 50px;
     margin-bottom: 70px;
     min-height: 96%;
     height: auto;
     font-family: "Open Sans", Arial, Helvetica, sans-serif;
+    background: rgb(61, 76, 104);
 }
 
 #root {
     height: 100%;
+    background: rgb(61, 76, 104);
+}
+.blueBackgroundColor {
     background: rgb(61, 76, 104);
 }
 
@@ -129,7 +132,12 @@ h1, h2, h3, h4, h5, h6 {
     color: #666;
     font-family: 'Muli', sans-serif;
 }
-
+.centerButton {
+    display: flex;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+}
 .marginPadding {
     margin: 1rem 0;
 }

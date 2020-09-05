@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import UserOutlined from "@ant-design/icons/lib/icons/UserOutlined";
 import LockOutlined from "@ant-design/icons/lib/icons/LockOutlined";
 import { useDispatch } from "react-redux";
-// import { loginUser } from "../../reducers/authReducer";
+import { loginUser } from "../../reducers/authReducer";
 
 export default () => {
   const dispatch = useDispatch();
@@ -17,9 +17,9 @@ export default () => {
       username: formValues.username.trim(),
       password: formValues.password.trim()
     };
-    // return dispatch(loginUser(creds)).catch(error =>
-    //   setStatus(getApiError(error))
-    // );
+    return dispatch(loginUser(creds)).catch(error =>
+      setStatus(getApiError(error))
+    );
   };
 
   return (
@@ -74,7 +74,7 @@ export default () => {
             </Button>
             {status && (
               <Alert
-                message="Login12 Error"
+                message="Login Error"
                 description={status}
                 type="error"
                 closable

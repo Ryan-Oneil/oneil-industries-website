@@ -6,7 +6,7 @@ import Images from "../pages/Gallery/Gallery";
 import Album from "../pages/Gallery/AlbumPage";
 import Services from "../pages/Services";
 import PrivateRoute from "./PrivateRoute";
-import ProfileRouting from "../pages/Profile/ProfileRouting";
+import ProfileRouting from "../pages/UserDashboard/Routing";
 import Admin from "../pages/admin/AdminRouting";
 import NotFound from "../pages/NotFound";
 import BottomFooter from "./site layout/BottomFooter";
@@ -17,15 +17,21 @@ import Register from "../pages/auth/Register";
 import ResetPassword from "../pages/auth/ResetPassword";
 import ChangePassword from "../pages/auth/ChangePassword";
 import EmailConfirmation from "../pages/auth/EmailConfirmation";
-const { Header, Content, Footer } = Layout;
+const { Content, Footer } = Layout;
 
 class ClientApp extends React.Component {
   render() {
     return (
-      <Layout style={{ background: "rgb(61, 76, 104)" }}>
+      <Layout className={"blueBackgroundColor"}>
         <BrowserRouter>
           <NavMenu />
-          <Content className="mainpage">
+          <Layout
+            style={{
+              background: "rgb(61, 76, 104)",
+              paddingTop: 50,
+              marginBottom: 50
+            }}
+          >
             <Switch>
               <Route path="/" exact component={Home} />
               <Route path="/images" component={Images} exact />
@@ -64,7 +70,7 @@ class ClientApp extends React.Component {
                 <NotFound />
               </Route>
             </Switch>
-          </Content>
+          </Layout>
         </BrowserRouter>
         <Footer className="lightBlack bottomFooter">
           <BottomFooter />

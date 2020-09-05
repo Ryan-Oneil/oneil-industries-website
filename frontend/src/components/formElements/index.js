@@ -1,6 +1,6 @@
 import React from "react";
 import { ErrorMessage } from "formik";
-import { Input } from "antd";
+import { Input, Select } from "antd";
 
 export const InputWithErrors = props => {
   const hasError = props.error ? "has-error" : "";
@@ -8,6 +8,22 @@ export const InputWithErrors = props => {
   return (
     <div className="inputField">
       <Input {...props} size="large" className={hasError} />
+      <ErrorDisplay name={props.name} />
+    </div>
+  );
+};
+
+export const SelectInputWithErrors = props => {
+  const hasError = props.error ? "has-error" : "";
+
+  return (
+    <div className="inputField">
+      <Select
+        {...props}
+        size="large"
+        className={hasError}
+        style={{ width: "100%" }}
+      />
       <ErrorDisplay name={props.name} />
     </div>
   );
