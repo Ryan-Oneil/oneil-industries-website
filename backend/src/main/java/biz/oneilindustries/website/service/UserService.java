@@ -4,18 +4,18 @@ import static biz.oneilindustries.website.config.AppConfig.BACK_END_URL;
 import static biz.oneilindustries.website.security.SecurityConstants.SECRET;
 import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
 
-import biz.oneilindustries.website.dao.ResetPasswordTokenDAO;
-import biz.oneilindustries.website.dao.TokenDAO;
-import biz.oneilindustries.website.dao.UserDAO;
 import biz.oneilindustries.website.entity.ApiToken;
-import biz.oneilindustries.website.entity.DiscordUser;
 import biz.oneilindustries.website.entity.PasswordResetToken;
 import biz.oneilindustries.website.entity.Quota;
-import biz.oneilindustries.website.entity.TeamspeakUser;
 import biz.oneilindustries.website.entity.User;
 import biz.oneilindustries.website.entity.VerificationToken;
 import biz.oneilindustries.website.exception.TokenException;
 import biz.oneilindustries.website.exception.UserException;
+import biz.oneilindustries.website.repository.APITokenRepository;
+import biz.oneilindustries.website.repository.QuotaRepository;
+import biz.oneilindustries.website.repository.ResetPasswordTokenRepository;
+import biz.oneilindustries.website.repository.UserRepository;
+import biz.oneilindustries.website.repository.VerificationTokenRepository;
 import biz.oneilindustries.website.validation.LoginForm;
 import biz.oneilindustries.website.validation.UpdatedQuota;
 import biz.oneilindustries.website.validation.UpdatedUser;
@@ -23,10 +23,10 @@ import com.auth0.jwt.JWT;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import javax.transaction.Transactional;
 import org.apache.commons.io.FileUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -39,49 +39,45 @@ public class UserService {
 
     private static final String USERNAME_REGEX = "^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$";
 
-    @Autowired
-    private UserDAO dao;
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final VerificationTokenRepository verificationTokenRepository;
+    private final ResetPasswordTokenRepository passwordTokenRepository;
+    private final QuotaRepository quotaRepository;
+    private final APITokenRepository apiTokenRepository;
 
-    @Autowired
-    private TokenDAO tokenDAO;
+    public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository,
+        VerificationTokenRepository verificationTokenRepository,
+        ResetPasswordTokenRepository passwordTokenRepository, QuotaRepository quotaRepository,
+        APITokenRepository apiTokenRepository) {
+        this.passwordEncoder = passwordEncoder;
+        this.userRepository = userRepository;
+        this.verificationTokenRepository = verificationTokenRepository;
+        this.passwordTokenRepository = passwordTokenRepository;
+        this.quotaRepository = quotaRepository;
+        this.apiTokenRepository = apiTokenRepository;
+    }
 
-    @Autowired
-    private ResetPasswordTokenDAO passwordTokenDAO;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Transactional
     public List<User> getUsers() {
-        return dao.getUsers();
+        return userRepository.getAllUsers();
     }
 
-    @Transactional
-    public List<User> getRecentUsers(int amount) {
-        return this.dao.getRecentUsers(amount);
+    public List<User> getRecentUsers() {
+        return this.userRepository.getTop5ByOrderByIdDesc();
     }
 
-    @Transactional
     public User getUser(String name) {
-        return dao.getUser(name);
+        return userRepository.getByUsername(name).orElseThrow(() -> new UsernameNotFoundException(name + " doesn't exist"));
     }
 
-    @Transactional
     public User getUserByEmail(String email) {
-        return dao.getUserByEmail(email);
+        return userRepository.getUsersByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email + " doesn't exist"));
     }
 
-    @Transactional
     public void saveUser(User user) {
-        dao.saveUser(user);
+        userRepository.save(user);
     }
 
-    @Transactional
-    public void deleteUser(String name) {
-        dao.deleteUser(name);
-    }
-
-    @Transactional
     public User registerUser(LoginForm loginForm) {
 
         if (!loginForm.getName().matches(USERNAME_REGEX)) {
@@ -99,91 +95,74 @@ public class UserService {
         return user;
     }
 
-    @Transactional
     public void updateUser(UpdatedUser updatedUser, String name) {
         User user = getUser(name);
 
-        if (user == null) {
-            throw new UsernameNotFoundException(name + " doesn't exists");
-        }
-
         if (!updatedUser.getEmail().equals(user.getEmail())) {
-            User isEmailTaken = getUserByEmail(updatedUser.getEmail());
-
-            if (isEmailTaken != null) {
+            if (userRepository.isEmailTaken(updatedUser.getEmail())) {
                 throw new UserException("Email is already registered to another user");
             }
         }
         user.setEmail(updatedUser.getEmail());
         updatedUser.getEnabled().ifPresent(user::setEnabled);
-        updatedUser.getPassword().ifPresent(password -> passwordEncoder.encode(password));
+        updatedUser.getPassword().ifPresent(passwordEncoder::encode);
         updatedUser.getRole().ifPresent(user::setRole);
 
         saveUser(user);
     }
 
-    @Transactional
-    public void createVerificationToken(User user, String token) {
-        VerificationToken myToken = new VerificationToken(token, user);
-        saveVerificationToken(myToken);
+    public void createVerificationToken(User user, String tokenUUID) {
+        VerificationToken token = new VerificationToken(tokenUUID, user);
+
+        verificationTokenRepository.save(token);
     }
 
-    @Transactional
-    public VerificationToken getToken(String token) {
-        return tokenDAO.findByToken(token);
+    public VerificationToken getVerificationToken(String token) {
+        return verificationTokenRepository.findByToken(token).orElseThrow(() -> new TokenException("Invalid Verification Token Link"));
     }
 
-    @Transactional
-    public VerificationToken getTokenByUser(User user) {
-        return tokenDAO.findByUser(user);
-    }
-
-    @Transactional
-    public void saveVerificationToken(VerificationToken token) {
-        tokenDAO.saveToken(token);
-    }
-
-    @Transactional
     public void deleteVerificationToken(VerificationToken token) {
-        tokenDAO.deleteToken(token);
+        verificationTokenRepository.delete(token);
     }
 
-    @Transactional
     public String generateResetToken(User user) {
+        Optional<PasswordResetToken> passwordResetToken = passwordTokenRepository.getByUsername(user);
 
-        PasswordResetToken passwordResetToken = passwordTokenDAO.getTokenByUser(user.getUsername());
+        if (passwordResetToken.isPresent()) {
+            PasswordResetToken token = passwordResetToken.get();
 
-        if (passwordResetToken != null) {
-            if (!isExpired(passwordResetToken.getExpiryDate())) {
-                return passwordResetToken.getToken();
+            if (!isExpired(token.getExpiryDate())) {
+                return token.getToken();
             }else {
                 //Deletes from database if the existing token is expired
-                deletePasswordResetToken(passwordResetToken);
+                passwordTokenRepository.delete(token);
             }
         }
-        String token = UUID.randomUUID().toString();
+        String tokenUUID = UUID.randomUUID().toString();
 
-        passwordResetToken = new PasswordResetToken(token,user);
-        passwordTokenDAO.saveToken(passwordResetToken);
+        PasswordResetToken token = new PasswordResetToken(tokenUUID,user);
+        passwordTokenRepository.save(token);
 
-        return token;
+        return tokenUUID;
     }
 
-    @Transactional
     public PasswordResetToken getResetToken(String token) {
-        return passwordTokenDAO.getToken(token);
+        return passwordTokenRepository.getByToken(token).orElseThrow(() -> new TokenException("Invalid Reset token"));
     }
 
-    @Transactional
+    public void resetUserPassword(String tokenUUID, String newPassword) {
+        PasswordResetToken token = getResetToken(tokenUUID);
+
+        checkExpired(token.getExpiryDate());
+        changeUserPassword(token.getUsername(), newPassword);
+
+        passwordTokenRepository.delete(token);
+    }
+
     public void changeUserPassword(User user, String password) {
         user.setPassword(passwordEncoder.encode(password));
 
         saveUser(user);
-    }
-
-    @Transactional
-    public void deletePasswordResetToken(PasswordResetToken token) {
-        passwordTokenDAO.deleteToken(token);
     }
 
     public boolean isExpired(Date date) {
@@ -192,113 +171,34 @@ public class UserService {
         return (date.getTime() - cal.getTime().getTime()) <= 0;
     }
 
-    @Transactional
-    public List<DiscordUser> getUserDiscordProfiles(String username) {
-        return dao.getUsersDiscordProfile(username);
-    }
-
-    @Transactional
-    public List<TeamspeakUser> getUserTeamspeakProfile(String username) {
-        return dao.getUserTeamspeakProfile(username);
-    }
-
-    @Transactional
-    public void saveUserTeamspeakProfile(TeamspeakUser teamspeakUser) {
-        dao.saveTeamspeakProfile(teamspeakUser);
-    }
-
-    @Transactional
-    public void saveUserDiscordProfile(DiscordUser discordUser) {
-        dao.saveDiscordProfile(discordUser);
-    }
-
-    @Transactional
-    public TeamspeakUser getTeamspeakUUID(String uuid) {
-        return dao.getTeamspeakUUID(uuid);
-    }
-
-    @Transactional
-    public DiscordUser getDiscordUUID(String uuid) {
-        return dao.getDiscordUUID(uuid);
-    }
-
-    @Transactional
-    public List<String> getTeamspeakUUIDs() {
-        return dao.getTeamspeakUUIDs();
-    }
-
-    @Transactional
-    public List<String> getDiscordUUIDs() {
-        return dao.getDiscordUUIDs();
-    }
-
-    @Transactional
-    public TeamspeakUser getTeamspeakByID(int id) {
-        return dao.getTeamspeakByID(id);
-    }
-
-    @Transactional
-    public DiscordUser getDiscordById(int id) {
-        return dao.getDiscordByID(id);
-    }
-
-    @Transactional
-    public void deleteTeamspeakUUID(TeamspeakUser teamspeakUser) {
-        dao.deleteTeamspeakUUID(teamspeakUser);
-    }
-
-    @Transactional
-    public void deleteDiscordUUID(DiscordUser discordUser) {
-        dao.deleteDiscordUUID(discordUser);
-    }
-
-    @Transactional
     public Quota getQuotaByUsername(String username) {
-        return dao.getQuotaByUsername(username);
+        return quotaRepository.getFirstByUsername(username);
     }
 
-    @Transactional
     public void saveUserQuota(Quota quota) {
-        dao.saveQuota(quota);
+        quotaRepository.save(quota);
     }
 
-    @Transactional
     public void updateUserQuota(UpdatedQuota updatedQuota, String username) {
         Quota quota = getQuotaByUsername(username);
 
-        if (quota == null) {
-            throw new UserException("No user found");
-        }
         quota.setIgnoreQuota(updatedQuota.isIgnoreQuota());
         quota.setMax(updatedQuota.getMax());
         saveUserQuota(quota);
     }
 
-    @Transactional
     public void increaseUsedAmount(Quota quota, long amount) {
         quota.increaseUsed(amount);
 
-        dao.saveQuota(quota);
+        saveUserQuota(quota);
     }
 
-    @Transactional
     public void decreaseUsedAmount(Quota quota, long amount) {
         quota.decreaseUsed(amount);
 
-        dao.saveQuota(quota);
+        saveUserQuota(quota);
     }
 
-    @Transactional
-    public long getUserRemainingStorage(String user) {
-        Quota quota = getQuotaByUsername(user);
-
-        //Returns -1 if the user is allowed to bypass their limit
-        if (quota.isIgnoreQuota()) {
-            return -1;
-        }
-        return Math.max((quota.getMax() * FileUtils.ONE_GB) - quota.getUsed(), 0);
-    }
-    @Transactional
     public long getUserRemainingStorage(Quota quota) {
         //Returns -1 if the user is allowed to bypass their limit
         if (quota.isIgnoreQuota()) {
@@ -310,7 +210,7 @@ public class UserService {
     @Transactional
     @Cacheable(value = "apiToken")
     public ApiToken getApiTokenByUser(String username) {
-        return dao.getApiTokenUser(username);
+        return apiTokenRepository.findById(username).orElse(null);
     }
 
     @Transactional
@@ -328,7 +228,7 @@ public class UserService {
             .sign(HMAC512(SECRET.getBytes()));
 
         ApiToken apiToken = new ApiToken(username, token, uuid);
-        dao.saveApiToken(apiToken);
+        apiTokenRepository.save(apiToken);
 
         return apiToken;
     }
@@ -336,7 +236,7 @@ public class UserService {
     @Transactional
     @CacheEvict(value = "apiToken", key = "#apiToken.username")
     public void deleteApiToken(ApiToken apiToken) {
-        dao.deleteApiToken(apiToken);
+        apiTokenRepository.delete(apiToken);
     }
 
     @Transactional
@@ -363,5 +263,25 @@ public class UserService {
             + "  \"Body\": \"MultipartFormData\",\n"
             + "  \"FileFormName\": \"file\"\n"
             + "}";
+    }
+
+    private void checkExpired(Date date) {
+
+        Calendar cal = Calendar.getInstance();
+        if ((date.getTime() - cal.getTime().getTime()) <= 0) {
+            throw new TokenException("Token has expired");
+        }
+    }
+
+    public void confirmUserRegistration(String token) {
+        VerificationToken verificationToken = getVerificationToken(token);
+        checkExpired(verificationToken.getExpiryDate());
+
+        User user = verificationToken.getUsername();
+
+        deleteVerificationToken(verificationToken);
+
+        user.setEnabled(true);
+        saveUser(user);
     }
 }

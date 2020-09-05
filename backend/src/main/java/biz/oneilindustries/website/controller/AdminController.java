@@ -19,7 +19,6 @@ import org.apache.commons.io.FileSystemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -67,15 +66,10 @@ public class AdminController {
     public ResponseEntity getUserAccountInformation(@PathVariable String username) {
         User user = userService.getUser(username);
 
-        if (user == null) {
-            throw new UsernameNotFoundException(username + " doesn't exists");
-        }
         //Create a new hashmap containing all this information and return the map for JSON
         HashMap<String, Object> userInformation = new HashMap<>();
         userInformation.put("details", new UpdatedUser(user.getUsername(), "*", user.getEmail(), user.getRole(), user.getEnabled()));
         userInformation.put("storageQuota", userService.getQuotaByUsername(username));
-        userInformation.put("discordProfiles", userService.getUserDiscordProfiles(username));
-        userInformation.put("teamspeakProfiles", userService.getUserTeamspeakProfile(username));
 
         return ResponseEntity.ok(userInformation);
     }
@@ -131,7 +125,7 @@ public class AdminController {
     public ResponseEntity getDashboardStats() throws IOException {
         HashMap<String, Object> stats = new HashMap<>();
 
-        List<User> users =  userService.getRecentUsers(3);
+        List<User> users =  userService.getRecentUsers();
 
         for (User user: users) {
             user.setPassword("*");

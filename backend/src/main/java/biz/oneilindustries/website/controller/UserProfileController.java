@@ -8,7 +8,6 @@ import java.util.HashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,7 +27,6 @@ public class UserProfileController {
 
     @GetMapping("/profile")
     public ResponseEntity showUserProfileHome(Authentication user) {
-
         HashMap<String, Object> userDetails = new HashMap<>();
 
         User userProfile = userService.getUser(user.getName());
@@ -36,8 +34,6 @@ public class UserProfileController {
 
         userDetails.put("user", new UpdatedUser(userProfile.getUsername(), userProfile.getEmail(), userProfile.getRole(), userProfile.getEnabled()));
         userDetails.put("storageQuota", userService.getQuotaByUsername(userProfile.getUsername()));
-        userDetails.put("userDiscord", userService.getUserDiscordProfiles(user.getName()));
-        userDetails.put("userTeamspeak", userService.getUserTeamspeakProfile(user.getName()));
 
         return ResponseEntity.ok(userDetails);
     }
@@ -49,17 +45,6 @@ public class UserProfileController {
 
     @PostMapping("/profile/update")
     public ResponseEntity updateUserDetails(@RequestBody UpdatedUser updatedUser, Authentication authentication) {
-
-        User user = userService.getUser(authentication.getName());
-
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found");
-        }
-        User checkEmail = userService.getUserByEmail(updatedUser.getEmail());
-
-        if ( checkEmail != null && !updatedUser.getEmail().equalsIgnoreCase(user.getEmail())) {
-            return ResponseEntity.badRequest().body("Email already registered");
-        }
         userService.updateUser(updatedUser, authentication.getName());
 
         return ResponseEntity.ok("Successfully updated account details");
@@ -72,7 +57,6 @@ public class UserProfileController {
 
     @GetMapping("/profile/generateAPIToken")
     public ResponseEntity generateAPIJWT(Authentication authentication) {
-
         ApiToken apiToken = userService.getApiTokenByUser(authentication.getName());
 
         //Deletes existing token
