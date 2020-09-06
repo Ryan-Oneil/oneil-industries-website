@@ -2,7 +2,6 @@ package biz.oneilindustries.website.aspects;
 
 import biz.oneilindustries.website.entity.Album;
 import biz.oneilindustries.website.entity.Media;
-import biz.oneilindustries.website.exception.MediaException;
 import biz.oneilindustries.website.exception.NotAuthorisedException;
 import biz.oneilindustries.website.service.AlbumService;
 import biz.oneilindustries.website.service.MediaService;
@@ -33,9 +32,6 @@ public class ImageGalleryAspect {
         this.albumService = albumService;
     }
 
-    @Pointcut("execution(* biz.oneilindustries.website.controller.ImageGalleryController.stream*(..))")
-    private void displayMedia() {}
-
     @Pointcut("execution(* biz.oneilindustries.website.controller.ImageGalleryController.showUser*(..))")
     private void showUserMedia() {}
 
@@ -52,9 +48,6 @@ public class ImageGalleryAspect {
     @Pointcut("execution(* biz.oneilindustries.website.controller.ImageGalleryController.manageMyAlbums(..))")
     private void manageAlbum() {}
 
-    @Pointcut("execution(* biz.oneilindustries.website.controller.ImageGalleryController.showUserAlbumNames(..))")
-    private void showAlbumNames() {}
-
     @Pointcut("execution(* biz.oneilindustries.website.controller.ImageGalleryController.updateAlbum(..))")
     private void updateAlbum() {}
 
@@ -63,20 +56,6 @@ public class ImageGalleryAspect {
 
     @Pointcut("manageAlbum() || updateAlbum() || deleteAlbum()")
     private void combinedAlbums() {}
-
-    @Before("displayMedia()")
-    public void before(JoinPoint joinPoint) {
-
-        Object[] args = joinPoint.getArgs();
-
-        String mediaName = (String) args[0];
-
-        Media media = mediaService.getMediaFileName(mediaName);
-
-        if (media == null) {
-            throw new MediaException("Media doesn't exist");
-        }
-    }
 
     @Before("showUserMedia()")
     public void checkPermission(JoinPoint joinPoint) {
@@ -103,9 +82,6 @@ public class ImageGalleryAspect {
 
         Media media = mediaService.getMedia(mediaInt);
 
-        if (media == null) {
-            throw new MediaException(FILE_NOT_EXISTS_ERROR_MESSAGE);
-        }
         if (!media.getUploader().equals(user.getName()) && !request.isUserInRole(ADMIN_ROLE)) {
             throw new NotAuthorisedException(user.getName() + NO_PERMISSION);
         }

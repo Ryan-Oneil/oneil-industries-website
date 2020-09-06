@@ -1,6 +1,6 @@
 package biz.oneilindustries.website.controller;
 
-import static biz.oneilindustries.website.config.AppConfig.GALLERY_IMAGES_DIRECTORY;
+import static biz.oneilindustries.AppConfig.GALLERY_IMAGES_DIRECTORY;
 
 import biz.oneilindustries.website.entity.User;
 import biz.oneilindustries.website.service.AlbumService;
@@ -17,6 +17,7 @@ import java.util.List;
 import javax.validation.Valid;
 import org.apache.commons.io.FileSystemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -98,8 +99,8 @@ public class AdminController {
     //Media related admin apis
 
     @GetMapping("/medias")
-    public ResponseEntity getAllMedias() {
-        return ResponseEntity.ok(mediaService.getMedias());
+    public ResponseEntity getAllMedias(Pageable pageable) {
+        return ResponseEntity.ok(mediaService.getMedias(pageable));
     }
 
     @GetMapping("/medias/pendingApproval")
@@ -130,7 +131,7 @@ public class AdminController {
         for (User user: users) {
             user.setPassword("*");
         }
-        stats.put("totalMedia", mediaService.getMedias().size());
+        stats.put("totalMedia", mediaService.getTotalMedias());
         stats.put("totalAlbums", albumService.getAlbums().size());
         stats.put("totalUsers", userService.getUsers().size());
         stats.put("recentUsers", users);

@@ -1,6 +1,6 @@
 package biz.oneilindustries.website.controller;
 
-import static biz.oneilindustries.website.config.AppConfig.FRONT_END_URL;
+import static biz.oneilindustries.AppConfig.FRONT_END_URL;
 
 import biz.oneilindustries.website.entity.User;
 import biz.oneilindustries.website.eventlisteners.OnRegistrationCompleteEvent;
@@ -36,16 +36,6 @@ public class LoginController {
 
     @PostMapping("/register")
     public ResponseEntity registerUser(@RequestBody @Valid LoginForm loginForm, HttpServletRequest request) {
-        User user = userService.getUser(loginForm.getName());
-
-        if (user != null) {
-            return ResponseEntity.badRequest().body("An account with this username already exists");
-        }
-        user = userService.getUserByEmail(loginForm.getEmail());
-
-        if (user != null) {
-            return ResponseEntity.badRequest().body("An account with this email already exists");
-        }
         User newUser = userService.registerUser(loginForm);
 
         eventPublisher.publishEvent(new OnRegistrationCompleteEvent

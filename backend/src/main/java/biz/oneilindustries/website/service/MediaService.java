@@ -3,13 +3,14 @@ package biz.oneilindustries.website.service;
 import static biz.oneilindustries.website.filecreater.FileHandler.getExtensionType;
 
 import biz.oneilindustries.RandomIDGen;
-import biz.oneilindustries.website.dao.MediaDAO;
 import biz.oneilindustries.website.entity.Album;
 import biz.oneilindustries.website.entity.Media;
 import biz.oneilindustries.website.entity.PublicMediaApproval;
 import biz.oneilindustries.website.exception.MediaApprovalException;
 import biz.oneilindustries.website.exception.MediaException;
 import biz.oneilindustries.website.filecreater.FileHandler;
+import biz.oneilindustries.website.repository.MediaApprovalRepository;
+import biz.oneilindustries.website.repository.MediaRepository;
 import biz.oneilindustries.website.validation.GalleryUpload;
 import java.io.File;
 import java.io.IOException;
@@ -17,83 +18,60 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
-import javax.transaction.Transactional;
 import org.apache.tika.Tika;
-import org.hibernate.Hibernate;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MediaService {
 
-    private final MediaDAO dao;
+    private static final String FILE_NOT_EXISTS_ERROR_MESSAGE = "Media does not exist on this server";
 
-    @Autowired
-    public MediaService(MediaDAO dao) {
-        this.dao = dao;
+    private final MediaRepository mediaRepository;
+    private final MediaApprovalRepository approvalRepository;
+
+    public MediaService(MediaRepository mediaRepository, MediaApprovalRepository approvalRepository) {
+        this.mediaRepository = mediaRepository;
+        this.approvalRepository = approvalRepository;
     }
 
-    @Transactional
-    public List<Media> getMedias() {
-        return dao.getImages();
+    public List<Media> getMedias(Pageable pageable) {
+        return mediaRepository.getAllByOrderByDateAddedDesc(pageable);
     }
 
-    @Transactional
     public List<Media> getMediaByLinkStatus(String status) {
-        return dao.getMediasByLinkStatus(status);
+        return mediaRepository.getAllByLinkStatus(status);
     }
 
-    @Transactional
     public List<Media> getMediasByUser(String username) {
-        return this.dao.getMediasByUser(username);
+        return this.mediaRepository.getAllByUploader(username);
     }
 
-    @Transactional
-    public List<Media> getAlbumMedias(String id) {
-        return this.dao.getAlbumMedias(id);
-    }
-
-    @Transactional
     public Media getMedia(int id) {
-        return dao.getMedia(id);
+        return mediaRepository.findById(id).orElseThrow(() -> new MediaException(FILE_NOT_EXISTS_ERROR_MESSAGE));
     }
 
-    @Transactional
-    public Media getMediaWithAlbum(int id) {
-        Media media = dao.getMedia(id);
-        Hibernate.initialize(media.getAlbum());
-
-        return media;
-    }
-
-    @Transactional
     public void saveMedia(Media media) {
-        dao.saveMedia(media);
+        mediaRepository.save(media);
     }
 
-    @Transactional
     public void saveMediaApproval(PublicMediaApproval media) {
-        dao.saveMediaApproval(media);
+        approvalRepository.save(media);
     }
 
-    @Transactional
     public void deleteMedia(int id) {
-        dao.deleteMedia(id);
+        mediaRepository.deleteById(id);
     }
 
-    @Transactional
     public Media getMediaFileName(String fileName) {
-        return dao.getMediaFileName(fileName);
+        return mediaRepository.getFirstByFileName(fileName).orElseThrow(() -> new MediaException(FILE_NOT_EXISTS_ERROR_MESSAGE));
     }
 
-    @Transactional
     public Media registerMedia(String mediaName, String privacy, File file, String user, Album album) throws IOException {
-
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         LocalDate localDate = LocalDate.now();
 
         Media media = new Media(mediaName, file.getName() , privacy,user, localDate.format(dtf));
-
         Optional.ofNullable(album).ifPresent(media::setAlbum);
 
         Tika tika = new Tika();
@@ -107,73 +85,48 @@ public class MediaService {
         return media;
     }
 
-    @Transactional
-    public long getTotalMediaCountByUser(String name) {
-        return dao.getMediaCountByUser(name);
-    }
-
-    @Transactional
     public void resetMediaAlbumIDs(Album album) {
-        for (Media media : album.getMedias()) {
-            media.setAlbum(null);
-            saveMedia(media);
-        }
+        album.getMedias().forEach(media -> media.setAlbum(null));
+        mediaRepository.saveAll(album.getMedias());
     }
 
-    @Transactional
     public void updateMedia(GalleryUpload galleryUpload, Album album, int mediaID) {
         Media media = getMedia(mediaID);
 
         media.setName(galleryUpload.getName());
         media.setLinkStatus(galleryUpload.getPrivacy());
+        media.setAlbum(album);
 
-        if (album != null) {
-            media.setAlbum(album);
-        }else {
-            media.setAlbum(null);
-        }
         saveMedia(media);
     }
 
-    @Transactional
     public void hideAllMedia(String name) {
         List<Media> userMedias = getMediasByUser(name);
 
-        if (userMedias == null) return;
-
         for (Media media : userMedias) {
             media.setLinkStatus("private");
-            saveMedia(media);
         }
+        mediaRepository.saveAll(userMedias);
     }
 
-    @Transactional
     public String generateUniqueMediaName(String originalFileName) {
-        String extension = getExtensionType(originalFileName); //
+        String extension = getExtensionType(originalFileName);
         String fileName = RandomIDGen.getBase62(16) + "." + extension;
 
-        while(this.getMediaFileName(fileName) != null) {
+        while(mediaRepository.isFileNameTaken(fileName)) {
             fileName = RandomIDGen.getBase62(16) + "." + extension;
         }
         return fileName;
     }
 
-    @Transactional
-    public List<PublicMediaApproval> getMediaApprovals() {
-        return dao.getMediaApprovals();
-    }
-
-    @Transactional
     public PublicMediaApproval getMediaApprovalByMediaID(int mediaID) {
-        return dao.getMediaApprovalByMediaID(mediaID);
+        return approvalRepository.getFirstByMedia_Id(mediaID).orElse(null);
     }
 
-    @Transactional
     public List<PublicMediaApproval> getMediaApprovalsByStatus(String status) {
-        return dao.getMediaApprovalsByStatus(status);
+        return approvalRepository.findAllByStatus(status);
     }
 
-    @Transactional
     public void requestPublicApproval(int mediaID, String mediaName, Album album) {
         PublicMediaApproval publicMediaStatus = this.getMediaApprovalByMediaID(mediaID);
 
@@ -186,7 +139,6 @@ public class MediaService {
         }
     }
 
-    @Transactional
     public void setMediaApprovalStatus(int mediaApprovalID, String newStatus) {
         PublicMediaApproval publicMedia = getMediaApprovalByMediaID(mediaApprovalID);
 
@@ -197,12 +149,10 @@ public class MediaService {
         saveMediaApproval(publicMedia);
     }
 
-    @Transactional
     public void deleteMediaApproval(int id) {
-        this.dao.deleteMediaApproval(id);
+        this.approvalRepository.deleteById(id);
     }
 
-    @Transactional
     public void approvePublicMedia(int mediaID) {
         PublicMediaApproval approval = getMediaApprovalByMediaID(mediaID);
 
@@ -216,5 +166,9 @@ public class MediaService {
         saveMedia(media);
 
         this.deleteMediaApproval(approval.getId());
+    }
+
+    public long getTotalMedias() {
+        return mediaRepository.count();
     }
 }

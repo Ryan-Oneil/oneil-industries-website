@@ -1,6 +1,6 @@
 package biz.oneilindustries.website.service;
 
-import static biz.oneilindustries.website.config.AppConfig.BACK_END_URL;
+import static biz.oneilindustries.AppConfig.BACK_END_URL;
 import static biz.oneilindustries.website.security.SecurityConstants.SECRET;
 import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
 
@@ -82,6 +82,14 @@ public class UserService {
 
         if (!loginForm.getName().matches(USERNAME_REGEX)) {
             throw new UserException("Username may only contain a-Z . _");
+        }
+
+        if (userRepository.isUsernameTaken(loginForm.getName())) {
+            throw new UserException("An account with this username already exists");
+        }
+
+        if (userRepository.isEmailTaken(loginForm.getEmail())) {
+            throw new UserException("An account with this email already exists");
         }
         String encryptedPassword = passwordEncoder.encode(loginForm.getPassword());
         String username = loginForm.getName().toLowerCase();
