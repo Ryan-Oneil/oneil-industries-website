@@ -11,10 +11,16 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MediaRepository extends CrudRepository<Media, Integer> {
     List<Media> getAllByOrderByDateAddedDesc(Pageable page);
-    List<Media> getAllByUploader(String uploader);
-    List<Media> getAllByLinkStatus(String linkStatus);
+    List<Media> getAllByUploader(String uploader, Pageable page);
+    List<Media> getAllByLinkStatus(String linkStatus, Pageable page);
     Optional<Media> getFirstByFileName(String filename);
 
     @Query("select case when count(m)> 0 then true else false end from Media m where m.fileName like ?1")
     boolean isFileNameTaken(String fileName);
+
+    @Query("select count(m) from Media m where m.uploader = ?1")
+    long getTotalMediasByUser(String username);
+
+    @Query("select count(m) from Media m where m.linkStatus = ?1")
+    long getTotalMediaByStatus(String status);
 }

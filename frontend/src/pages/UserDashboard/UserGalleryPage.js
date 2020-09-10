@@ -1,26 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
 import Media from "../../components/Gallery/Media";
 import "../../assets/css/layout.css";
 import EditMediaForm from "../../components/formElements/EditMediaForm";
-import RenderMedias from "../../components/Gallery/RenderMedias";
-import { forceCheck } from "react-lazyload";
-import { Button, Modal, Row } from "antd";
-import {
-  deleteMedia,
-  fetchAlbums,
-  fetchImages
-} from "../../reducers/mediaReducer";
+import { Button, Modal } from "antd";
+import { deleteMedia } from "../../reducers/mediaReducer";
 import { BASE_URL } from "../../apis/api";
+import MediaGrid from "../../components/Gallery/MediaGrid";
+import { USER_MEDIAS_ENDPOINT } from "../../apis/endpoints";
 
 export default props => {
   const { medias } = useSelector(state => state.medias.entities);
   const [mediaId, setMediaId] = useState("");
   const [activeMedia, setActiveMedia] = useState("");
-  const [mediaIds, setMediaIds] = useState([]);
   const dispatch = useDispatch();
-  const mediaList = mediaIds.map(id => medias[id]);
   const { name } = props.user;
 
   const handleShowDialog = mediaID => {
@@ -31,19 +24,12 @@ export default props => {
     setActiveMedia(medias[mediaId]);
   }, [mediaId]);
 
-  useEffect(() => {
-    forceCheck();
-    dispatch(fetchImages(`/gallery/medias/user/${name}`)).then(mediaIds =>
-      setMediaIds(mediaIds)
-    );
-    dispatch(fetchAlbums(`/gallery/myalbums/${name}`));
-  }, []);
-
   return (
-    <div className="marginPadding">
-      <Row justify="center" gutter={[32, 32]}>
-        {RenderMedias(mediaList, handleShowDialog, false)}
-      </Row>
+    <div style={{ height: "100%", overflow: "auto" }}>
+      <MediaGrid
+        endpoint={`${USER_MEDIAS_ENDPOINT}${name}`}
+        handleShowDialog={handleShowDialog}
+      />
       {activeMedia && (
         <Modal
           title={activeMedia.name}
@@ -85,42 +71,6 @@ export default props => {
           />
         </Modal>
       )}
-      {/*{this.state.isOpen && (*/}
-      {/*  <Modal title={activeMedia.name} closeModal={handleShowDialog}>*/}
-      {/*    <div className="image">*/}
-      {/*      <a*/}
-      {/*        href={`${BASE_URL}/gallery/${activeMedia.mediaType}/${activeMedia.fileName}`}*/}
-      {/*      >*/}
-      {/*        <Media*/}
-      {/*          media={activeMedia}*/}
-      {/*          renderVideoControls={true}*/}
-      {/*          fullSize={true}*/}
-      {/*        />*/}
-      {/*      </a>*/}
-      {/*    </div>*/}
-      {/*    <button*/}
-      {/*      value="Delete"*/}
-      {/*      className="centerButton ui negative button center aligned bottomMargin"*/}
-      {/*      onClick={() => {*/}
-      {/*        this.props.deleteMedia(*/}
-      {/*          `/gallery/media/delete/${activeMedia.id}`,*/}
-      {/*          activeMedia.id*/}
-      {/*        );*/}
-      {/*        this.setState({ isOpen: false });*/}
-      {/*      }}*/}
-      {/*    >*/}
-      {/*      Delete*/}
-      {/*    </button>*/}
-      {/*    <EditMediaForm*/}
-      {/*      media={activeMedia}*/}
-      {/*      initialValues={{*/}
-      {/*        name: activeMedia.name,*/}
-      {/*        privacy: activeMedia.linkStatus*/}
-      {/*      }}*/}
-      {/*    />*/}
-      {/*    {deleteError && renderErrorMessage(deleteError)}*/}
-      {/*  </Modal>*/}
-      {/*)}*/}
     </div>
   );
 };

@@ -1,8 +1,8 @@
 package biz.oneilindustries.website.controller;
 
-import static biz.oneilindustries.website.config.AppConfig.BACK_END_URL;
-import static biz.oneilindustries.website.config.AppConfig.FRONT_END_URL;
-import static biz.oneilindustries.website.config.AppConfig.GALLERY_IMAGES_DIRECTORY;
+import static biz.oneilindustries.AppConfig.BACK_END_URL;
+import static biz.oneilindustries.AppConfig.FRONT_END_URL;
+import static biz.oneilindustries.AppConfig.GALLERY_IMAGES_DIRECTORY;
 import static biz.oneilindustries.website.security.SecurityConstants.TRUSTED_ROLES;
 
 import biz.oneilindustries.website.config.ResourceHandler;
@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -34,6 +35,7 @@ import org.apache.commons.fileupload.FileUploadBase.InvalidContentTypeException;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -71,8 +73,8 @@ public class ImageGalleryController {
     }
 
     @GetMapping("/medias")
-    public List<Media> showAllMedia() {
-        return mediaService.getMediaByLinkStatus(PUBLIC);
+    public HashMap<String, Object> showAllMedia(Pageable pageable) {
+        return mediaService.getPublicMedias(pageable);
     }
 
     @GetMapping("/image/{imageName}")
@@ -200,8 +202,8 @@ public class ImageGalleryController {
     }
 
     @GetMapping("/medias/user/{username}")
-    public List<Media> showUserMedias(Authentication user, @PathVariable String username, HttpServletRequest request) {
-        return mediaService.getMediasByUser(username);
+    public HashMap<String, Object> showUserMedias(Authentication user, @PathVariable String username, HttpServletRequest request, Pageable pageable) {
+        return mediaService.getMediasByUser(username, pageable);
     }
 
     @PutMapping("/media/update/{mediaID}")

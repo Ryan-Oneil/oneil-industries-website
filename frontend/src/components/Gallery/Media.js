@@ -1,5 +1,4 @@
 import React from "react";
-import LazyLoad from "react-lazyload";
 import { BASE_URL } from "../../apis/api";
 import { Image } from "antd";
 
@@ -11,15 +10,13 @@ class Media extends React.Component {
     }`;
     //Checks if media.src exists as some pages send blobs instead or urls
     return (
-      <LazyLoad>
-        <Image
-          alt={media.name}
-          src={media.src ? media.src : baseSrc + endpoint}
-          preview={false}
-          style={{ margin: "auto" }}
-          width={"100%"}
-        />
-      </LazyLoad>
+      <Image
+        alt={media.name}
+        src={media.src ? media.src : baseSrc + endpoint}
+        preview={false}
+        style={{ margin: "auto" }}
+        width={"100%"}
+      />
     );
   };
 

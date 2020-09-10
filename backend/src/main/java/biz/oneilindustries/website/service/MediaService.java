@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import org.apache.tika.Tika;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 public class MediaService {
 
     private static final String FILE_NOT_EXISTS_ERROR_MESSAGE = "Media does not exist on this server";
+    private static final String PUBLIC = "public";
 
     private final MediaRepository mediaRepository;
     private final MediaApprovalRepository approvalRepository;
@@ -39,12 +41,20 @@ public class MediaService {
         return mediaRepository.getAllByOrderByDateAddedDesc(pageable);
     }
 
-    public List<Media> getMediaByLinkStatus(String status) {
-        return mediaRepository.getAllByLinkStatus(status);
+    public HashMap<String, Object> getPublicMedias(Pageable pageable) {
+        HashMap<String, Object> publicMedias = new HashMap<>();
+        publicMedias.put("medias", mediaRepository.getAllByLinkStatus(PUBLIC, pageable));
+        publicMedias.put("total", mediaRepository.getTotalMediaByStatus(PUBLIC));
+
+        return publicMedias;
     }
 
-    public List<Media> getMediasByUser(String username) {
-        return this.mediaRepository.getAllByUploader(username);
+    public HashMap<String, Object> getMediasByUser(String username, Pageable pageable) {
+        HashMap<String, Object> medias = new HashMap<>();
+        medias.put("medias", mediaRepository.getAllByUploader(username, pageable));
+        medias.put("total", mediaRepository.getTotalMediasByUser(username));
+
+        return medias;
     }
 
     public Media getMedia(int id) {
@@ -101,12 +111,12 @@ public class MediaService {
     }
 
     public void hideAllMedia(String name) {
-        List<Media> userMedias = getMediasByUser(name);
-
-        for (Media media : userMedias) {
-            media.setLinkStatus("private");
-        }
-        mediaRepository.saveAll(userMedias);
+//        List<Media> userMedias = getMediasByUser(name);
+//
+//        for (Media media : userMedias) {
+//            media.setLinkStatus("private");
+//        }
+//        mediaRepository.saveAll(userMedias);
     }
 
     public String generateUniqueMediaName(String originalFileName) {

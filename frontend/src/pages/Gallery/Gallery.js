@@ -1,49 +1,28 @@
-import React, { useEffect, useState } from "react";
-import RenderMedias from "../../components/Gallery/RenderMedias";
+import React, { useState } from "react";
 import { BASE_URL } from "../../apis/api";
 import Media from "../../components/Gallery/Media";
-import { useDispatch, useSelector } from "react-redux";
-import { forceCheck } from "react-lazyload";
-import { Modal, Row } from "antd";
-import { fetchImages } from "../../reducers/mediaReducer";
+import { Modal } from "antd";
+import MediaGrid from "../../components/Gallery/MediaGrid";
+import { PUBLIC_MEDIAS_ENDPOINT } from "../../apis/endpoints";
 
 export default () => {
-  const [mediaId, setMediaId] = useState("");
   const [activeMedia, setActiveMedia] = useState("");
-  const [mediaIds, setMediaIds] = useState([]);
-  const dispatch = useDispatch();
-  const { medias } = useSelector(state => state.medias.entities);
-  const mediaList = mediaIds.map(id => medias[id]);
 
   const handleShowDialog = mediaID => {
-    setMediaId(mediaID);
+    setActiveMedia(mediaID);
   };
-
-  useEffect(() => {
-    dispatch(fetchImages("/gallery/medias")).then(mediaIds =>
-      setMediaIds(mediaIds)
-    );
-  }, []);
-
-  useEffect(() => {
-    setActiveMedia(medias[mediaId]);
-  }, [mediaId]);
-
-  // componentDidUpdate(prevProps, prevState, snapshot) {
-  //   //Fixes a lazy loading bug that prevents a image from being lazy loaded when it was previously created in another page
-  //   forceCheck();
-  // }
 
   return (
     <>
-      <Row justify="center" gutter={[32, 32]}>
-        {RenderMedias(mediaList, handleShowDialog, true)}
-      </Row>
+      <MediaGrid
+        endpoint={PUBLIC_MEDIAS_ENDPOINT}
+        handleShowDialog={handleShowDialog}
+      />
       {activeMedia && (
         <Modal
           title={activeMedia.name}
-          visible={mediaId}
-          onCancel={() => setMediaId("")}
+          visible={activeMedia}
+          onCancel={() => setActiveMedia("")}
           footer={null}
         >
           <a
