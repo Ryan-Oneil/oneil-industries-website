@@ -1,14 +1,20 @@
 package biz.oneilindustries.website.service;
 
+import static biz.oneilindustries.AppConfig.BACK_END_URL;
+import static biz.oneilindustries.AppConfig.FRONT_END_URL;
+import static biz.oneilindustries.AppConfig.GALLERY_IMAGES_DIRECTORY;
 import static biz.oneilindustries.website.filecreater.FileHandler.getExtensionType;
+import static biz.oneilindustries.website.security.SecurityConstants.TRUSTED_ROLES;
 
 import biz.oneilindustries.RandomIDGen;
 import biz.oneilindustries.website.entity.Album;
 import biz.oneilindustries.website.entity.Media;
 import biz.oneilindustries.website.entity.PublicMediaApproval;
+import biz.oneilindustries.website.entity.User;
 import biz.oneilindustries.website.exception.MediaApprovalException;
 import biz.oneilindustries.website.exception.MediaException;
 import biz.oneilindustries.website.filecreater.FileHandler;
+import biz.oneilindustries.website.repository.AlbumRepository;
 import biz.oneilindustries.website.repository.MediaApprovalRepository;
 import biz.oneilindustries.website.repository.MediaRepository;
 import biz.oneilindustries.website.validation.GalleryUpload;
@@ -16,25 +22,81 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import org.apache.tika.Tika;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 @Service
 public class MediaService {
 
     private static final String FILE_NOT_EXISTS_ERROR_MESSAGE = "Media does not exist on this server";
     private static final String PUBLIC = "public";
+    private static final String UNLISTED = "unlisted";
 
     private final MediaRepository mediaRepository;
     private final MediaApprovalRepository approvalRepository;
+    private final AlbumRepository albumRepository;
 
-    public MediaService(MediaRepository mediaRepository, MediaApprovalRepository approvalRepository) {
+    public MediaService(MediaRepository mediaRepository, MediaApprovalRepository approvalRepository,
+        AlbumRepository albumRepository) {
         this.mediaRepository = mediaRepository;
         this.approvalRepository = approvalRepository;
+        this.albumRepository = albumRepository;
+    }
+
+    public String registerMedias(List<File> mediaFiles, GalleryUpload galleryUpload, User user) throws IOException {
+        Album album = null;
+        List<Media> mediaList = new ArrayList<>();
+
+        if (galleryUpload.getAlbum() != null || mediaFiles.size() > 1) {
+            album = getOrRegisterAlbum(user.getUsername(), galleryUpload.getAlbum());
+        }
+        for (File mediaFile : mediaFiles) {
+            Media media = registerMedia(mediaFile.getName(), galleryUpload.getPrivacy(), mediaFile, user.getUsername(), album);
+            checkMediaPrivacy(media, user);
+
+            mediaList.add(media);
+        }
+        mediaRepository.saveAll(mediaList);
+
+        if (mediaFiles.size() > 1) {
+            return  FRONT_END_URL + "/gallery/album/" + album.getId();
+        }
+        Media media = mediaList.get(0);
+
+        return BACK_END_URL + "/gallery/" + media.getMediaType() + "/" + media.getFileName();
+    }
+
+    public void checkMediaPrivacy(Media media, User user) {
+        if (media.getLinkStatus().equalsIgnoreCase(PUBLIC) && !CollectionUtils.containsAny(user.getAuthorities(), TRUSTED_ROLES)) {
+            requestPublicApproval(media.getId(), media.getName(), media.getAlbum());
+        }
+    }
+
+    public Album getOrRegisterAlbum(String user, String albumName) {
+        return albumRepository.getFirstByName(albumName).orElseGet(() -> registerNewAlbum(albumName, user, true));
+    }
+
+    public String generateAlbumUUID() {
+        String id = RandomIDGen.getBase62(16);
+        while(albumRepository.existsById(id)) {
+            id = RandomIDGen.getBase62(16);
+        }
+        return id;
+    }
+
+    public Album registerNewAlbum(String albumName, String username, boolean showUnlistedImages) {
+        String id = generateAlbumUUID();
+
+        Album album = new Album(id, albumName, username, showUnlistedImages);
+        albumRepository.save(album);
+
+        return album;
     }
 
     public List<Media> getMedias(Pageable pageable) {
@@ -90,8 +152,6 @@ public class MediaService {
         } else if (FileHandler.isVideoFile(tika.detect(file))) {
             media.setMediaType("video");
         }
-        saveMedia(media);
-
         return media;
     }
 
@@ -180,5 +240,9 @@ public class MediaService {
 
     public long getTotalMedias() {
         return mediaRepository.count();
+    }
+
+    public String getUserMediaDirectory(String username) {
+        return String.format("%s%s/",GALLERY_IMAGES_DIRECTORY, username);
     }
 }

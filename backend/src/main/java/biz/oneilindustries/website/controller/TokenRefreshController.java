@@ -1,8 +1,8 @@
 package biz.oneilindustries.website.controller;
 
+import static biz.oneilindustries.website.security.SecurityConstants.EXPIRATION_TIME;
 import static biz.oneilindustries.website.security.SecurityConstants.REFRESH_TOKEN_PREFIX;
 import static biz.oneilindustries.website.security.SecurityConstants.SECRET;
-import static biz.oneilindustries.website.security.SecurityConstants.SHORT_EXPIRATION_TIME;
 import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
 
 import biz.oneilindustries.website.entity.User;
@@ -13,7 +13,6 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,15 +45,13 @@ public class TokenRefreshController {
         }
         User user = userService.getUser(decodedToken.getClaim("user").asString());
 
-        if (user == null) {
-            throw new UsernameNotFoundException("Username not found");
-        }
         return "Bearer " + JWT.create()
             .withSubject("authToken")
+            .withClaim("userID", user.getId())
             .withClaim("user", user.getUsername())
             .withClaim("role", user.getAuthorities().get(0).getAuthority())
             .withClaim("enabled", user.getEnabled())
-            .withExpiresAt(new Date(System.currentTimeMillis() + SHORT_EXPIRATION_TIME))
+            .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
             .sign(HMAC512(SECRET.getBytes()));
     }
 }

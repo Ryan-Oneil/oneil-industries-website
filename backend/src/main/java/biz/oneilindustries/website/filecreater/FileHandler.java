@@ -21,23 +21,27 @@ public class FileHandler {
     private FileHandler() {
     }
 
-    public static File writeFile(FileItemStream file, String fileName, String dest, String uploader) throws IOException {
-        String extension = getExtensionType(fileName);
-        File destFolder = new File(dest + uploader + "/");
+    public static File writeFile(FileItemStream file, String fileName, String dest) throws IOException {
+        File destFolder = new File(dest);
 
         if (!destFolder.exists()) {
             destFolder.mkdir();
         }
-        File newFile = new File(dest + uploader + "/" + fileName);
+        File newFile = new File(dest + "/" + fileName);
 
+        if (newFile.exists()) {
+            newFile = renameFile(newFile, dest);
+        }
         //Copy file to new file
         FileUtils.copyInputStreamToFile(file.openStream(), newFile);
 
-        //If file is image
-        if (isImageFile(extension)) {
-            ImageThumbnailWriter.writeImage(newFile,dest, extension, uploader);
-        }
         return newFile;
+    }
+
+    public static void writeImageThumbnail(File file, String dest) throws IOException {
+        String extension = getExtensionType(file.getName());
+
+        ImageThumbnailWriter.writeImage(file, dest, extension);
     }
 
     public static String getExtensionType(String originalFileName) {
@@ -50,6 +54,20 @@ public class FileHandler {
         if (extensionType.equalsIgnoreCase("jpg") || extensionType.equalsIgnoreCase("jpeg")) return "jpeg";
 
         return extensionType;
+    }
+
+    public static File renameFile(File file, String dest) {
+        int fileCount = 1;
+        File currentFile = file;
+
+        while (currentFile.exists()) {
+            String fileName = file.getName().substring(0, file.getName().lastIndexOf('.')) + String.format("(%s)", fileCount);
+            String fileExtension = "." + getExtensionType(file.getName());
+
+            currentFile = new File(String.format("%s/%s", dest, fileName + fileExtension));
+            fileCount++;
+        }
+        return currentFile;
     }
 
     public static boolean isImageFile(String extension) {

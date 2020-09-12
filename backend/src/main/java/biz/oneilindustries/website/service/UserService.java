@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 import javax.transaction.Transactional;
 import org.apache.commons.io.FileUtils;
 import org.springframework.cache.annotation.CacheEvict;
@@ -79,37 +80,44 @@ public class UserService {
     }
 
     public User registerUser(LoginForm loginForm) {
+        String username = loginForm.getName();
+        String email = loginForm.getEmail();
 
-        if (!loginForm.getName().matches(USERNAME_REGEX)) {
-            throw new UserException("Username may only contain a-Z . _");
-        }
+        validateUsername(username);
+        validateEmail(email);
 
-        if (userRepository.isUsernameTaken(loginForm.getName())) {
-            throw new UserException("An account with this username already exists");
-        }
-
-        if (userRepository.isEmailTaken(loginForm.getEmail())) {
-            throw new UserException("An account with this email already exists");
-        }
         String encryptedPassword = passwordEncoder.encode(loginForm.getPassword());
-        String username = loginForm.getName().toLowerCase();
 
-        User user = new User(username, encryptedPassword,false, loginForm.getEmail(), "ROLE_UNREGISTERED");
+        User user = new User(username.toLowerCase(), encryptedPassword,false, email, "ROLE_UNREGISTERED");
         Quota quota = new Quota(username, 0, 25, false);
 
         saveUser(user);
-        saveUserQuota(quota);
+        quotaRepository.save(quota);
 
         return user;
+    }
+
+    public void validateUsername(String username) {
+        if (!username.matches(USERNAME_REGEX)) {
+            throw new UserException("Username may only contain a-Z . _");
+        }
+
+        if (userRepository.isUsernameTaken(username.toLowerCase())) {
+            throw new UserException("Username is taken");
+        }
+    }
+
+    public void validateEmail(String email) {
+        if (userRepository.isEmailTaken(email.toLowerCase())) {
+            throw new UserException("Email is taken");
+        }
     }
 
     public void updateUser(UpdatedUser updatedUser, String name) {
         User user = getUser(name);
 
         if (!updatedUser.getEmail().equals(user.getEmail())) {
-            if (userRepository.isEmailTaken(updatedUser.getEmail())) {
-                throw new UserException("Email is already registered to another user");
-            }
+            validateEmail(updatedUser.getEmail());
         }
         user.setEmail(updatedUser.getEmail());
         updatedUser.getEnabled().ifPresent(user::setEnabled);
@@ -195,10 +203,13 @@ public class UserService {
         saveUserQuota(quota);
     }
 
-    public void increaseUsedAmount(Quota quota, long amount) {
-        quota.increaseUsed(amount);
+    public void increaseUsedAmount(String username, long amount) {
+        Optional<Quota> userQuota = quotaRepository.findById(username);
 
-        saveUserQuota(quota);
+        userQuota.ifPresent(quota -> {
+            quota.increaseUsed(amount);
+            quotaRepository.save(quota);
+        });
     }
 
     public void decreaseUsedAmount(Quota quota, long amount) {
@@ -207,14 +218,21 @@ public class UserService {
         saveUserQuota(quota);
     }
 
-    public long getUserRemainingStorage(Quota quota) {
-        //Returns -1 if the user is allowed to bypass their limit
-        if (quota.isIgnoreQuota()) {
-            return -1;
-        }
-        return Math.max((quota.getMax() * FileUtils.ONE_GB) - quota.getUsed(), 0);
-    }
+    public long getRemainingQuota(String username) {
+        AtomicReference<Long> remaining = new AtomicReference<>(0L);
 
+        Optional<Quota> userQuota = quotaRepository.findById(username);
+
+        userQuota.ifPresent(quota -> {
+            if (quota.isIgnoreQuota()) {
+                remaining.set(-1L);
+            }else {
+                long remainingAmount = (quota.getMax() * FileUtils.ONE_GB) - quota.getUsed();
+                remaining.set(Math.max(remainingAmount, 0));
+            }
+        });
+        return remaining.get();
+    }
     @Transactional
     @Cacheable(value = "apiToken")
     public ApiToken getApiTokenByUser(String username) {

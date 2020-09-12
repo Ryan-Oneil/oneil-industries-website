@@ -1,7 +1,6 @@
 package biz.oneilindustries.website.validation;
 
 import java.io.File;
-import java.util.Optional;
 import javax.validation.constraints.NotNull;
 
 public class GalleryUpload {
@@ -44,8 +43,8 @@ public class GalleryUpload {
         this.privacy = privacy;
     }
 
-    public Optional<String> getAlbum() {
-        return Optional.ofNullable(album);
+    public String getAlbum() {
+        return album;
     }
 
     public void setAlbum(String album) {
