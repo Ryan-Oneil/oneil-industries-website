@@ -103,7 +103,6 @@ public class ImageGalleryController {
     }
 
     private ResponseEntity<StreamingResponseBody> displayMedia(HttpServletResponse response, String imageName, String directory) {
-
         Media media = mediaService.getMediaFileName(imageName);
 
         File serverFile = new File(directory + media.getUploader() + "/" + media.getFileName());
@@ -160,9 +159,10 @@ public class ImageGalleryController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @GetMapping("/medias/user/{username}")
-    public HashMap<String, Object> showUserMedias(Authentication user, @PathVariable String username, HttpServletRequest request, Pageable pageable) {
-        return mediaService.getMediasByUser(username, pageable);
+    @GetMapping("/medias/user/{username}/{mediaType}")
+    public HashMap<String, Object> showUserMedias(Authentication user, @PathVariable String username, HttpServletRequest request, Pageable pageable,
+        @PathVariable String mediaType) {
+        return mediaService.getMediasByUser(username, pageable, mediaType);
     }
 
     @PutMapping("/media/update/{mediaID}")

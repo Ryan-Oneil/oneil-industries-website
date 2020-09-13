@@ -4,6 +4,8 @@ import static biz.oneilindustries.AppConfig.BACK_END_URL;
 import static biz.oneilindustries.website.security.SecurityConstants.SECRET;
 import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
 
+import biz.oneilindustries.website.dto.QuotaDTO;
+import biz.oneilindustries.website.dto.UserDTO;
 import biz.oneilindustries.website.entity.ApiToken;
 import biz.oneilindustries.website.entity.PasswordResetToken;
 import biz.oneilindustries.website.entity.Quota;
@@ -26,6 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import org.apache.commons.io.FileUtils;
 import org.springframework.cache.annotation.CacheEvict;
@@ -309,5 +312,30 @@ public class UserService {
 
         user.setEnabled(true);
         saveUser(user);
+    }
+
+    public UserDTO getUserStats(String username) {
+        Quota quota = getQuotaByUsername(username);
+        User user = getUser(username);
+
+        QuotaDTO quotaDTO = quotaToDTO(quota);
+        UserDTO userDTO = userToDTO(user);
+        userDTO.setQuota(quotaDTO);
+
+        return userDTO;
+    }
+
+    public QuotaDTO quotaToDTO(Quota quota) {
+        return new QuotaDTO(quota.getUsed(), quota.getMax(), quota.isIgnoreQuota());
+    }
+
+    public List<UserDTO> usersToDTOs(List<User> users) {
+        return users.stream()
+            .map(this::userToDTO)
+            .collect(Collectors.toList());
+    }
+
+    public UserDTO userToDTO(User user) {
+        return new UserDTO(user.getId(), user.getUsername(), user.getEmail(), user.getRole(), user.getEnabled());
     }
 }

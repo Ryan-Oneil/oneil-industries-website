@@ -4,6 +4,7 @@ import static biz.oneilindustries.AppConfig.BACK_END_URL;
 import static biz.oneilindustries.AppConfig.FRONT_END_URL;
 import static biz.oneilindustries.AppConfig.GALLERY_IMAGES_DIRECTORY;
 import static biz.oneilindustries.website.filecreater.FileHandler.getExtensionType;
+import static biz.oneilindustries.website.filecreater.FileHandler.writeImageThumbnail;
 import static biz.oneilindustries.website.security.SecurityConstants.TRUSTED_ROLES;
 
 import biz.oneilindustries.RandomIDGen;
@@ -26,6 +27,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.tika.Tika;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -33,6 +36,8 @@ import org.springframework.util.CollectionUtils;
 
 @Service
 public class MediaService {
+
+    private static final Logger logger = LogManager.getLogger(biz.oneilindustries.website.service.MediaService.class);
 
     private static final String FILE_NOT_EXISTS_ERROR_MESSAGE = "Media does not exist on this server";
     private static final String PUBLIC = "public";
@@ -63,6 +68,7 @@ public class MediaService {
             mediaList.add(media);
         }
         mediaRepository.saveAll(mediaList);
+        writeMediaThumbnails(mediaFiles, user.getUsername());
 
         if (mediaFiles.size() > 1) {
             return  FRONT_END_URL + "/gallery/album/" + album.getId();
@@ -70,6 +76,18 @@ public class MediaService {
         Media media = mediaList.get(0);
 
         return BACK_END_URL + "/gallery/" + media.getMediaType() + "/" + media.getFileName();
+    }
+
+    private void writeMediaThumbnails(List<File> medias, String user) {
+        medias.forEach(media -> {
+            if (FileHandler.isImageFile(media.getName())) {
+                try {
+                    writeImageThumbnail(media, String.format("%s/thumbnail/%s/",GALLERY_IMAGES_DIRECTORY, user));
+                } catch (IOException e) {
+                    logger.error("Error writing thumbnails for image {}", e.getMessage());
+                }
+            }
+        });
     }
 
     public void checkMediaPrivacy(Media media, User user) {
@@ -111,10 +129,10 @@ public class MediaService {
         return publicMedias;
     }
 
-    public HashMap<String, Object> getMediasByUser(String username, Pageable pageable) {
+    public HashMap<String, Object> getMediasByUser(String username, Pageable pageable, String mediaType) {
         HashMap<String, Object> medias = new HashMap<>();
-        medias.put("medias", mediaRepository.getAllByUploader(username, pageable));
-        medias.put("total", mediaRepository.getTotalMediasByUser(username));
+        medias.put("medias", mediaRepository.getAllByUploaderAndMediaTypeOrderByIdDesc(username, mediaType, pageable));
+        medias.put("total", mediaRepository.getTotalMediasByUserAndType(username, mediaType));
 
         return medias;
     }
