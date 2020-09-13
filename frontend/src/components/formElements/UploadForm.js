@@ -1,139 +1,88 @@
-import React from "react";
-import { Field, formValueSelector, reduxForm, reset } from "redux-form";
-import { renderErrorMessage, renderPositiveMessage } from "../Message";
-import { connect } from "react-redux";
-import { clearMessages, fetchAlbums, uploadMedia } from "../../actions";
-import { getUserStorage } from "../../actions/profile";
-import { renderInput, renderSelectField } from "./index";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { USER_ALBUMS_ENDPOINT } from "../../apis/endpoints";
+import { getApiError } from "../../helpers";
+import { uploadMedia } from "../../reducers/mediaReducer";
+import { Field, Formik } from "formik";
+import { SelectInputWithErrors } from "./index";
+import UserOutlined from "@ant-design/icons/lib/icons/UserOutlined";
+import { Alert, Button, Select } from "antd";
+const { Option } = Select;
 
-class UploadForm extends React.Component {
-  componentDidMount() {
-    this.props.fetchAlbums(`/gallery/myalbums/${this.props.auth.user}`);
-  }
-  state = { reachedUploadLimit: false };
-  renderAlbums = () => {
-    return this.props.medias.albums.map(MediaAlbum => {
-      return (
-        <option value={MediaAlbum.id} key={MediaAlbum.id}>
-          {MediaAlbum.name}
-        </option>
-      );
-    });
+export default ({ mediaList, onSubmitSuccess }) => {
+  const dispatch = useDispatch();
+
+  const onSubmit = (formValues, { setStatus }) => {
+    return uploadMedia("/gallery/upload", formValues, mediaList)
+      .then(data => {
+        onSubmitSuccess();
+        setStatus({ msg: data, type: "success" });
+      })
+      .catch(error => setStatus(getApiError(error)));
   };
 
-  componentWillUnmount() {
-    this.props.clearMessages();
-  }
+  return (
+    <Formik
+      initialValues={{
+        linkStatus: "unlisted"
+      }}
+      onSubmit={onSubmit}
+      validate={validate}
+    >
+      {props => {
+        const {
+          isSubmitting,
+          handleSubmit,
+          isValid,
+          errors,
+          status,
+          setStatus
+        } = props;
 
-  onSubmit = formValues => {
-    return this.props.uploadMedia(
-      "/gallery/upload",
-      formValues,
-      this.props.mediasList
-    );
-  };
-
-  render() {
-    const {
-      submitting,
-      error,
-      handleSubmit,
-      reachedUploadLimit,
-      hasAlbumValue,
-      mediasList
-    } = this.props;
-    const { mediaPostMessage } = this.props.medias;
-    const showNewAlbum = hasAlbumValue === "new";
-
-    return (
-      <div className="column six wide">
-        <form
-          onSubmit={handleSubmit(this.onSubmit)}
-          className="ui form error centerText"
-        >
-          <div className="ui segment">
-            <h1 className="textFormat">Upload your Media(s)</h1>
-
-            <label className="textFormat">Link Status</label>
+        return (
+          <form onSubmit={handleSubmit} className="login-form">
             <Field
               name="linkStatus"
-              component={renderSelectField}
-              className="field"
+              as={SelectInputWithErrors}
+              type="text"
+              placeholder="Privacy Status"
+              prefix={<UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
+              error={errors.linkStatus}
             >
-              <option value="unlisted">Unlisted</option>
-              <option value="public">Public</option>
-              <option value="private">Private</option>
+              <Option value="unlisted">Unlisted</Option>
+              <Option value="private">Private</Option>
+              <Option value="public">Public</Option>
             </Field>
-
-            <label className="textFormat">Album</label>
-            <Field name="album" component="select" className="field">
-              <option value="" />
-              <option value="new">Create new Album</option>
-              {this.renderAlbums()}
-            </Field>
-
-            {showNewAlbum && (
-              <>
-                <label className="textFormat">Album Name</label>
-                <Field name="albumName" component={renderInput} type="text" />
-                <label className="textFormat">Show unlisted media</label>
-                <Field
-                  name="showUnlisted"
-                  component={renderSelectField}
-                  className="field"
-                >
-                  <option value="true">Yes</option>
-                  <option value="false">No</option>
-                </Field>
-              </>
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="form-button"
+              disabled={!isValid || isSubmitting || !mediaList.length > 0}
+              loading={isSubmitting}
+              size="large"
+            >
+              {isSubmitting ? "Uploading" : "Upload"}
+            </Button>
+            {status && (
+              <Alert
+                message={status.msg}
+                type={status.type}
+                closable
+                showIcon
+                onClose={() => setStatus("")}
+              />
             )}
-
-            {error && renderErrorMessage(error)}
-            {reachedUploadLimit &&
-              renderErrorMessage("You have reached the upload storage limit")}
-            <button
-              className="ui fluid large submit button buttonFormat"
-              disabled={submitting || reachedUploadLimit || mediasList < 1}
-            >
-              Upload
-            </button>
-            {mediaPostMessage && renderPositiveMessage(mediaPostMessage)}
-          </div>
-        </form>
-      </div>
-    );
-  }
-}
-
-const warn = values => {
-  const warnings = {};
-  if (values.linkStatus === "public") {
-    warnings.linkStatus =
-      "Public media may require admin approval. It will remain unlisted until approved";
-  }
-  return warnings;
+          </form>
+        );
+      }}
+    </Formik>
+  );
 };
+const validate = values => {
+  const errors = {};
 
-const mapStateToProps = state => ({
-  medias: state.medias,
-  profile: state.profile,
-  auth: state.auth,
-  hasAlbumValue: selector(state, "album")
-});
-const selector = formValueSelector("upload");
-UploadForm = connect(mapStateToProps, {
-  uploadMedia,
-  fetchAlbums,
-  getUserStorage,
-  clearMessages,
-  reset
-})(UploadForm);
-
-export default reduxForm({
-  form: "upload",
-  warn,
-  initialValues: {
-    linkStatus: "unlisted",
-    showUnlisted: "true"
+  if (!values.linkStatus) {
+    errors.linkStatus = "linkStatus is required";
   }
-})(UploadForm);
+  return errors;
+};

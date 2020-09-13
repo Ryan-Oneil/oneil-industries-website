@@ -6,6 +6,7 @@ import serviceReducer from "./serviceReducer";
 import profileReducer from "./profileReducer";
 import adminReducer from "./adminReducer";
 import globalErrorReducer from "./globalErrorReducer";
+import userReducer from "./userReducer";
 
 export default combineReducers({
   auth: authReducer,
@@ -14,5 +15,6 @@ export default combineReducers({
   services: serviceReducer,
   profile: profileReducer,
   admin: adminReducer,
+  user: userReducer,
   globalErrors: globalErrorReducer
 });

@@ -1,15 +1,12 @@
 import React from "react";
 import ManageServices from "./ManageServices";
-import SideBarNav from "../../components/site layout/SideBarNav";
 import { NavLink, Route, Switch } from "react-router-dom";
 import PrivateRoute from "../../components/PrivateRoute";
 import APIPage from "./APIPage";
 import ProfilePage from "./Overview";
-import SubNavMenu from "../../components/site layout/SubNavMenu";
-import UserGalleryPage from "./UserGalleryPage";
-import UserAlbumsPage from "./UserAlbumsPage";
+import UserGalleryPage from "./Gallery/UserGalleryPage";
+import UserAlbumsPage from "./Gallery/UserAlbumsPage";
 import { connect } from "react-redux";
-import Upload from "./Upload";
 import SideNav from "../../components/site layout/SideNav";
 import UserOutlined from "@ant-design/icons/lib/icons/UserOutlined";
 import DatabaseOutlined from "@ant-design/icons/lib/icons/DatabaseOutlined";
@@ -18,6 +15,7 @@ import UploadOutlined from "@ant-design/icons/lib/icons/UploadOutlined";
 import PictureOutlined from "@ant-design/icons/lib/icons/PictureOutlined";
 import FileImageOutlined from "@ant-design/icons/lib/icons/FileImageOutlined";
 import { Layout } from "antd";
+import UploadPage from "./Gallery/UploadPage";
 const { Header, Content, Sider } = Layout;
 
 class Routing extends React.Component {
@@ -83,7 +81,7 @@ class Routing extends React.Component {
                 <Route
                   exact
                   path={`${match.path}/gallery/upload`}
-                  component={Upload}
+                  component={UploadPage}
                 />
               </PrivateRoute>
             </Switch>

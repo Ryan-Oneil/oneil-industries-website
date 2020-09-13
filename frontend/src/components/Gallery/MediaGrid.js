@@ -34,7 +34,7 @@ export default ({ endpoint, handleShowDialog }) => {
   };
 
   return (
-    <div style={{ height: "100%", overflow: "auto" }}>
+    <div style={{ height: "100%", overflow: "auto", paddingLeft: "30px" }}>
       <InfiniteScroll
         initialLoad={false}
         pageStart={0}
@@ -43,7 +43,7 @@ export default ({ endpoint, handleShowDialog }) => {
         useWindow={false}
       >
         <List
-          grid={{ gutter: 16, column: 4 }}
+          grid={{ gutter: 32, column: 4 }}
           dataSource={mediaList}
           renderItem={item => (
             <List.Item key={item.id}>

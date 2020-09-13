@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Media from "../../components/Gallery/Media";
-import "../../assets/css/layout.css";
-import EditMediaForm from "../../components/formElements/EditMediaForm";
+import Media from "../../../components/Gallery/Media";
+import "../../../assets/css/layout.css";
 import { Button, Modal } from "antd";
-import { deleteMedia } from "../../reducers/mediaReducer";
-import { BASE_URL } from "../../apis/api";
-import MediaGrid from "../../components/Gallery/MediaGrid";
-import { USER_MEDIAS_ENDPOINT } from "../../apis/endpoints";
+import MediaGrid from "../../../components/Gallery/MediaGrid";
+import { USER_MEDIAS_ENDPOINT } from "../../../apis/endpoints";
+import { BASE_URL } from "../../../apis/api";
+import { deleteMedia } from "../../../reducers/mediaReducer";
+import EditMediaForm from "../../../components/formElements/EditMediaForm";
 
 export default props => {
   const { medias } = useSelector(state => state.medias.entities);

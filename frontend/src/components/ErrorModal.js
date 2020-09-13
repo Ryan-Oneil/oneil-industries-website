@@ -1,64 +1,36 @@
+import { Button, Modal } from "antd";
 import React from "react";
-import { connect } from "react-redux";
-import { clearError, disableError } from "../actions/errors";
+import { useDispatch } from "react-redux";
+import { clearError, disableError } from "../reducers/globalErrorReducer";
 
-class ErrorModal extends React.Component {
-  constructor(props) {
-    super(props);
+export default props => {
+  const { message } = props;
+  const dispatch = useDispatch();
 
-    this.setWrapperRef = this.setWrapperRef.bind(this);
-    this.handleClickOutside = this.handleClickOutside.bind(this);
-  }
+  const closeModal = () => {
+    dispatch(clearError());
+  };
 
-  componentDidMount() {
-    document.addEventListener("mousedown", this.handleClickOutside);
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener("mousedown", this.handleClickOutside);
-  }
-
-  setWrapperRef(node) {
-    this.wrapperRef = node;
-  }
-
-  handleClickOutside(event) {
-    const { clearError } = this.props;
-
-    if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
-      clearError();
-    }
-  }
-
-  render() {
-    const { error, clearError, disableError } = this.props;
-
-    return (
-      <div className="modalBackground">
-        <div
-          className="errorModal ui mini test modal transition visible active"
-          ref={this.setWrapperRef}
+  return (
+    <Modal
+      visible
+      onCancel={closeModal}
+      onOk={closeModal}
+      title="An Error Occurred"
+      footer={[
+        <Button key="disable" onClick={() => dispatch(disableError())}>
+          Disable
+        </Button>,
+        <Button
+          key="confirm"
+          type="primary"
+          onClick={() => dispatch(clearError())}
         >
-          <div className="header">An error occurred</div>
-          <div className="content">
-            <p>{error}</p>
-          </div>
-          <div className="actions">
-            <div
-              className="ui negative left floated button"
-              onClick={disableError}
-              data-tooltip="Temporarily disables error popups"
-              data-position="bottom center"
-            >
-              Disable
-            </div>
-            <div className="ui positive button" onClick={clearError}>
-              Close
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-}
-export default connect(null, { clearError, disableError })(ErrorModal);
+          Ok
+        </Button>
+      ]}
+    >
+      <p>{message}</p>
+    </Modal>
+  );
+};
