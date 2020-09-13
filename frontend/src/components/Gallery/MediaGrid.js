@@ -1,70 +1,169 @@
 import React, { useEffect, useState } from "react";
-import { Card, Divider, List } from "antd";
+import { Card, Divider, List, Tabs } from "antd";
 import Media from "./Media";
 import InfiniteScroll from "react-infinite-scroller";
 import { fetchImages } from "../../reducers/mediaReducer";
 import { useDispatch, useSelector } from "react-redux";
+import VideoCameraOutlined from "@ant-design/icons/lib/icons/VideoCameraOutlined";
+import FileImageOutlined from "@ant-design/icons/lib/icons/FileImageOutlined";
 const { Meta } = Card;
+const { TabPane } = Tabs;
 
-export default ({ endpoint, handleShowDialog }) => {
+export default ({ imageEndpoint, videoEndpoint, handleShowDialog }) => {
   const { medias } = useSelector(state => state.medias.entities);
-  const [mediaIds, setMediaIds] = useState([]);
-  const [mediaList, setMediaList] = useState([]);
+  const [imageIds, setImageIds] = useState([]);
+  const [imageList, setImageList] = useState([]);
+  const [videoIds, setVideoIds] = useState([]);
+  const [videoList, setVideoList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [total, setTotal] = useState(0);
+  const [imageTotal, setImageTotal] = useState(0);
+  const [videoTotal, setVideoTotal] = useState(0);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    setMediaList(mediaIds.map(id => medias[id]));
-  }, [mediaIds]);
+    setImageList(imageIds.map(id => medias[id]));
+  }, [imageIds]);
 
   useEffect(() => {
-    handleInfiniteOnLoad(0);
+    setVideoList(videoIds.map(id => medias[id]));
+  }, [videoIds]);
+
+  useEffect(() => {
+    handleImageInfiniteOnLoad(0);
+    handleVideoInfiniteOnLoad(0);
   }, []);
 
-  const handleInfiniteOnLoad = page => {
+  const handleImageInfiniteOnLoad = page => {
     setLoading(true);
-    dispatch(fetchImages(endpoint, page, 30)).then(({ payload }) => {
+    dispatch(fetchImages(imageEndpoint, page, 30)).then(({ payload }) => {
       const payloadMediaIds = payload.medias.map(media => media.id);
 
-      setMediaIds(prevState => [...prevState, ...payloadMediaIds]);
-      setTotal(payload.total);
+      setImageIds(prevState => [...prevState, ...payloadMediaIds]);
+      setImageTotal(payload.total);
+      setLoading(false);
+    });
+  };
+
+  const handleVideoInfiniteOnLoad = page => {
+    setLoading(true);
+    dispatch(fetchImages(videoEndpoint, page, 30)).then(({ payload }) => {
+      const payloadMediaIds = payload.medias.map(media => media.id);
+
+      setVideoIds(prevState => [...prevState, ...payloadMediaIds]);
+      setVideoTotal(payload.total);
       setLoading(false);
     });
   };
 
   return (
-    <div style={{ height: "100%", overflow: "auto", paddingLeft: "30px" }}>
-      <InfiniteScroll
-        initialLoad={false}
-        pageStart={0}
-        loadMore={handleInfiniteOnLoad}
-        hasMore={!loading && mediaIds.length < total}
-        useWindow={false}
-      >
-        <List
-          grid={{ gutter: 32, column: 4 }}
-          dataSource={mediaList}
-          renderItem={item => (
-            <List.Item key={item.id}>
-              <Card>
-                <div className="pointerCursor">
-                  <Media
-                    media={item}
-                    onClick={handleShowDialog.bind(this, item.id)}
-                  />
-                </div>
-                <Divider />
-                <Meta
-                  title={item.name}
-                  description={item.dateAdded}
-                  style={{ textAlign: "center" }}
-                />
-              </Card>
-            </List.Item>
-          )}
-        />
-      </InfiniteScroll>
+    <div
+      style={{
+        paddingLeft: "30px",
+        marginTop: "-10px"
+      }}
+    >
+      <Tabs defaultActiveKey="1">
+        <TabPane
+          tab={
+            <span>
+              <FileImageOutlined />
+              Images
+            </span>
+          }
+          key="1"
+        >
+          <div style={{ height: "690px", overflow: "auto" }}>
+            <InfiniteScroll
+              initialLoad={false}
+              pageStart={0}
+              loadMore={handleImageInfiniteOnLoad}
+              hasMore={!loading && imageIds.length < imageTotal}
+              useWindow={false}
+            >
+              <List
+                grid={{
+                  gutter: 16,
+                  xs: 1,
+                  sm: 2,
+                  md: 4,
+                  lg: 4,
+                  xl: 5,
+                  xxl: 5
+                }}
+                dataSource={imageList}
+                renderItem={item => (
+                  <List.Item key={item.id}>
+                    <Card>
+                      <div className="pointerCursor">
+                        <Media
+                          media={item}
+                          onClick={handleShowDialog.bind(this, item.id)}
+                        />
+                      </div>
+                      <Divider />
+                      <Meta
+                        title={item.name}
+                        description={item.dateAdded}
+                        style={{ textAlign: "center" }}
+                      />
+                    </Card>
+                  </List.Item>
+                )}
+              />
+            </InfiniteScroll>
+          </div>
+        </TabPane>
+        <TabPane
+          tab={
+            <span>
+              <VideoCameraOutlined />
+              Videos
+            </span>
+          }
+          key="2"
+        >
+          <div style={{ height: "690px", overflow: "auto" }}>
+            <InfiniteScroll
+              initialLoad={false}
+              pageStart={0}
+              loadMore={handleVideoInfiniteOnLoad}
+              hasMore={!loading && videoIds.length < videoTotal}
+              useWindow={false}
+            >
+              <List
+                grid={{
+                  gutter: 16,
+                  xs: 1,
+                  sm: 2,
+                  md: 4,
+                  lg: 4,
+                  xl: 5,
+                  xxl: 5
+                }}
+                dataSource={videoList}
+                renderItem={item => (
+                  <List.Item key={item.id}>
+                    <Card>
+                      <div className="pointerCursor">
+                        <Media
+                          media={item}
+                          onClick={handleShowDialog.bind(this, item.id)}
+                        />
+                      </div>
+                      <Divider />
+                      <Meta
+                        title={item.name}
+                        description={item.dateAdded}
+                        style={{ textAlign: "center" }}
+                      />
+                    </Card>
+                  </List.Item>
+                )}
+              />
+            </InfiniteScroll>
+          </div>
+        </TabPane>
+      </Tabs>
     </div>
   );
 };

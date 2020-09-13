@@ -1,6 +1,5 @@
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { USER_ALBUMS_ENDPOINT } from "../../apis/endpoints";
+import React from "react";
+import { useDispatch } from "react-redux";
 import { getApiError } from "../../helpers";
 import { uploadMedia } from "../../reducers/mediaReducer";
 import { Field, Formik } from "formik";

@@ -27,7 +27,8 @@ export default props => {
   return (
     <div style={{ height: "100%", overflow: "auto" }}>
       <MediaGrid
-        endpoint={`${USER_MEDIAS_ENDPOINT}${name}`}
+        imageEndpoint={`${USER_MEDIAS_ENDPOINT}${name}/image`}
+        videoEndpoint={`${USER_MEDIAS_ENDPOINT}${name}/video`}
         handleShowDialog={handleShowDialog}
       />
       {activeMedia && (
@@ -36,6 +37,7 @@ export default props => {
           visible={mediaId}
           onCancel={() => setMediaId("")}
           footer={null}
+          width={550}
         >
           <a
             href={`${BASE_URL}/gallery/${activeMedia.mediaType}/${activeMedia.fileName}`}

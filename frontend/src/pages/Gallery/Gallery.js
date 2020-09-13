@@ -15,7 +15,7 @@ export default () => {
   return (
     <>
       <MediaGrid
-        endpoint={PUBLIC_MEDIAS_ENDPOINT}
+        imageEndpoint={PUBLIC_MEDIAS_ENDPOINT}
         handleShowDialog={handleShowDialog}
       />
       {activeMedia && (

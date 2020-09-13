@@ -28,6 +28,7 @@ class Media extends React.Component {
         className="centerVideo"
         src={media.src ? media.src : src}
         controls={renderVideoControls}
+        style={{ width: " 100%", height: "auto" }}
       />
     );
   };
