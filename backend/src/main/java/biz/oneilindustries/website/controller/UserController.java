@@ -3,8 +3,12 @@ package biz.oneilindustries.website.controller;
 import biz.oneilindustries.website.dto.QuotaDTO;
 import biz.oneilindustries.website.dto.UserDTO;
 import biz.oneilindustries.website.entity.ApiToken;
+import biz.oneilindustries.website.entity.Role;
 import biz.oneilindustries.website.service.UserService;
+import biz.oneilindustries.website.validation.UpdatedQuota;
 import biz.oneilindustries.website.validation.UpdatedUser;
+import java.util.List;
+import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -63,5 +67,23 @@ public class UserController {
     @GetMapping("/{username}/getShareX")
     public ResponseEntity getShareXConfig(@PathVariable String username, Authentication authentication) {
         return ResponseEntity.ok(userService.generateShareXAPIFile(username));
+    }
+
+    //admin related apis
+    @GetMapping("/admin/users")
+    public List<UserDTO> showUsers() {
+        return userService.getUsers();
+    }
+
+    @GetMapping("/admin/users/roles")
+    public ResponseEntity<List<Role>> getRoles() {
+        return ResponseEntity.ok(userService.getRoles());
+    }
+
+    @PutMapping("/admin/user/{username}/update/quota")
+    public ResponseEntity updateUserQuota(@RequestBody @Valid UpdatedQuota updatedQuota, @PathVariable String username) {
+        userService.updateUserQuota(updatedQuota, username);
+
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 }

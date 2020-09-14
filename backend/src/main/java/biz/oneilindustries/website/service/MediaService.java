@@ -14,6 +14,7 @@ import biz.oneilindustries.website.entity.PublicMediaApproval;
 import biz.oneilindustries.website.entity.User;
 import biz.oneilindustries.website.exception.MediaApprovalException;
 import biz.oneilindustries.website.exception.MediaException;
+import biz.oneilindustries.website.exception.ResourceNotFoundException;
 import biz.oneilindustries.website.filecreater.FileHandler;
 import biz.oneilindustries.website.repository.AlbumRepository;
 import biz.oneilindustries.website.repository.MediaApprovalRepository;
@@ -21,6 +22,7 @@ import biz.oneilindustries.website.repository.MediaRepository;
 import biz.oneilindustries.website.validation.GalleryUpload;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -92,7 +94,7 @@ public class MediaService {
 
     public void checkMediaPrivacy(Media media, User user) {
         if (media.getLinkStatus().equalsIgnoreCase(PUBLIC) && !CollectionUtils.containsAny(user.getAuthorities(), TRUSTED_ROLES)) {
-            requestPublicApproval(media.getId(), media.getName(), media.getAlbum());
+            requestPublicApproval(media, media.getName(), media.getAlbum());
         }
     }
 
@@ -117,14 +119,18 @@ public class MediaService {
         return album;
     }
 
-    public List<Media> getMedias(Pageable pageable) {
-        return mediaRepository.getAllByOrderByDateAddedDesc(pageable);
+    public HashMap<String, Object> getMedias(String mediaType, Pageable pageable) {
+        HashMap<String, Object> medias = new HashMap<>();
+        medias.put("medias", mediaRepository.getAllByMediaTypeOrderByDateAddedDesc(mediaType, pageable));
+        medias.put("total", mediaRepository.getTotalMediaByType(mediaType));
+
+        return medias;
     }
 
-    public HashMap<String, Object> getPublicMedias(Pageable pageable) {
+    public HashMap<String, Object> getPublicMedias(Pageable pageable, String mediaType) {
         HashMap<String, Object> publicMedias = new HashMap<>();
-        publicMedias.put("medias", mediaRepository.getAllByLinkStatus(PUBLIC, pageable));
-        publicMedias.put("total", mediaRepository.getTotalMediaByStatus(PUBLIC));
+        publicMedias.put("medias", mediaRepository.getAllByLinkStatusAndMediaType(PUBLIC, mediaType, pageable));
+        publicMedias.put("total", mediaRepository.getTotalMediaByStatusAndMediaType(PUBLIC, mediaType));
 
         return publicMedias;
     }
@@ -147,10 +153,6 @@ public class MediaService {
 
     public void saveMediaApproval(PublicMediaApproval media) {
         approvalRepository.save(media);
-    }
-
-    public void deleteMedia(int id) {
-        mediaRepository.deleteById(id);
     }
 
     public Media getMediaFileName(String fileName) {
@@ -215,11 +217,11 @@ public class MediaService {
         return approvalRepository.findAllByStatus(status);
     }
 
-    public void requestPublicApproval(int mediaID, String mediaName, Album album) {
-        PublicMediaApproval publicMediaStatus = this.getMediaApprovalByMediaID(mediaID);
+    public void requestPublicApproval(Media media, String mediaName, Album album) {
+        PublicMediaApproval publicMediaStatus = this.getMediaApprovalByMediaID(media.getId());
 
         if (publicMediaStatus == null) {
-            publicMediaStatus = new PublicMediaApproval(new Media(mediaID), album, mediaName, "pending");
+            publicMediaStatus = new PublicMediaApproval(media, album, mediaName, "pending");
             this.saveMediaApproval(publicMediaStatus);
         } else {
             throw new MediaApprovalException("This media has previously requested public access. Approval status: " + publicMediaStatus
@@ -262,5 +264,33 @@ public class MediaService {
 
     public String getUserMediaDirectory(String username) {
         return String.format("%s%s/",GALLERY_IMAGES_DIRECTORY, username);
+    }
+
+    public long deleteMedia(int mediaID) throws IOException {
+        Media media = getMedia(mediaID);
+
+        File mediaFile = new File(getUserMediaDirectory(media.getName()) + media.getFileName());
+        long size = mediaFile.length();
+
+        if (mediaFile.exists()) {
+            Files.delete(mediaFile.toPath());
+        }
+        if (media.getPublicMediaApproval() != null) {
+            deleteMediaApproval(media.getPublicMediaApproval().getId());
+        }
+        mediaRepository.delete(media);
+
+        if (media.getAlbum() != null) {
+            deleteAlbumIfEmpty(media.getAlbum().getId());
+        }
+        return size;
+    }
+
+    public void deleteAlbumIfEmpty(String id) {
+        Album album = albumRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Album doesn't exist"));
+
+        if (album.getMedias().isEmpty()) {
+           albumRepository.delete(album);
+        }
     }
 }

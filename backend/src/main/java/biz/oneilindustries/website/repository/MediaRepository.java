@@ -10,9 +10,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MediaRepository extends CrudRepository<Media, Integer> {
-    List<Media> getAllByOrderByDateAddedDesc(Pageable page);
-    List<Media> getAllByUploaderOrderByIdDesc(String uploader, Pageable page);
-    List<Media> getAllByLinkStatus(String linkStatus, Pageable page);
+    List<Media> getAllByMediaTypeOrderByDateAddedDesc(String mediaType, Pageable page);
+    List<Media> getAllByLinkStatusAndMediaType(String linkStatus, String mediaType, Pageable page);
     Optional<Media> getFirstByFileName(String filename);
     List<Media> getAllByUploaderAndMediaTypeOrderByIdDesc(String uploader, String mediaType, Pageable page);
 
@@ -22,6 +21,9 @@ public interface MediaRepository extends CrudRepository<Media, Integer> {
     @Query("select count(m) from Media m where m.uploader = ?1 and m.mediaType = ?2")
     long getTotalMediasByUserAndType(String username, String mediaType);
 
-    @Query("select count(m) from Media m where m.linkStatus = ?1")
-    long getTotalMediaByStatus(String status);
+    @Query("select count(m) from Media m where m.linkStatus = ?1 and m.mediaType = ?2")
+    long getTotalMediaByStatusAndMediaType(String status, String mediaType);
+
+    @Query("select count(m) from Media m where m.mediaType = ?1")
+    long getTotalMediaByType(String mediaType);
 }

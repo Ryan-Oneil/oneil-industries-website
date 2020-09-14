@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import org.apache.commons.fileupload.FileUploadException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
@@ -59,7 +58,6 @@ public class ImageGalleryController {
     private static final String PUBLIC = "public";
     private static final String UNLISTED = "unlisted";
 
-    @Autowired
     public ImageGalleryController(MediaService mediaService, AlbumService albumService, UserService userService,
         ResourceHandler handler, SystemFileService fileService) {
         this.mediaService = mediaService;
@@ -69,9 +67,9 @@ public class ImageGalleryController {
         this.fileService = fileService;
     }
 
-    @GetMapping("/medias")
-    public HashMap<String, Object> showAllMedia(Pageable pageable) {
-        return mediaService.getPublicMedias(pageable);
+    @GetMapping("/medias/{mediaType}")
+    public HashMap<String, Object> showAllMedia(@PathVariable String mediaType, Pageable pageable) {
+        return mediaService.getPublicMedias(pageable, mediaType);
     }
 
     @GetMapping("/image/{imageName}")
@@ -133,29 +131,13 @@ public class ImageGalleryController {
         return mediaService.registerMedias(uploadedFiles, galleryUpload, userAuth);
     }
 
-    @DeleteMapping("/media/delete/{mediaInt}")
-    public ResponseEntity deleteMedia(@PathVariable int mediaInt, Authentication user, HttpServletRequest request) throws IOException {
-
-        Media media = mediaService.getMedia(mediaInt);
+    @DeleteMapping("/media/delete/{mediaId}")
+    public ResponseEntity deleteMedia(@PathVariable int mediaId, Authentication user, HttpServletRequest request) throws IOException {
         Quota quota = userService.getQuotaByUsername(user.getName());
 
-        File mediaFile = new File(GALLERY_IMAGES_DIRECTORY + media.getUploader() + "/" + media.getFileName());
-        long mediaSize = 0;
-
-        if (mediaFile.exists()) {
-            mediaSize = mediaFile.length();
-            Files.delete(mediaFile.toPath());
-        }
-
-        if (media.getPublicMediaApproval() != null) {
-            mediaService.deleteMediaApproval(media.getPublicMediaApproval().getId());
-        }
-        mediaService.deleteMedia(media.getId());
+        long mediaSize = mediaService.deleteMedia(mediaId);
         userService.decreaseUsedAmount(quota, mediaSize);
 
-        if (media.getAlbum() != null) {
-            albumService.deleteAlbumIfEmpty(media.getAlbum().getId());
-        }
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
@@ -176,7 +158,7 @@ public class ImageGalleryController {
 
         if (galleryUpload.getPrivacy().equalsIgnoreCase(PUBLIC) && !CollectionUtils.containsAny(user.getAuthorities(), TRUSTED_ROLES)) {
             galleryUpload.setPrivacy(UNLISTED);
-            mediaService.requestPublicApproval(mediaID, galleryUpload.getName(), album);
+//            mediaService.requestPublicApproval(mediaID, galleryUpload.getName(), album);
             return ResponseEntity.ok("Adding or updating a public media will require admin approval. Once approved your media changes will be live");
         }
         mediaService.updateMedia(galleryUpload, album, mediaID);
@@ -229,6 +211,32 @@ public class ImageGalleryController {
 
         mediaService.resetMediaAlbumIDs(album);
         albumService.deleteAlbum(albumID);
+
+        return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    // Admin related APIs
+
+    @GetMapping("/admin/medias/{mediaType}")
+    public ResponseEntity<HashMap<String, Object>> getAllMedias(@PathVariable String mediaType, Pageable pageable) {
+        return  ResponseEntity.ok(mediaService.getMedias(mediaType, pageable));
+    }
+
+    @GetMapping("/admin/media/pendingApproval")
+    public ResponseEntity getMediasRequiringApproval() {
+        return ResponseEntity.ok(mediaService.getMediaApprovalsByStatus("pending"));
+    }
+
+    @PutMapping("/admin/media/{approvalMediaID}/approve")
+    public ResponseEntity approveMediaApproval(@PathVariable int approvalMediaID) {
+        mediaService.approvePublicMedia(approvalMediaID);
+
+        return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    @PutMapping("/admin/media/{approvalMediaID}/deny")
+    public ResponseEntity denyMediaApproval(@PathVariable int approvalMediaID) {
+        mediaService.setMediaApprovalStatus(approvalMediaID, "denied");
 
         return ResponseEntity.ok(HttpStatus.OK);
     }

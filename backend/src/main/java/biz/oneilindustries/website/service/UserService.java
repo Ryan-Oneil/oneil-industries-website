@@ -9,6 +9,7 @@ import biz.oneilindustries.website.dto.UserDTO;
 import biz.oneilindustries.website.entity.ApiToken;
 import biz.oneilindustries.website.entity.PasswordResetToken;
 import biz.oneilindustries.website.entity.Quota;
+import biz.oneilindustries.website.entity.Role;
 import biz.oneilindustries.website.entity.User;
 import biz.oneilindustries.website.entity.VerificationToken;
 import biz.oneilindustries.website.exception.TokenException;
@@ -16,6 +17,7 @@ import biz.oneilindustries.website.exception.UserException;
 import biz.oneilindustries.website.repository.APITokenRepository;
 import biz.oneilindustries.website.repository.QuotaRepository;
 import biz.oneilindustries.website.repository.ResetPasswordTokenRepository;
+import biz.oneilindustries.website.repository.RoleRepository;
 import biz.oneilindustries.website.repository.UserRepository;
 import biz.oneilindustries.website.repository.VerificationTokenRepository;
 import biz.oneilindustries.website.validation.LoginForm;
@@ -49,25 +51,27 @@ public class UserService {
     private final ResetPasswordTokenRepository passwordTokenRepository;
     private final QuotaRepository quotaRepository;
     private final APITokenRepository apiTokenRepository;
+    private final RoleRepository roleRepository;
 
     public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository,
         VerificationTokenRepository verificationTokenRepository,
         ResetPasswordTokenRepository passwordTokenRepository, QuotaRepository quotaRepository,
-        APITokenRepository apiTokenRepository) {
+        APITokenRepository apiTokenRepository, RoleRepository roleRepository) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.verificationTokenRepository = verificationTokenRepository;
         this.passwordTokenRepository = passwordTokenRepository;
         this.quotaRepository = quotaRepository;
         this.apiTokenRepository = apiTokenRepository;
+        this.roleRepository = roleRepository;
     }
 
-    public List<User> getUsers() {
-        return userRepository.getAllUsers();
+    public List<UserDTO> getUsers() {
+        return usersToDTOs(userRepository.getAllUsers());
     }
 
-    public List<User> getRecentUsers() {
-        return this.userRepository.getTop5ByOrderByIdDesc();
+    public List<UserDTO> getRecentUsers() {
+        return usersToDTOs(this.userRepository.getTop5ByOrderByIdDesc());
     }
 
     public User getUser(String name) {
@@ -323,6 +327,14 @@ public class UserService {
         userDTO.setQuota(quotaDTO);
 
         return userDTO;
+    }
+
+    public long getTotalUsedQuota() {
+        return quotaRepository.getTotalUsed();
+    }
+
+    public List<Role> getRoles() {
+        return  roleRepository.getAllRoles();
     }
 
     public QuotaDTO quotaToDTO(Quota quota) {

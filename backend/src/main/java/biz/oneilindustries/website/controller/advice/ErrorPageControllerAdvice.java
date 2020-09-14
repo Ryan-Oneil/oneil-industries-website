@@ -89,7 +89,6 @@ public class ErrorPageControllerAdvice {
             .body(error.getMessage());
     }
 
-
     @ExceptionHandler(Exception.class)
     public ResponseEntity handleAll(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());

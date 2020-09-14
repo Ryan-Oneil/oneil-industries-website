@@ -29,11 +29,6 @@ public class AlbumService {
     }
 
     @Transactional
-    public List<Album> getAlbumsByCreator(String name) {
-        return this.albumDAO.getAlbumsByCreator(name);
-    }
-
-    @Transactional
     public List<Album> getAlbumsWithMediaByCreator(String name) {
         List<Album> albums = this.albumDAO.getAlbumsByCreator(name);
 
@@ -62,15 +57,6 @@ public class AlbumService {
     }
 
     @Transactional
-    public void deleteAlbumIfEmpty(String id) {
-        Album album = this.getAlbumWithMediaByID(id);
-
-        if (album.getMedias().isEmpty()) {
-            this.deleteAlbum(album.getId());
-        }
-    }
-
-    @Transactional
     public void saveAlbum(Album album) {
         this.albumDAO.saveAlbum(album);
     }
@@ -89,26 +75,12 @@ public class AlbumService {
         return album;
     }
 
-    @Transactional
-    public Album registerRandomAlbum(String user) {
-        String id = generateUniqueID();
-
-        Album album = new Album(id, id, user, true);
-        saveAlbum(album);
-        return album;
-    }
-
     private String generateUniqueID() {
         String id = RandomIDGen.getBase62(16);
         while(getAlbumByName(id) != null) {
             id = RandomIDGen.getBase62(16);
         }
         return id;
-    }
-
-    @Transactional
-    public long getAlbumCountByUser(String name) {
-        return albumDAO.getAlbumCountByUser(name);
     }
 
     @Transactional
