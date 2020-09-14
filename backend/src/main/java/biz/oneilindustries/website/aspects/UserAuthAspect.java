@@ -18,9 +18,13 @@ public class UserAuthAspect {
     @Pointcut("execution(* biz.oneilindustries.website.controller.UserController.get*(..))")
     private void getUserMethods() {}
 
+    @Pointcut("execution(* biz.oneilindustries.website.controller.UserController.update*(..))")
     private void updateUserMethods() {}
 
-    @Before("getUserMethods()")
+    @Pointcut("execution(* biz.oneilindustries.website.controller.UserController.generateAPIJWT(..))")
+    private void generateJWT() {}
+
+    @Before("getUserMethods() || updateUserMethods() || generateJWT()")
     public void checkPermission(JoinPoint joinPoint) {
 
         Object[] args = joinPoint.getArgs();

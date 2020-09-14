@@ -42,26 +42,26 @@ public class UserController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @GetMapping("/getAPIToken")
-    public ResponseEntity getAPIJWT(Authentication authentication) {
-        return ResponseEntity.ok(userService.getApiTokenByUser(authentication.getName()).getToken());
+    @GetMapping("/{username}/getAPIToken")
+    public ResponseEntity getAPIJWT(@PathVariable String username, Authentication authentication) {
+        return ResponseEntity.ok(userService.getApiTokenByUser(username).getToken());
     }
 
-    @GetMapping("/generateAPIToken")
-    public ResponseEntity generateAPIJWT(Authentication authentication) {
-        ApiToken apiToken = userService.getApiTokenByUser(authentication.getName());
+    @GetMapping("/{username}/generateAPIToken")
+    public ResponseEntity generateAPIJWT(@PathVariable String username, Authentication authentication) {
+        ApiToken apiToken = userService.getApiTokenByUser(username);
 
         //Deletes existing token
         if (apiToken != null) {
             userService.deleteApiToken(apiToken);
         }
-        ApiToken token = userService.generateApiToken(authentication.getName());
+        ApiToken token = userService.generateApiToken(username);
 
         return ResponseEntity.ok(token.getToken());
     }
 
-    @GetMapping("/getShareX")
-    public ResponseEntity generateShareXFile(Authentication authentication) {
-        return ResponseEntity.ok(userService.generateShareXAPIFile(authentication.getName()));
+    @GetMapping("/{username}/getShareX")
+    public ResponseEntity getShareXConfig(@PathVariable String username, Authentication authentication) {
+        return ResponseEntity.ok(userService.generateShareXAPIFile(username));
     }
 }

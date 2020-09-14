@@ -17,7 +17,7 @@ import Register from "../pages/auth/Register";
 import ResetPassword from "../pages/auth/ResetPassword";
 import ChangePassword from "../pages/auth/ChangePassword";
 import EmailConfirmation from "../pages/auth/EmailConfirmation";
-const { Content, Footer } = Layout;
+const { Footer } = Layout;
 
 class ClientApp extends React.Component {
   render() {

@@ -1,26 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import { Button, Card, Col, Input, Row } from "antd";
+import CopyOutlined from "@ant-design/icons/lib/icons/CopyOutlined";
 import {
   generateAPIToken,
   generateShareXConfig,
   getAPIToken
-} from "../../actions/profile";
-import { CopyToClipboard } from "react-copy-to-clipboard";
-import { Button, Card, Col, Input, Row } from "antd";
-import CopyOutlined from "@ant-design/icons/lib/icons/CopyOutlined";
+} from "../../reducers/userReducer";
 const { TextArea } = Input;
 
 export default () => {
   const dispatch = useDispatch();
   const [sharexText, setSharexText] = useState("Copy");
-  const { apiToken, shareXConfig } = useSelector(state => state.profile);
+  const { apiToken, shareXConfig } = useSelector(state => state.user);
+  const { name } = useSelector(state => state.auth.user);
 
   useEffect(() => {
     if (!apiToken) {
-      dispatch(getAPIToken("/user/profile/getAPIToken"));
+      dispatch(getAPIToken(`/user/${name}/getAPIToken`));
     }
     if (!shareXConfig) {
-      dispatch(generateShareXConfig("/user/profile/getShareX"));
+      dispatch(generateShareXConfig(`/user/${name}/getShareX`));
     }
   }, []);
 
