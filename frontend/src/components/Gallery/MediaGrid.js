@@ -21,12 +21,12 @@ export default ({ imageEndpoint, videoEndpoint, handleShowDialog }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    setImageList(imageIds.map(id => medias[id]));
-  }, [imageIds]);
+    setImageList(imageIds.flatMap(id => (medias[id] ? medias[id] : [])));
+  }, [imageIds, medias]);
 
   useEffect(() => {
-    setVideoList(videoIds.map(id => medias[id]));
-  }, [videoIds]);
+    setVideoList(videoIds.flatMap(id => (medias[id] ? medias[id] : [])));
+  }, [videoIds, medias]);
 
   useEffect(() => {
     handleImageInfiniteOnLoad(0);
@@ -55,6 +55,51 @@ export default ({ imageEndpoint, videoEndpoint, handleShowDialog }) => {
     });
   };
 
+  const renderMediaList = (loadMore, hasMore, mediaList) => {
+    return (
+      <div style={{ height: "780px", overflow: "auto" }}>
+        <InfiniteScroll
+          initialLoad={false}
+          pageStart={0}
+          loadMore={loadMore}
+          hasMore={!loading && hasMore}
+          useWindow={false}
+        >
+          <List
+            grid={{
+              gutter: 16,
+              xs: 1,
+              sm: 2,
+              md: 4,
+              lg: 4,
+              xl: 5,
+              xxl: 5
+            }}
+            dataSource={mediaList}
+            renderItem={item => (
+              <List.Item key={item.id}>
+                <Card>
+                  <div className="pointerCursor">
+                    <Media
+                      media={item}
+                      onClick={handleShowDialog.bind(this, item.id)}
+                    />
+                  </div>
+                  <Divider />
+                  <Meta
+                    title={item.name}
+                    description={item.dateAdded}
+                    style={{ textAlign: "center" }}
+                  />
+                </Card>
+              </List.Item>
+            )}
+          />
+        </InfiniteScroll>
+      </div>
+    );
+  };
+
   return (
     <div
       style={{
@@ -72,46 +117,11 @@ export default ({ imageEndpoint, videoEndpoint, handleShowDialog }) => {
           }
           key="1"
         >
-          <div style={{ height: "690px", overflow: "auto" }}>
-            <InfiniteScroll
-              initialLoad={false}
-              pageStart={0}
-              loadMore={handleImageInfiniteOnLoad}
-              hasMore={!loading && imageIds.length < imageTotal}
-              useWindow={false}
-            >
-              <List
-                grid={{
-                  gutter: 16,
-                  xs: 1,
-                  sm: 2,
-                  md: 4,
-                  lg: 4,
-                  xl: 5,
-                  xxl: 5
-                }}
-                dataSource={imageList}
-                renderItem={item => (
-                  <List.Item key={item.id}>
-                    <Card>
-                      <div className="pointerCursor">
-                        <Media
-                          media={item}
-                          onClick={handleShowDialog.bind(this, item.id)}
-                        />
-                      </div>
-                      <Divider />
-                      <Meta
-                        title={item.name}
-                        description={item.dateAdded}
-                        style={{ textAlign: "center" }}
-                      />
-                    </Card>
-                  </List.Item>
-                )}
-              />
-            </InfiniteScroll>
-          </div>
+          {renderMediaList(
+            handleImageInfiniteOnLoad,
+            imageIds.length < imageTotal,
+            imageList
+          )}
         </TabPane>
         <TabPane
           tab={
@@ -122,46 +132,11 @@ export default ({ imageEndpoint, videoEndpoint, handleShowDialog }) => {
           }
           key="2"
         >
-          <div style={{ height: "690px", overflow: "auto" }}>
-            <InfiniteScroll
-              initialLoad={false}
-              pageStart={0}
-              loadMore={handleVideoInfiniteOnLoad}
-              hasMore={!loading && videoIds.length < videoTotal}
-              useWindow={false}
-            >
-              <List
-                grid={{
-                  gutter: 16,
-                  xs: 1,
-                  sm: 2,
-                  md: 4,
-                  lg: 4,
-                  xl: 5,
-                  xxl: 5
-                }}
-                dataSource={videoList}
-                renderItem={item => (
-                  <List.Item key={item.id}>
-                    <Card>
-                      <div className="pointerCursor">
-                        <Media
-                          media={item}
-                          onClick={handleShowDialog.bind(this, item.id)}
-                        />
-                      </div>
-                      <Divider />
-                      <Meta
-                        title={item.name}
-                        description={item.dateAdded}
-                        style={{ textAlign: "center" }}
-                      />
-                    </Card>
-                  </List.Item>
-                )}
-              />
-            </InfiniteScroll>
-          </div>
+          {renderMediaList(
+            handleVideoInfiniteOnLoad,
+            videoIds.length < videoTotal,
+            videoList
+          )}
         </TabPane>
       </Tabs>
     </div>

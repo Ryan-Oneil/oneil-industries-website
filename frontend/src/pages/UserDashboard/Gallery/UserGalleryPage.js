@@ -9,12 +9,12 @@ import { BASE_URL } from "../../../apis/api";
 import { deleteMedia } from "../../../reducers/mediaReducer";
 import EditMediaForm from "../../../components/formElements/EditMediaForm";
 
-export default props => {
+export default () => {
   const { medias } = useSelector(state => state.medias.entities);
   const [mediaId, setMediaId] = useState("");
   const [activeMedia, setActiveMedia] = useState("");
   const dispatch = useDispatch();
-  const { name } = props.user;
+  const { name } = useSelector(state => state.auth.user);
 
   const handleShowDialog = mediaID => {
     setMediaId(mediaID);
@@ -25,7 +25,7 @@ export default props => {
   }, [mediaId]);
 
   return (
-    <div style={{ height: "100%", overflow: "auto" }}>
+    <div>
       <MediaGrid
         imageEndpoint={`${USER_MEDIAS_ENDPOINT}${name}/image`}
         videoEndpoint={`${USER_MEDIAS_ENDPOINT}${name}/video`}
@@ -64,13 +64,7 @@ export default props => {
           >
             Delete
           </Button>
-          <EditMediaForm
-            media={activeMedia}
-            initialValues={{
-              name: activeMedia.name,
-              privacy: activeMedia.linkStatus
-            }}
-          />
+          <EditMediaForm media={activeMedia} />
         </Modal>
       )}
     </div>

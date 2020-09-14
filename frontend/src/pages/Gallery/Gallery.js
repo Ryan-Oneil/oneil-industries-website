@@ -13,9 +13,10 @@ export default () => {
   };
 
   return (
-    <>
+    <div style={{ marginTop: "24px" }}>
       <MediaGrid
-        imageEndpoint={PUBLIC_MEDIAS_ENDPOINT}
+        imageEndpoint={`${PUBLIC_MEDIAS_ENDPOINT}/image`}
+        videoEndpoint={`${PUBLIC_MEDIAS_ENDPOINT}/video`}
         handleShowDialog={handleShowDialog}
       />
       {activeMedia && (
@@ -40,6 +41,6 @@ export default () => {
           </div>
         </Modal>
       )}
-    </>
+    </div>
   );
 };

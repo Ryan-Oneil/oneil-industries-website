@@ -127,10 +127,6 @@ import {
   ALBUM_DELETE,
   ALBUM_EDIT_PUT,
   ALBUM_MEDIA_GET,
-  ALBUM_REQUEST,
-  MEDIA_DELETE_DONE,
-  MEDIA_POST_SENT,
-  MEDIA_REQUEST,
   MEDIA_UPDATE_SENT
 } from "../actions/types";
 import {
@@ -192,12 +188,8 @@ export const uploadMedia = (endpoint, data, files) => {
 
 export const deleteMedia = (endpoint, mediaID) => dispatch => {
   apiDeleteCall(endpoint)
-    .then(response => {
-      dispatch({
-        type: MEDIA_DELETE_DONE,
-        message: response.data,
-        mediaDeleteID: mediaID
-      });
+    .then(() => {
+      dispatch(deletedMedia(mediaID));
     })
     .catch(error => dispatch(setError(getApiError(error))));
 };
@@ -267,8 +259,11 @@ export const slice = createSlice({
       const data = normalize(action.payload, albumList);
 
       state.entities.albums = data.entities.albums;
+    },
+    deletedMedia(state, action) {
+      delete state.entities.medias[action.payload];
     }
   }
 });
 export default slice.reducer;
-export const { fetchedMedia, fetchedAlbums } = slice.actions;
+export const { fetchedMedia, fetchedAlbums, deletedMedia } = slice.actions;

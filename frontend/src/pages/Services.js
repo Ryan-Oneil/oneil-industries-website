@@ -17,7 +17,7 @@ export default () => {
   }, []);
 
   return (
-    <Row justify="center" gutter={[32, 32]}>
+    <Row justify="center" gutter={[32, 32]} style={{ marginTop: "20px" }}>
       <Col xs={18} sm={18} md={16} lg={10} xl={8}>
         <Card
           title={

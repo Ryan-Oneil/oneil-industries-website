@@ -23,7 +23,9 @@ export const SelectInputWithErrors = props => {
         size="large"
         className={hasError}
         style={{ width: "100%" }}
-      />
+      >
+        {props.children}
+      </Select>
       <ErrorDisplay name={props.name} />
     </div>
   );

@@ -22,14 +22,14 @@ const { Footer } = Layout;
 class ClientApp extends React.Component {
   render() {
     return (
-      <Layout className={"blueBackgroundColor"}>
+      <Layout className={"blueBackgroundColor"} style={{ height: "100vh" }}>
         <BrowserRouter>
           <NavMenu />
           <Layout
             style={{
-              background: "rgb(61, 76, 104)",
-              paddingTop: 50,
-              marginBottom: 50
+              background: "rgb(61, 76, 104)"
+              // paddingTop: 50,
+              // marginBottom: 50
             }}
           >
             <Switch>
@@ -72,9 +72,9 @@ class ClientApp extends React.Component {
             </Switch>
           </Layout>
         </BrowserRouter>
-        <Footer className="lightBlack bottomFooter">
-          <BottomFooter />
-        </Footer>
+        {/*<Footer className="lightBlack bottomFooter">*/}
+        {/*  <BottomFooter />*/}
+        {/*</Footer>*/}
       </Layout>
     );
   }

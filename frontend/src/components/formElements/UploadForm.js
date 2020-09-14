@@ -1,16 +1,12 @@
 import React from "react";
-import { useDispatch } from "react-redux";
 import { getApiError } from "../../helpers";
 import { uploadMedia } from "../../reducers/mediaReducer";
 import { Field, Formik } from "formik";
 import { SelectInputWithErrors } from "./index";
-import UserOutlined from "@ant-design/icons/lib/icons/UserOutlined";
 import { Alert, Button, Select } from "antd";
 const { Option } = Select;
 
 export default ({ mediaList, onSubmitSuccess }) => {
-  const dispatch = useDispatch();
-
   const onSubmit = (formValues, { setStatus }) => {
     return uploadMedia("/gallery/upload", formValues, mediaList)
       .then(data => {
@@ -22,11 +18,9 @@ export default ({ mediaList, onSubmitSuccess }) => {
 
   return (
     <Formik
-      initialValues={{
-        linkStatus: "unlisted"
-      }}
       onSubmit={onSubmit}
       validate={validate}
+      initialValues={{ linkStatus: "unlisted" }}
     >
       {props => {
         const {
@@ -35,7 +29,8 @@ export default ({ mediaList, onSubmitSuccess }) => {
           isValid,
           errors,
           status,
-          setStatus
+          setStatus,
+          setFieldValue
         } = props;
 
         return (
@@ -43,10 +38,9 @@ export default ({ mediaList, onSubmitSuccess }) => {
             <Field
               name="linkStatus"
               as={SelectInputWithErrors}
-              type="text"
               placeholder="Privacy Status"
-              prefix={<UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
               error={errors.linkStatus}
+              onChange={data => setFieldValue("linkStatus", data)}
             >
               <Option value="unlisted">Unlisted</Option>
               <Option value="private">Private</Option>
