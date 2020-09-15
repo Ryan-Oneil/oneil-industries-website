@@ -11,18 +11,19 @@ import EditMediaForm from "../../../components/formElements/EditMediaForm";
 
 export default () => {
   const { medias } = useSelector(state => state.medias.entities);
-  const [mediaId, setMediaId] = useState("");
   const [activeMedia, setActiveMedia] = useState("");
   const dispatch = useDispatch();
   const { name } = useSelector(state => state.auth.user);
 
-  const handleShowDialog = mediaID => {
-    setMediaId(mediaID);
+  const handleShowDialog = media => {
+    setActiveMedia(media);
   };
 
   useEffect(() => {
-    setActiveMedia(medias[mediaId]);
-  }, [mediaId, medias]);
+    if (activeMedia) {
+      setActiveMedia(medias[activeMedia.id]);
+    }
+  }, [medias]);
 
   return (
     <div>
@@ -34,8 +35,8 @@ export default () => {
       {activeMedia && (
         <Modal
           title={activeMedia.name}
-          visible={mediaId}
-          onCancel={() => setMediaId("")}
+          visible={activeMedia}
+          onCancel={() => setActiveMedia("")}
           footer={null}
           width={550}
         >

@@ -88,7 +88,7 @@ export default ({ imageEndpoint, videoEndpoint, handleShowDialog }) => {
                   <div className="pointerCursor">
                     <Media
                       media={item}
-                      onClick={handleShowDialog.bind(this, item.id)}
+                      onClick={handleShowDialog.bind(this, item)}
                     />
                   </div>
                   <Divider />

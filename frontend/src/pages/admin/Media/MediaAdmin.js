@@ -11,16 +11,17 @@ import Media from "../../../components/Gallery/Media";
 export default () => {
   const dispatch = useDispatch();
   const { medias } = useSelector(state => state.medias.entities);
-  const [mediaId, setMediaId] = useState("");
   const [activeMedia, setActiveMedia] = useState("");
 
   const handleShowDialog = media => {
-    setMediaId(media);
+    setActiveMedia(media);
   };
 
   useEffect(() => {
-    setActiveMedia(medias[mediaId]);
-  }, [mediaId, medias]);
+    if (activeMedia) {
+      setActiveMedia(medias[activeMedia.id]);
+    }
+  }, [medias]);
 
   return (
     <div style={{ marginTop: "20px" }}>
@@ -32,8 +33,8 @@ export default () => {
       {activeMedia && (
         <Modal
           title={activeMedia.name}
-          visible={mediaId}
-          onCancel={() => setMediaId("")}
+          visible={activeMedia}
+          onCancel={() => setActiveMedia("")}
           footer={null}
           width={550}
         >
