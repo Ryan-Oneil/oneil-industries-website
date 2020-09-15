@@ -1,6 +1,6 @@
 import React from "react";
 import { Card } from "antd";
-import { connect, useDispatch } from "react-redux";
+import { connect } from "react-redux";
 import { changePassword } from "../../reducers/authReducer";
 import ChangePasswordForm from "../../components/formElements/ChangePasswordForm";
 

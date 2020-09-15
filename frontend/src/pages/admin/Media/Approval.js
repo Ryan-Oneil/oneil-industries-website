@@ -37,7 +37,7 @@ export default () => {
             onApproveClick={() => {
               dispatch(
                 approvePublicMedia(
-                  `/admin/media/${mediaApproval.id}/approve`,
+                  `/gallery/admin/media/${mediaApproval.id}/approve`,
                   mediaApproval.id
                 )
               );
@@ -45,7 +45,7 @@ export default () => {
             onDeclineClick={() => {
               dispatch(
                 denyPublicMedia(
-                  `/admin/media/${mediaApproval.id}/deny`,
+                  `/gallery/admin/media/${mediaApproval.id}/deny`,
                   mediaApproval.id
                 )
               );

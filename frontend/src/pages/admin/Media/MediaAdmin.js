@@ -20,7 +20,7 @@ export default () => {
 
   useEffect(() => {
     setActiveMedia(medias[mediaId]);
-  }, [mediaId]);
+  }, [mediaId, medias]);
 
   return (
     <div style={{ marginTop: "20px" }}>

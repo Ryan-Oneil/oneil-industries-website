@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAdminStats } from "../../reducers/adminReducer";
 
 export default () => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
 
   const {
@@ -20,7 +20,7 @@ export default () => {
   } = useSelector(state => state.admin.stats);
 
   useEffect(() => {
-    dispatch(getAdminStats());
+    dispatch(getAdminStats()).then(() => setLoading(false));
   }, []);
 
   return (

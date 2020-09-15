@@ -11,7 +11,7 @@ class App extends React.Component {
     return (
       <>
         <ClientApp />
-        {error && <ErrorModal error={error} />}
+        {error && <ErrorModal message={error} />}
       </>
     );
   }

@@ -1,65 +1,54 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Media from "../../components/Gallery/Media";
 import RenderMedias from "../../components/Gallery/RenderMedias";
-import Modal from "../../components/Gallery/Modal";
 import { BASE_URL } from "../../apis/api";
-import { connect } from "react-redux";
-import { fetchAlbumWithImages, setActiveMediaForModal } from "../../actions";
+import { fetchAlbumWithImages } from "../../reducers/mediaReducer";
+import { Modal, Row } from "antd";
 
-class AlbumPage extends React.Component {
-  state = { isOpen: false, message: null };
+export default props => {
+  const {
+    match: { params }
+  } = props;
+  const [album, setAlbum] = useState({ medias: [] });
+  const [activeMedia, setActiveMedia] = useState("");
 
-  handleShowDialog = mediaID => {
-    this.setState({ isOpen: !this.state.isOpen });
-    this.props.setActiveMediaForModal(mediaID);
+  useEffect(() => {
+    fetchAlbumWithImages(`/gallery/album/${params.albumName}`).then(album =>
+      setAlbum(album)
+    );
+  }, []);
+
+  const handleShowDialog = media => {
+    setActiveMedia(media);
   };
 
-  componentDidMount() {
-    const {
-      match: { params }
-    } = this.props;
-
-    this.props.fetchAlbumWithImages(`/gallery/album/${params.albumName}`);
-  }
-
-  render() {
-    const { activeMedia, mediasList, album } = this.props.medias;
-
-    return (
-      <div className="marginPadding">
-        <h1 className="ui center aligned header whiteText">
-          Album :{" "}
-          {album.name === album.id ? `Created by ${album.creator}` : album.name}
-        </h1>
-        <div className="ui container">
-          <div className="ui four column centered grid">
-            {RenderMedias(mediasList, this.handleShowDialog, true)}
+  return (
+    <div style={{ marginTop: "20px" }}>
+      <Row gutter={[32, 32]} justify="center">
+        {RenderMedias(album.medias, handleShowDialog, true)}
+      </Row>
+      {activeMedia && (
+        <Modal
+          title={activeMedia.name}
+          visible={activeMedia}
+          onCancel={() => setActiveMedia("")}
+          footer={null}
+        >
+          <a
+            href={`${BASE_URL}/gallery/${activeMedia.mediaType}/${activeMedia.fileName}`}
+          >
+            <Media
+              media={activeMedia}
+              renderVideoControls={true}
+              fullSize={true}
+            />
+          </a>
+          <div className="centerText">
+            <p>Uploader: {activeMedia.uploader}</p>
+            <p>Uploaded: {activeMedia.dateAdded}</p>
           </div>
-        </div>
-        {this.state.isOpen && (
-          <Modal title={activeMedia.name} closeModal={this.handleShowDialog}>
-            <div className="image">
-              <a
-                href={`${BASE_URL}/gallery/${activeMedia.mediaType}/${activeMedia.fileName}`}
-              >
-                <Media media={activeMedia} renderVideoControls={true} />
-              </a>
-            </div>
-            <div className="centerText">
-              <p>Uploader: {activeMedia.uploader}</p>
-              <p>Uploaded: {activeMedia.dateAdded}</p>
-            </div>
-          </Modal>
-        )}
-      </div>
-    );
-  }
-}
-const mapStateToProps = state => {
-  return { medias: state.medias };
+        </Modal>
+      )}
+    </div>
+  );
 };
-
-export default connect(mapStateToProps, {
-  setActiveMediaForModal,
-  fetchAlbumWithImages
-})(AlbumPage);

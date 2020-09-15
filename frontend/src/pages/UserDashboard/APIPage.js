@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Button, Card, Col, Input, Row } from "antd";
-import CopyOutlined from "@ant-design/icons/lib/icons/CopyOutlined";
 import {
   generateAPIToken,
   generateShareXConfig,
@@ -45,9 +44,9 @@ export default () => {
             className="centerButton"
             onClick={() => {
               dispatch(
-                generateAPIToken("/user/profile/generateAPIToken")
+                generateAPIToken(`/user/${name}/generateAPIToken`)
               ).then(() =>
-                dispatch(generateShareXConfig("/user/profile/getShareX"))
+                dispatch(generateShareXConfig(`/user/${name}/getShareX`))
               );
             }}
           >

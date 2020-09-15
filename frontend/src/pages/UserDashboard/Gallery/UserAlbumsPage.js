@@ -2,13 +2,16 @@ import React, { useEffect, useState } from "react";
 import Media from "../../../components/Gallery/Media";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteAlbum, fetchAlbums } from "../../../reducers/mediaReducer";
-import { Button, Card, Col, Divider, Modal, Row } from "antd";
+import { Button, Card, Col, Divider, Empty, Modal, Row } from "antd";
 import { DELETE_ALBUM } from "../../../apis/endpoints";
+import { setError } from "../../../reducers/globalErrorReducer";
+import { getApiError } from "../../../helpers";
 const { Meta } = Card;
 
 export default () => {
   const [album, setAlbum] = useState("");
   const [albums, setAlbums] = useState([]);
+  const [loading, setLoading] = useState(true);
   const { name } = useSelector(state => state.auth.user);
   const dispatch = useDispatch();
 
@@ -17,7 +20,10 @@ export default () => {
   };
 
   useEffect(() => {
-    fetchAlbums(`/gallery/myalbums/${name}`).then(data => setAlbums(data));
+    fetchAlbums(`/gallery/myalbums/${name}`)
+      .then(data => setAlbums(data))
+      .catch(error => dispatch(setError(getApiError(error))))
+      .finally(() => setLoading(false));
   }, []);
 
   const renderList = () => {
@@ -70,6 +76,13 @@ export default () => {
             Delete
           </Button>
         </Modal>
+      )}
+      {albums.length === 0 && (
+        <Card>
+          <Empty
+            description={loading ? "Fetching Albums" : "No Albums found"}
+          />
+        </Card>
       )}
     </div>
   );

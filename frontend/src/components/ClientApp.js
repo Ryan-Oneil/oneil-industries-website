@@ -25,13 +25,7 @@ class ClientApp extends React.Component {
       <Layout className={"blueBackgroundColor"} style={{ height: "100vh" }}>
         <BrowserRouter>
           <NavMenu />
-          <Layout
-            style={{
-              background: "rgb(61, 76, 104)"
-              // paddingTop: 50,
-              // marginBottom: 50
-            }}
-          >
+          <Layout style={{ background: "rgb(61, 76, 104)" }}>
             <Switch>
               <Route path="/" exact component={Home} />
               <Route path="/images" component={Images} exact />

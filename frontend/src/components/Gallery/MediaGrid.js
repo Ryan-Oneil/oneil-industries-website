@@ -36,6 +36,9 @@ export default ({ imageEndpoint, videoEndpoint, handleShowDialog }) => {
   const handleImageInfiniteOnLoad = page => {
     setLoading(true);
     dispatch(fetchImages(imageEndpoint, page, 30)).then(({ payload }) => {
+      if (!Array.isArray(payload.medias)) {
+        return;
+      }
       const payloadMediaIds = payload.medias.map(media => media.id);
 
       setImageIds(prevState => [...prevState, ...payloadMediaIds]);
@@ -47,6 +50,9 @@ export default ({ imageEndpoint, videoEndpoint, handleShowDialog }) => {
   const handleVideoInfiniteOnLoad = page => {
     setLoading(true);
     dispatch(fetchImages(videoEndpoint, page, 30)).then(({ payload }) => {
+      if (!Array.isArray(payload.medias)) {
+        return;
+      }
       const payloadMediaIds = payload.medias.map(media => media.id);
 
       setVideoIds(prevState => [...prevState, ...payloadMediaIds]);

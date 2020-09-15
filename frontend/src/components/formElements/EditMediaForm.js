@@ -3,8 +3,9 @@ import { useDispatch } from "react-redux";
 import { InputWithErrors, SelectInputWithErrors } from "./index";
 import { getApiError } from "../../helpers";
 import { Field, Formik } from "formik";
-import { Alert, Button } from "antd";
+import { Alert, Button, Select } from "antd";
 import { updateMedia } from "../../reducers/mediaReducer";
+const { Option } = Select;
 
 export default props => {
   const dispatch = useDispatch();
@@ -31,7 +32,8 @@ export default props => {
           isValid,
           errors,
           status,
-          setStatus
+          setStatus,
+          setFieldValue
         } = props;
 
         return (
@@ -48,10 +50,11 @@ export default props => {
               as={SelectInputWithErrors}
               type="privacy"
               placeholder={"Privacy Status"}
+              onChange={data => setFieldValue("privacy", data)}
             >
-              <option value="unlisted">Unlisted</option>
-              <option value="public">Public</option>
-              <option value="private">Private</option>
+              <Option value="unlisted">Unlisted</Option>
+              <Option value="public">Public</Option>
+              <Option value="private">Private</Option>
             </Field>
             <Button
               type="primary"

@@ -22,7 +22,7 @@ export default () => {
 
   useEffect(() => {
     setActiveMedia(medias[mediaId]);
-  }, [mediaId]);
+  }, [mediaId, medias]);
 
   return (
     <div>

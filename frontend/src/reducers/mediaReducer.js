@@ -1,134 +1,6 @@
-// import {
-//   ALBUM_DELETE,
-//   ALBUM_EDIT_PUT,
-//   ALBUM_MEDIA_GET,
-//   ALBUM_REQUEST,
-//   MEDIA_DELETE_DONE,
-//   MEDIA_DELETE_FAIL,
-//   MEDIA_POST_SENT,
-//   MEDIA_REQUEST,
-//   MEDIA_RESET_MESSAGES,
-//   MEDIA_UPDATE_SENT,
-//   SET_ACTIVE_MEDIA_MODAL
-// } from "../actions/types";
-//
-// export default (
-//   state = {
-//     mediasList: [],
-//     albums: [],
-//     mediaUpdateMessage: "",
-//     activeMedia: {},
-//     album: {}
-//   },
-//   action
-// ) => {
-//   switch (action.type) {
-//     case MEDIA_REQUEST: {
-//       return { ...state, mediasList: action.payload };
-//     }
-//     case MEDIA_POST_SENT: {
-//       return {
-//         ...state,
-//         mediaPostMessage: action.message,
-//         mediaErrorMessage: ""
-//       };
-//     }
-//     case MEDIA_DELETE_DONE: {
-//       return {
-//         ...state,
-//         mediasList: state.mediasList.filter(
-//           media => media.id !== action.mediaDeleteID
-//         )
-//       };
-//     }
-//     case MEDIA_DELETE_FAIL: {
-//       return { ...state, deleteError: action.message };
-//     }
-//     case MEDIA_UPDATE_SENT: {
-//       return {
-//         ...state,
-//         mediaUpdateMessage: action.message,
-//         mediasList: state.mediasList.map(media =>
-//           changeMedia(media, action.media)
-//         ),
-//         activeMedia: changeMedia(state.activeMedia, action.media)
-//       };
-//     }
-//     case ALBUM_REQUEST: {
-//       return { ...state, albums: action.payload };
-//     }
-//     case ALBUM_EDIT_PUT: {
-//       return {
-//         ...state,
-//         albums: state.albums.map(mediaAlbum => {
-//           if (mediaAlbum.id === action.album.id) {
-//             mediaAlbum.name = action.album.name;
-//             mediaAlbum.showUnlistedImages = action.album.showUnlistedImages;
-//             return mediaAlbum;
-//           }
-//           return mediaAlbum;
-//         })
-//       };
-//     }
-//     case ALBUM_DELETE: {
-//       return {
-//         ...state,
-//         albums: state.albums.filter(
-//           mediaAlbum => mediaAlbum.id !== action.albumDeleteID
-//         )
-//       };
-//     }
-//     case MEDIA_RESET_MESSAGES: {
-//       return {
-//         ...state,
-//         mediaUpdateMessage: "",
-//         mediaPostMessage: "",
-//         mediaErrorMessage: ""
-//       };
-//     }
-//     case SET_ACTIVE_MEDIA_MODAL: {
-//       return {
-//         ...state,
-//         activeMedia: _.find(state.mediasList, media => {
-//           return media.id === action.mediaID;
-//         })
-//       };
-//     }
-//     case ALBUM_MEDIA_GET: {
-//       return {
-//         ...state,
-//         mediasList: action.medias,
-//         album: {
-//           id: action.payload.id,
-//           name: action.payload.name,
-//           creator: action.payload.creator
-//         }
-//       };
-//     }
-//     default: {
-//       return state;
-//     }
-//   }
-// };
-//
-// const changeMedia = (media, actionMedia) => {
-//   if (media.id === actionMedia.id) {
-//     return {
-//       ...media,
-//       name: actionMedia.name,
-//       linkStatus: actionMedia.linkStatus
-//     };
-//   }
-//   return media;
-// };
 import { createSlice } from "@reduxjs/toolkit";
 import { normalize, schema } from "normalizr";
-import {
-  ALBUM_DELETE,
-  ALBUM_EDIT_PUT,
-  ALBUM_MEDIA_GET,
-  MEDIA_UPDATE_SENT
-} from "../actions/types";
+import { ALBUM_DELETE, ALBUM_EDIT_PUT } from "../actions/types";
 import {
   apiDeleteCall,
   apiGetCall,
@@ -195,18 +67,14 @@ export const deleteMedia = (endpoint, mediaID) => dispatch => {
 };
 
 export const updateMedia = (data, mediaID) => dispatch => {
-  const updatedMedia = {
+  const media = {
     id: mediaID,
     name: data.name,
     linkStatus: data.privacy
   };
 
-  return apiPutCall(`/gallery/media/update/${mediaID}`, data).then(response => {
-    dispatch({
-      type: MEDIA_UPDATE_SENT,
-      media: updatedMedia,
-      message: response.data
-    });
+  return apiPutCall(`/gallery/media/update/${mediaID}`, data).then(() => {
+    dispatch(updatedMedia(media));
   });
 };
 
@@ -220,16 +88,8 @@ export const deleteAlbum = (endpoint, albumID) => dispatch => {
     })
     .catch(error => dispatch(setError(getApiError(error))));
 };
-export const fetchAlbumWithImages = endpoint => dispatch => {
-  apiGetCall(endpoint)
-    .then(response => {
-      dispatch({
-        type: ALBUM_MEDIA_GET,
-        payload: response.data,
-        medias: response.data.medias
-      });
-    })
-    .catch(error => dispatch(setError(getApiError(error))));
+export const fetchAlbumWithImages = endpoint => {
+  return apiGetCall(endpoint).then(({ data }) => data);
 };
 
 const media = new schema.Entity("medias");
@@ -262,8 +122,21 @@ export const slice = createSlice({
     },
     deletedMedia(state, action) {
       delete state.entities.medias[action.payload];
+    },
+    updatedMedia(state, action) {
+      const id = action.payload.id;
+
+      state.entities.medias[id] = {
+        ...state.entities.medias[id],
+        ...action.payload
+      };
     }
   }
 });
 export default slice.reducer;
-export const { fetchedMedia, fetchedAlbums, deletedMedia } = slice.actions;
+export const {
+  fetchedMedia,
+  fetchedAlbums,
+  deletedMedia,
+  updatedMedia
+} = slice.actions;

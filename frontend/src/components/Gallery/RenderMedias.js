@@ -9,7 +9,7 @@ export default (mediasList, mediaOnClick, displayUploader) => {
       <Col xs={18} sm={12} md={12} lg={8} xl={6}>
         <Card>
           <div className="pointerCursor">
-            <Media media={media} onClick={mediaOnClick.bind(this, media.id)} />
+            <Media media={media} onClick={mediaOnClick.bind(this, media)} />
           </div>
           <Divider />
           <Meta
