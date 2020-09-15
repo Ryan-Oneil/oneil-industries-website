@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tika.Tika;
@@ -272,7 +273,7 @@ public class MediaService {
     }
 
     public void deleteAlbumIfEmpty(String id) {
-        Album album = albumRepository.getFirstById(id).orElseThrow(() -> new ResourceNotFoundException("Album doesn't exist"));
+        Album album = getAlbumWithMedias(id);
 
         if (album.getMedias().isEmpty()) {
            albumRepository.delete(album);
@@ -281,5 +282,43 @@ public class MediaService {
 
     public Album getAlbum(String albumName) {
         return albumRepository.getFirstByName(albumName).orElseThrow(() -> new ResourceNotFoundException("Album not found"));
+    }
+
+    public Album getAlbumWithMedias(String id) {
+        return albumRepository.getFirstById(id).orElseThrow(() -> new ResourceNotFoundException("Album not found"));
+    }
+
+    public Album getPublicAlbum(String id) {
+        Album album = getAlbumWithMedias(id);
+
+        List<Media> publicMedias = album.getMedias().stream().filter(media -> media.getLinkStatus().equalsIgnoreCase(PUBLIC))
+            .collect(Collectors.toList());
+        album.setMedias(publicMedias);
+
+        return album;
+    }
+
+    public void deleteAlbum(String albumId) {
+        Album album = getAlbumWithMedias(albumId);
+
+        resetMediaAlbumIDs(album);
+        albumRepository.delete(album);
+    }
+
+    public List<Album> getAlbumsByUser(String user) {
+        return albumRepository.getAllByCreator(user);
+    }
+
+    public long getTotalAlbums() {
+        return albumRepository.count();
+    }
+
+    public void updateAlbum(String albumID, String name, boolean showUnlistedMedia) {
+        Album album = getAlbum(albumID);
+
+        album.setName(name);
+        album.setShowUnlistedImages(showUnlistedMedia);
+
+        albumRepository.save(album);
     }
 }

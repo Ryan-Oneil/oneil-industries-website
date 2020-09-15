@@ -3,9 +3,7 @@ package biz.oneilindustries.website.aspects;
 import biz.oneilindustries.website.entity.Album;
 import biz.oneilindustries.website.entity.Media;
 import biz.oneilindustries.website.exception.NotAuthorisedException;
-import biz.oneilindustries.website.service.AlbumService;
 import biz.oneilindustries.website.service.MediaService;
-import java.io.FileNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -20,16 +18,13 @@ import org.springframework.stereotype.Component;
 public class ImageGalleryAspect {
 
     private final MediaService mediaService;
-    private final AlbumService albumService;
 
-    private static final String FILE_NOT_EXISTS_ERROR_MESSAGE = "Media does not exist on this server";
     private static final String NO_PERMISSION = "You don't have the permission to access this resource";
     private static final String ADMIN_ROLE = "ROLE_ADMIN";
 
     @Autowired
-    public ImageGalleryAspect(MediaService mediaService, AlbumService albumService) {
+    public ImageGalleryAspect(MediaService mediaService) {
         this.mediaService = mediaService;
-        this.albumService = albumService;
     }
 
     @Pointcut("execution(* biz.oneilindustries.website.controller.ImageGalleryController.showUser*(..))")
@@ -88,7 +83,7 @@ public class ImageGalleryAspect {
     }
 
     @Before("combinedAlbums()")
-    public void checkAlbum(JoinPoint joinPoint) throws FileNotFoundException {
+    public void checkAlbum(JoinPoint joinPoint) {
 
         Object[] args = joinPoint.getArgs();
 
@@ -96,11 +91,7 @@ public class ImageGalleryAspect {
         Authentication user = (Authentication) args[1];
         HttpServletRequest request = (HttpServletRequest) args[2];
 
-        Album album = albumService.getAlbum(albumName);
-
-        if (album == null) {
-            throw new FileNotFoundException(albumName + FILE_NOT_EXISTS_ERROR_MESSAGE);
-        }
+        Album album = mediaService.getAlbum(albumName);
 
         if (!user.getName().equalsIgnoreCase(album.getCreator()) && !request.isUserInRole(ADMIN_ROLE)) {
             throw new NotAuthorisedException(NO_PERMISSION);

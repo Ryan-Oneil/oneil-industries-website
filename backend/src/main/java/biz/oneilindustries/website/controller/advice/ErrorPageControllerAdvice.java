@@ -1,9 +1,8 @@
 package biz.oneilindustries.website.controller.advice;
 
-import biz.oneilindustries.website.exception.MediaException;
 import biz.oneilindustries.website.exception.MediaApprovalException;
+import biz.oneilindustries.website.exception.MediaException;
 import biz.oneilindustries.website.exception.NotAuthorisedException;
-import biz.oneilindustries.website.exception.ServiceProfileException;
 import biz.oneilindustries.website.exception.TokenException;
 import biz.oneilindustries.website.exception.TooManyLoginAttempts;
 import biz.oneilindustries.website.exception.UserException;
@@ -34,11 +33,6 @@ public class ErrorPageControllerAdvice {
     @ExceptionHandler(TokenException.class)
     public ResponseEntity tokenException(TokenException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-    }
-
-    @ExceptionHandler(ServiceProfileException.class)
-    public ResponseEntity serverProfileException(ServiceProfileException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
     @ExceptionHandler(UserException.class)

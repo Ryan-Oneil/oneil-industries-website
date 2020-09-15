@@ -7,10 +7,7 @@ import biz.oneilindustries.website.entity.Album;
 import biz.oneilindustries.website.entity.Media;
 import biz.oneilindustries.website.entity.Quota;
 import biz.oneilindustries.website.entity.User;
-import biz.oneilindustries.website.exception.MediaException;
 import biz.oneilindustries.website.filecreater.FileHandler;
-import biz.oneilindustries.website.pojo.AlbumDetails;
-import biz.oneilindustries.website.service.AlbumService;
 import biz.oneilindustries.website.service.MediaService;
 import biz.oneilindustries.website.service.SystemFileService;
 import biz.oneilindustries.website.service.UserService;
@@ -22,7 +19,6 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -48,18 +44,13 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 public class ImageGalleryController {
 
     private final MediaService mediaService;
-    private final AlbumService albumService;
     private final UserService userService;
     private final ResourceHandler handler;
     private final SystemFileService fileService;
 
-    private static final String PUBLIC = "public";
-    private static final String UNLISTED = "unlisted";
-
-    public ImageGalleryController(MediaService mediaService, AlbumService albumService, UserService userService,
+    public ImageGalleryController(MediaService mediaService, UserService userService,
         ResourceHandler handler, SystemFileService fileService) {
         this.mediaService = mediaService;
-        this.albumService = albumService;
         this.userService = userService;
         this.handler = handler;
         this.fileService = fileService;
@@ -157,49 +148,29 @@ public class ImageGalleryController {
 
     @GetMapping("/album/{albumID}")
     public Album showAlbum(@PathVariable String albumID) {
-        Album album = albumService.getAlbumWithMediaByID(albumID);
-
-        if (album == null) {
-            throw new MediaException(albumID + ": Is not a valid album");
-        }
-
-        if (!album.isShowUnlistedImages()) {
-            //Removes all medias that aren't set to public
-            List<Media> publicMedias = album.getMedias().stream().filter(media -> media.getLinkStatus().equalsIgnoreCase(PUBLIC))
-                .collect(Collectors.toList());
-            album.setMedias(publicMedias);
-        }
-        return album;
-    }
-
-    @GetMapping("/myalbums/{username}/details")
-    public List<AlbumDetails> showUserAlbumNames(Authentication user, @PathVariable String username, HttpServletRequest request) {
-        return albumService.getAlbumDetailsByCreator(username);
+        return mediaService.getPublicAlbum(albumID);
     }
 
     @GetMapping("/myalbums/{username}")
     public List<Album> showUserAlbum(Authentication user, @PathVariable String username, HttpServletRequest request) {
-        return albumService.getAlbumsWithMediaByCreator(username);
+        return mediaService.getAlbumsByUser(username);
     }
 
     @GetMapping("/myalbum/{albumID}")
     public Album manageMyAlbums(@PathVariable String albumID, Authentication user, HttpServletRequest request) {
-        return albumService.getAlbumWithMediaByID(albumID);
+        return mediaService.getAlbumWithMedias(albumID);
     }
 
     @PutMapping("/myalbums/update/{albumID}")
     public ResponseEntity updateAlbum(@PathVariable String albumID, Authentication user, HttpServletRequest request, UpdatedAlbum updatedAlbum) {
-        albumService.updateAlbum(albumID, updatedAlbum.getNewAlbumName(), updatedAlbum.isShowUnlistedImages());
+        mediaService.updateAlbum(albumID, updatedAlbum.getNewAlbumName(), updatedAlbum.isShowUnlistedImages());
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
     @DeleteMapping("/myalbums/delete/{albumID}")
     public ResponseEntity deleteAlbum(@PathVariable String albumID, Authentication user, HttpServletRequest request) {
-        Album album = albumService.getAlbumWithMediaByID(albumID);
-
-        mediaService.resetMediaAlbumIDs(album);
-        albumService.deleteAlbum(albumID);
+        mediaService.deleteAlbum(albumID);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
