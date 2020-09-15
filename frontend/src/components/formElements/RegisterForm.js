@@ -6,19 +6,16 @@ import { getApiError } from "../../helpers";
 import MailOutlined from "@ant-design/icons/lib/icons/MailOutlined";
 import LockOutlined from "@ant-design/icons/lib/icons/LockOutlined";
 import UserOutlined from "@ant-design/icons/lib/icons/UserOutlined";
-import { useDispatch } from "react-redux";
 import { registerUser } from "../../reducers/authReducer";
 
 export default () => {
-  const dispatch = useDispatch();
-
   const onSubmit = (formValues, { setStatus }) => {
     const creds = {
-      username: formValues.username.trim(),
+      name: formValues.username.trim(),
       password: formValues.password.trim(),
       email: formValues.email.trim()
     };
-    return dispatch(registerUser(creds))
+    return registerUser(creds)
       .then(response => setStatus({ msg: response.data, type: "success" }))
       .catch(error => {
         setStatus({ msg: getApiError(error), type: "error" });

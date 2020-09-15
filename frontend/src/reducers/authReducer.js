@@ -10,7 +10,7 @@ export const loginUser = creds => dispatch => {
 };
 
 export const registerUser = creds => {
-  return apiPostCall(BASE_URL + "/user/register", creds);
+  return apiPostCall(BASE_URL + "/auth/register", creds);
 };
 
 export const logoutUser = () => {
@@ -22,11 +22,11 @@ export const logoutUser = () => {
 };
 
 export const resetPassword = value => {
-  return apiPostCall(BASE_URL + "/user/forgotPassword/" + value.email);
+  return apiPostCall(BASE_URL + "/auth/forgotPassword/" + value.email);
 };
 
 export const changePassword = (token, value) => {
-  return apiPostCall(BASE_URL + "/user/newPassword/" + token, value);
+  return apiPostCall(BASE_URL + "/auth/newPassword/" + token, value.password);
 };
 
 export const isTokenExpired = token => {

@@ -5,7 +5,6 @@ import { changePassword } from "../../reducers/authReducer";
 import ChangePasswordForm from "../../components/formElements/ChangePasswordForm";
 
 const ResetPassword = props => {
-  const dispatch = useDispatch();
   let token = props.match.params.token;
   const { isAuthenticated } = props.auth;
   const { history } = props;
@@ -19,9 +18,7 @@ const ResetPassword = props => {
       <Card>
         <ChangePasswordForm
           action={password =>
-            dispatch(changePassword(token, password)).then(() =>
-              history.push("/login")
-            )
+            changePassword(token, password).then(() => history.push("/login"))
           }
         />
       </Card>
