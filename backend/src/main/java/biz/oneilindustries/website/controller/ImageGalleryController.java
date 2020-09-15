@@ -1,7 +1,6 @@
 package biz.oneilindustries.website.controller;
 
 import static biz.oneilindustries.AppConfig.GALLERY_IMAGES_DIRECTORY;
-import static biz.oneilindustries.website.security.SecurityConstants.TRUSTED_ROLES;
 
 import biz.oneilindustries.website.config.ResourceHandler;
 import biz.oneilindustries.website.entity.Album;
@@ -34,7 +33,6 @@ import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -150,18 +148,9 @@ public class ImageGalleryController {
     @PutMapping("/media/update/{mediaID}")
     public ResponseEntity updateMedia(@PathVariable int mediaID, Authentication user, HttpServletRequest request,
         @RequestBody @Valid GalleryUpload galleryUpload) {
-        Album album = null;
+        User userAuth = (User) user.getPrincipal();
 
-        if (galleryUpload.getAlbum() != null) {
-            album = albumService.getOrRegisterAlbum(galleryUpload.getAlbum(), galleryUpload.getShowUnlistedImages(), user.getName());
-        }
-
-        if (galleryUpload.getPrivacy().equalsIgnoreCase(PUBLIC) && !CollectionUtils.containsAny(user.getAuthorities(), TRUSTED_ROLES)) {
-            galleryUpload.setPrivacy(UNLISTED);
-//            mediaService.requestPublicApproval(mediaID, galleryUpload.getName(), album);
-            return ResponseEntity.ok("Adding or updating a public media will require admin approval. Once approved your media changes will be live");
-        }
-        mediaService.updateMedia(galleryUpload, album, mediaID);
+        mediaService.updateMedia(galleryUpload, mediaID, userAuth);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }

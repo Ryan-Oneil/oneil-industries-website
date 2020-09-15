@@ -257,7 +257,7 @@ public class MediaService {
     public long deleteMedia(int mediaID) throws IOException {
         Media media = getMedia(mediaID);
 
-        File mediaFile = new File(getUserMediaDirectory(media.getName()) + media.getFileName());
+        File mediaFile = new File(getUserMediaDirectory(media.getUploader()) + media.getFileName());
         long size = mediaFile.length();
 
         if (mediaFile.exists()) {
