@@ -2,6 +2,7 @@ package biz.oneilindustries.website.repository;
 
 import biz.oneilindustries.website.entity.Album;
 import java.util.Optional;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,4 +10,6 @@ import org.springframework.stereotype.Repository;
 public interface AlbumRepository extends CrudRepository<Album, String> {
 
     Optional<Album> getFirstByName(String albumName);
+    @EntityGraph(attributePaths  = {"medias"})
+    Optional<Album> getFirstById(String id);
 }

@@ -3,7 +3,6 @@ package biz.oneilindustries.website.service;
 import static biz.oneilindustries.AppConfig.BACK_END_URL;
 import static biz.oneilindustries.AppConfig.FRONT_END_URL;
 import static biz.oneilindustries.AppConfig.GALLERY_IMAGES_DIRECTORY;
-import static biz.oneilindustries.website.filecreater.FileHandler.getExtensionType;
 import static biz.oneilindustries.website.filecreater.FileHandler.writeImageThumbnail;
 import static biz.oneilindustries.website.security.SecurityConstants.TRUSTED_ROLES;
 
@@ -61,7 +60,9 @@ public class MediaService {
         List<Media> mediaList = new ArrayList<>();
 
         if (galleryUpload.getAlbum() != null || mediaFiles.size() > 1) {
-            album = getOrRegisterAlbum(user.getUsername(), galleryUpload.getAlbum());
+            String albumName = galleryUpload.getAlbum() != null ? galleryUpload.getAlbum() : generateAlbumUUID();
+
+            album = getOrRegisterAlbum(user.getUsername(), albumName);
         }
         for (File mediaFile : mediaFiles) {
             Media media = registerMedia(mediaFile.getName(), galleryUpload.getPrivacy(), mediaFile, user.getUsername(), album);
@@ -94,6 +95,7 @@ public class MediaService {
 
     public void checkMediaPrivacy(Media media, User user) {
         if (media.getLinkStatus().equalsIgnoreCase(PUBLIC) && !CollectionUtils.containsAny(user.getAuthorities(), TRUSTED_ROLES)) {
+            media.setLinkStatus(UNLISTED);
             requestPublicApproval(media, media.getName(), media.getAlbum());
         }
     }
@@ -129,7 +131,7 @@ public class MediaService {
 
     public HashMap<String, Object> getPublicMedias(Pageable pageable, String mediaType) {
         HashMap<String, Object> publicMedias = new HashMap<>();
-        publicMedias.put("medias", mediaRepository.getAllByLinkStatusAndMediaType(PUBLIC, mediaType, pageable));
+        publicMedias.put("medias", mediaRepository.getAllByLinkStatusAndMediaTypeOrderByIdDesc(PUBLIC, mediaType, pageable));
         publicMedias.put("total", mediaRepository.getTotalMediaByStatusAndMediaType(PUBLIC, mediaType));
 
         return publicMedias;
@@ -180,33 +182,19 @@ public class MediaService {
         mediaRepository.saveAll(album.getMedias());
     }
 
-    public void updateMedia(GalleryUpload galleryUpload, Album album, int mediaID) {
+    public void updateMedia(GalleryUpload galleryUpload, int mediaID, User user) {
         Media media = getMedia(mediaID);
 
+        if (galleryUpload.getAlbum() != null) {
+            Album album = getAlbum(galleryUpload.getAlbum());
+            media.setAlbum(album);
+        }
         media.setName(galleryUpload.getName());
         media.setLinkStatus(galleryUpload.getPrivacy());
-        media.setAlbum(album);
+
+        checkMediaPrivacy(media, user);
 
         saveMedia(media);
-    }
-
-    public void hideAllMedia(String name) {
-//        List<Media> userMedias = getMediasByUser(name);
-//
-//        for (Media media : userMedias) {
-//            media.setLinkStatus("private");
-//        }
-//        mediaRepository.saveAll(userMedias);
-    }
-
-    public String generateUniqueMediaName(String originalFileName) {
-        String extension = getExtensionType(originalFileName);
-        String fileName = RandomIDGen.getBase62(16) + "." + extension;
-
-        while(mediaRepository.isFileNameTaken(fileName)) {
-            fileName = RandomIDGen.getBase62(16) + "." + extension;
-        }
-        return fileName;
     }
 
     public PublicMediaApproval getMediaApprovalByMediaID(int mediaID) {
@@ -275,9 +263,6 @@ public class MediaService {
         if (mediaFile.exists()) {
             Files.delete(mediaFile.toPath());
         }
-        if (media.getPublicMediaApproval() != null) {
-            deleteMediaApproval(media.getPublicMediaApproval().getId());
-        }
         mediaRepository.delete(media);
 
         if (media.getAlbum() != null) {
@@ -287,10 +272,14 @@ public class MediaService {
     }
 
     public void deleteAlbumIfEmpty(String id) {
-        Album album = albumRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Album doesn't exist"));
+        Album album = albumRepository.getFirstById(id).orElseThrow(() -> new ResourceNotFoundException("Album doesn't exist"));
 
         if (album.getMedias().isEmpty()) {
            albumRepository.delete(album);
         }
+    }
+
+    public Album getAlbum(String albumName) {
+        return albumRepository.getFirstByName(albumName).orElseThrow(() -> new ResourceNotFoundException("Album not found"));
     }
 }
