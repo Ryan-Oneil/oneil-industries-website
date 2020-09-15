@@ -1,10 +1,10 @@
 package biz.oneilindustries.website.service;
 
-import static biz.oneilindustries.AppConfig.BACK_END_URL;
 import static biz.oneilindustries.website.security.SecurityConstants.SECRET;
 import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
 
 import biz.oneilindustries.website.dto.QuotaDTO;
+import biz.oneilindustries.website.dto.ShareXConfig;
 import biz.oneilindustries.website.dto.UserDTO;
 import biz.oneilindustries.website.entity.ApiToken;
 import biz.oneilindustries.website.entity.PasswordResetToken;
@@ -240,13 +240,12 @@ public class UserService {
         });
         return remaining.get();
     }
-    @Transactional
+
     @Cacheable(value = "apiToken")
     public ApiToken getApiTokenByUser(String username) {
         return apiTokenRepository.findById(username).orElse(null);
     }
 
-    @Transactional
     @CachePut(value = "apiToken", key = "#result.username")
     public ApiToken generateApiToken(String username) {
         // Creates a non expiring user jwt with limited access. Currently can only upload media
@@ -266,36 +265,19 @@ public class UserService {
         return apiToken;
     }
 
-    @Transactional
     @CacheEvict(value = "apiToken", key = "#apiToken.username")
     public void deleteApiToken(ApiToken apiToken) {
         apiTokenRepository.delete(apiToken);
     }
 
-    @Transactional
-    public String generateShareXAPIFile(String username) {
+    public ShareXConfig generateShareXAPIFile(String username) {
         ApiToken apiToken = getApiTokenByUser(username);
 
         if (apiToken == null) {
-            throw new TokenException("Generate a api token first");
+            return null;
         }
         //Returns a shareX custom uploader config template
-        return "{\n"
-            + "  \"Name\": \"Oneil Industries\",\n"
-            + "  \"DestinationType\": \"ImageUploader, TextUploader, FileUploader\",\n"
-            + "  \"RequestMethod\": \"POST\",\n"
-            + "  \"RequestURL\": \"" + BACK_END_URL + "/gallery/upload\",\n"
-            + "  \"Parameters\": {\n"
-            + "    \"name\": \"%h.%mi.%s-%d.%mo.%yy\",\n"
-            + "    \"privacy\": \"unlisted\",\n"
-            + "    \"albumName\": \"none\"\n"
-            + "  },\n"
-            + "  \"Headers\": {\n"
-            + "\"Authorization\": \"Bearer " + apiToken.getToken()
-            + "  \"\n},\n"
-            + "  \"Body\": \"MultipartFormData\",\n"
-            + "  \"FileFormName\": \"file\"\n"
-            + "}";
+        return new ShareXConfig(apiToken.getToken());
     }
 
     private void checkExpired(Date date) {

@@ -16,19 +16,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/auth")
-public class LoginController {
+public class AuthController {
 
     private final UserService userService;
     private final ApplicationEventPublisher eventPublisher;
     private final EmailSender emailSender;
 
     @Autowired
-    public LoginController(UserService userService, ApplicationEventPublisher eventPublisher, EmailSender emailSender) {
+    public AuthController(UserService userService, ApplicationEventPublisher eventPublisher, EmailSender emailSender) {
         this.userService = userService;
         this.eventPublisher = eventPublisher;
         this.emailSender = emailSender;
@@ -57,13 +56,13 @@ public class LoginController {
 
         //Will generate a new token or send a previously generated one if exists and not expired
         String token = userService.generateResetToken(user);
-        emailSender.sendSimpleEmail(user.getEmail(),"Password Reset","Reset Password Link " + FRONT_END_URL + "/resetPassword/" + token,"Oneil-Industries",null);
+        emailSender.sendSimpleEmail(user.getEmail(),"Password Reset","Reset Password Link " + FRONT_END_URL + "/changePassword/" + token,"Oneil-Industries",null);
 
         return ResponseEntity.ok("Password reset email has been sent");
     }
 
     @PostMapping("/newPassword/{token}")
-    public ResponseEntity setNewPassword(@PathVariable String token, @RequestParam String password) {
+    public ResponseEntity setNewPassword(@PathVariable String token, @RequestBody String password) {
         userService.resetUserPassword(token, password);
 
         return ResponseEntity.ok("Password has been changed");
