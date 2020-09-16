@@ -12,6 +12,8 @@ export default ({ menuDirection }) => {
   useEffect(() => {
     if (role === "ROLE_ADMIN") {
       setIsAdmin(true);
+    } else {
+      setIsAdmin(false);
     }
   }, [role]);
 

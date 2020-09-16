@@ -1,10 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { apiPostCall, BASE_URL } from "../apis/api";
+import { apiPostCall, BASE_URL, getRefreshToken } from "../apis/api";
 
 export const loginUser = creds => dispatch => {
   return apiPostCall(BASE_URL + "/login", creds).then(response => {
     const token = response.headers["authorization"];
     localStorage.setItem("refreshToken", token);
+
+    dispatch(getRefreshTokenWithRole());
     dispatch(loginSuccess(creds));
   });
 };
@@ -54,6 +56,16 @@ const isAuth = () => {
   return !isTokenExpired(token);
 };
 
+export const getRefreshTokenWithRole = () => dispatch => {
+  const refreshToken = localStorage.getItem("refreshToken");
+
+  if (refreshToken) {
+    getRefreshToken(refreshToken).then(() => {
+      dispatch(setUserRole(decodeJWT("authToken").role));
+    });
+  }
+};
+
 export const slice = createSlice({
   name: "auth",
   initialState: {
@@ -69,8 +81,12 @@ export const slice = createSlice({
     logout(state) {
       state.isAuthenticated = false;
       state.user = {};
+      state.role = "";
+    },
+    setUserRole(state, action) {
+      state.role = action.payload;
     }
   }
 });
 export default slice.reducer;
-export const { loginSuccess, logout } = slice.actions;
+export const { loginSuccess, logout, setUserRole } = slice.actions;
