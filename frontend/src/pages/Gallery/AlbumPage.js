@@ -3,19 +3,20 @@ import Media from "../../components/Gallery/Media";
 import RenderMedias from "../../components/Gallery/RenderMedias";
 import { BASE_URL } from "../../apis/api";
 import { fetchAlbumWithImages } from "../../reducers/mediaReducer";
-import { Modal, Row } from "antd";
+import { Card, Empty, Modal, Row, Spin } from "antd";
 
 export default props => {
   const {
     match: { params }
   } = props;
   const [album, setAlbum] = useState({ medias: [] });
+  const [loading, setLoading] = useState(true);
   const [activeMedia, setActiveMedia] = useState("");
 
   useEffect(() => {
-    fetchAlbumWithImages(`/gallery/album/${params.albumName}`).then(album =>
-      setAlbum(album)
-    );
+    fetchAlbumWithImages(`/gallery/album/${params.albumName}`)
+      .then(album => setAlbum(album))
+      .finally(() => setLoading(false));
   }, []);
 
   const handleShowDialog = media => {
@@ -24,6 +25,10 @@ export default props => {
 
   return (
     <div style={{ marginTop: "20px" }}>
+      <Empty
+        description={`${loading ? "Loading Album" : "No album found"}`}
+        style={{ color: "white" }}
+      />
       <Row gutter={[32, 32]} justify="center">
         {RenderMedias(album.medias, handleShowDialog, true)}
       </Row>
