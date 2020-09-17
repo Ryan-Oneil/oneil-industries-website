@@ -14,5 +14,6 @@ public interface AlbumRepository extends CrudRepository<Album, String> {
     @EntityGraph(attributePaths  = {"medias"})
     Optional<Album> getFirstById(String id);
 
+    @EntityGraph(attributePaths  = {"medias"})
     List<Album> getAllByCreator(String user);
 }

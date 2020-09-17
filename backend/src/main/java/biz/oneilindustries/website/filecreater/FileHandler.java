@@ -1,5 +1,6 @@
 package biz.oneilindustries.website.filecreater;
 
+import biz.oneilindustries.website.exception.MediaException;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -7,6 +8,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.io.FileUtils;
+import org.apache.tika.Tika;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -77,7 +79,19 @@ public class FileHandler {
         return supportImageFormats.contains(extension);
     }
 
-    public static boolean isVideoFile(String contentType) {
+    public static boolean isVideoFile(File file) throws IOException {
+        Tika tika = new Tika();
+        String contentType = tika.detect(file);
+
         return contentType.startsWith("video");
+    }
+
+    public static String getFileMediaType(File file) throws IOException {
+        if (isImageFile(file.getName())) {
+            return "image";
+        } else if (isVideoFile(file)) {
+            return "video";
+        }
+        throw new MediaException("Not a valid media file");
     }
 }

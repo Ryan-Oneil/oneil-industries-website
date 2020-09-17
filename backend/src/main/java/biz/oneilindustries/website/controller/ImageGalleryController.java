@@ -1,10 +1,9 @@
 package biz.oneilindustries.website.controller;
 
-import static biz.oneilindustries.AppConfig.GALLERY_IMAGES_DIRECTORY;
-
 import biz.oneilindustries.website.config.ResourceHandler;
+import biz.oneilindustries.website.dto.AlbumDTO;
 import biz.oneilindustries.website.entity.Album;
-import biz.oneilindustries.website.entity.Media;
+import biz.oneilindustries.website.entity.PublicMediaApproval;
 import biz.oneilindustries.website.entity.Quota;
 import biz.oneilindustries.website.entity.User;
 import biz.oneilindustries.website.filecreater.FileHandler;
@@ -63,24 +62,25 @@ public class ImageGalleryController {
 
     @GetMapping("/image/{imageName}")
     public ResponseEntity<StreamingResponseBody> streamImage(@PathVariable String imageName, Authentication user, HttpServletResponse response) {
-        return displayMedia(response, imageName, GALLERY_IMAGES_DIRECTORY);
+        File mediaFile = mediaService.getMediaFile(imageName);
+
+        return displayMedia(response, imageName, mediaFile);
     }
 
     @GetMapping("/image/thumbnail/{imageName}")
     public ResponseEntity<StreamingResponseBody> streamImageThumbnail(@PathVariable String imageName, Authentication user,
         HttpServletResponse response) {
-        return displayMedia(response, imageName, GALLERY_IMAGES_DIRECTORY + "thumbnail/");
+        File mediaFile = mediaService.getMediaThumbnailFile(imageName);
+
+        return displayMedia(response, imageName, mediaFile);
     }
 
     @GetMapping("/video/{videoName}")
     public void streamVideo(@PathVariable String videoName, Authentication user, HttpServletResponse response, HttpServletRequest request)
         throws ServletException {
+        File serverFile = mediaService.getMediaFile(videoName);
 
-        Media media = mediaService.getMediaFileName(videoName);
-
-        File serverFile = new File(GALLERY_IMAGES_DIRECTORY + media.getUploader() + "/" + media.getFileName());
-
-        response.setContentType("video/" + FileHandler.getContentType(media.getFileName()));
+        response.setContentType("video/" + FileHandler.getContentType(serverFile.getName()));
         request.setAttribute(ResourceHandler.ATTR_FILE, serverFile);
         try {
             handler.handleRequest(request, response);
@@ -89,20 +89,13 @@ public class ImageGalleryController {
         }
     }
 
-    private ResponseEntity<StreamingResponseBody> displayMedia(HttpServletResponse response, String imageName, String directory) {
-        Media media = mediaService.getMediaFileName(imageName);
+    private ResponseEntity<StreamingResponseBody> displayMedia(HttpServletResponse response, String imageName, File mediaFile) {
+        response.setContentType("image/" + FileHandler.getContentType(mediaFile.getName()));
+        StreamingResponseBody stream = out -> Files.copy(mediaFile.toPath(), out);
 
-        File serverFile = new File(directory + media.getUploader() + "/" + media.getFileName());
-
-        if (!serverFile.exists()) {
-            serverFile = new File(directory + "noimage.png");
-        }
-        response.setContentType("image/" + FileHandler.getContentType(media.getFileName()));
-
-        File finalServerFile = serverFile;
-        StreamingResponseBody stream = out -> Files.copy(finalServerFile.toPath(), out);
-
-        return ResponseEntity.status(HttpStatus.OK).contentLength(finalServerFile.length()).cacheControl(CacheControl.maxAge(1, TimeUnit.DAYS))
+        return ResponseEntity.status(HttpStatus.OK)
+            .contentLength(mediaFile.length())
+            .cacheControl(CacheControl.maxAge(1, TimeUnit.DAYS))
             .body(stream);
     }
 
@@ -121,7 +114,7 @@ public class ImageGalleryController {
     }
 
     @DeleteMapping("/media/delete/{mediaId}")
-    public ResponseEntity deleteMedia(@PathVariable int mediaId, Authentication user, HttpServletRequest request) throws IOException {
+    public ResponseEntity<HttpStatus> deleteMedia(@PathVariable int mediaId, Authentication user, HttpServletRequest request) throws IOException {
         Quota quota = userService.getQuotaByUsername(user.getName());
 
         long mediaSize = mediaService.deleteMedia(mediaId);
@@ -137,7 +130,7 @@ public class ImageGalleryController {
     }
 
     @PutMapping("/media/update/{mediaID}")
-    public ResponseEntity updateMedia(@PathVariable int mediaID, Authentication user, HttpServletRequest request,
+    public ResponseEntity<HttpStatus> updateMedia(@PathVariable int mediaID, Authentication user, HttpServletRequest request,
         @RequestBody @Valid GalleryUpload galleryUpload) {
         User userAuth = (User) user.getPrincipal();
 
@@ -147,12 +140,12 @@ public class ImageGalleryController {
     }
 
     @GetMapping("/album/{albumID}")
-    public Album showAlbum(@PathVariable String albumID) {
+    public AlbumDTO showAlbum(@PathVariable String albumID) {
         return mediaService.getPublicAlbum(albumID);
     }
 
     @GetMapping("/myalbums/{username}")
-    public List<Album> showUserAlbum(Authentication user, @PathVariable String username, HttpServletRequest request) {
+    public List<AlbumDTO> showUserAlbum(Authentication user, @PathVariable String username, HttpServletRequest request) {
         return mediaService.getAlbumsByUser(username);
     }
 
@@ -162,14 +155,14 @@ public class ImageGalleryController {
     }
 
     @PutMapping("/myalbums/update/{albumID}")
-    public ResponseEntity updateAlbum(@PathVariable String albumID, Authentication user, HttpServletRequest request, UpdatedAlbum updatedAlbum) {
+    public ResponseEntity<HttpStatus> updateAlbum(@PathVariable String albumID, Authentication user, HttpServletRequest request, UpdatedAlbum updatedAlbum) {
         mediaService.updateAlbum(albumID, updatedAlbum.getNewAlbumName(), updatedAlbum.isShowUnlistedImages());
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
     @DeleteMapping("/myalbums/delete/{albumID}")
-    public ResponseEntity deleteAlbum(@PathVariable String albumID, Authentication user, HttpServletRequest request) {
+    public ResponseEntity<HttpStatus> deleteAlbum(@PathVariable String albumID, Authentication user, HttpServletRequest request) {
         mediaService.deleteAlbum(albumID);
 
         return ResponseEntity.ok(HttpStatus.OK);
@@ -183,19 +176,19 @@ public class ImageGalleryController {
     }
 
     @GetMapping("/admin/media/pendingApproval")
-    public ResponseEntity getMediasRequiringApproval() {
+    public ResponseEntity<List<PublicMediaApproval>> getMediasRequiringApproval() {
         return ResponseEntity.ok(mediaService.getMediaApprovalsByStatus("pending"));
     }
 
     @PutMapping("/admin/media/{approvalMediaID}/approve")
-    public ResponseEntity approveMediaApproval(@PathVariable int approvalMediaID) {
+    public ResponseEntity<HttpStatus> approveMediaApproval(@PathVariable int approvalMediaID) {
         mediaService.approvePublicMedia(approvalMediaID);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
     @PutMapping("/admin/media/{approvalMediaID}/deny")
-    public ResponseEntity denyMediaApproval(@PathVariable int approvalMediaID) {
+    public ResponseEntity<HttpStatus> denyMediaApproval(@PathVariable int approvalMediaID) {
         mediaService.setMediaApprovalStatus(approvalMediaID, "denied");
 
         return ResponseEntity.ok(HttpStatus.OK);
