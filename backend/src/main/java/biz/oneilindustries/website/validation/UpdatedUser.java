@@ -43,8 +43,8 @@ public class UpdatedUser {
         this.username = username;
     }
 
-    public String getEmail() {
-        return email;
+    public Optional<String> getEmail() {
+        return Optional.ofNullable(email);
     }
 
     public void setEmail(String email) {

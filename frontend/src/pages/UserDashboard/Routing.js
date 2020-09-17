@@ -15,6 +15,7 @@ import PictureOutlined from "@ant-design/icons/lib/icons/PictureOutlined";
 import FileImageOutlined from "@ant-design/icons/lib/icons/FileImageOutlined";
 import { Layout } from "antd";
 import UploadPage from "./Gallery/UploadPage";
+import Profile from "../Profile";
 const { Content, Sider } = Layout;
 
 export default props => {
@@ -80,6 +81,7 @@ export default props => {
                 path={`${match.path}/gallery/upload`}
                 component={UploadPage}
               />
+              <Route exact path={`${match.path}/profile`} component={Profile} />
             </PrivateRoute>
           </Switch>
         </Content>

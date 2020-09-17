@@ -31,7 +31,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-import javax.transaction.Transactional;
 import org.apache.commons.io.FileUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -123,12 +122,14 @@ public class UserService {
     public void updateUser(UpdatedUser updatedUser, String name) {
         User user = getUser(name);
 
-        if (!updatedUser.getEmail().equals(user.getEmail())) {
-            validateEmail(updatedUser.getEmail());
-        }
-        user.setEmail(updatedUser.getEmail());
+        updatedUser.getEmail().ifPresent(email -> {
+            if (!email.equals(user.getEmail())) {
+                validateEmail(email);
+            }
+            user.setEmail(email);
+        });
         updatedUser.getEnabled().ifPresent(user::setEnabled);
-        updatedUser.getPassword().ifPresent(passwordEncoder::encode);
+        updatedUser.getPassword().ifPresent(password -> user.setPassword(passwordEncoder.encode(password)));
         updatedUser.getRole().ifPresent(user::setRole);
 
         saveUser(user);

@@ -79,7 +79,9 @@ export const getAdminStats = () => dispatch => {
     })
     .catch(error => dispatch(setError(getApiError(error))));
 };
-
+export const changeUserPassword = (username, password) => {
+  return apiPutCall(`/user/${username}/details/update`, password);
+};
 export const slice = createSlice({
   name: "admin",
   initialState: {
