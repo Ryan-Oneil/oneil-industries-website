@@ -38,7 +38,7 @@ export default () => {
           <StatisticCard title="Total Storage Space" value={max} suffix="GB" />
         </Col>
         <Col xs={24} sm={24} md={6} lg={6} xl={6}>
-          <StatisticCard title="Total Views" value={totalViews} />
+          <StatisticCard title="Total Link Views" value={totalViews} />
         </Col>
       </Row>
       <Row gutter={[32, 32]} type="flex">
