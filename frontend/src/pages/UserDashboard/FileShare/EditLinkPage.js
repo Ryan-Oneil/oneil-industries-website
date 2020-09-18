@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
   Avatar,
-  Breadcrumb,
   Button,
   Card,
   Col,
@@ -13,7 +12,6 @@ import {
 } from "antd";
 import DownloadOutlined from "@ant-design/icons/lib/icons/DownloadOutlined";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 import FileAddOutlined from "@ant-design/icons/lib/icons/FileAddOutlined";
 import DeleteOutlined from "@ant-design/icons/lib/icons/DeleteOutlined";
 import {
@@ -73,14 +71,8 @@ export default props => {
 
   return (
     <>
-      <Breadcrumb>
-        <Breadcrumb.Item>
-          <Link to={"/dashboard/files"}>Files</Link>
-        </Breadcrumb.Item>
-        <Breadcrumb.Item>Edit</Breadcrumb.Item>
-      </Breadcrumb>
       {link && (
-        <Row style={{ padding: "2%" }}>
+        <Row className={"extraPadding"}>
           <Col span={6}>
             <Card title={link.title}>
               <Statistic title="Views" value={link.views} />

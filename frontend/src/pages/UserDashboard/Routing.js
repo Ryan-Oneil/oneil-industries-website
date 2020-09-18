@@ -78,7 +78,7 @@ export default props => {
         />
       </Sider>
       <Layout className={"blueBackgroundColor"}>
-        <Content style={{ padding: "24px" }}>
+        <Content className="extraPadding">
           <Switch>
             <PrivateRoute>
               <Route exact path={match.path} component={ProfilePage} />

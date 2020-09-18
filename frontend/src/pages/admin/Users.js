@@ -55,7 +55,7 @@ export default props => {
   ];
 
   return (
-    <div style={{ padding: "24px" }}>
+    <div className="extraPadding">
       <Card>
         <Table
           dataSource={Object.values(users)}
