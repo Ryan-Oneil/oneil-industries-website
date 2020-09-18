@@ -1,97 +1,102 @@
 import React from "react";
-import { connect } from "react-redux";
-import { Field, reduxForm } from "redux-form";
-import logo from "../../assets/images/oi-logo.png";
-import { renderIconInput } from "./index";
-import { renderErrorMessage } from "../Message";
-import { loginUser } from "../../actions";
+import { Field, Formik } from "formik";
+import { InputWithErrors } from "./index";
+import { Alert, Button } from "antd";
+import { getApiError } from "../../helpers";
+import { Link } from "react-router-dom";
+import UserOutlined from "@ant-design/icons/lib/icons/UserOutlined";
+import LockOutlined from "@ant-design/icons/lib/icons/LockOutlined";
+import { useDispatch } from "react-redux";
+import { loginUser } from "../../reducers/authReducer";
 
-class LoginForm extends React.Component {
-  onSubmit = formValues => {
+export default () => {
+  const dispatch = useDispatch();
+
+  const onSubmit = (formValues, { setStatus }) => {
     const creds = {
       username: formValues.username.trim(),
       password: formValues.password.trim()
     };
-
-    return this.props.loginUser(creds);
+    return dispatch(loginUser(creds)).catch(error =>
+      setStatus(getApiError(error))
+    );
   };
 
-  render() {
-    const {
-      submitting,
-      signUp,
-      resetPassword,
-      error,
-      handleSubmit
-    } = this.props;
+  return (
+    <Formik
+      initialValues={{
+        username: "",
+        password: ""
+      }}
+      onSubmit={onSubmit}
+      validate={validate}
+    >
+      {props => {
+        const {
+          isSubmitting,
+          handleSubmit,
+          isValid,
+          errors,
+          status,
+          setStatus
+        } = props;
 
-    return (
-      <form
-        onSubmit={handleSubmit(this.onSubmit)}
-        className="ui form error marginPadding textColorScheme"
-      >
-        <div className="ui segment">
-          <img
-            src={logo}
-            alt="Login Logo"
-            className="ui centered small image"
-          />
-          <h1 className="textColorScheme">Log-in to your account</h1>
-          <Field
-            name="username"
-            component={renderIconInput}
-            label="Enter Username"
-            iconType="user"
-            type="text"
-          />
-          <Field
-            name="password"
-            component={renderIconInput}
-            label="Enter Password"
-            iconType="lock"
-            type="password"
-          />
+        return (
+          <form onSubmit={handleSubmit} className="login-form">
+            <Field
+              name="username"
+              as={InputWithErrors}
+              type="text"
+              placeholder="Username"
+              prefix={<UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
+              error={errors.username}
+            />
+            <Field
+              name="password"
+              as={InputWithErrors}
+              type="password"
+              placeholder="Password"
+              prefix={<LockOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
+              error={errors.password}
+            />
+            <Link to="/resetPassword" style={{ float: "right" }}>
+              Forgot Password?
+            </Link>
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="form-button"
+              disabled={!isValid || isSubmitting}
+              loading={isSubmitting}
+              size="large"
+            >
+              {isSubmitting ? "Logging In" : "Login"}
+            </Button>
+            {status && (
+              <Alert
+                message="Login Error"
+                description={status}
+                type="error"
+                closable
+                showIcon
+                onClose={() => setStatus("")}
+              />
+            )}
+          </form>
+        );
+      }}
+    </Formik>
+  );
+};
 
-          {error && renderErrorMessage(error)}
-          <button
-            className="ui large submit button buttonFormat"
-            disabled={submitting}
-          >
-            Login
-          </button>
-          <p>
-            Don't have an account?{" "}
-            <button className="buttonLink" onClick={() => signUp()}>
-              Sign up
-            </button>
-          </p>
-          <p>
-            Forgot your password?{" "}
-            <button className="buttonLink" onClick={() => resetPassword()}>
-              Reset Password
-            </button>
-          </p>
-        </div>
-      </form>
-    );
-  }
-}
-const validate = formValues => {
+const validate = values => {
   const errors = {};
 
-  if (!formValues.username) {
-    errors.username = "You must enter a Username";
+  if (!values.username) {
+    errors.username = "Username is required";
   }
-  if (!formValues.password) {
-    errors.password = "You must enter a Password";
+  if (!values.password) {
+    errors.password = "Password is required";
   }
   return errors;
 };
-
-const mapStateToProps = state => {
-  return { auth: state.auth };
-};
-
-export default connect(mapStateToProps, { loginUser })(
-  reduxForm({ form: "LoginForm", validate })(LoginForm)
-);

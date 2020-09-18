@@ -1,59 +1,77 @@
-import React from "react";
-import { connect } from "react-redux";
-import { getMediaApprovals } from "../../actions/admin";
-import { NavLink, Route, Switch } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { Route, Switch } from "react-router-dom";
 import Users from "./Users";
 import ManageUser from "./ManageUser";
 import PrivateRoute from "../../components/PrivateRoute";
-import SideBarNav from "../../components/site layout/SideBarNav";
 import Media from "./Media/MediaAdmin";
-import SubNavMenu from "../../components/site layout/SubNavMenu";
 import Approval from "./Media/Approval";
 import Stats from "./Stats";
+import SideNav from "../../components/site layout/SideNav";
+import { Layout } from "antd";
+import UserOutlined from "@ant-design/icons/lib/icons/UserOutlined";
+import DatabaseOutlined from "@ant-design/icons/lib/icons/DatabaseOutlined";
+import PictureOutlined from "@ant-design/icons/lib/icons/PictureOutlined";
+import FileImageOutlined from "@ant-design/icons/lib/icons/FileImageOutlined";
+import CloudUploadOutlined from "@ant-design/icons/lib/icons/CloudUploadOutlined";
+import UploadOutlined from "@ant-design/icons/lib/icons/UploadOutlined";
+import FolderOutlined from "@ant-design/icons/lib/icons/FolderOutlined";
+import ViewAllLinks from "./fileshare/ViewAllLinks";
+import EditLinkPage from "../UserDashboard/FileShare/EditLinkPage";
+const { Content, Sider } = Layout;
 
-class AdminRouting extends React.Component {
-  componentDidMount() {
-    const { isAuthenticated, role } = this.props.auth;
+export default props => {
+  const { isAuthenticated, role } = useSelector(state => state.auth);
+  const { match } = props;
 
-    if (!isAuthenticated || role !== "ROLE_ADMIN") {
-      this.props.history.push("/");
+  const links = [
+    { path: "", icon: <DatabaseOutlined />, name: "Stats" },
+    { path: "/users", icon: <UserOutlined />, name: "Users" }
+  ];
+  const subLinks = [
+    {
+      title: "Gallery",
+      icon: <PictureOutlined />,
+      links: [
+        { path: "/gallery/media", icon: <PictureOutlined />, name: "Medias" },
+        {
+          path: "/gallery/approval",
+          icon: <FileImageOutlined />,
+          name: "Approvals"
+        }
+      ]
+    },
+    {
+      title: "File Share",
+      icon: <CloudUploadOutlined />,
+      links: [
+        {
+          path: "/fileshare/files",
+          icon: <FolderOutlined />,
+          name: "Files"
+        }
+      ]
     }
-  }
+  ];
 
-  render() {
-    const { match } = this.props;
-    return (
-      <div className="ui padded equal width grid">
-        <SideBarNav headerText="Admin Dashboard" headerIcon="hdd">
-          <NavLink to={match.path} className="item" exact={true}>
-            <i className="icon chart bar" />
-            Stats
-          </NavLink>
-          <NavLink to={`${match.path}/users`} className="item">
-            <i className="icon user" />
-            Users
-          </NavLink>
-          <SubNavMenu header="Media Gallery" icon="images outline">
-            <NavLink
-              to={`${match.path}/media`}
-              exact
-              className="item subMenuItem"
-            >
-              <i className="icon images outline" />
-              Medias
-            </NavLink>
-            <NavLink
-              to={`${match.path}/media/approval`}
-              exact
-              className="item subMenuItem"
-            >
-              <i className="icon check" />
-              Approvals
-            </NavLink>
-          </SubNavMenu>
-        </SideBarNav>
+  useEffect(() => {
+    if (!isAuthenticated || role !== "ROLE_ADMIN") {
+      props.history.push("/");
+    }
+  }, []);
 
-        <div className="sixteen wide mobile thirteen wide tablet thirteen wide computer right floated column">
+  return (
+    <Layout>
+      <Sider breakpoint="lg" collapsedWidth="0">
+        <SideNav
+          path={match.path}
+          links={links}
+          title={"Admin Dashboard"}
+          subLinks={subLinks}
+        />
+      </Sider>
+      <Layout className={"blueBackgroundColor"}>
+        <Content>
           <Switch>
             <PrivateRoute>
               <Route exact path={match.path} component={Stats} />
@@ -62,21 +80,30 @@ class AdminRouting extends React.Component {
                 path={`${match.path}/users/:user`}
                 component={ManageUser}
               />
-              <Route exact path={`${match.path}/media`} component={Media} />
               <Route
                 exact
-                path={`${match.path}/media/approval`}
+                path={`${match.path}/gallery/media`}
+                component={Media}
+              />
+              <Route
+                exact
+                path={`${match.path}/gallery/approval`}
                 component={Approval}
+              />
+              <Route
+                exact
+                path={`${match.path}/fileshare/files`}
+                component={ViewAllLinks}
+              />
+              <Route
+                exact
+                path={`${match.path}/fileshare/files/edit/:linkID`}
+                component={EditLinkPage}
               />
             </PrivateRoute>
           </Switch>
-        </div>
-      </div>
-    );
-  }
-}
-const mapStateToProps = state => {
-  return { admin: state.admin, auth: state.auth };
+        </Content>
+      </Layout>
+    </Layout>
+  );
 };
-
-export default connect(mapStateToProps, { getMediaApprovals })(AdminRouting);

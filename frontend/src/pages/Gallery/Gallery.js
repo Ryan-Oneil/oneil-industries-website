@@ -1,65 +1,46 @@
-import React from "react";
-import RenderMedias from "../../components/Gallery/RenderMedias";
-import Modal from "../../components/Gallery/Modal";
+import React, { useState } from "react";
 import { BASE_URL } from "../../apis/api";
 import Media from "../../components/Gallery/Media";
-import { connect } from "react-redux";
-import { fetchImages, setActiveMediaForModal } from "../../actions";
-import { forceCheck } from "react-lazyload";
+import { Modal } from "antd";
+import MediaGrid from "../../components/Gallery/MediaGrid";
+import { PUBLIC_MEDIAS_ENDPOINT } from "../../apis/endpoints";
 
-class Gallery extends React.Component {
-  state = { isModalOpen: false };
+export default () => {
+  const [activeMedia, setActiveMedia] = useState("");
 
-  handleShowDialog = mediaID => {
-    this.setState({ isOpen: !this.state.isOpen });
-    this.props.setActiveMediaForModal(mediaID);
+  const handleShowDialog = mediaID => {
+    setActiveMedia(mediaID);
   };
 
-  componentDidMount() {
-    this.props.fetchImages("/gallery/medias");
-  }
-
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    //Fixes a lazy loading bug that prevents a image from being lazy loaded when it was previously created in another page
-    forceCheck();
-  }
-
-  render() {
-    const { activeMedia, mediasList } = this.props.medias;
-
-    return (
-      <div className="ui container">
-        <div className="ui four column centered grid">
-          {RenderMedias(mediasList, this.handleShowDialog, true)}
-        </div>
-        {this.state.isOpen && (
-          <Modal title={activeMedia.name} closeModal={this.handleShowDialog}>
-            <div className="image">
-              <a
-                href={`${BASE_URL}/gallery/${activeMedia.mediaType}/${activeMedia.fileName}`}
-              >
-                <Media
-                  media={activeMedia}
-                  renderVideoControls={true}
-                  fullSize={true}
-                />
-              </a>
-            </div>
-            <div className="centerText">
-              <p>Uploader: {activeMedia.uploader}</p>
-              <p>Uploaded: {activeMedia.dateAdded}</p>
-            </div>
-          </Modal>
-        )}
-      </div>
-    );
-  }
-}
-const mapStateToProps = state => {
-  return { medias: state.medias, auth: state.auth };
+  return (
+    <div style={{ marginTop: "24px" }}>
+      <MediaGrid
+        imageEndpoint={`${PUBLIC_MEDIAS_ENDPOINT}/image`}
+        videoEndpoint={`${PUBLIC_MEDIAS_ENDPOINT}/video`}
+        handleShowDialog={handleShowDialog}
+      />
+      {activeMedia && (
+        <Modal
+          title={activeMedia.name}
+          visible={activeMedia}
+          onCancel={() => setActiveMedia("")}
+          footer={null}
+        >
+          <a
+            href={`${BASE_URL}/gallery/${activeMedia.mediaType}/${activeMedia.fileName}`}
+          >
+            <Media
+              media={activeMedia}
+              renderVideoControls={true}
+              fullSize={true}
+            />
+          </a>
+          <div className="centerText">
+            <p>Uploader: {activeMedia.uploader}</p>
+            <p>Uploaded: {activeMedia.dateAdded}</p>
+          </div>
+        </Modal>
+      )}
+    </div>
+  );
 };
-
-export default connect(mapStateToProps, {
-  fetchImages,
-  setActiveMediaForModal
-})(Gallery);

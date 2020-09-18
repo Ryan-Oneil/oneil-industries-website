@@ -1,69 +1,51 @@
-import {
-  LOGIN_REQUEST,
-  LOGIN_SUCCESS,
-  LOGOUT_SUCCESS,
-  REGISTER_SUCCESS,
-  REGISTER_FAIL,
-  RESET_PASSWORD_SENT,
-  NEW_PASSWORD_SENT
-} from "../actions/types";
-import { decodeJWT, isTokenExpired } from "../actions";
+import { createSlice } from "@reduxjs/toolkit";
+import { apiPostCall, BASE_URL, getRefreshToken } from "../apis/api";
 
-export default function auth(
-  state = {
-    isAuthenticated: isAuth(),
-    user: decodeJWT("refreshToken").user,
-    role: decodeJWT("authToken").role
-  },
-  action
-) {
-  switch (action.type) {
-    case LOGIN_REQUEST:
-      return Object.assign({}, state, {
-        isAuthenticated: false,
-        user: action.creds.username
-      });
-    case LOGIN_SUCCESS:
-      return Object.assign({}, state, {
-        isAuthenticated: true,
-        errorMessage: ""
-      });
-    case LOGOUT_SUCCESS:
-      return Object.assign({}, state, {
-        isAuthenticated: false,
-        user: ""
-      });
-    case REGISTER_SUCCESS: {
-      return {
-        ...state,
-        isRegistered: true,
-        message: action.message,
-        errorMessage: ""
-      };
-    }
-    case REGISTER_FAIL: {
-      return { ...state, errorMessage: action.errorMessage, message: "" };
-    }
-    case RESET_PASSWORD_SENT: {
-      return {
-        ...state,
-        hasSentResetEmail: true,
-        message: action.message,
-        errorMessage: ""
-      };
-    }
-    case NEW_PASSWORD_SENT: {
-      return {
-        ...state,
-        message: action.message,
-        errorMessage: "",
-        passwordReset: true
-      };
-    }
-    default:
-      return state;
+export const loginUser = creds => dispatch => {
+  return apiPostCall(BASE_URL + "/login", creds).then(response => {
+    const token = response.headers["authorization"];
+    localStorage.setItem("refreshToken", token);
+
+    dispatch(getRefreshTokenWithRole());
+    dispatch(loginSuccess(creds));
+  });
+};
+
+export const registerUser = creds => {
+  return apiPostCall(BASE_URL + "/auth/register", creds);
+};
+
+export const logoutUser = () => {
+  return dispatch => {
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("authToken");
+    dispatch(logout());
+  };
+};
+
+export const resetPassword = value => {
+  return apiPostCall(BASE_URL + "/auth/forgotPassword/" + value.email);
+};
+
+export const changePassword = (token, value) => {
+  return apiPostCall(BASE_URL + "/auth/newPassword/" + token, value.password);
+};
+
+export const isTokenExpired = token => {
+  return Date.now() > token.exp * 1000;
+};
+
+export const decodeJWT = tokenType => {
+  const token = localStorage.getItem(tokenType);
+
+  if (!token) {
+    return "";
   }
-}
+  const base64Url = token.split(".")[1];
+  const base64 = base64Url.replace("-", "+").replace("_", "/");
+
+  return JSON.parse(window.atob(base64));
+};
 
 const isAuth = () => {
   const token = decodeJWT("refreshToken");
@@ -73,3 +55,38 @@ const isAuth = () => {
   }
   return !isTokenExpired(token);
 };
+
+export const getRefreshTokenWithRole = () => dispatch => {
+  const refreshToken = localStorage.getItem("refreshToken");
+
+  if (refreshToken) {
+    getRefreshToken(refreshToken).then(() => {
+      dispatch(setUserRole(decodeJWT("authToken").role));
+    });
+  }
+};
+
+export const slice = createSlice({
+  name: "auth",
+  initialState: {
+    isAuthenticated: isAuth(),
+    user: { name: decodeJWT("refreshToken").user, avatar: "" },
+    role: decodeJWT("authToken").role
+  },
+  reducers: {
+    loginSuccess(state, action) {
+      state.user = { name: action.payload.username };
+      state.isAuthenticated = true;
+    },
+    logout(state) {
+      state.isAuthenticated = false;
+      state.user = {};
+      state.role = "";
+    },
+    setUserRole(state, action) {
+      state.role = action.payload;
+    }
+  }
+});
+export default slice.reducer;
+export const { loginSuccess, logout, setUserRole } = slice.actions;

@@ -2,6 +2,7 @@ package biz.oneilindustries.website.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Objects;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -41,7 +42,7 @@ public class Media {
     @Column(name = "media_type")
     private String mediaType;
 
-    @OneToOne(mappedBy = "media")
+    @OneToOne(mappedBy = "media", cascade = CascadeType.ALL)
     @JsonIgnore
     private PublicMediaApproval publicMediaApproval;
 

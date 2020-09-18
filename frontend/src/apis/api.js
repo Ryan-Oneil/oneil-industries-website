@@ -1,6 +1,6 @@
 import axios from "axios";
-import { decodeJWT, isTokenExpired, logoutUser } from "../actions";
 import { store } from "../index";
+import { decodeJWT, isTokenExpired, logoutUser } from "../reducers/authReducer";
 
 export const BASE_URL = process.env.REACT_APP_API_URL;
 
@@ -13,13 +13,17 @@ const baseApi = axios.create({
   }
 });
 
+// baseApi.interceptors.request.use(
+//   config => new Promise(resolve => setTimeout(() => resolve(config), 10000))
+// );
+
 baseApi.interceptors.response.use(
   response => response,
   error => {
     const originalRequest = error.config;
 
     if (!error.response) {
-      return Promise.reject(new Error("API is down"));
+      return Promise.reject(new Error("Issue with connecting to backend API"));
     }
 
     //Prevents requests from getting stuck in a loop
@@ -43,30 +47,36 @@ baseApi.interceptors.response.use(
         return Promise.reject(new Error("Your session has expired"));
       }
 
-      return baseApi
-        .post("/token/refresh", refreshToken, {
-          headers: {
-            "Content-Type": "application/json"
-          }
-        })
-        .then(({ data }) => {
-          localStorage.setItem("authToken", data);
+      return getRefreshToken(refreshToken).then(data => {
+        originalRequest.headers["Authorization"] = data;
 
-          baseApi.defaults.headers["Authorization"] = data;
-          originalRequest.headers["Authorization"] = data;
-
-          return axios(originalRequest);
-        })
-        .catch(error => {
-          return Promise.reject(error);
-        });
+        return axios(originalRequest);
+      });
     }
     return Promise.reject(error);
   }
 );
 
-export const apiGetCall = async endpoint => {
-  return await baseApi.get(endpoint);
+export const getRefreshToken = refreshToken => {
+  return baseApi
+    .post("/token/refresh", refreshToken, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+    .then(({ data }) => {
+      localStorage.setItem("authToken", data);
+      baseApi.defaults.headers["Authorization"] = data;
+
+      return data;
+    })
+    .catch(error => {
+      return Promise.reject(error);
+    });
+};
+
+export const apiGetCall = async (endpoint, options) => {
+  return await baseApi.get(endpoint, options);
 };
 
 export const apiPostCall = async (endpoint, data, options) => {

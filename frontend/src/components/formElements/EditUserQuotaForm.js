@@ -1,52 +1,90 @@
 import React from "react";
-import { Field, reduxForm } from "redux-form";
-import { renderInput } from "./index";
-import { renderErrorMessage } from "../Message";
-import { connect } from "react-redux";
-import { getRoles, updateUserQuota } from "../../actions/admin";
+import { InputWithErrors, SelectInputWithErrors } from "./index";
+import { useDispatch } from "react-redux";
+import { getApiError } from "../../helpers";
+import { updateUserQuota } from "../../reducers/adminReducer";
+import { Field, Formik } from "formik";
+import { Alert, Button, Card, Select } from "antd";
+const { Option } = Select;
 
-class EditUserQuotaForm extends React.Component {
-  onSubmit = formValues => {
-    const { details } = this.props.admin.user;
+export default props => {
+  const { username } = props;
+  const dispatch = useDispatch();
 
-    return this.props.updateUserQuota(
-      `/admin/user/${details.username}/update/quota`,
-      formValues
+  const onSubmit = (formValues, { setStatus }) => {
+    return dispatch(updateUserQuota(username, formValues)).catch(error =>
+      setStatus(getApiError(error))
     );
   };
+  return (
+    <Card title="Quota Settings">
+      <Formik
+        initialValues={{
+          max: props.quota.max,
+          ignoreQuota: props.quota.ignoreQuota.toString(),
+          used: props.quota.used
+        }}
+        enableReinitialize
+        onSubmit={onSubmit}
+        validate={validate}
+      >
+        {props => {
+          const {
+            isSubmitting,
+            handleSubmit,
+            isValid,
+            errors,
+            status,
+            setStatus,
+            setFieldValue
+          } = props;
 
-  render() {
-    const { pristine, submitting, error, handleSubmit } = this.props;
-    const { ignoreQuota } = this.props.admin.user.storageQuota;
-
-    const option = ignoreQuota ? "false" : "true";
-    return (
-      <form onSubmit={handleSubmit(this.onSubmit)} className="ui form error">
-        <label>Max storage amount (In GBs):</label>
-        <Field
-          name="max"
-          component={renderInput}
-          type="number"
-          label="Max storage amount"
-        />
-        <label>Ignore storage quota:</label>
-        <Field name="ignoreQuota" component="select" className="field">
-          <option value={ignoreQuota ? "true" : "false"}>
-            {ignoreQuota ? "true" : "false"}
-          </option>
-          <option value={option}>{option}</option>
-        </Field>
-        {error && renderErrorMessage(error)}
-        <button
-          className="ui fluid large buttonFormat submit button"
-          disabled={submitting || pristine}
-        >
-          Update Quota
-        </button>
-      </form>
-    );
-  }
-}
+          return (
+            <form onSubmit={handleSubmit}>
+              Max Storage:
+              <Field
+                name="max"
+                as={InputWithErrors}
+                type="text"
+                placeholder="Max Quota"
+                error={errors.max}
+              />
+              Ignore Quota:
+              <Field
+                name="ignoreQuota"
+                as={SelectInputWithErrors}
+                error={errors.ignoreQuota}
+                onChange={data => setFieldValue("ignoreQuota", data)}
+              >
+                <Option value={"true"}>True</Option>
+                <Option value={"false"}>False</Option>
+              </Field>
+              <Button
+                type="primary"
+                htmlType="submit"
+                className="form-button"
+                disabled={!isValid || isSubmitting}
+                loading={isSubmitting}
+              >
+                {isSubmitting ? "Updating" : "Update"}
+              </Button>
+              {status && (
+                <Alert
+                  message="Update Error"
+                  description={status}
+                  type="error"
+                  closable
+                  showIcon
+                  onClose={() => setStatus("")}
+                />
+              )}
+            </form>
+          );
+        }}
+      </Formik>
+    </Card>
+  );
+};
 const validate = formValues => {
   const errors = {};
 
@@ -55,13 +93,3 @@ const validate = formValues => {
   }
   return errors;
 };
-
-const mapStateToProps = state => {
-  return { admin: state.admin };
-};
-
-export default connect(mapStateToProps, { getRoles, updateUserQuota })(
-  reduxForm({ form: "EditUserQuotaForm", enableReinitialize: true, validate })(
-    EditUserQuotaForm
-  )
-);

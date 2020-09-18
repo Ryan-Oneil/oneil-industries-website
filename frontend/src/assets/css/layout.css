@@ -1,5 +1,26 @@
+@import '~antd/dist/antd.css';
+
 body {
     background-color: #f0f3f6;
+}
+
+.centerContent {
+    margin: auto;
+    display: block;
+}
+
+.ant-divider-horizontal.ant-divider-with-text-center::before,
+.ant-divider-horizontal.ant-divider-with-text-center::after
+{
+    border-top: 1px solid white;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: white;
+}
+.dashboard {
+    margin-top: -50px;
+    /*height: 100vh;*/
 }
 .bottomFooter {
     position: fixed!important;
@@ -7,6 +28,71 @@ body {
     bottom: 0;
     width: 100%;
     z-index: 10;
+    text-align: center;
+}
+
+.centerText {
+    text-align: center;
+}
+.right {
+    float: right;
+    margin-left: auto;
+    overflow: hidden;
+}
+.leftMenu {
+    float: left;
+}
+.rightMenu {
+    float: right;
+}
+
+.avatar {
+    margin-right: 8px;
+    /*background: rgba(255, 255, 255, 0.85);*/
+}
+.userDropdown {
+    display: inline-block;
+    height: 100%;
+    padding: 0 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.userDropdown:hover {
+    background: rgba(0,0,0,.025);
+}
+.login {
+    width: 20%;
+    margin-top: 2%;
+    margin-left: auto;
+    margin-right: auto;
+}
+.appName {
+    color: rgba(255, 255, 255, 0.65);
+    text-align: center;
+    padding: 20px;
+}
+@media only screen and (max-width: 800px) {
+    .username {
+        display: none;
+    }
+    .right {
+        position: absolute;
+        top: 0;
+        right: 12px;
+    }
+    .right .account .avatar {
+        margin-right: 0;
+    }
+    .leftMenu,.rightMenu{
+        display: none;
+    }
+    .responsiveMenuButton {
+        display: inline-block!important;
+    }
+}
+.whiteBackground {
+    background: #fff;
+    overflow: hidden;
 }
 
 .lightBlack{
@@ -20,29 +106,25 @@ body {
     color: #2c2f3e;
 }
 
-.showDisplay {
-    display: block!important;
-}
-
 .removeMargin {
     margin: 0!important;
 }
 
-.maindiv {
-    height: 100%;
-}
-
 .mainpage {
-    padding-top: 70px;
-    margin-bottom: 30px;
+    padding-top: 50px;
+    margin-bottom: 70px;
     min-height: 96%;
     height: auto;
-    background: rgb(61, 76, 104);
     font-family: "Open Sans", Arial, Helvetica, sans-serif;
+    background: rgb(61, 76, 104);
 }
 
 #root {
     height: 100%;
+    background: rgb(61, 76, 104);
+}
+.blueBackgroundColor {
+    background: rgb(61, 76, 104);
 }
 
 .textFormat {
@@ -50,66 +132,14 @@ body {
     color: #666;
     font-family: 'Muli', sans-serif;
 }
-.centerVideo {
-    display: block;
-    margin: 0 auto;
-    max-width: 100%;
-}
 .centerButton {
-    display: flex!important;
-    margin-left: auto!important;
-    margin-right: auto!important;
-    margin-top: 20px!important;
-}
-.buttonLink {
-    background:none!important;
-    border:none;
-    padding:0!important;
-
-    font-family:arial,sans-serif;
-    color:#069;
-    cursor:pointer;
-}
-.buttonLink:hover{
-    text-decoration:underline;
-}
-
-.teamspeakList {
-    /*width: 20% !important;*/
-    display: inline-block !important;;
-    text-align: left !important;;
-    background: #FFFFFF !important;;
-    color: #2c2f3e!important;
-    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24) !important;;
-    height: 50% !important;;
-    max-height: 50% !important;;
-    overflow: auto !important;;
-    margin: 20px !important;;
-}
-.teamspeakList h2 {
-    text-align: center;
-}
-.subChannel{
-    padding-left: 20px;
-}
-.teamspeakList .user{
-padding-left: 30px;
-}
-.channel {
-
-}
-
-.channel p, .subChannel p, .user p {
-    margin: 5px;
-}
-.channel img, .subChannel img, .user img {
-    vertical-align: middle;
-}
-.userNav {
-    justify-content: center;
+    display: flex;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
 }
 .marginPadding {
-    margin: 1rem 0!important;
+    margin: 1rem 0;
 }
 .bottomMargin {
     margin-bottom: 1em!important;
@@ -128,42 +158,7 @@ padding-left: 30px;
 .navTextColor {
     color: rgba(255,255,255,.9)!important;
 }
-.modalBackground {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width:100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-}
 
-#dashboardSideMenu {
-    position: fixed;
-    top: 50px;
-    height: 100vh;
-    background-color: rgb(27, 36, 48);
-    padding-left: 0;
-    padding-right: 0;
-    z-index: 5;
-}
-
-#dashboardSideMenu .ui.menu a.item {
-    padding: 10px 20px;
-    line-height: 20px;
-    color: rgb(238, 238, 238);
-    border-radius: 0 !important;
-    margin-top: 0;
-    margin-bottom: 0;
-}
-
-#dashboardSideMenu .ui.menu a.item.active {
-    background-color: rgb(18, 24, 32);
-    border: none !important;
-}
-
-#dashboardSideMenu .ui.menu a.item:hover {
-    background: rgba(0, 0, 0, 0.08);
-}
 .dashboardHeader {
     font-size: 1.125rem;
     font-weight: 600;
@@ -173,115 +168,83 @@ padding-left: 30px;
     min-height: 56px;
     padding: 20px;
 }
-.removeCircleBorder {
-    border-radius: 0!important;
-}
-.fixedHeader {
-    width: 100%;
-    top: 0;
-    left: 0;
-    position: fixed;
-    z-index: 100;
-}
-.subNavHeader {
-    padding: 10px 20px;
-    line-height: 20px;
-    color: rgb(238, 238, 238);
-    border-radius: 0 !important;
-    margin-top: 0;
-    margin-bottom: 0;
-    cursor: pointer;
-}
-.subNavHeader:hover {
-    background: rgba(0, 0, 0, 0.08);
-}
 
-.subMenuItem {
-    padding-left: 40px!important;
-}
-.subMenuActive {
-    background-color: rgb(26, 31, 39);
-}
-.rightIcon {
-    float: right;
-}
-.errorModal {
-    margin: 5% auto!important;
-    left: 0!important;
-    right: 0!important;
-    position: fixed!important;
-    top: 25%!important;
-    z-index: 1000!important;
-}
-.pointerCursor {
-    cursor: pointer;
-}
-.boxOutline {
-    outline: 2px dashed black;
-    outline-offset: -10px;
-}
-.fileHover {
-    background-color: white!important;
-}
-.centerItem {
-    margin: auto 8% auto 10% !important;
-}
-.logoText {
-    color: #f92214!important;
-    white-space: nowrap;
-}
-a.removeFormat:link {
-    text-decoration: inherit;
-}
-
-a.removeFormat:visited {
-    text-decoration: inherit;
-}
-#redText a {
-    color: #2c2f3e!important;
-    font-size: 16px;
-    font-weight: 400;
-}
-#redText a:hover,#redText .active {
-    color: #f1574d!important;
-}
-#headerButton {
-    background: #f1574d;
-    padding: 8px 15px;
-    color: white!important;
-    margin-left: 15px;
-    font-size: 16px;
-    font-weight: 400;
-}
-#secondMenu {
-    margin-right: 25%;
-}
-.buttonFormat {
-    color: #FFFFFF!important;
-    background: #f1574d!important;
-    padding-left: 10%!important;
-    padding-right: 10%!important;
-    margin-bottom: 10px!important;
-}
-.leftAlignText {
-    text-align: left!important;
-}
-.formatInfo {
-    line-height: 2.14;
-}
-.formatInfo h3 {
-    font-size: 18px;
-    line-height: 23px;
-}
 .preventTextOverflow {
     overflow-wrap: break-word;
 }
 .whiteText {
     color: #FFFFFF!important;
 }
-.wordWrap {
-    word-wrap: break-word;
+.logoText {
+    color: #f92214;
+    white-space: nowrap;
 }
-.card, .segment {
-    overflow: auto;
+.logo {
+    float: left;
+    width: 210px;
+}
+.headerMenu {
+    width: calc(100% - 200px);
+    float: left;
+}
+.login-form {
+    padding-top: 5%;
+}
+.form-button {
+    width: 100%;
+    background-color: #f1574d;
+    border-color: #f1574d;
+    color: white;
+}
+.form-button:hover {
+    background-color: #f76057;
+    border-color: #f76057;
+    color: white;
+}
+.inputField {
+    margin-bottom: 24px;
+}
+.ant-row {
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+}
+
+.fixGap:first-child {
+    padding-left: 0 !important;
+}
+
+.fixGap:last-child {
+    padding-right: 0 !important;
+}
+.responsiveMenuButton {
+    float: right;
+    margin-top: 15px;
+    display: none;
+}
+.pointerCursor {
+    cursor: pointer;
+}
+.ant-drawer-body{
+    padding: 0;
+}
+.ant-drawer-body .ant-menu-horizontal > .ant-menu-item, .ant-drawer-body .ant-menu-horizontal > .ant-menu-submenu{
+    display: inline-block;
+    width: 100%;
+}
+.ant-drawer-body .ant-menu-horizontal{
+    border-bottom: none;
+}
+.ant-drawer-body .ant-menu-horizontal > .ant-menu-item:hover{
+    border-bottom-color: transparent;
+}
+
+.ant-menu-horizontal > .ant-menu-item-selected a, .ant-menu-horizontal > .ant-menu-item a:hover {
+    color: #f1574d;
+}
+.extraPadding {
+    padding: 24px;
+}
+.imageResponse {
+    max-width: 100%;
+    height: auto;
 }

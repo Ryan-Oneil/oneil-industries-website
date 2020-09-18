@@ -1,71 +1,150 @@
-import React from "react";
-import { connect } from "react-redux";
-import { getAdminStats } from "../../actions/admin";
-import StatBox from "../../components/StatBox";
-import { displayBytesInReadableForm } from "../../functions";
-import { ListItem, StatList } from "../../components/StatList";
+import React, { useEffect, useState } from "react";
+import { displayBytesInReadableForm } from "../../helpers";
+import { Col, Row, List, Avatar } from "antd";
+import StatisticCard from "../../components/Stats/StatisticCard";
+import ListCard from "../../components/Stats/ListCard";
+import { useDispatch, useSelector } from "react-redux";
+import { getAdminLinkStats, getAdminStats } from "../../reducers/adminReducer";
 
-class Stats extends React.Component {
-  componentDidMount() {
-    this.props.getAdminStats("/admin/stats");
-  }
+export default () => {
+  const [loading, setLoading] = useState(true);
+  const [loadingFileShareData, setLoadingFileShareData] = useState(true);
+  const dispatch = useDispatch();
+  const { admin } = useSelector(state => state);
+  const { totalViews, totalLinks, mostViewed, recentShared } = admin.fileShare;
 
-  renderUserList = () => {
-    return this.props.admin.stats.recentUsers.map(user => {
-      return (
-        <ListItem
-          headerText={user.username}
-          subText={user.email}
-          iconType="user"
-          src={require("../../assets/images/userIcon.png")}
-        />
-      );
-    });
-  };
+  const {
+    totalMedia,
+    totalAlbums,
+    totalUsers,
+    recentUsers,
+    remainingStorage,
+    usedStorage
+  } = useSelector(state => state.admin.stats);
 
-  renderFeedBackList = () => {
-    return this.props.admin.stats.feedback.map(feedback => {
-      return (
-        <ListItem
-          headerText={feedback.subject}
-          subText={feedback.email}
-          iconType="email"
-          src={require("../../assets/images/email.png")}
-        />
-      );
-    });
-  };
+  useEffect(() => {
+    dispatch(getAdminStats()).then(() => setLoading(false));
+    dispatch(getAdminLinkStats()).then(() => setLoadingFileShareData(false));
+  }, []);
 
-  render() {
-    const { stats } = this.props.admin;
-
-    return (
-      <div className="ui padded grid">
-        <div className="row">
-          <StatBox header="Total Media" value={stats.totalMedia} />
-          <StatBox header="Total Albums" value={stats.totalAlbums} />
-          <StatBox header="Total Users" value={stats.totalUsers} />
-          <StatBox
-            header="Remaining Storage"
-            value={displayBytesInReadableForm(stats.remainingStorage * 1024)}
+  return (
+    <div style={{ padding: "24px" }}>
+      <Row gutter={[32, 32]} type="flex">
+        <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+          <StatisticCard title="Total Media" value={totalMedia} />
+        </Col>
+        <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+          <StatisticCard title="Total Albums" value={totalAlbums} />
+        </Col>
+        <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+          <StatisticCard title="Total Users" value={totalUsers} />
+        </Col>
+        <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+          <StatisticCard
+            title="Used Storage"
+            value={displayBytesInReadableForm(usedStorage)}
           />
-        </div>
-        <div className="row">
-          <StatList header="Recent Users">
-            <div className="ui large divided list">{this.renderUserList()}</div>
-          </StatList>
-          <StatList header="Recent Feedback">
-            <div className="ui large divided list">
-              {this.renderFeedBackList()}
-            </div>
-          </StatList>
-        </div>
-      </div>
-    );
-  }
-}
-const mapStateToProps = state => {
-  return { admin: state.admin };
+        </Col>
+        <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+          <StatisticCard title="Uptime" value={"In-progress"} />
+        </Col>
+        <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+          <StatisticCard title="Total Shared Links" value={totalLinks} />
+        </Col>
+        <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+          <StatisticCard title="Total Views" value={totalViews} />
+        </Col>
+        <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+          <StatisticCard
+            title="Available Storage"
+            value={displayBytesInReadableForm(remainingStorage)}
+          />
+        </Col>
+      </Row>
+      <Row gutter={[32, 32]} type="flex">
+        <Col xs={24} sm={24} md={12} lg={12} xl={8}>
+          <ListCard
+            title="Recent Users"
+            itemLayout="horizontal"
+            dataSource={recentUsers}
+            loading={loading}
+            renderItem={item => (
+              <List.Item>
+                <List.Item.Meta
+                  avatar={
+                    <Avatar
+                      src={require("../../assets/images/file.png")}
+                      size="large"
+                    />
+                  }
+                  title={item.name}
+                  description={item.email}
+                />
+              </List.Item>
+            )}
+          />
+        </Col>
+        <Col xs={24} sm={24} md={12} lg={12} xl={8}>
+          <ListCard
+            title="Popular Links"
+            itemLayout="horizontal"
+            dataSource={mostViewed}
+            loading={loadingFileShareData}
+            renderItem={item => (
+              <List.Item>
+                <List.Item.Meta
+                  avatar={
+                    <Avatar
+                      src={require("../../assets/images/file.png")}
+                      size="large"
+                    />
+                  }
+                  title={
+                    <a
+                      href={`/shared/${item.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {item.title ? item.title : item.id}
+                    </a>
+                  }
+                  description={`${item.views} views`}
+                />
+              </List.Item>
+            )}
+          />
+        </Col>
+        <Col xs={24} sm={24} md={12} lg={12} xl={8}>
+          <ListCard
+            title="Recent Links"
+            itemLayout="horizontal"
+            dataSource={recentShared}
+            loading={loadingFileShareData}
+            renderItem={item => (
+              <List.Item>
+                <List.Item.Meta
+                  avatar={
+                    <Avatar
+                      src={require("../../assets/images/file.png")}
+                      size="large"
+                    />
+                  }
+                  title={
+                    <a
+                      href={`/shared/${item.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {item.title ? item.title : item.id}
+                    </a>
+                  }
+                  description={`${item.views} views`}
+                />
+              </List.Item>
+            )}
+          />
+        </Col>
+      </Row>
+    </div>
+  );
 };
-
-export default connect(mapStateToProps, { getAdminStats })(Stats);

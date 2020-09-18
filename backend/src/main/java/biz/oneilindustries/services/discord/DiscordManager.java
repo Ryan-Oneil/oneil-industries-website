@@ -1,12 +1,16 @@
 package biz.oneilindustries.services.discord;
 
 import biz.oneilindustries.rank.Rank;
+import biz.oneilindustries.website.pojo.CustomChannel;
+import biz.oneilindustries.website.pojo.ServiceClient;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import net.dv8tion.jda.api.entities.Category;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -26,6 +30,28 @@ public class DiscordManager {
         guild = DiscordBot.getGuild();
 
         return guild.getMembers();
+    }
+
+    public List<CustomChannel> getChannelsMapped() {
+        List<Category> categories = getCategories();
+
+        return categories.stream()
+            .filter(category -> !category.getVoiceChannels().isEmpty())
+            .map(category -> {
+                CustomChannel parentCategory = new CustomChannel(category.getName(), category.getId());
+                List<VoiceChannel> voiceChannels = category.getVoiceChannels();
+
+                voiceChannels.forEach(voiceChannel ->  {
+                    CustomChannel discordChannel = new CustomChannel(voiceChannel.getName(), voiceChannel.getId());
+                    List<ServiceClient> usersInChannel = voiceChannel.getMembers().stream()
+                        .map(member -> new ServiceClient(member.getEffectiveName(), member.getId()))
+                        .collect(Collectors.toList());
+
+                    discordChannel.setUsersInChannel(usersInChannel);
+                    parentCategory.addChild(discordChannel);
+                });
+                return parentCategory;
+            }).collect(Collectors.toList());
     }
 
     public void sendUserMessage(String uuid, String message) {

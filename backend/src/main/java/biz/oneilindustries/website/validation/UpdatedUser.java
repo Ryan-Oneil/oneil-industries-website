@@ -15,21 +15,17 @@ public class UpdatedUser {
 
     private String role;
 
-    private Boolean enabled;
-
-    public UpdatedUser(@NotNull String username, String password, @NotNull String email, String role, Boolean enabled) {
+    public UpdatedUser(@NotNull String username, String password, @NotNull String email, String role) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.role = role;
-        this.enabled = enabled;
     }
 
-    public UpdatedUser(@NotNull String username, @NotNull String email, String role, Boolean enabled) {
+    public UpdatedUser(@NotNull String username, @NotNull String email, String role) {
         this.username = username;
         this.email = email;
         this.role = role;
-        this.enabled = enabled;
     }
 
     public UpdatedUser() {
@@ -43,8 +39,8 @@ public class UpdatedUser {
         this.username = username;
     }
 
-    public String getEmail() {
-        return email;
+    public Optional<String> getEmail() {
+        return Optional.ofNullable(email);
     }
 
     public void setEmail(String email) {
@@ -57,14 +53,6 @@ public class UpdatedUser {
 
     public void setRole(String role) {
         this.role = role;
-    }
-
-    public  Optional<Boolean> getEnabled() {
-        return Optional.ofNullable(enabled);
-    }
-
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
     }
 
     public Optional<String> getPassword() {

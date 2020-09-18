@@ -6,6 +6,7 @@ import static biz.oneilindustries.website.security.SecurityConstants.SECRET;
 import static biz.oneilindustries.website.security.SecurityConstants.TOKEN_PREFIX;
 
 import biz.oneilindustries.website.entity.ApiToken;
+import biz.oneilindustries.website.entity.User;
 import biz.oneilindustries.website.service.UserService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -100,11 +101,13 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     }
 
     private UsernamePasswordAuthenticationToken returnAuth(DecodedJWT decodedToken) {
+        int userID = decodedToken.getClaim("userID").asInt();
         String user = decodedToken.getClaim("user").asString();
         String role = decodedToken.getClaim("role").asString();
+        User userAuth = new User(userID, user, role );
 
         ArrayList<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(role));
-        return new UsernamePasswordAuthenticationToken(user, null, authorities);
+        return new UsernamePasswordAuthenticationToken(userAuth, null, authorities);
     }
 }

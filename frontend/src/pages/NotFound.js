@@ -1,11 +1,23 @@
 import React from "react";
-import {useLocation} from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { Button, Card, Result } from "antd";
 export default () => {
-    let location = useLocation();
+  let location = useLocation();
 
-    return (
-        <div className="marginPadding">
-            <h1 className="ui center aligned header">404 - {location.pathname} doesn't exist</h1>
-        </div>
-    );
-}
+  return (
+    <div style={{ padding: "24px" }}>
+      <Card>
+        <Result
+          status="404"
+          title="404"
+          subTitle={`Sorry, ${location.pathname} does not exist.`}
+          extra={
+            <Link to="/">
+              <Button type="primary">Back Home</Button>
+            </Link>
+          }
+        />
+      </Card>
+    </div>
+  );
+};

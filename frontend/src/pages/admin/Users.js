@@ -1,71 +1,69 @@
-import React from "react";
-import { connect } from "react-redux";
-import { getUsers } from "../../actions/admin";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { SearchAbleTable } from "../../components/Table/SearchAbleTable";
+import { getAllUsers } from "../../reducers/adminReducer";
+import { Button, Card, Table, Tooltip } from "antd";
+import EditOutlined from "@ant-design/icons/lib/icons/EditOutlined";
 
-class Users extends React.Component {
-  constructor(props) {
-    super(props);
-    this.props.getUsers("/admin/users");
-  }
+export default props => {
+  const { match } = props;
+  const dispatch = useDispatch();
+  const { users } = useSelector(state => state.admin.entities);
+  const [loading, setLoading] = useState(true);
 
-  renderUserRows = rows => {
-    return rows.map(row => {
-      return {
-        username: row.username,
-        email: row.email,
-        role: row.role,
-        enabled: row.enabled ? "Enabled" : "Disabled",
-        manage: row.manage
-      };
-    });
-  };
+  useEffect(() => {
+    dispatch(getAllUsers()).then(() => setLoading(false));
+  }, []);
 
-  render() {
-    const columns = [
-      {
-        Header: "Username",
-        accessor: "username"
-      },
-      {
-        Header: "Email",
-        accessor: "email"
-      },
-      {
-        Header: "Role",
-        accessor: "role"
-      },
-      {
-        Header: "Enabled",
-        accessor: "enabled"
-      },
-      {
-        Header: "Manage",
-        Cell: ({ row }) => (
-          <Link to={`users/${row.values.username}`}>
-            <i className="edit icon" />
-            Manage
+  const columns = [
+    {
+      title: "ID",
+      dataIndex: "id",
+      sorter: true,
+      defaultSortOrder: "descend"
+    },
+    {
+      title: "Username",
+      dataIndex: "name"
+    },
+    {
+      title: "Email",
+      dataIndex: "email"
+    },
+    {
+      title: "Role",
+      dataIndex: "role",
+      sorter: true
+    },
+    {
+      title: "Status",
+      dataIndex: "enabled",
+      render: enabled => (enabled ? "Enabled" : "Disabled"),
+      sorter: true
+    },
+    {
+      title: "",
+      key: "action",
+      render: (text, record) => (
+        <Tooltip title="Edit">
+          <Link to={`${match.path}/${record.name}`}>
+            <Button shape="circle" icon={<EditOutlined />} />
           </Link>
-        )
-      }
-    ];
-    const { users } = this.props.admin;
+        </Tooltip>
+      )
+    }
+  ];
 
-    return (
-      <div className="ui padded grid">
-        <div className="thirteen wide column">
-          <SearchAbleTable
-            columns={columns}
-            data={this.renderUserRows(users)}
-          />
-        </div>
-      </div>
-    );
-  }
-}
-const mapStateToProps = state => {
-  return { admin: state.admin };
+  return (
+    <div style={{ padding: "24px" }}>
+      <Card>
+        <Table
+          dataSource={Object.values(users)}
+          columns={columns}
+          rowKey={user => user.id}
+          loading={loading}
+        />
+      </Card>
+    </div>
+  );
 };
-
-export default connect(mapStateToProps, { getUsers })(Users);

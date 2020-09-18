@@ -1,85 +1,71 @@
-import React from "react";
-import { connect } from "react-redux";
-import RenderMedias from "../../../components/Gallery/RenderMedias";
-import Modal from "../../../components/Gallery/Modal";
+import React, { useEffect, useState } from "react";
 import { BASE_URL } from "../../../apis/api";
 import EditMediaForm from "../../../components/formElements/EditMediaForm";
-import { renderErrorMessage } from "../../../components/Message";
-import {
-  deleteMedia,
-  fetchImages,
-  setActiveMediaForModal
-} from "../../../actions";
+import { ADMIN_GET_MEDIAS_ENDPOINT } from "../../../apis/endpoints";
+import MediaGrid from "../../../components/Gallery/MediaGrid";
+import { Button, Modal } from "antd";
+import { deleteMedia } from "../../../reducers/mediaReducer";
+import { useDispatch, useSelector } from "react-redux";
 import Media from "../../../components/Gallery/Media";
 
-class MediaAdmin extends React.Component {
-  state = { isModalOpen: false };
+export default () => {
+  const dispatch = useDispatch();
+  const { medias } = useSelector(state => state.medias.entities);
+  const [activeMedia, setActiveMedia] = useState("");
 
-  componentDidMount() {
-    this.props.fetchImages("/admin/medias");
-  }
-
-  handleShowDialog = mediaID => {
-    this.setState({
-      isModalOpen: !this.state.isModalOpen
-    });
-    this.props.setActiveMediaForModal(mediaID);
+  const handleShowDialog = media => {
+    setActiveMedia(media);
   };
 
-  render() {
-    const { activeMedia, mediasList, deleteError } = this.props.medias;
+  useEffect(() => {
+    if (activeMedia) {
+      setActiveMedia(medias[activeMedia.id]);
+    }
+  }, [medias]);
 
-    return (
-      <div className="ui padded equal width grid">
-        <div className="ui four column centered grid">
-          {RenderMedias(mediasList, this.handleShowDialog, true)}
-        </div>
-        {this.state.isModalOpen && (
-          <Modal title={activeMedia.name} closeModal={this.handleShowDialog}>
-            <div className="image">
-              <a
-                href={`${BASE_URL}/gallery/${activeMedia.mediaType}/${activeMedia.fileName}`}
-              >
-                <Media
-                  media={activeMedia}
-                  renderVideoControls={true}
-                  fullSize={true}
-                />
-              </a>
-            </div>
-            <button
-              value="Delete"
-              className="centerButton ui negative button center aligned bottomMargin"
-              onClick={() => {
-                this.props.deleteMedia(
+  return (
+    <div style={{ marginTop: "20px" }}>
+      <MediaGrid
+        imageEndpoint={`${ADMIN_GET_MEDIAS_ENDPOINT}image`}
+        videoEndpoint={`${ADMIN_GET_MEDIAS_ENDPOINT}video`}
+        handleShowDialog={handleShowDialog}
+      />
+      {activeMedia && (
+        <Modal
+          title={activeMedia.name}
+          visible={activeMedia}
+          onCancel={() => setActiveMedia("")}
+          footer={null}
+          width={550}
+        >
+          <a
+            href={`${BASE_URL}/gallery/${activeMedia.mediaType}/${activeMedia.fileName}`}
+          >
+            <Media
+              media={activeMedia}
+              renderVideoControls={true}
+              fullSize={true}
+            />
+          </a>
+          <Button
+            value="Delete"
+            className="centerButton"
+            type="danger"
+            onClick={() => {
+              dispatch(
+                deleteMedia(
                   `/gallery/media/delete/${activeMedia.id}`,
                   activeMedia.id
-                );
-                this.setState({ isModalOpen: false });
-              }}
-            >
-              Delete
-            </button>
-            <EditMediaForm
-              media={activeMedia}
-              initialValues={{
-                name: activeMedia.name,
-                privacy: activeMedia.linkStatus
-              }}
-            />
-            {deleteError && renderErrorMessage(deleteError)}
-          </Modal>
-        )}
-      </div>
-    );
-  }
-}
-const mapStateToProps = state => {
-  return { medias: state.medias };
+                )
+              );
+              setActiveMedia("");
+            }}
+          >
+            Delete
+          </Button>
+          <EditMediaForm media={activeMedia} />
+        </Modal>
+      )}
+    </div>
+  );
 };
-
-export default connect(mapStateToProps, {
-  fetchImages,
-  setActiveMediaForModal,
-  deleteMedia
-})(MediaAdmin);

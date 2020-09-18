@@ -1,76 +1,93 @@
 import React from "react";
-import { Field, reduxForm } from "redux-form";
-import { connect } from "react-redux";
-import { clearMessages, updateMedia } from "../../actions";
-import { renderInput } from "./index";
-import { renderErrorMessage, renderPositiveMessage } from "../Message";
+import { useDispatch } from "react-redux";
+import { InputWithErrors, SelectInputWithErrors } from "./index";
+import { getApiError } from "../../helpers";
+import { Field, Formik } from "formik";
+import { Alert, Button, Select } from "antd";
+import { updateMedia } from "../../reducers/mediaReducer";
+const { Option } = Select;
 
-class EditMediaForm extends React.Component {
-  onSubmit = formValues => {
-    return this.props.updateMedia(
-      `/gallery/media/update/${this.props.media.id}`,
-      formValues,
-      this.props.media.id
+export default props => {
+  const dispatch = useDispatch();
+
+  const onSubmit = (formValues, { setStatus }) => {
+    return dispatch(updateMedia(formValues, props.media.id)).catch(error =>
+      setStatus(getApiError(error))
     );
   };
 
-  componentWillUnmount() {
-    this.props.clearMessages();
-  }
+  return (
+    <Formik
+      initialValues={{
+        name: props.media.name,
+        privacy: props.media.linkStatus
+      }}
+      onSubmit={onSubmit}
+      validate={validate}
+    >
+      {props => {
+        const {
+          isSubmitting,
+          handleSubmit,
+          isValid,
+          errors,
+          status,
+          setStatus,
+          setFieldValue
+        } = props;
 
-  render() {
-    const { submitting, error, submitSucceeded, handleSubmit } = this.props;
-    const { mediaUpdateMessage } = this.props.medias;
-
-    return (
-      <div className="ui one column stackable center aligned page grid">
-        <div className="column twelve wide">
-          <form
-            onSubmit={handleSubmit(this.onSubmit)}
-            className="ui form error"
-          >
-            <div className="ui segment">
-              <h1 className="textFormat">Edit Media</h1>
-              <label className="textFormat">Media Name</label>
-              <Field name="name" component={renderInput} type="text" />
-              <label className="textFormat">Link Status</label>
-              <Field name="privacy" component="select" className="field">
-                <option value="unlisted">Unlisted</option>
-                <option value="public">Public</option>
-                <option value="private">Private</option>
-              </Field>
-              {error && renderErrorMessage(error)}
-              {mediaUpdateMessage && renderPositiveMessage(mediaUpdateMessage)}
-              <button
-                className="ui fluid large buttonFormat submit button"
-                disabled={submitting || submitSucceeded}
-              >
-                Confirm
-              </button>
-            </div>
+        return (
+          <form onSubmit={handleSubmit} className="login-form">
+            <Field
+              name="name"
+              as={InputWithErrors}
+              type="text"
+              placeholder="Media Name"
+              error={errors.name}
+            />
+            <Field
+              name="privacy"
+              as={SelectInputWithErrors}
+              type="privacy"
+              placeholder={"Privacy Status"}
+              onChange={data => setFieldValue("privacy", data)}
+            >
+              <Option value="unlisted">Unlisted</Option>
+              <Option value="public">Public</Option>
+              <Option value="private">Private</Option>
+            </Field>
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="form-button"
+              disabled={!isValid || isSubmitting}
+              loading={isSubmitting}
+              size="large"
+            >
+              {isSubmitting ? "Updating" : "Update"}
+            </Button>
+            {status && (
+              <Alert
+                message="Media Update Error"
+                description={status}
+                type="error"
+                closable
+                showIcon
+                onClose={() => setStatus("")}
+              />
+            )}
           </form>
-        </div>
-      </div>
-    );
-  }
-}
-const validate = formValues => {
+        );
+      }}
+    </Formik>
+  );
+};
+
+const validate = values => {
   const errors = {};
 
-  if (!formValues.name) {
-    errors.name = "A Media needs a name!";
+  if (!values.name) {
+    errors.name = "Name is required";
   }
   return errors;
 };
-
-const mapStateToProps = state => ({
-  medias: state.medias
-});
-
-export default connect(mapStateToProps, { updateMedia, clearMessages })(
-  reduxForm({
-    form: "editImage",
-    enableReinitialize: true,
-    validate
-  })(EditMediaForm)
-);

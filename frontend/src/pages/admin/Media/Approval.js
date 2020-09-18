@@ -1,89 +1,91 @@
-import React from "react";
-import { connect } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import ApprovalCard from "../../../components/Gallery/ApprovalCard";
+import { BASE_URL } from "../../../apis/api";
+import Media from "../../../components/Gallery/Media";
 import {
   approvePublicMedia,
   denyPublicMedia,
   getMediaApprovals
-} from "../../../actions/admin";
-import ApprovalCard from "../../../components/Gallery/ApprovalCard";
-import { BASE_URL } from "../../../apis/api";
-import Modal from "../../../components/Gallery/Modal";
-import Media from "../../../components/Gallery/Media";
+} from "../../../reducers/adminReducer";
+import { Card, Col, Empty, Modal, Row } from "antd";
 
-class Approval extends React.Component {
-  constructor(props) {
-    super(props);
-    this.props.getMediaApprovals("/admin/medias/pendingApproval");
-  }
-  state = { isModalOpen: false, media: {} };
+export default () => {
+  const dispatch = useDispatch();
+  const { mediaApprovals } = useSelector(state => state.admin);
+  const [media, setMedia] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  handleShowDialog = media => {
-    this.setState({ isModalOpen: !this.state.isModalOpen, media });
+  useEffect(() => {
+    dispatch(getMediaApprovals()).then(() => setLoading(false));
+  }, []);
+
+  const handleShowDialog = media => {
+    setMedia(media);
   };
 
-  renderApprovalList = () => {
-    return this.props.admin.mediaApprovals.map(mediaApproval => {
+  const renderApprovalList = () => {
+    return mediaApprovals.map(mediaApproval => {
       return (
-        <div className="three wide column">
+        <Col xs={24} sm={24} md={6} lg={6} xl={6}>
           <ApprovalCard
             media={mediaApproval.media}
-            onClick={this.handleShowDialog.bind(this, mediaApproval.media)}
+            onClick={handleShowDialog.bind(this, mediaApproval.media)}
             uploaderName={mediaApproval.media.uploader}
             fileName={mediaApproval.publicName}
             dateAdded={mediaApproval.media.dateAdded}
             onApproveClick={() => {
-              this.props.approvePublicMedia(
-                `/admin/media/${mediaApproval.id}/approve`,
-                mediaApproval.id
+              dispatch(
+                approvePublicMedia(
+                  `/gallery/admin/media/${mediaApproval.id}/approve`,
+                  mediaApproval.id
+                )
               );
             }}
             onDeclineClick={() => {
-              this.props.denyPublicMedia(
-                `/admin/media/${mediaApproval.id}/deny`,
-                mediaApproval.id
+              dispatch(
+                denyPublicMedia(
+                  `/gallery/admin/media/${mediaApproval.id}/deny`,
+                  mediaApproval.id
+                )
               );
             }}
           />
-        </div>
+        </Col>
       );
     });
   };
 
-  render() {
-    const { media } = this.state;
-
-    return (
-      <div className="ui padded equal width grid">
-        {this.renderApprovalList()}
-        {this.state.isModalOpen && (
-          <Modal title={media.name} closeModal={this.handleShowDialog}>
-            <div className="image">
-              <a
-                href={`${BASE_URL}/gallery/${media.mediaType}/${media.fileName}`}
-              >
-                <Media
-                  media={media}
-                  renderVideoControls={true}
-                  fullSize={true}
-                />
-              </a>
-            </div>
-            <div className="centerText">
-              <p>Uploader: {media.uploader}</p>
-              <p>Uploaded: {media.dateAdded}</p>
-            </div>
-          </Modal>
-        )}
-      </div>
-    );
-  }
-}
-const mapStateToProps = state => {
-  return { admin: state.admin, medias: state.medias };
+  return (
+    <div style={{ padding: "20px" }}>
+      <Row gutter={[32, 32]} style={{ padding: "24px" }}>
+        {renderApprovalList()}
+      </Row>
+      {mediaApprovals.length === 0 && (
+        <Card>
+          <Empty
+            description={
+              loading
+                ? "Fetching Media Approvals"
+                : "No Pending Media Approvals"
+            }
+          />
+        </Card>
+      )}
+      <Modal
+        title={media.name}
+        visible={media}
+        onCancel={() => setMedia("")}
+        footer={null}
+      >
+        <a href={`${BASE_URL}/gallery/${media.mediaType}/${media.fileName}`}>
+          <Media media={media} renderVideoControls={true} fullSize={true} />
+        </a>
+        <div className="centerText">
+          <p>Uploader: {media.uploader}</p>
+          <p>Uploaded: {media.dateAdded}</p>
+        </div>
+      </Modal>
+    </div>
+  );
 };
-
-export default connect(mapStateToProps, {
-  getMediaApprovals,
-  approvePublicMedia,
-  denyPublicMedia
-})(Approval);

@@ -5,21 +5,18 @@ import java.util.List;
 
 public class CustomChannel {
 
-    private String name;
-
-    private String channelID;
-
-    private int parentChannelID;
-
+    private String title;
+    private String key;
+    private List<CustomChannel> children;
     private List<ServiceClient> usersInChannel;
 
-    public CustomChannel(String name, String channelID, int parentChannelID) {
-        this.name = name;
-        if (name.contains("spacer")) {
-            this.name = "";
+    public CustomChannel(String title, String key) {
+        this.title = title;
+        if (title.contains("spacer")) {
+            this.title = "";
         }
-        this.channelID = channelID;
-        this.parentChannelID = parentChannelID;
+        this.key = key;
+        this.children = new ArrayList<>();
         this.usersInChannel = new ArrayList<>();
     }
 
@@ -27,20 +24,20 @@ public class CustomChannel {
         this.usersInChannel.add(client);
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public String getChannelID() {
-        return channelID;
+    public String getKey() {
+        return key;
     }
 
-    public void setChannelID(String channelID) {
-        this.channelID = channelID;
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public List<ServiceClient> getUsersInChannel() {
@@ -51,11 +48,15 @@ public class CustomChannel {
         this.usersInChannel = usersInChannel;
     }
 
-    public int getParentChannelID() {
-        return parentChannelID;
+    public List<CustomChannel> getChildren() {
+        return children;
     }
 
-    public void setParentChannelID(int parentChannelID) {
-        this.parentChannelID = parentChannelID;
+    public void setChildren(List<CustomChannel> children) {
+        this.children = children;
+    }
+
+    public void addChild(CustomChannel customChannel) {
+        this.children.add(customChannel);
     }
 }

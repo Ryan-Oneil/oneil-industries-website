@@ -1,54 +1,47 @@
-import React from "react";
-import { connect } from "react-redux";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import ServiceList from "../components/Services/ServiceList";
+import { Card, Col, Row } from "antd";
 import {
   getDiscordActiveList,
   getTeamspeakActiveList
-} from "../actions/services";
-import ServiceList from "../components/Services/ServiceList";
-import { renderErrorMessage } from "../components/Message";
+} from "../reducers/serviceReducer";
 
-class Services extends React.Component {
-  constructor(props) {
-    super(props);
+export default () => {
+  const dispatch = useDispatch();
+  const { activeTSList, activeDiscord } = useSelector(state => state.services);
 
-    this.props.getTeamspeakActiveList("/services/public/teamspeak");
-    this.props.getDiscordActiveList("/services/public/discord");
-  }
+  useEffect(() => {
+    dispatch(getTeamspeakActiveList());
+    dispatch(getDiscordActiveList());
+  }, []);
 
-  render() {
-    const { activeTSList, activeDiscord, errorMessage } = this.props.services;
-
-    return (
-      <div className="ui two column stackable center aligned page grid">
-        <div className="column eight wide">
-          <div className="teamspeakList ui segment ">
-            <h1 className="ui center aligned header">
+  return (
+    <Row justify="center" gutter={[32, 32]} style={{ marginTop: "20px" }}>
+      <Col xs={18} sm={18} md={16} lg={10} xl={8}>
+        <Card
+          title={
+            <h1 className="centerText">
               <a href="ts3server://ts.oneilindustries.biz/?port=9987">
                 Connect to Teamspeak
               </a>
             </h1>
-            {activeTSList && <ServiceList list={activeTSList} />}
-          </div>
-        </div>
-        <div className="column eight wide">
-          <div className="teamspeakList ui segment ">
-            <h1 className="ui center aligned header">
+          }
+        >
+          <ServiceList serviceList={activeTSList} />
+        </Card>
+      </Col>
+      <Col xs={18} sm={18} md={16} lg={10} xl={8}>
+        <Card
+          title={
+            <h1 className="centerText">
               <a href="https://discord.gg/dZSKaaX">Connect to Discord</a>
             </h1>
-            {activeDiscord && <ServiceList list={activeDiscord} />}
-          </div>
-        </div>
-        {errorMessage && renderErrorMessage(errorMessage)}
-      </div>
-    );
-  }
-}
-
-const mapStateToProps = state => {
-  return { services: state.services };
+          }
+        >
+          <ServiceList serviceList={activeDiscord} />
+        </Card>
+      </Col>
+    </Row>
+  );
 };
-
-export default connect(mapStateToProps, {
-  getTeamspeakActiveList,
-  getDiscordActiveList
-})(Services);

@@ -1,112 +1,122 @@
 import React from "react";
-import { Field, reduxForm } from "redux-form";
-import logo from "../../assets/images/oi-logo.png";
-import "../../assets/css/layout.css";
-import { renderIconInput } from "../formElements";
-import { connect } from "react-redux";
-import { registerUser } from "../../actions";
-import { renderErrorMessage, renderPositiveMessage } from "../Message";
+import { Field, Formik } from "formik";
+import { InputWithErrors } from "./index";
+import { Alert, Button } from "antd";
+import { getApiError } from "../../helpers";
+import MailOutlined from "@ant-design/icons/lib/icons/MailOutlined";
+import LockOutlined from "@ant-design/icons/lib/icons/LockOutlined";
+import UserOutlined from "@ant-design/icons/lib/icons/UserOutlined";
+import { registerUser } from "../../reducers/authReducer";
 
-class RegisterForm extends React.Component {
-  onSubmit = formValues => {
+export default () => {
+  const onSubmit = (formValues, { setStatus }) => {
     const creds = {
-      name: formValues.name.trim(),
+      name: formValues.username.trim(),
       password: formValues.password.trim(),
       email: formValues.email.trim()
     };
-
-    return this.props.registerUser(creds);
+    return registerUser(creds)
+      .then(response => setStatus({ msg: response.data, type: "success" }))
+      .catch(error => {
+        setStatus({ msg: getApiError(error), type: "error" });
+      });
   };
 
-  render() {
-    const { submitting, changeState, error } = this.props;
-    const { message, isRegistered } = this.props.auth;
+  return (
+    <Formik
+      initialValues={{
+        username: "",
+        password: "",
+        confirmPassword: "",
+        email: ""
+      }}
+      onSubmit={onSubmit}
+      validate={validate}
+    >
+      {props => {
+        const {
+          isSubmitting,
+          handleSubmit,
+          isValid,
+          errors,
+          status,
+          setStatus
+        } = props;
 
-    return (
-      <form
-        onSubmit={this.props.handleSubmit(this.onSubmit)}
-        className="ui form error textColorScheme"
-      >
-        <div className="ui segment">
-          <img
-            src={logo}
-            alt="Login Logo"
-            className="ui centered small image"
-          />
-          <h1 className="textColorScheme">Register an account</h1>
-          <Field
-            name="name"
-            component={renderIconInput}
-            label="Enter Username"
-            iconType="user"
-            type="text"
-          />
-          <Field
-            name="password"
-            component={renderIconInput}
-            label="Enter Password"
-            iconType="lock"
-            type="password"
-          />
-          <Field
-            name="confirmPassword"
-            component={renderIconInput}
-            label="Confirm Password"
-            iconType="lock"
-            type="password"
-          />
-          <Field
-            name="email"
-            component={renderIconInput}
-            label="Enter Email"
-            iconType="envelope"
-            type="email"
-          />
-          {error && renderErrorMessage(error)}
-          {message && renderPositiveMessage(message)}
-          <button
-            className="ui large buttonFormat submit button"
-            disabled={submitting || isRegistered}
-          >
-            Register
-          </button>
-          <p>
-            Already have an account?
-            <button className="buttonLink" onClick={changeState}>
-              Login
-            </button>
-          </p>
-        </div>
-      </form>
-    );
-  }
-}
+        return (
+          <form onSubmit={handleSubmit} className="login-form">
+            <Field
+              name="username"
+              as={InputWithErrors}
+              type="text"
+              placeholder="Username"
+              prefix={<UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
+              error={errors.username}
+            />
+            <Field
+              name="password"
+              as={InputWithErrors}
+              type="password"
+              placeholder="Password"
+              prefix={<LockOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
+              error={errors.password}
+            />
+            <Field
+              name="confirmPassword"
+              as={InputWithErrors}
+              type="password"
+              placeholder="Confirm Password"
+              prefix={<LockOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
+              error={errors.confirmPassword}
+            />
+            <Field
+              name="email"
+              as={InputWithErrors}
+              type="email"
+              placeholder="Email"
+              prefix={<MailOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
+              error={errors.email}
+            />
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="form-button"
+              disabled={!isValid || isSubmitting}
+              size="large"
+              loading={isSubmitting}
+            >
+              {isSubmitting ? "Registering" : "Register"}
+            </Button>
+            {status && (
+              <Alert
+                message={status.msg}
+                type={status.type}
+                closable
+                showIcon
+                onClose={() => setStatus("")}
+              />
+            )}
+          </form>
+        );
+      }}
+    </Formik>
+  );
+};
 
-const validate = formValues => {
+const validate = values => {
   const errors = {};
 
-  if (!formValues.name) {
-    errors.name = "You must enter a Username";
+  if (!values.username) {
+    errors.username = "Username is required";
   }
-  if (!formValues.password) {
-    errors.password = "You must enter a Password";
+  if (!values.password) {
+    errors.password = "Password is required";
   }
-  if (!formValues.confirmPassword) {
-    errors.confirmPassword = "Please confirm your password";
-  } else if (formValues.confirmPassword !== formValues.password) {
-    errors.confirmPassword = "Passwords must match";
+  if (values.password !== values.confirmPassword) {
+    errors.confirmPassword = "Passwords don't match";
   }
-  if (!formValues.email) {
-    errors.email = "You must enter a Email";
+  if (!values.email) {
+    errors.email = "Email is required";
   }
   return errors;
 };
-
-const mapStateToProps = state => {
-  return { auth: state.auth };
-};
-export default connect(mapStateToProps, { registerUser })(
-  reduxForm({ form: "register", enableReinitialize: true, validate })(
-    RegisterForm
-  )
-);
