@@ -29,6 +29,7 @@ export default () => {
         imageEndpoint={`${ADMIN_GET_MEDIAS_ENDPOINT}image`}
         videoEndpoint={`${ADMIN_GET_MEDIAS_ENDPOINT}video`}
         handleShowDialog={handleShowDialog}
+        showUploader={true}
       />
       {activeMedia && (
         <Modal

@@ -5,6 +5,7 @@ import biz.oneilindustries.website.dto.ShareXConfig;
 import biz.oneilindustries.website.dto.UserDTO;
 import biz.oneilindustries.website.entity.ApiToken;
 import biz.oneilindustries.website.entity.Role;
+import biz.oneilindustries.website.entity.User;
 import biz.oneilindustries.website.service.UserService;
 import biz.oneilindustries.website.validation.UpdatedQuota;
 import biz.oneilindustries.website.validation.UpdatedUser;
@@ -54,12 +55,13 @@ public class UserController {
     @GetMapping("/{username}/generateAPIToken")
     public ResponseEntity<String> generateAPIJWT(@PathVariable String username, Authentication authentication) {
         ApiToken apiToken = userService.getApiTokenByUser(username);
+        User user = (User) authentication.getPrincipal();
 
         //Deletes existing token
         if (apiToken != null) {
             userService.deleteApiToken(apiToken);
         }
-        ApiToken token = userService.generateApiToken(username);
+        ApiToken token = userService.generateApiToken(user);
 
         return ResponseEntity.ok(token.getToken());
     }

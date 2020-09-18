@@ -9,7 +9,12 @@ import FileImageOutlined from "@ant-design/icons/lib/icons/FileImageOutlined";
 const { Meta } = Card;
 const { TabPane } = Tabs;
 
-export default ({ imageEndpoint, videoEndpoint, handleShowDialog }) => {
+export default ({
+  imageEndpoint,
+  videoEndpoint,
+  handleShowDialog,
+  showUploader
+}) => {
   const { medias } = useSelector(state => state.medias.entities);
   const [imageIds, setImageIds] = useState([]);
   const [imageList, setImageList] = useState([]);
@@ -93,7 +98,7 @@ export default ({ imageEndpoint, videoEndpoint, handleShowDialog }) => {
                   </div>
                   <Divider />
                   <Meta
-                    title={item.name}
+                    title={showUploader ? item.uploader : item.name}
                     description={item.dateAdded}
                     style={{ textAlign: "center" }}
                   />
