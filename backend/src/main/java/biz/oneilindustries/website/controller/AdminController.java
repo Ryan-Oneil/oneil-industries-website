@@ -28,7 +28,7 @@ public class AdminController {
     }
 
     @GetMapping("/stats")
-    public ResponseEntity getDashboardStats() throws IOException {
+    public ResponseEntity<HashMap<String, Object>> getDashboardStats() throws IOException {
         HashMap<String, Object> stats = new HashMap<>();
 
         stats.put("totalMedia", mediaService.getTotalMedias());

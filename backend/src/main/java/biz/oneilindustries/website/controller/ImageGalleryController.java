@@ -4,7 +4,6 @@ import biz.oneilindustries.website.config.ResourceHandler;
 import biz.oneilindustries.website.dto.AlbumDTO;
 import biz.oneilindustries.website.entity.Album;
 import biz.oneilindustries.website.entity.PublicMediaApproval;
-import biz.oneilindustries.website.entity.Quota;
 import biz.oneilindustries.website.entity.User;
 import biz.oneilindustries.website.filecreater.FileHandler;
 import biz.oneilindustries.website.service.MediaService;
@@ -115,10 +114,8 @@ public class ImageGalleryController {
 
     @DeleteMapping("/media/delete/{mediaId}")
     public ResponseEntity<HttpStatus> deleteMedia(@PathVariable int mediaId, Authentication user, HttpServletRequest request) throws IOException {
-        Quota quota = userService.getQuotaByUsername(user.getName());
-
         long mediaSize = mediaService.deleteMedia(mediaId);
-        userService.decreaseUsedAmount(quota, mediaSize);
+        userService.decreaseUsedAmount(user.getName(), mediaSize);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }

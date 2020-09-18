@@ -34,7 +34,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity registerUser(@RequestBody @Valid LoginForm loginForm, HttpServletRequest request) {
+    public ResponseEntity<String> registerUser(@RequestBody @Valid LoginForm loginForm, HttpServletRequest request) {
         User newUser = userService.registerUser(loginForm);
 
         eventPublisher.publishEvent(new OnRegistrationCompleteEvent
@@ -44,14 +44,14 @@ public class AuthController {
     }
 
     @PostMapping("/registrationConfirm/{token}")
-    public ResponseEntity confirmRegistration(@PathVariable String token) {
+    public ResponseEntity<String> confirmRegistration(@PathVariable String token) {
         userService.confirmUserRegistration(token);
 
         return ResponseEntity.ok("Account has been successfully verified!");
     }
 
     @PostMapping("/forgotPassword/{email}")
-    public ResponseEntity sendResetToken(@PathVariable String email) {
+    public ResponseEntity<String> sendResetToken(@PathVariable String email) {
         User user = userService.getUserByEmail(email);
 
         //Will generate a new token or send a previously generated one if exists and not expired
@@ -62,7 +62,7 @@ public class AuthController {
     }
 
     @PostMapping("/newPassword/{token}")
-    public ResponseEntity setNewPassword(@PathVariable String token, @RequestBody String password) {
+    public ResponseEntity<String> setNewPassword(@PathVariable String token, @RequestBody String password) {
         userService.resetUserPassword(token, password);
 
         return ResponseEntity.ok("Password has been changed");

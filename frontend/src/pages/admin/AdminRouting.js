@@ -66,7 +66,7 @@ export default props => {
         <SideNav
           path={match.path}
           links={links}
-          title={"Dashboard"}
+          title={"Admin Dashboard"}
           subLinks={subLinks}
         />
       </Sider>
