@@ -17,6 +17,7 @@ import Register from "../pages/auth/Register";
 import ResetPassword from "../pages/auth/ResetPassword";
 import ChangePassword from "../pages/auth/ChangePassword";
 import EmailConfirmation from "../pages/auth/EmailConfirmation";
+import SharedLinkPage from "../pages/UserDashboard/FileShare/SharedLinkPage";
 const { Footer } = Layout;
 
 class ClientApp extends React.Component {
@@ -53,6 +54,7 @@ class ClientApp extends React.Component {
                   component={ChangePassword}
                 />
               </PublicRoute>
+              <Route path="/shared/:id" component={SharedLinkPage} />
               <Route path="/services" exact component={Services} />
               <PrivateRoute path="/dashboard">
                 <Route path="/dashboard" component={ProfileRouting} />

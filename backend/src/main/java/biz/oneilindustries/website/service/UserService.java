@@ -220,10 +220,13 @@ public class UserService {
         });
     }
 
-    public void decreaseUsedAmount(Quota quota, long amount) {
-        quota.decreaseUsed(amount);
+    public void decreaseUsedAmount(String username, long amount) {
+      Optional<Quota> userQuota = quotaRepository.findById(username);
 
-        saveUserQuota(quota);
+        userQuota.ifPresent(quota -> {
+            quota.decreaseUsed(amount);
+            quotaRepository.save(quota);
+        });
     }
 
     public long getRemainingQuota(String username) {

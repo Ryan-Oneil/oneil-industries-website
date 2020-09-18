@@ -1,10 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { apiGetCall, apiPutCall } from "../apis/api";
-import {
-  ADMIN_GET_USER_DETAIL,
-  ADMIN_UPDATE_USER_DETAILS,
-  ADMIN_UPDATE_USER_QUOTA
-} from "../actions/types";
 import { getApiError } from "../helpers";
 import { setError } from "./globalErrorReducer";
 import {
@@ -12,6 +7,7 @@ import {
   ADMIN_GET_STATS_ENDPOINT,
   ADMIN_GET_USERS_ENDPOINT
 } from "../apis/endpoints";
+import { normalize, schema } from "normalizr";
 
 export const getAllUsers = () => dispatch => {
   return apiGetCall(ADMIN_GET_USERS_ENDPOINT)
@@ -24,32 +20,18 @@ export const getAllUsers = () => dispatch => {
 export const getRoles = endpoint => dispatch => {
   apiGetCall(endpoint).then(({ data }) => dispatch(fetchedRoles(data)));
 };
-export const getUserDetail = endpoint => dispatch => {
-  apiGetCall(endpoint)
-    .then(response => {
-      dispatch({ type: ADMIN_GET_USER_DETAIL, payload: response.data });
-    })
-    .catch(error => dispatch(setError(getApiError(error))));
-};
 
-export const updateUserDetails = (endpoint, data, user) => dispatch => {
-  const updatedUser = {
-    username: user,
-    password: data.password,
-    email: data.email,
-    role: data.role,
-    enabled: data.enabled
-  };
+export const updateUser = user => dispatch => {
+  const userDetails = { email: user.userEmail, password: user.userPass };
 
-  return apiPutCall(endpoint, updatedUser).then(() => {
-    dispatch({ type: ADMIN_UPDATE_USER_DETAILS, user: updatedUser });
-  });
-};
-
-export const updateUserQuota = (endpoint, data) => dispatch => {
-  apiPutCall(endpoint, data).then(() => {
-    dispatch({ type: ADMIN_UPDATE_USER_QUOTA, quota: data });
-  });
+  return apiPutCall(
+    `/user/${user.username}/details/update`,
+    userDetails
+  ).then(() =>
+    dispatch(
+      updateUserDetails({ name: user.username, email: userDetails.email })
+    )
+  );
 };
 
 export const getMediaApprovals = () => dispatch => {
@@ -82,12 +64,46 @@ export const getAdminStats = () => dispatch => {
 export const changeUserPassword = (username, password) => {
   return apiPutCall(`/user/${username}/details/update`, password);
 };
+
+const getUserDetailsBase = username => {
+  return apiGetCall(`/user/${username}/details`);
+};
+
+export const adminGetUserDetails = username => dispatch => {
+  return getUserDetailsBase(username)
+    .then(response => dispatch(getUserDetails(response.data)))
+    .catch(error => dispatch(setError(getApiError(error))));
+};
+
+export const getUserFileStats = username => dispatch => {
+  return apiGetCall(`/user/${username}/links/stats`)
+    .then(response => dispatch(getUserFileShareStats(response.data)))
+    .catch(error => dispatch(setError(getApiError(error))));
+};
+
+export const getAdminLinkStats = () => dispatch => {
+  return apiGetCall("/admin/link/stats")
+    .then(response => dispatch(getFileShareStats(response.data)))
+    .catch(error => dispatch(setError(getApiError(error))));
+};
+
+const user = new schema.Entity("user", {}, { idAttribute: "name" });
+const userList = new schema.Array(user);
+
 export const slice = createSlice({
   name: "admin",
   initialState: {
     roles: [],
-    users: [],
     mediaApprovals: [],
+    entities: {
+      users: {}
+    },
+    fileShare: {
+      totalViews: 0,
+      totalLinks: 0,
+      mostViewed: [],
+      recentShared: []
+    },
     stats: {
       remainingStorage: 0,
       totalMedia: 0,
@@ -102,7 +118,9 @@ export const slice = createSlice({
       state.stats = action.payload;
     },
     fetchedUsers(state, action) {
-      state.users = action.payload;
+      const users = normalize(action.payload, userList);
+
+      state.entities.users = users.entities.user;
     },
     fetchedMediaApprovals(state, action) {
       state.mediaApprovals = action.payload;
@@ -114,6 +132,21 @@ export const slice = createSlice({
     },
     fetchedRoles(state, action) {
       state.roles = action.payload;
+    },
+    getUserDetails(state, action) {
+      state.entities.users[action.payload.name] = {
+        ...state.entities.users[action.payload.name],
+        ...action.payload
+      };
+    },
+    updateUserDetails(state, action) {
+      state.entities.users[action.payload.name].email = action.payload.email;
+    },
+    getFileShareStats(state, action) {
+      state.fileShare = action.payload;
+    },
+    getUserFileShareStats(state, action) {
+      state.user.stats = action.payload;
     }
   }
 });
@@ -123,5 +156,9 @@ export const {
   fetchedUsers,
   fetchedMediaApprovals,
   removedMediaApproval,
-  fetchedRoles
+  fetchedRoles,
+  getUserDetails,
+  updateUserDetails,
+  getFileShareStats,
+  getUserFileShareStats
 } = slice.actions;

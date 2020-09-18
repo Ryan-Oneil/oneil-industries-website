@@ -241,8 +241,8 @@ h1, h2, h3, h4, h5, h6 {
 .ant-menu-horizontal > .ant-menu-item-selected a, .ant-menu-horizontal > .ant-menu-item a:hover {
     color: #f1574d;
 }
-.ant-tabs-tab-btn {
-    color: white;
+.extraPadding {
+    padding: 24px;
 }
 .imageResponse {
     max-width: 100%;

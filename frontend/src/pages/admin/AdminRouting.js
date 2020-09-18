@@ -13,6 +13,11 @@ import UserOutlined from "@ant-design/icons/lib/icons/UserOutlined";
 import DatabaseOutlined from "@ant-design/icons/lib/icons/DatabaseOutlined";
 import PictureOutlined from "@ant-design/icons/lib/icons/PictureOutlined";
 import FileImageOutlined from "@ant-design/icons/lib/icons/FileImageOutlined";
+import CloudUploadOutlined from "@ant-design/icons/lib/icons/CloudUploadOutlined";
+import UploadOutlined from "@ant-design/icons/lib/icons/UploadOutlined";
+import FolderOutlined from "@ant-design/icons/lib/icons/FolderOutlined";
+import ViewAllLinks from "./fileshare/ViewAllLinks";
+import EditLinkPage from "../UserDashboard/FileShare/EditLinkPage";
 const { Content, Sider } = Layout;
 
 export default props => {
@@ -33,6 +38,17 @@ export default props => {
           path: "/gallery/approval",
           icon: <FileImageOutlined />,
           name: "Approvals"
+        }
+      ]
+    },
+    {
+      title: "File Share",
+      icon: <CloudUploadOutlined />,
+      links: [
+        {
+          path: "/fileshare/files",
+          icon: <FolderOutlined />,
+          name: "Files"
         }
       ]
     }
@@ -73,6 +89,16 @@ export default props => {
                 exact
                 path={`${match.path}/gallery/approval`}
                 component={Approval}
+              />
+              <Route
+                exact
+                path={`${match.path}/fileshare/files`}
+                component={ViewAllLinks}
+              />
+              <Route
+                exact
+                path={`${match.path}/fileshare/files/edit/:linkID`}
+                component={EditLinkPage}
               />
             </PrivateRoute>
           </Switch>

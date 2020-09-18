@@ -8,14 +8,11 @@ import EditOutlined from "@ant-design/icons/lib/icons/EditOutlined";
 export default props => {
   const { match } = props;
   const dispatch = useDispatch();
-  const { users } = useSelector(state => state.admin);
-  const [loading, setLoading] = useState(false);
+  const { users } = useSelector(state => state.admin.entities);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (users.length === 0) {
-      setLoading(true);
-      dispatch(getAllUsers()).then(() => setLoading(false));
-    }
+    dispatch(getAllUsers()).then(() => setLoading(false));
   }, []);
 
   const columns = [
@@ -61,7 +58,7 @@ export default props => {
     <div style={{ padding: "24px" }}>
       <Card>
         <Table
-          dataSource={users}
+          dataSource={Object.values(users)}
           columns={columns}
           rowKey={user => user.id}
           loading={loading}

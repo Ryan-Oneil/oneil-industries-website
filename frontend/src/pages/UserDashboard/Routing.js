@@ -16,6 +16,12 @@ import FileImageOutlined from "@ant-design/icons/lib/icons/FileImageOutlined";
 import { Layout } from "antd";
 import UploadPage from "./Gallery/UploadPage";
 import Profile from "../Profile";
+import CloudUploadOutlined from "@ant-design/icons/lib/icons/CloudUploadOutlined";
+import FolderOutlined from "@ant-design/icons/lib/icons/FolderOutlined";
+import ManageFilesPage from "./FileShare/ManageFilesPage";
+import EditLinkPage from "./FileShare/EditLinkPage";
+import SharePage from "./FileShare/SharePage";
+import ShareAltOutlined from "@ant-design/icons/lib/icons/ShareAltOutlined";
 const { Content, Sider } = Layout;
 
 export default props => {
@@ -40,6 +46,22 @@ export default props => {
           path: "/gallery/albums",
           icon: <FileImageOutlined />,
           name: "Albums"
+        }
+      ]
+    },
+    {
+      title: "File Share",
+      icon: <CloudUploadOutlined />,
+      links: [
+        {
+          path: "/fileshare/share",
+          icon: <ShareAltOutlined />,
+          name: "Share files"
+        },
+        {
+          path: "/fileshare/files",
+          icon: <FolderOutlined />,
+          name: "Files"
         }
       ]
     }
@@ -80,6 +102,21 @@ export default props => {
                 exact
                 path={`${match.path}/gallery/upload`}
                 component={UploadPage}
+              />
+              <Route
+                exact
+                path={`${match.path}/fileshare/share`}
+                component={SharePage}
+              />
+              <Route
+                exact
+                path={`${match.path}/fileshare/files`}
+                component={ManageFilesPage}
+              />
+              <Route
+                exact
+                path={`${match.path}/fileshare/files/edit/:linkID`}
+                component={EditLinkPage}
               />
               <Route exact path={`${match.path}/profile`} component={Profile} />
             </PrivateRoute>

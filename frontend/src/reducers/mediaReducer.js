@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { normalize, schema } from "normalizr";
-import { ALBUM_DELETE, ALBUM_EDIT_PUT } from "../actions/types";
 import {
   apiDeleteCall,
   apiGetCall,
@@ -22,19 +21,6 @@ export const fetchImages = (endpoint, page, size) => dispatch => {
 
 export const fetchAlbums = endpoint => {
   return apiGetCall(endpoint).then(response => response.data);
-};
-
-export const updateAlbum = (endpoint, id, payload) => dispatch => {
-  return apiPutCall(endpoint + id, payload).then(() => {
-    dispatch({
-      type: ALBUM_EDIT_PUT,
-      album: {
-        id,
-        name: payload.newAlbumName,
-        showUnlistedImages: payload.showUnlistedImages
-      }
-    });
-  });
 };
 
 export const uploadMedia = (endpoint, data, files) => {
@@ -79,14 +65,9 @@ export const updateMedia = (data, mediaID) => dispatch => {
 };
 
 export const deleteAlbum = (endpoint, albumID) => dispatch => {
-  apiDeleteCall(endpoint + albumID)
-    .then(() => {
-      dispatch({
-        type: ALBUM_DELETE,
-        albumDeleteID: albumID
-      });
-    })
-    .catch(error => dispatch(setError(getApiError(error))));
+  apiDeleteCall(endpoint + albumID).catch(error =>
+    dispatch(setError(getApiError(error)))
+  );
 };
 export const fetchAlbumWithImages = endpoint => {
   return apiGetCall(endpoint).then(({ data }) => data);

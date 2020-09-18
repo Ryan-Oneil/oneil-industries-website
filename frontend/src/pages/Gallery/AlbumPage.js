@@ -3,7 +3,7 @@ import Media from "../../components/Gallery/Media";
 import RenderMedias from "../../components/Gallery/RenderMedias";
 import { BASE_URL } from "../../apis/api";
 import { fetchAlbumWithImages } from "../../reducers/mediaReducer";
-import { Card, Empty, Modal, Row, Spin } from "antd";
+import { Empty, Modal, Row } from "antd";
 
 export default props => {
   const {
@@ -25,10 +25,12 @@ export default props => {
 
   return (
     <div style={{ marginTop: "20px" }}>
-      <Empty
-        description={`${loading ? "Loading Album" : "No album found"}`}
-        style={{ color: "white" }}
-      />
+      {album.medias.length === 0 && (
+        <Empty
+          description={`${loading ? "Loading Album" : "No album found"}`}
+          style={{ color: "white" }}
+        />
+      )}
       <Row gutter={[32, 32]} justify="center">
         {RenderMedias(album.medias, handleShowDialog, true)}
       </Row>

@@ -113,7 +113,7 @@ export default ({ imageEndpoint, videoEndpoint, handleShowDialog }) => {
         marginTop: "-10px"
       }}
     >
-      <Tabs defaultActiveKey="1">
+      <Tabs defaultActiveKey="1" type="card">
         <TabPane
           tab={
             <span>
