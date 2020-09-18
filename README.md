@@ -19,6 +19,7 @@ The website allows the ability to upload images/videos and displays them in a ga
 - Live teamspeak/discord user view
 - ShareX custom uploader API
 - Teamspeak/Discord service bot that adds user's to approved roles upon registration
+- File Sharing service
 
 # Frameworks/Libraries used:
 
