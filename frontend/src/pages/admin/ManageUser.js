@@ -1,153 +1,174 @@
-import React from "react";
-import { connect } from "react-redux";
-import { getRoles, getUserDetail, getUsers } from "../../actions/admin";
-import DetailBox from "../../components/DetailBox";
-import Modal from "../../components/Gallery/Modal";
-
-import { displayBytesInReadableForm } from "../../functions";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Button, Col, Modal, PageHeader, Row, Tabs } from "antd";
+import { Link } from "react-router-dom";
+import { displayBytesInReadableForm } from "../../helpers";
+import StatisticCard from "../../components/Stats/StatisticCard";
+import {
+  adminGetUserDetails,
+  getUserFileStats,
+  updateUserAccountStatus
+} from "../../reducers/adminReducer";
+import { getUserLinks } from "../../reducers/fileReducer";
+import EditUserForm from "../../components/formElements/EditUserForm";
+import SharedLinkTable from "../../components/Table/SharedLinkTable";
+import { USER_MEDIAS_ENDPOINT } from "../../apis/endpoints";
+import MediaGrid from "../../components/Gallery/MediaGrid";
+import { BASE_URL } from "../../apis/api";
+import Media from "../../components/Gallery/Media";
+import { deleteMedia } from "../../reducers/mediaReducer";
+import EditMediaForm from "../../components/formElements/EditMediaForm";
 import EditUserQuotaForm from "../../components/formElements/EditUserQuotaForm";
-import AdminUserDetailsForm from "../../components/formElements/AdminUserDetailsForm";
+import EditUserRole from "../../components/formElements/EditUserRole";
+const { TabPane } = Tabs;
 
-class ManageUser extends React.Component {
-  constructor(props) {
-    super(props);
-    const user = this.props.match.params.user;
-    this.props.getUserDetail(`/admin/user/${user}`);
-  }
+export default props => {
+  const dispatch = useDispatch();
+  const { match } = props;
+  const { user } = props.match.params;
+  const { users } = useSelector(state => state.admin.entities);
+  const account = users[user] || {
+    name: "",
+    email: "",
+    role: "",
+    enabled: "",
+    quota: { used: 0, max: 25, ignoreQuota: false }
+  };
+  const { totalLinks, totalViews } = useSelector(
+    state => state.admin.userStats
+  );
+  const [loadingFileStats, setLoadingFileStats] = useState(false);
+  const [loadingUserDetails, setLoadingUserDetails] = useState(true);
+  const [activeMedia, setActiveMedia] = useState("");
 
-  state = { showModal: "" };
-
-  closeModal = () => {
-    this.setState({ showModal: "" });
+  const loadUserStats = () => {
+    dispatch(getUserFileStats(user)).then(() => setLoadingFileStats(false));
+    dispatch(adminGetUserDetails(user)).then(() =>
+      setLoadingUserDetails(false)
+    );
   };
 
-  renderAccountModal() {
-    const { details } = this.props.admin.user;
+  const handleShowDialog = media => {
+    setActiveMedia(media);
+  };
 
-    return (
-      <Modal
-        title="Edit Account"
-        closeModal={() => this.setState({ showModal: "" })}
+  useEffect(() => {
+    loadUserStats();
+  }, []);
+
+  return (
+    <div className="extraPadding">
+      <PageHeader
+        ghost={false}
+        onBack={() => window.history.back()}
+        title="Back"
+        extra={[
+          <Button
+            key="1"
+            type={`${account.enabled ? "danger" : "primary"}`}
+            onClick={() =>
+              dispatch(updateUserAccountStatus(user, !account.enabled))
+            }
+          >
+            {account.enabled ? "Disable Account" : "Enable Account"}
+          </Button>
+        ]}
       >
-        <div className="ui centered grid">
-          <div className="six wide column">
-            <AdminUserDetailsForm
-              onSubmitSuccess={this.closeModal}
-              initialValues={{
-                email: details.email,
-                role: `ROLE_${details.role}`,
-                enabled: details.enabled
-              }}
+        <Tabs defaultActiveKey="1">
+          <TabPane tab="Account Settings" key="1">
+            <Row gutter={[32, 32]} type="flex">
+              <Col xs={24} sm={12} md={12} lg={12} xl={8}>
+                <EditUserForm user={account} loading={loadingUserDetails} />
+              </Col>
+              <Col xs={24} sm={12} md={12} lg={12} xl={8}>
+                <EditUserQuotaForm username={user} quota={account.quota} />
+              </Col>
+              <Col xs={24} sm={12} md={12} lg={12} xl={8}>
+                <EditUserRole role={account.role} username={user} />
+              </Col>
+            </Row>
+          </TabPane>
+          <TabPane tab="Files" key="2">
+            <SharedLinkTable
+              editPath={match.path}
+              fetchData={(page, size, sorter) =>
+                getUserLinks(user, page, size, sorter)
+              }
             />
-          </div>
-        </div>
-      </Modal>
-    );
-  }
-
-  renderQuotaModal() {
-    const { storageQuota, details } = this.props.admin.user;
-
-    return (
-      <Modal title="Edit Quota" closeModal={this.closeModal}>
-        <div className="ui centered grid">
-          <div className="six wide column">
-            <EditUserQuotaForm
-              onSubmitSuccess={this.closeModal}
-              ignoreQuota={storageQuota.ignoreQuota}
-              user={details.username}
-              initialValues={{
-                max: storageQuota.max,
-                ignoreQuota: storageQuota.ignoreQuota
-              }}
+          </TabPane>
+          <TabPane tab="Medias" key="3">
+            <MediaGrid
+              imageEndpoint={`${USER_MEDIAS_ENDPOINT}${user}/image`}
+              videoEndpoint={`${USER_MEDIAS_ENDPOINT}${user}/video`}
+              handleShowDialog={handleShowDialog}
             />
-          </div>
-        </div>
-      </Modal>
-    );
-  }
-
-  renderModal() {
-    switch (this.state.showModal) {
-      case "": {
-        return;
-      }
-      case "account": {
-        return this.renderAccountModal();
-      }
-      case "quota": {
-        return this.renderQuotaModal();
-      }
-      default: {
-        return;
-      }
-    }
-  }
-
-  render() {
-    const { details } = this.props.admin.user;
-    const { storageQuota } = this.props.admin.user;
-
-    return (
-      <div className="ui padded grid">
-        {details && (
-          <div className="six wide column">
-            <DetailBox header="Account Details">
-              <p>
-                <strong>Name:</strong> {details.username}
-              </p>
-              <p>
-                <strong>Email:</strong> {details.email}
-              </p>
-              <p>
-                <strong>Account Enabled:</strong>{" "}
-                {details.enabled ? "Yes" : "No"}
-              </p>
-              <p>
-                <strong>Role:</strong> {details.role}
-              </p>
-              <button
-                className="ui primary button centerButton"
-                onClick={() => this.setState({ showModal: "account" })}
-              >
-                Edit
-              </button>
-            </DetailBox>
-          </div>
-        )}
-
-        {storageQuota && (
-          <div className="six wide column">
-            <DetailBox header="Storage Quota Details">
-              <p>
-                <strong>Used Storage:</strong>{" "}
-                {displayBytesInReadableForm(storageQuota.used)}
-              </p>
-              <p>
-                <strong>Max Storage:</strong> {storageQuota.max} GB
-              </p>
-              <p>
-                <strong>Ignore Quota:</strong>{" "}
-                {storageQuota.ignoreQuota ? "Yes" : "No"}
-              </p>
-              <button
-                className="ui primary button centerButton"
-                onClick={() => this.setState({ showModal: "quota" })}
-              >
-                Edit
-              </button>
-            </DetailBox>
-          </div>
-        )}
-        {this.state.showModal && this.renderModal()}
-      </div>
-    );
-  }
-}
-const mapStateToProps = state => {
-  return { admin: state.admin };
+          </TabPane>
+          <TabPane tab="Stats" key="4">
+            <Row gutter={[32, 32]} type="flex" justify="center">
+              <Col xs={24} sm={24} md={5} lg={5} xl={5}>
+                <StatisticCard
+                  title={"Total Links"}
+                  value={totalLinks}
+                  loading={loadingFileStats}
+                />
+              </Col>
+              <Col xs={24} sm={24} md={5} lg={5} xl={5}>
+                <StatisticCard
+                  title={"Total Link Views"}
+                  value={totalViews}
+                  loading={loadingFileStats}
+                />
+              </Col>
+              <Col xs={24} sm={24} md={5} lg={5} xl={5}>
+                <StatisticCard
+                  title={"Total Used Storage"}
+                  value={displayBytesInReadableForm(account.quota.used)}
+                  loading={loadingUserDetails}
+                />
+              </Col>
+              <Col xs={24} sm={24} md={5} lg={5} xl={5}>
+                <StatisticCard title={"Total Media"} value={0} />
+              </Col>
+            </Row>
+          </TabPane>
+        </Tabs>
+      </PageHeader>
+      {activeMedia && (
+        <Modal
+          title={activeMedia.name}
+          visible={activeMedia}
+          onCancel={() => setActiveMedia("")}
+          footer={null}
+          width={550}
+        >
+          <a
+            href={`${BASE_URL}/gallery/${activeMedia.mediaType}/${activeMedia.fileName}`}
+          >
+            <Media
+              media={activeMedia}
+              renderVideoControls={true}
+              fullSize={true}
+            />
+          </a>
+          <Button
+            value="Delete"
+            className="centerButton"
+            type="danger"
+            onClick={() => {
+              dispatch(
+                deleteMedia(
+                  `/gallery/media/delete/${activeMedia.id}`,
+                  activeMedia.id
+                )
+              );
+              setActiveMedia("");
+            }}
+          >
+            Delete
+          </Button>
+          <EditMediaForm media={activeMedia} />
+        </Modal>
+      )}
+    </div>
+  );
 };
-
-export default connect(mapStateToProps, { getRoles, getUsers, getUserDetail })(
-  ManageUser
-);

@@ -1,6 +1,7 @@
 package biz.oneilindustries.website.controller;
 
 import biz.oneilindustries.website.dto.QuotaDTO;
+import biz.oneilindustries.website.dto.ShareXConfig;
 import biz.oneilindustries.website.dto.UserDTO;
 import biz.oneilindustries.website.entity.ApiToken;
 import biz.oneilindustries.website.entity.Role;
@@ -8,7 +9,6 @@ import biz.oneilindustries.website.service.UserService;
 import biz.oneilindustries.website.validation.UpdatedQuota;
 import biz.oneilindustries.website.validation.UpdatedUser;
 import java.util.List;
-import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -47,12 +47,12 @@ public class UserController {
     }
 
     @GetMapping("/{username}/getAPIToken")
-    public ResponseEntity getAPIJWT(@PathVariable String username, Authentication authentication) {
+    public ResponseEntity<String> getAPIJWT(@PathVariable String username, Authentication authentication) {
         return ResponseEntity.ok(userService.getApiTokenByUser(username).getToken());
     }
 
     @GetMapping("/{username}/generateAPIToken")
-    public ResponseEntity generateAPIJWT(@PathVariable String username, Authentication authentication) {
+    public ResponseEntity<String> generateAPIJWT(@PathVariable String username, Authentication authentication) {
         ApiToken apiToken = userService.getApiTokenByUser(username);
 
         //Deletes existing token
@@ -65,7 +65,7 @@ public class UserController {
     }
 
     @GetMapping("/{username}/getShareX")
-    public ResponseEntity getShareXConfig(@PathVariable String username, Authentication authentication) {
+    public ResponseEntity<ShareXConfig> getShareXConfig(@PathVariable String username, Authentication authentication) {
         return ResponseEntity.ok(userService.generateShareXAPIFile(username));
     }
 
@@ -75,14 +75,28 @@ public class UserController {
         return userService.getUsers();
     }
 
-    @GetMapping("/admin/users/roles")
-    public ResponseEntity<List<Role>> getRoles() {
+    @GetMapping("/admin/roles")
+    public ResponseEntity<List<Role>> adminGetRoles() {
         return ResponseEntity.ok(userService.getRoles());
     }
 
     @PutMapping("/admin/user/{username}/update/quota")
-    public ResponseEntity updateUserQuota(@RequestBody @Valid UpdatedQuota updatedQuota, @PathVariable String username) {
+    public ResponseEntity<HttpStatus> adminUpdateUserQuota(@PathVariable String username, @RequestBody UpdatedQuota updatedQuota) {
         userService.updateUserQuota(updatedQuota, username);
+
+        return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    @PutMapping("/admin/user/{username}/disable")
+    public ResponseEntity<HttpStatus> adminDisableUser(@PathVariable String username) {
+        userService.changeUserAccountStatus(false, username);
+
+        return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    @PutMapping("/admin/user/{username}/enable")
+    public ResponseEntity<HttpStatus> adminEnableUser(@PathVariable String username) {
+        userService.changeUserAccountStatus(true, username);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }

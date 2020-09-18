@@ -128,7 +128,6 @@ public class UserService {
             }
             user.setEmail(email);
         });
-        updatedUser.getEnabled().ifPresent(user::setEnabled);
         updatedUser.getPassword().ifPresent(password -> user.setPassword(passwordEncoder.encode(password)));
         updatedUser.getRole().ifPresent(user::setRole);
 
@@ -322,6 +321,15 @@ public class UserService {
     public List<Role> getRoles() {
         return  roleRepository.getAllRoles();
     }
+
+    public void changeUserAccountStatus(boolean status, String username) {
+        User user = getUser(username);
+        user.setEnabled(status);
+
+        userRepository.save(user);
+    }
+
+    // DTOs
 
     public QuotaDTO quotaToDTO(Quota quota) {
         return new QuotaDTO(quota.getUsed(), quota.getMax(), quota.isIgnoreQuota());

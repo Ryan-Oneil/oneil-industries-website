@@ -4,6 +4,7 @@ import { getApiError } from "../helpers";
 import { setError } from "./globalErrorReducer";
 import {
   ADMIN_GET_PENDING_APPROVALS_ENDPOINT,
+  ADMIN_GET_ROLES,
   ADMIN_GET_STATS_ENDPOINT,
   ADMIN_GET_USERS_ENDPOINT
 } from "../apis/endpoints";
@@ -17,8 +18,10 @@ export const getAllUsers = () => dispatch => {
     .catch(error => dispatch(setError(getApiError(error))));
 };
 
-export const getRoles = endpoint => dispatch => {
-  apiGetCall(endpoint).then(({ data }) => dispatch(fetchedRoles(data)));
+export const getRoles = () => dispatch => {
+  apiGetCall(ADMIN_GET_ROLES)
+    .then(({ data }) => dispatch(fetchedRoles(data)))
+    .catch(error => dispatch(setError(getApiError(error))));
 };
 
 export const updateUser = user => dispatch => {
@@ -31,6 +34,12 @@ export const updateUser = user => dispatch => {
     dispatch(
       updateUserDetails({ name: user.username, email: userDetails.email })
     )
+  );
+};
+
+export const updateUserRole = (username, role) => dispatch => {
+  return apiPutCall(`/user/${username}/details/update`, { role }).then(() =>
+    dispatch(updateUserDetails({ name: username, role }))
   );
 };
 
@@ -77,13 +86,30 @@ export const adminGetUserDetails = username => dispatch => {
 
 export const getUserFileStats = username => dispatch => {
   return apiGetCall(`/user/${username}/links/stats`)
-    .then(response => dispatch(getUserFileShareStats(response.data)))
+    .then(({ data }) => dispatch(getUserFileShareStats(data)))
     .catch(error => dispatch(setError(getApiError(error))));
 };
 
 export const getAdminLinkStats = () => dispatch => {
   return apiGetCall("/admin/link/stats")
     .then(response => dispatch(getFileShareStats(response.data)))
+    .catch(error => dispatch(setError(getApiError(error))));
+};
+
+export const updateUserQuota = (username, values) => dispatch => {
+  return apiPutCall(
+    `/user/admin/user/${username}/update/quota`,
+    values
+  ).then(() => dispatch(updateUserDetails({ name: username, quota: values })));
+};
+
+export const updateUserAccountStatus = (username, status) => dispatch => {
+  let endpoint = status ? "enable" : "disable";
+
+  return apiPutCall(`/user/admin/user/${username}/${endpoint}`)
+    .then(() =>
+      dispatch(updateUserDetails({ name: username, enabled: status }))
+    )
     .catch(error => dispatch(setError(getApiError(error))));
 };
 
@@ -111,6 +137,10 @@ export const slice = createSlice({
       totalUsers: 0,
       usedStorage: 0,
       recentUsers: []
+    },
+    userStats: {
+      totalViews: 0,
+      totalLinks: 0
     }
   },
   reducers: {
@@ -140,13 +170,17 @@ export const slice = createSlice({
       };
     },
     updateUserDetails(state, action) {
-      state.entities.users[action.payload.name].email = action.payload.email;
+      const user = state.entities.users[action.payload.name];
+      state.entities.users[action.payload.name] = {
+        ...user,
+        ...action.payload
+      };
     },
     getFileShareStats(state, action) {
       state.fileShare = action.payload;
     },
     getUserFileShareStats(state, action) {
-      state.user.stats = action.payload;
+      state.userStats = action.payload;
     }
   }
 });

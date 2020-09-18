@@ -1,8 +1,8 @@
-import React from "react";
-import { InputWithErrors, SelectInputWithErrors } from "./index";
-import { useDispatch } from "react-redux";
+import React, { useEffect } from "react";
+import { SelectInputWithErrors } from "./index";
+import { useDispatch, useSelector } from "react-redux";
 import { getApiError } from "../../helpers";
-import { updateUserQuota } from "../../reducers/adminReducer";
+import { getRoles, updateUserRole } from "../../reducers/adminReducer";
 import { Field, Formik } from "formik";
 import { Alert, Button, Card, Select } from "antd";
 const { Option } = Select;
@@ -10,23 +10,30 @@ const { Option } = Select;
 export default props => {
   const { username } = props;
   const dispatch = useDispatch();
+  const { roles } = useSelector(state => state.admin);
+  const roleDropdown = roles.map(role => (
+    <Option key={role.id} value={role.role}>
+      {role.role.replace("ROLE_", "")}
+    </Option>
+  ));
+
+  useEffect(() => {
+    dispatch(getRoles());
+  }, []);
 
   const onSubmit = (formValues, { setStatus }) => {
-    return dispatch(updateUserQuota(username, formValues)).catch(error =>
+    return dispatch(updateUserRole(username, formValues.role)).catch(error =>
       setStatus(getApiError(error))
     );
   };
   return (
-    <Card title="Quota Settings">
+    <Card title="Role Settings">
       <Formik
         initialValues={{
-          max: props.quota.max,
-          ignoreQuota: props.quota.ignoreQuota.toString(),
-          used: props.quota.used
+          role: props.role
         }}
         enableReinitialize
         onSubmit={onSubmit}
-        validate={validate}
       >
         {props => {
           const {
@@ -41,23 +48,13 @@ export default props => {
 
           return (
             <form onSubmit={handleSubmit}>
-              Max Storage:
               <Field
-                name="max"
-                as={InputWithErrors}
-                type="text"
-                placeholder="Max Quota"
-                error={errors.max}
-              />
-              Ignore Quota:
-              <Field
-                name="ignoreQuota"
+                name="role"
                 as={SelectInputWithErrors}
-                error={errors.ignoreQuota}
-                onChange={data => setFieldValue("ignoreQuota", data)}
+                error={errors.role}
+                onChange={data => setFieldValue("role", data)}
               >
-                <Option value={"true"}>True</Option>
-                <Option value={"false"}>False</Option>
+                {roleDropdown}
               </Field>
               <Button
                 type="primary"
@@ -84,12 +81,4 @@ export default props => {
       </Formik>
     </Card>
   );
-};
-const validate = formValues => {
-  const errors = {};
-
-  if (!formValues.max) {
-    errors.max = "You must enter a quota max amount";
-  }
-  return errors;
 };
