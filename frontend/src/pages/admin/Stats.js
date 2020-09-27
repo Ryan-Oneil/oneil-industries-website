@@ -59,7 +59,7 @@ export default () => {
         <Col xs={24} sm={24} md={6} lg={6} xl={6}>
           <StatisticCard
             title="Available Storage"
-            value={displayBytesInReadableForm(remainingStorage)}
+            value={displayBytesInReadableForm(remainingStorage * 1000)}
           />
         </Col>
       </Row>
