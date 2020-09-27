@@ -63,7 +63,7 @@ public class ImageGalleryController {
     public ResponseEntity<StreamingResponseBody> streamImage(@PathVariable String imageName, Authentication user, HttpServletResponse response) {
         File mediaFile = mediaService.getMediaFile(imageName);
 
-        return displayMedia(response, imageName, mediaFile);
+        return displayMedia(response, mediaFile);
     }
 
     @GetMapping("/image/thumbnail/{imageName}")
@@ -71,7 +71,7 @@ public class ImageGalleryController {
         HttpServletResponse response) {
         File mediaFile = mediaService.getMediaThumbnailFile(imageName);
 
-        return displayMedia(response, imageName, mediaFile);
+        return displayMedia(response, mediaFile);
     }
 
     @GetMapping("/video/{videoName}")
@@ -88,7 +88,7 @@ public class ImageGalleryController {
         }
     }
 
-    private ResponseEntity<StreamingResponseBody> displayMedia(HttpServletResponse response, String imageName, File mediaFile) {
+    private ResponseEntity<StreamingResponseBody> displayMedia(HttpServletResponse response, File mediaFile) {
         response.setContentType("image/" + FileHandler.getContentType(mediaFile.getName()));
         StreamingResponseBody stream = out -> Files.copy(mediaFile.toPath(), out);
 
