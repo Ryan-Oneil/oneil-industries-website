@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MediaRepository extends CrudRepository<Media, Integer> {
-    List<Media> getAllByMediaTypeOrderByDateAddedDesc(String mediaType, Pageable page);
+    List<Media> getAllByMediaTypeOrderByIdDesc(String mediaType, Pageable page);
     List<Media> getAllByLinkStatusAndMediaTypeOrderByIdDesc(String linkStatus, String mediaType, Pageable page);
     Optional<Media> getFirstByFileName(String filename);
     List<Media> getAllByUploaderAndMediaTypeOrderByIdDesc(String uploader, String mediaType, Pageable page);

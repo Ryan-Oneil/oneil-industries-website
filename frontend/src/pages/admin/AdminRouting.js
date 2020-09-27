@@ -14,7 +14,6 @@ import DatabaseOutlined from "@ant-design/icons/lib/icons/DatabaseOutlined";
 import PictureOutlined from "@ant-design/icons/lib/icons/PictureOutlined";
 import FileImageOutlined from "@ant-design/icons/lib/icons/FileImageOutlined";
 import CloudUploadOutlined from "@ant-design/icons/lib/icons/CloudUploadOutlined";
-import UploadOutlined from "@ant-design/icons/lib/icons/UploadOutlined";
 import FolderOutlined from "@ant-design/icons/lib/icons/FolderOutlined";
 import ViewAllLinks from "./fileshare/ViewAllLinks";
 import EditLinkPage from "../UserDashboard/FileShare/EditLinkPage";

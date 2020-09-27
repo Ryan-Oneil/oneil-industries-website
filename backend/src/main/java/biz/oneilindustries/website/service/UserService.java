@@ -250,19 +250,20 @@ public class UserService {
     }
 
     @CachePut(value = "apiToken", key = "#result.username")
-    public ApiToken generateApiToken(String username) {
+    public ApiToken generateApiToken(User user) {
         // Creates a non expiring user jwt with limited access. Currently can only upload media
         String uuid = UUID.randomUUID().toString();
 
         String token = JWT.create()
             .withSubject("apiToken")
-            .withClaim("user", username)
+            .withClaim("userID", user.getId())
+            .withClaim("user", user.getUsername())
             .withClaim("role", "ROLE_LIMITED_API")
             .withClaim("enabled", true)
             .withClaim("uuid", uuid)
             .sign(HMAC512(SECRET.getBytes()));
 
-        ApiToken apiToken = new ApiToken(username, token, uuid);
+        ApiToken apiToken = new ApiToken(user.getUsername(), token, uuid);
         apiTokenRepository.save(apiToken);
 
         return apiToken;

@@ -28,7 +28,7 @@ export default () => {
   }, []);
 
   return (
-    <div style={{ padding: "24px" }}>
+    <div className="extraPadding">
       <Row gutter={[32, 32]} type="flex">
         <Col xs={24} sm={24} md={6} lg={6} xl={6}>
           <StatisticCard title="Total Media" value={totalMedia} />

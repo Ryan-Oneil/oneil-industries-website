@@ -71,7 +71,7 @@ public class TSManager {
 
     private List<ServiceClient> getTSClientsForChannel(int channelID, List<Client> clients) {
         return clients.stream()
-            .filter(client -> client.getChannelId() == channelID)
+            .filter(client -> client.getChannelId() == channelID && client.isRegularClient())
             .map(client -> new ServiceClient(client.getNickname(), client.getUniqueIdentifier()))
             .collect(Collectors.toList());
     }

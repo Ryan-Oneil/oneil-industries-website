@@ -5,7 +5,7 @@ export default () => {
   let location = useLocation();
 
   return (
-    <div style={{ padding: "24px" }}>
+    <div className="extraPadding">
       <Card>
         <Result
           status="404"

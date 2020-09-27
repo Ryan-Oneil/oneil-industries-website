@@ -67,7 +67,7 @@ const recursiveTraversal = childrenChannels => {
 const renderClients = clients => {
   return clients.map(client => {
     return (
-      <TreeNode title={client.name} key={client.uuid} icon={<UserOutlined />} />
+      <TreeNode title={client.name} key={client.uuid + client.name} icon={<UserOutlined />} />
     );
   });
 };
