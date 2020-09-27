@@ -109,7 +109,7 @@ public class MediaService {
 
     public HashMap<String, Object> getMedias(String mediaType, Pageable pageable) {
         HashMap<String, Object> medias = new HashMap<>();
-        medias.put("medias", mediaToDTOs(mediaRepository.getAllByMediaTypeOrderByDateAddedDesc(mediaType, pageable)));
+        medias.put("medias", mediaToDTOs(mediaRepository.getAllByMediaTypeOrderByIdDesc(mediaType, pageable)));
         medias.put("total", mediaRepository.getTotalMediaByType(mediaType));
 
         return medias;
