@@ -11,6 +11,8 @@ import biz.oneilindustries.website.service.SystemFileService;
 import biz.oneilindustries.website.service.UserService;
 import biz.oneilindustries.website.validation.GalleryUpload;
 import biz.oneilindustries.website.validation.UpdatedAlbum;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Metrics;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -63,7 +65,10 @@ public class ImageGalleryController {
     public ResponseEntity<StreamingResponseBody> streamImage(@PathVariable String imageName, Authentication user, HttpServletResponse response) {
         File mediaFile = mediaService.getMediaFile(imageName);
 
-        return displayMedia(response, imageName, mediaFile);
+        Counter counter = Metrics.counter("request.media.view", "mediaName", mediaFile.getName(), "type", "image");
+        counter.increment();
+
+        return displayMedia(response, mediaFile);
     }
 
     @GetMapping("/image/thumbnail/{imageName}")
@@ -71,13 +76,19 @@ public class ImageGalleryController {
         HttpServletResponse response) {
         File mediaFile = mediaService.getMediaThumbnailFile(imageName);
 
-        return displayMedia(response, imageName, mediaFile);
+        Counter counter = Metrics.counter("request.media.view", "mediaName", mediaFile.getName(), "type", "thumbnail");
+        counter.increment();
+
+        return displayMedia(response, mediaFile);
     }
 
     @GetMapping("/video/{videoName}")
     public void streamVideo(@PathVariable String videoName, Authentication user, HttpServletResponse response, HttpServletRequest request)
         throws ServletException {
         File serverFile = mediaService.getMediaFile(videoName);
+
+        Counter counter = Metrics.counter("request.media.view", "mediaName", serverFile.getName(), "type", "video");
+        counter.increment();
 
         response.setContentType("video/" + FileHandler.getContentType(serverFile.getName()));
         request.setAttribute(ResourceHandler.ATTR_FILE, serverFile);
@@ -88,7 +99,7 @@ public class ImageGalleryController {
         }
     }
 
-    private ResponseEntity<StreamingResponseBody> displayMedia(HttpServletResponse response, String imageName, File mediaFile) {
+    private ResponseEntity<StreamingResponseBody> displayMedia(HttpServletResponse response, File mediaFile) {
         response.setContentType("image/" + FileHandler.getContentType(mediaFile.getName()));
         StreamingResponseBody stream = out -> Files.copy(mediaFile.toPath(), out);
 
