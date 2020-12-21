@@ -29,7 +29,7 @@ export default () => {
   const renderList = () => {
     return albums.map(album => {
       return (
-        <Col key={album.id} xs={18} sm={6} md={6} lg={7} xl={6}>
+        <Col key={album.id} xs={18} sm={6} md={6} lg={7} xl={4}>
           <Card>
             <div className="pointerCursor">
               <Media

@@ -69,10 +69,10 @@ export default ({
   const renderMediaList = (loadMore, hasMore, mediaList) => {
     return (
       <div
-          style={{
-            height: "85vh",
-            overflow: 'auto'
-          }}
+        style={{
+          height: "85vh",
+          overflow: "auto"
+        }}
       >
         <InfiniteScroll
           initialLoad={false}
@@ -91,7 +91,7 @@ export default ({
               xl: 5,
               xxl: 8
             }}
-            style={{marginLeft: "-8px"}}
+            style={{ marginLeft: "-8px" }}
             dataSource={mediaList}
             renderItem={item => (
               <List.Item key={item.id}>
@@ -113,7 +113,7 @@ export default ({
             )}
           />
         </InfiniteScroll>
-       </div>
+      </div>
     );
   };
 

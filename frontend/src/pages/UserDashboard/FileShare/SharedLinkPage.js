@@ -122,7 +122,11 @@ export default props => {
         </Row>
       )}
       {invalidLink && (
-        <Result status="warning" title="This shared link doesn't exist" />
+        <div className="extraPadding">
+          <Card>
+            <Result status="warning" title="This shared link doesn't exist" />
+          </Card>
+        </div>
       )}
     </>
   );

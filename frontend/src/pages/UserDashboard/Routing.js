@@ -27,7 +27,7 @@ const { Content, Sider } = Layout;
 export default props => {
   const { match } = props;
   const links = [
-    { path: "", icon: <UserOutlined />, name: "Account" },
+    { path: "", icon: <UserOutlined />, name: "Dashboard" },
     { path: "/services", icon: <DatabaseOutlined />, name: "Services" },
     { path: "/api", icon: <ApiOutlined />, name: "Api" }
   ];

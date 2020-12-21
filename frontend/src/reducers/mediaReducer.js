@@ -73,6 +73,12 @@ export const fetchAlbumWithImages = endpoint => {
   return apiGetCall(endpoint).then(({ data }) => data);
 };
 
+export const getUserMediaStats = user => dispatch => {
+  return apiGetCall(`/gallery/user/${user}/stats`)
+    .then(response => dispatch(fetchedUserMediaStats(response.data)))
+    .catch(error => dispatch(setError(getApiError(error))));
+};
+
 const media = new schema.Entity("medias");
 const album = new schema.Entity("albums", { medias: [media] });
 const mediaList = new schema.Array(media);
@@ -84,6 +90,11 @@ export const slice = createSlice({
     entities: {
       medias: {},
       albums: {}
+    },
+    stats: {
+      totalMedias: 0,
+      recentMedias: [],
+      totalAlbums: 0
     }
   },
   reducers: {
@@ -111,6 +122,9 @@ export const slice = createSlice({
         ...state.entities.medias[id],
         ...action.payload
       };
+    },
+    fetchedUserMediaStats(state, action) {
+      state.stats = action.payload;
     }
   }
 });
@@ -119,5 +133,6 @@ export const {
   fetchedMedia,
   fetchedAlbums,
   deletedMedia,
-  updatedMedia
+  updatedMedia,
+  fetchedUserMediaStats
 } = slice.actions;
