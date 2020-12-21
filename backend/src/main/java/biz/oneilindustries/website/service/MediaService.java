@@ -269,6 +269,15 @@ public class MediaService {
         return file;
     }
 
+    public HashMap<String, Object> getMediaStats(String username) {
+        HashMap<String, Object> stats = new HashMap<>();
+        stats.put("totalMedias", mediaRepository.getTotalByUser(username));
+        stats.put("recentMedias", mediaRepository.findTop5ByUploaderOrderByIdDesc(username));
+        stats.put("totalAlbums", albumRepository.getTotalAlbumsByUser(username));
+
+        return stats;
+    }
+
     //Album related code
 
     public Album getOrRegisterAlbum(String user, String albumName) {

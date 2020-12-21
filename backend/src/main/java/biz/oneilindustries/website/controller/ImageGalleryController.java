@@ -131,10 +131,15 @@ public class ImageGalleryController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @GetMapping("/medias/user/{username}/{mediaType}")
+    @GetMapping("/user/medias/{username}/{mediaType}")
     public HashMap<String, Object> showUserMedias(Authentication user, @PathVariable String username, HttpServletRequest request, Pageable pageable,
         @PathVariable String mediaType) {
         return mediaService.getMediasByUser(username, pageable, mediaType);
+    }
+
+    @GetMapping("/user/{username}/stats")
+    public HashMap<String, Object> showUserMediaStats(Authentication user, @PathVariable String username, HttpServletRequest request) {
+        return mediaService.getMediaStats(username);
     }
 
     @PutMapping("/media/update/{mediaID}")

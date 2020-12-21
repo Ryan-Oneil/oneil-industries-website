@@ -14,6 +14,7 @@ public interface MediaRepository extends CrudRepository<Media, Integer> {
     List<Media> getAllByLinkStatusAndMediaTypeOrderByIdDesc(String linkStatus, String mediaType, Pageable page);
     Optional<Media> getFirstByFileName(String filename);
     List<Media> getAllByUploaderAndMediaTypeOrderByIdDesc(String uploader, String mediaType, Pageable page);
+    List<Media> findTop5ByUploaderOrderByIdDesc(String uploader);
 
     @Query("select case when count(m)> 0 then true else false end from Media m where m.fileName like ?1")
     boolean isFileNameTaken(String fileName);
@@ -26,4 +27,7 @@ public interface MediaRepository extends CrudRepository<Media, Integer> {
 
     @Query("select count(m) from Media m where m.mediaType = ?1")
     long getTotalMediaByType(String mediaType);
+
+    @Query("select count(m) from Media m where m.uploader = ?1")
+    long getTotalByUser(String username);
 }
