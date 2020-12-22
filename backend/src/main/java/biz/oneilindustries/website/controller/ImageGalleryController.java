@@ -169,7 +169,7 @@ public class ImageGalleryController {
 
     @PutMapping("/myalbums/update/{albumID}")
     public ResponseEntity<HttpStatus> updateAlbum(@PathVariable String albumID, Authentication user, HttpServletRequest request, UpdatedAlbum updatedAlbum) {
-        mediaService.updateAlbum(albumID, updatedAlbum.getNewAlbumName(), updatedAlbum.isShowUnlistedImages());
+        mediaService.updateAlbum(albumID, updatedAlbum.getNewAlbumName());
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
@@ -179,6 +179,13 @@ public class ImageGalleryController {
         mediaService.deleteAlbum(albumID);
 
         return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/myalbums/create")
+    public ResponseEntity<Album> createAlbum(@RequestBody String albumName, Authentication user, HttpServletRequest request) {
+        Album album = mediaService.registerNewAlbum(albumName, user.getName());
+
+        return ResponseEntity.ok(album);
     }
 
     // Admin related APIs

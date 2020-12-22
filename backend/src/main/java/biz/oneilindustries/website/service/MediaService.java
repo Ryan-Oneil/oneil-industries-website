@@ -13,9 +13,9 @@ import biz.oneilindustries.website.entity.Album;
 import biz.oneilindustries.website.entity.Media;
 import biz.oneilindustries.website.entity.PublicMediaApproval;
 import biz.oneilindustries.website.entity.User;
+import biz.oneilindustries.website.exception.AlbumMissingException;
 import biz.oneilindustries.website.exception.MediaApprovalException;
 import biz.oneilindustries.website.exception.MediaException;
-import biz.oneilindustries.website.exception.ResourceNotFoundException;
 import biz.oneilindustries.website.filecreater.FileHandler;
 import biz.oneilindustries.website.repository.AlbumRepository;
 import biz.oneilindustries.website.repository.MediaApprovalRepository;
@@ -279,9 +279,8 @@ public class MediaService {
     }
 
     //Album related code
-
     public Album getOrRegisterAlbum(String user, String albumName) {
-        return albumRepository.getFirstByName(albumName).orElseGet(() -> registerNewAlbum(albumName, user, true));
+        return albumRepository.getFirstByName(albumName).orElseGet(() -> registerNewAlbum(albumName, user));
     }
 
     public String generateAlbumUUID() {
@@ -292,10 +291,10 @@ public class MediaService {
         return id;
     }
 
-    public Album registerNewAlbum(String albumName, String username, boolean showUnlistedImages) {
+    public Album registerNewAlbum(String albumName, String username) {
         String id = generateAlbumUUID();
 
-        Album album = new Album(id, albumName, username, showUnlistedImages);
+        Album album = new Album(id, albumName, username);
         albumRepository.save(album);
 
         return album;
@@ -314,12 +313,12 @@ public class MediaService {
         }
     }
 
-    public Album getAlbum(String albumName) {
-        return albumRepository.getFirstByName(albumName).orElseThrow(() -> new ResourceNotFoundException("Album not found"));
+    public Album getAlbum(String id) {
+        return albumRepository.getFirstByName(id).orElseThrow(() -> new AlbumMissingException("Album not found"));
     }
 
     public Album getAlbumWithMedias(String id) {
-        return albumRepository.getFirstById(id).orElseThrow(() -> new ResourceNotFoundException("Album not found"));
+        return albumRepository.getFirstById(id).orElseThrow(() -> new AlbumMissingException("Album not found"));
     }
 
     public AlbumDTO getPublicAlbum(String id) {
@@ -357,11 +356,10 @@ public class MediaService {
         return albumRepository.count();
     }
 
-    public void updateAlbum(String albumID, String name, boolean showUnlistedMedia) {
+    public void updateAlbum(String albumID, String name) {
         Album album = getAlbum(albumID);
 
         album.setName(name);
-        album.setShowUnlistedImages(showUnlistedMedia);
 
         albumRepository.save(album);
     }

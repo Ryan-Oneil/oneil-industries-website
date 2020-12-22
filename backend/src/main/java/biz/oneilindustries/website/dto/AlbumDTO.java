@@ -7,17 +7,15 @@ public class AlbumDTO {
     private String id;
     private String name;
     private String creator;
-    private boolean showUnlistedImages;
     private List<MediaDTO> medias;
 
     public AlbumDTO() {
     }
 
-    public AlbumDTO(String id, String name, String creator, boolean showUnlistedImages, List<MediaDTO> medias) {
+    public AlbumDTO(String id, String name, String creator, List<MediaDTO> medias) {
         this.id = id;
         this.name = name;
         this.creator = creator;
-        this.showUnlistedImages = showUnlistedImages;
         this.medias = medias;
     }
 
@@ -43,14 +41,6 @@ public class AlbumDTO {
 
     public void setCreator(String creator) {
         this.creator = creator;
-    }
-
-    public boolean isShowUnlistedImages() {
-        return showUnlistedImages;
-    }
-
-    public void setShowUnlistedImages(boolean showUnlistedImages) {
-        this.showUnlistedImages = showUnlistedImages;
     }
 
     public List<MediaDTO> getMedias() {
