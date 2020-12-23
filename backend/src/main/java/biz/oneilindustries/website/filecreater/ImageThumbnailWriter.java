@@ -9,8 +9,7 @@ import javax.imageio.ImageIO;
 
 public class ImageThumbnailWriter {
 
-    private ImageThumbnailWriter() {
-    }
+    private ImageThumbnailWriter() {}
 
     private static final int IMAGE_RESIZE_SIZE = 400;
 
@@ -36,7 +35,7 @@ public class ImageThumbnailWriter {
                 IMAGE_RESIZE_SIZE, IMAGE_RESIZE_SIZE,
                 BufferedImage.TYPE_INT_RGB);
         Graphics2D g = thumbNail.createGraphics();
-        g.drawImage(original, 0, 0,IMAGE_RESIZE_SIZE,IMAGE_RESIZE_SIZE, null);
+        g.drawImage(original, 0, 0, IMAGE_RESIZE_SIZE, IMAGE_RESIZE_SIZE, null);
         g.dispose();
         return thumbNail;
     }

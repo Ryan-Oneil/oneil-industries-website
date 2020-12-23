@@ -47,7 +47,6 @@ public class MediaService {
     private static final String FILE_NOT_EXISTS_ERROR_MESSAGE = "Media does not exist on this server";
     private static final String PUBLIC = "public";
     private static final String UNLISTED = "unlisted";
-    private static final String PRIVATE = "private";
 
     private final MediaRepository mediaRepository;
     private final MediaApprovalRepository approvalRepository;
@@ -66,10 +65,10 @@ public class MediaService {
         Album album = null;
         List<Media> mediaList = new ArrayList<>();
 
-        if (galleryUpload.getAlbum() != null || mediaFiles.size() > 1) {
-            String albumName = galleryUpload.getAlbum() != null ? galleryUpload.getAlbum() : generateAlbumUUID();
+        if (galleryUpload.getAlbumId() != null || mediaFiles.size() > 1) {
+            String albumId = galleryUpload.getAlbumId() != null ? galleryUpload.getAlbumId() : generateAlbumUUID();
 
-            album = getOrRegisterAlbum(user.getUsername(), albumName);
+            album = getOrRegisterAlbum(user.getUsername(), albumId);
         }
         for (File mediaFile : mediaFiles) {
             Media media = registerMedia(mediaFile.getName(), galleryUpload.getPrivacy(), mediaFile, user.getUsername(), album);
@@ -163,8 +162,8 @@ public class MediaService {
     public void updateMedia(GalleryUpload galleryUpload, int mediaID, User user) {
         Media media = getMedia(mediaID);
 
-        if (galleryUpload.getAlbum() != null) {
-            Album album = getAlbum(galleryUpload.getAlbum());
+        if (galleryUpload.getAlbumId() != null) {
+            Album album = getAlbum(galleryUpload.getAlbumId());
             media.setAlbum(album);
         }
         media.setName(galleryUpload.getName());
@@ -243,9 +242,6 @@ public class MediaService {
         }
         mediaRepository.delete(media);
 
-        if (media.getAlbum() != null) {
-            deleteAlbumIfEmpty(media.getAlbum().getId());
-        }
         return size;
     }
 
@@ -279,8 +275,8 @@ public class MediaService {
     }
 
     //Album related code
-    public Album getOrRegisterAlbum(String user, String albumName) {
-        return albumRepository.getFirstByName(albumName).orElseGet(() -> registerNewAlbum(albumName, user));
+    public Album getOrRegisterAlbum(String user, String albumId) {
+        return albumRepository.getFirstById(albumId).orElseGet(() -> registerNewAlbum(albumId, user));
     }
 
     public String generateAlbumUUID() {
@@ -305,16 +301,8 @@ public class MediaService {
         mediaRepository.saveAll(album.getMedias());
     }
 
-    public void deleteAlbumIfEmpty(String id) {
-        Album album = getAlbumWithMedias(id);
-
-        if (album.getMedias().isEmpty()) {
-           albumRepository.delete(album);
-        }
-    }
-
     public Album getAlbum(String id) {
-        return albumRepository.getFirstByName(id).orElseThrow(() -> new AlbumMissingException("Album not found"));
+        return albumRepository.getFirstById(id).orElseThrow(() -> new AlbumMissingException("Album not found"));
     }
 
     public Album getAlbumWithMedias(String id) {
@@ -323,10 +311,6 @@ public class MediaService {
 
     public AlbumDTO getPublicAlbum(String id) {
         Album album = getAlbumWithMedias(id);
-
-        List<Media> publicMedias = album.getMedias().stream().filter(media -> !media.getLinkStatus().equalsIgnoreCase(PRIVATE))
-            .collect(Collectors.toList());
-        album.setMedias(publicMedias);
 
         return albumToDTO(album);
     }
@@ -340,16 +324,8 @@ public class MediaService {
 
     public List<AlbumDTO> getAlbumsByUser(String user) {
         List<Album> albums = albumRepository.getAllByCreator(user);
-        List<Album> usedAlbums = deleteEmptyAlbums(albums);
 
-        return albumToDTOs(usedAlbums);
-    }
-
-    private List<Album> deleteEmptyAlbums(List<Album> albums) {
-        List<Album> emptyAlbums = albums.stream().filter(album -> album.getMedias().isEmpty()).collect(Collectors.toList());
-        albumRepository.deleteAll(emptyAlbums);
-
-        return albums.stream().filter(album -> !album.getMedias().isEmpty()).collect(Collectors.toList());
+        return albumToDTOs(albums);
     }
 
     public long getTotalAlbums() {
@@ -358,7 +334,6 @@ public class MediaService {
 
     public void updateAlbum(String albumID, String name) {
         Album album = getAlbum(albumID);
-
         album.setName(name);
 
         albumRepository.save(album);

@@ -1,30 +1,17 @@
 package biz.oneilindustries.website.validation;
 
-import java.io.File;
 import javax.validation.constraints.NotNull;
 
 public class GalleryUpload {
-
-    private File file;
 
     @NotNull
     private String name;
 
     private String privacy = "unlisted";
 
-    private String album;
-
-    private Boolean showUnlistedImages;
+    private String albumId;
 
     public GalleryUpload() {
-    }
-
-    public File getFile() {
-        return file;
-    }
-
-    public void setFile(File file) {
-        this.file = file;
     }
 
     public String getName() {
@@ -43,19 +30,11 @@ public class GalleryUpload {
         this.privacy = privacy;
     }
 
-    public String getAlbum() {
-        return album;
+    public String getAlbumId() {
+        return albumId;
     }
 
-    public void setAlbum(String album) {
-        this.album = album;
-    }
-
-    public Boolean getShowUnlistedImages() {
-        return showUnlistedImages;
-    }
-
-    public void setShowUnlistedImages(Boolean showUnlistedImages) {
-        this.showUnlistedImages = showUnlistedImages;
+    public void setAlbumId(String albumId) {
+        this.albumId = albumId;
     }
 }

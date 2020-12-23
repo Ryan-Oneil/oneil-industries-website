@@ -10,7 +10,6 @@ import biz.oneilindustries.website.service.MediaService;
 import biz.oneilindustries.website.service.SystemFileService;
 import biz.oneilindustries.website.service.UserService;
 import biz.oneilindustries.website.validation.GalleryUpload;
-import biz.oneilindustries.website.validation.UpdatedAlbum;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Metrics;
 import java.io.File;
@@ -168,8 +167,9 @@ public class ImageGalleryController {
     }
 
     @PutMapping("/myalbums/update/{albumID}")
-    public ResponseEntity<HttpStatus> updateAlbum(@PathVariable String albumID, Authentication user, HttpServletRequest request, UpdatedAlbum updatedAlbum) {
-        mediaService.updateAlbum(albumID, updatedAlbum.getNewAlbumName());
+    public ResponseEntity<HttpStatus> updateAlbum(@PathVariable String albumID, Authentication user, HttpServletRequest request,
+        @RequestBody AlbumDTO albumDTO) {
+        mediaService.updateAlbum(albumID, albumDTO.getName());
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
@@ -181,9 +181,9 @@ public class ImageGalleryController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @DeleteMapping("/myalbums/create")
-    public ResponseEntity<Album> createAlbum(@RequestBody String albumName, Authentication user, HttpServletRequest request) {
-        Album album = mediaService.registerNewAlbum(albumName, user.getName());
+    @PostMapping("/myalbums/create")
+    public ResponseEntity<Album> createAlbum(@RequestBody AlbumDTO albumDTO, Authentication user, HttpServletRequest request) {
+        Album album = mediaService.registerNewAlbum(albumDTO.getName(), user.getName());
 
         return ResponseEntity.ok(album);
     }

@@ -44,6 +44,7 @@ public class SystemFileService {
         } catch (IOException e) {
             throw new RuntimeException("No form data");
         }
+
         while(iterator.hasNext()) {
             FileItemStream item = iterator.next();
 
