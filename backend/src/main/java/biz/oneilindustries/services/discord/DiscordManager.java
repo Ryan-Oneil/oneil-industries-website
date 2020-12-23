@@ -16,19 +16,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class DiscordManager {
 
-    private Guild guild;
+    private final Guild guild;
+
+    public DiscordManager() {
+        this.guild = DiscordBot.getGuild();
+    }
 
     public List<Category> getCategories() {
-
-        guild = DiscordBot.getGuild();
-
         return guild.getCategories();
     }
 
     public List<Member> getMembers() {
-
-        guild = DiscordBot.getGuild();
-
         return guild.getMembers();
     }
 
@@ -55,30 +53,18 @@ public class DiscordManager {
     }
 
     public void sendUserMessage(String uuid, String message) {
-
-        guild = DiscordBot.getGuild();
-
         guild.getJDA().getUserById(uuid).openPrivateChannel().queue(channel -> channel.sendMessage(message).queue());
     }
 
     public String getUserName(String uuid) {
-
-        guild = DiscordBot.getGuild();
-
         return guild.getJDA().getUserById(uuid).getName();
     }
 
     public Member getMember(String uuid) {
-
-        guild = DiscordBot.getGuild();
-
         return guild.getMemberById(uuid);
     }
 
     public void addUserRole(Member member, String roleName) {
-
-        guild = DiscordBot.getGuild();
-
         Rank.setDiscordServerRoles(guild.getRoles());
         Role role = Rank.getRequiredDiscordRole(roleName);
 
@@ -89,9 +75,6 @@ public class DiscordManager {
     }
 
     public void removeRoles(Member member) {
-
-        guild = DiscordBot.getGuild();
-
         guild.modifyMemberRoles(member, new ArrayList<>()).queue();
     }
 }

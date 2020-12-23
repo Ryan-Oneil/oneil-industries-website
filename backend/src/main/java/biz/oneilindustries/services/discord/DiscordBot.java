@@ -15,7 +15,7 @@ public class DiscordBot {
 
     public static void start(String botToken) {
         try {
-            jda = new JDABuilder(botToken).build();
+            jda = JDABuilder.createDefault(botToken).build();
             //jda.addEventListener(new DiscordCommandListener());
         } catch (LoginException e) {
             e.printStackTrace();
