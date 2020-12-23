@@ -1,17 +1,16 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { InputWithErrors, SelectInputWithErrors } from "./index";
+import { InputWithErrors } from "./index";
 import { getApiError } from "../../helpers";
 import { Field, Formik } from "formik";
-import { Alert, Button, Select } from "antd";
-import { updateMedia } from "../../reducers/mediaReducer";
-const { Option } = Select;
+import { Alert, Button } from "antd";
+import { updateAlbum } from "../../reducers/mediaReducer";
 
 export default props => {
   const dispatch = useDispatch();
 
   const onSubmit = (formValues, { setStatus }) => {
-    return dispatch(updateMedia(formValues, props.media.id)).catch(error =>
+    return dispatch(updateAlbum(formValues, props.album.id)).catch(error =>
       setStatus(getApiError(error))
     );
   };
@@ -19,8 +18,7 @@ export default props => {
   return (
     <Formik
       initialValues={{
-        name: props.media.name,
-        privacy: props.media.linkStatus
+        name: props.album.name
       }}
       onSubmit={onSubmit}
       validate={validate}
@@ -32,8 +30,7 @@ export default props => {
           isValid,
           errors,
           status,
-          setStatus,
-          setFieldValue
+          setStatus
         } = props;
 
         return (
@@ -42,19 +39,10 @@ export default props => {
               name="name"
               as={InputWithErrors}
               type="text"
-              placeholder="Media Name"
+              placeholder="Album Name"
               error={errors.name}
             />
-            <Field
-              name="privacy"
-              as={SelectInputWithErrors}
-              type="privacy"
-              placeholder={"Privacy Status"}
-              onChange={data => setFieldValue("privacy", data)}
-            >
-              <Option value="unlisted">Unlisted</Option>
-              <Option value="public">Public</Option>
-            </Field>
+
             <Button
               type="primary"
               htmlType="submit"
@@ -67,7 +55,7 @@ export default props => {
             </Button>
             {status && (
               <Alert
-                message="Media Update Error"
+                message="Album Update Error"
                 description={status}
                 type="error"
                 closable

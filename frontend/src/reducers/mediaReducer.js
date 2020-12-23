@@ -8,6 +8,7 @@ import {
 } from "../apis/api";
 import { getApiError } from "../helpers";
 import { setError } from "./globalErrorReducer";
+import { ALBUM_CREATE, ALBUM_UPDATE } from "../apis/endpoints";
 
 export const fetchImages = (endpoint, page, size) => dispatch => {
   const params = new URLSearchParams();
@@ -19,8 +20,10 @@ export const fetchImages = (endpoint, page, size) => dispatch => {
     .catch(error => dispatch(setError(getApiError(error))));
 };
 
-export const fetchAlbums = endpoint => {
-  return apiGetCall(endpoint).then(response => response.data);
+export const fetchAlbums = endpoint => dispatch => {
+  return apiGetCall(endpoint)
+    .then(response => dispatch(fetchedAlbums(response.data)))
+    .catch(error => dispatch(setError(getApiError(error))));
 };
 
 export const uploadMedia = (endpoint, data, files) => {
@@ -29,7 +32,7 @@ export const uploadMedia = (endpoint, data, files) => {
   files.forEach(media => postData.append("file[]", media, media.name));
 
   let options = {
-    params: { privacy: data.linkStatus }
+    params: { privacy: data.linkStatus, albumId: data.albumId }
   };
 
   if (data.albumName) {
@@ -79,6 +82,20 @@ export const getUserMediaStats = user => dispatch => {
     .catch(error => dispatch(setError(getApiError(error))));
 };
 
+export const postNewAlbum = albumName => dispatch => {
+  const album = { name: albumName };
+
+  return apiPostCall(ALBUM_CREATE, album)
+    .then(response => dispatch(createdAlbum(response.data)))
+    .catch(error => dispatch(setError(getApiError(error))));
+};
+
+export const updateAlbum = (album, albumId) => dispatch => {
+  return apiPutCall(`${ALBUM_UPDATE}/${albumId}`, { name: album.name })
+    .then(() => dispatch(updatedAlbum({ id: albumId, album: album })))
+    .catch(error => dispatch(setError(getApiError(error))));
+};
+
 const media = new schema.Entity("medias");
 const album = new schema.Entity("albums", { medias: [media] });
 const mediaList = new schema.Array(media);
@@ -110,6 +127,11 @@ export const slice = createSlice({
     fetchedAlbums(state, action) {
       const data = normalize(action.payload, albumList);
 
+      state.entities.medias = Object.assign(
+        {},
+        state.entities.medias,
+        data.entities.medias
+      );
       state.entities.albums = data.entities.albums;
     },
     deletedMedia(state, action) {
@@ -125,6 +147,15 @@ export const slice = createSlice({
     },
     fetchedUserMediaStats(state, action) {
       state.stats = action.payload;
+    },
+    createdAlbum(state, action) {
+      state.entities.albums[action.payload.id] = action.payload;
+    },
+    updatedAlbum(state, action) {
+      state.entities.albums[action.payload.id] = {
+        ...state.entities.albums[action.payload.id],
+        ...action.payload.album
+      };
     }
   }
 });
@@ -134,5 +165,7 @@ export const {
   fetchedAlbums,
   deletedMedia,
   updatedMedia,
-  fetchedUserMediaStats
+  fetchedUserMediaStats,
+  createdAlbum,
+  updatedAlbum
 } = slice.actions;

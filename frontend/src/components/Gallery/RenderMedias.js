@@ -6,7 +6,7 @@ const { Meta } = Card;
 export default (mediasList, mediaOnClick, displayUploader) => {
   return mediasList.map(media => {
     return (
-      <Col xs={18} sm={12} md={12} lg={8} xl={6}>
+      <Col xs={24} sm={12} md={12} lg={8} xl={6} xxl={4}>
         <Card>
           <div className="pointerCursor">
             <Media media={media} onClick={mediaOnClick.bind(this, media)} />

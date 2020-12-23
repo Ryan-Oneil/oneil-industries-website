@@ -42,8 +42,26 @@ class Media extends React.Component {
     return this.renderImage(media);
   };
 
+  renderMissingMedia = onClick => {
+    return (
+      <div className="imageBox" onClick={onClick}>
+        <Image
+          alt={"No image in album"}
+          src={require("../../assets/images/noimage.png")}
+          preview={false}
+          style={{ margin: "auto" }}
+          width={"100%"}
+        />
+      </div>
+    );
+  };
+
   render() {
     const { onClick, media } = this.props;
+
+    if (!media) {
+      return this.renderMissingMedia(onClick);
+    }
 
     return (
       <div className="imageBox" key={media.id} onClick={onClick}>

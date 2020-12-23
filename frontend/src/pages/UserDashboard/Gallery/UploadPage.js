@@ -1,12 +1,21 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Avatar, Button, Card, Col, List, Row } from "antd";
 import DeleteOutlined from "@ant-design/icons/lib/icons/DeleteOutlined";
 import Uploader from "../../../components/Uploader";
 import UploadForm from "../../../components/formElements/UploadForm";
 import { displayBytesInReadableForm } from "../../../helpers";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchAlbums } from "../../../reducers/mediaReducer";
 
 export default () => {
   const [files, setFiles] = useState([]);
+  const { name } = useSelector(state => state.auth.user);
+  const { albums } = useSelector(state => state.medias.entities);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchAlbums(`/gallery/myalbums/${name}`));
+  }, []);
 
   const removeFile = fileId => {
     const oldFiles = [...files];
@@ -22,6 +31,7 @@ export default () => {
             <UploadForm
               mediaList={files}
               onSubmitSuccess={() => setFiles([])}
+              albums={Object.values(albums)}
             />
           </Card>
         </Col>

@@ -1,12 +1,14 @@
 import React from "react";
 import { getApiError } from "../../helpers";
-import { uploadMedia } from "../../reducers/mediaReducer";
+import { postNewAlbum, uploadMedia } from "../../reducers/mediaReducer";
 import { Field, Formik } from "formik";
 import { SelectInputWithErrors } from "./index";
 import { Alert, Button, Select } from "antd";
+import SelectWithDropDown from "./SelectWithDropDown";
+import { useDispatch } from "react-redux";
 const { Option } = Select;
 
-export default ({ mediaList, onSubmitSuccess }) => {
+export default ({ mediaList, onSubmitSuccess, albums }) => {
   const onSubmit = (formValues, { setStatus }) => {
     return uploadMedia("/gallery/upload", formValues, mediaList)
       .then(data => {
@@ -15,6 +17,7 @@ export default ({ mediaList, onSubmitSuccess }) => {
       })
       .catch(error => setStatus(getApiError(error)));
   };
+  const dispatch = useDispatch();
 
   return (
     <Formik
@@ -43,9 +46,14 @@ export default ({ mediaList, onSubmitSuccess }) => {
               onChange={data => setFieldValue("linkStatus", data)}
             >
               <Option value="unlisted">Unlisted</Option>
-              <Option value="private">Private</Option>
               <Option value="public">Public</Option>
             </Field>
+            <SelectWithDropDown
+              optionValues={albums}
+              placeHolder={"Album"}
+              onChange={value => setFieldValue("albumId", value)}
+              onSubmit={value => dispatch(postNewAlbum(value))}
+            />
             <Button
               type="primary"
               htmlType="submit"
