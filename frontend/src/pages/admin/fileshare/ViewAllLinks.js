@@ -5,6 +5,13 @@ import SharedLinkTable from "../../../components/Table/SharedLinkTable";
 
 export default props => {
   const { match } = props;
+  const adminColumns = [
+    {
+      title: "Creator",
+      dataIndex: "creator",
+      sorter: true
+    }
+  ];
 
   return (
     <div className="extraPadding">
@@ -13,6 +20,7 @@ export default props => {
           editPath={match.path}
           fetchData={getAllLinksPageable}
           defaultSort={{ field: "creationDate", order: "descend" }}
+          extraColumns={adminColumns}
         />
       </Card>
     </div>

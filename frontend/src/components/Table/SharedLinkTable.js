@@ -10,7 +10,7 @@ import PaginationTable from "./PaginationTable";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteLink } from "../../reducers/fileReducer";
 
-export default ({ editPath, fetchData }) => {
+export default ({ editPath, fetchData, extraColumns = [] }) => {
   const dispatch = useDispatch();
   const [linkIds, setLinkIds] = useState([]);
   const [totalLinks, setTotalLinks] = useState(0);
@@ -56,6 +56,7 @@ export default ({ editPath, fetchData }) => {
       render: size => displayBytesInReadableForm(size),
       sorter: true
     },
+    ...extraColumns,
     {
       title: "",
       key: "action",
