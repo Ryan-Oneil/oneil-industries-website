@@ -51,6 +51,11 @@ export default () => {
         marginTop: "-10px"
       }}
     >
+      {Object.values(albums).length === 0 && (
+        <Card>
+          <Empty description={"You don't have any albums"} />
+        </Card>
+      )}
       <Row gutter={[32, 32]}>{renderList()}</Row>
       {albumId && (
         <Modal

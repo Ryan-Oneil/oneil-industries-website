@@ -3,14 +3,13 @@ import { useDispatch, useSelector } from "react-redux";
 import Media from "../../../components/Gallery/Media";
 import "../../../assets/css/layout.css";
 import { Button, Modal } from "antd";
-import MediaGrid from "../../../components/Gallery/MediaGrid";
-import { USER_MEDIAS_ENDPOINT } from "../../../apis/endpoints";
 import { BASE_URL } from "../../../apis/api";
-import { deleteMedia } from "../../../reducers/mediaReducer";
+import { deleteMedia, fetchAlbums } from "../../../reducers/mediaReducer";
 import EditMediaForm from "../../../components/formElements/EditMediaForm";
+import ManageMediaGrid from "../../../components/Gallery/ManageMediaGrid";
 
 export default () => {
-  const { medias } = useSelector(state => state.medias.entities);
+  const { medias, albums } = useSelector(state => state.medias.entities);
   const [activeMedia, setActiveMedia] = useState("");
   const dispatch = useDispatch();
   const { name } = useSelector(state => state.auth.user);
@@ -20,6 +19,10 @@ export default () => {
   };
 
   useEffect(() => {
+    dispatch(fetchAlbums(`/gallery/myalbums/${name}`));
+  }, []);
+
+  useEffect(() => {
     if (activeMedia) {
       setActiveMedia(medias[activeMedia.id]);
     }
@@ -27,10 +30,9 @@ export default () => {
 
   return (
     <div>
-      <MediaGrid
-        imageEndpoint={`${USER_MEDIAS_ENDPOINT}${name}/image`}
-        videoEndpoint={`${USER_MEDIAS_ENDPOINT}${name}/video`}
+      <ManageMediaGrid
         handleShowDialog={handleShowDialog}
+        albums={Object.values(albums)}
       />
       {activeMedia && (
         <Modal

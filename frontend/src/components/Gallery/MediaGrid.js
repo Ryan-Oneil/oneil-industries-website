@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Card, Divider, List, Tabs } from "antd";
-import Media from "./Media";
+import { Card, ConfigProvider, Empty, List, Tabs } from "antd";
 import InfiniteScroll from "react-infinite-scroller";
 import { fetchImages } from "../../reducers/mediaReducer";
 import { useDispatch, useSelector } from "react-redux";
 import VideoCameraOutlined from "@ant-design/icons/lib/icons/VideoCameraOutlined";
 import FileImageOutlined from "@ant-design/icons/lib/icons/FileImageOutlined";
-const { Meta } = Card;
+import PictureOutlined from "@ant-design/icons/lib/icons/PictureOutlined";
 const { TabPane } = Tabs;
 
 export default ({
   imageEndpoint,
   videoEndpoint,
-  handleShowDialog,
-  showUploader
+  tabExtraActions,
+  mediaCardLayout
 }) => {
   const { medias } = useSelector(state => state.medias.entities);
   const [imageIds, setImageIds] = useState([]);
@@ -70,7 +69,7 @@ export default ({
     return (
       <div
         style={{
-          height: "85vh",
+          height: "79vh",
           overflow: "auto"
         }}
       >
@@ -94,25 +93,21 @@ export default ({
             style={{ marginLeft: "-8px" }}
             dataSource={mediaList}
             renderItem={item => (
-              <List.Item key={item.id}>
-                <Card>
-                  <div className="pointerCursor">
-                    <Media
-                      media={item}
-                      onClick={handleShowDialog.bind(this, item)}
-                    />
-                  </div>
-                  <Divider />
-                  <Meta
-                    title={showUploader ? item.uploader : item.name}
-                    description={item.dateAdded}
-                    style={{ textAlign: "center" }}
-                  />
-                </Card>
-              </List.Item>
+              <List.Item key={item.id}>{mediaCardLayout(item)}</List.Item>
             )}
           />
         </InfiniteScroll>
+      </div>
+    );
+  };
+
+  const renderEmpty = () => {
+    return (
+      <div style={{ width: "20vw" }} className={"centerContent"}>
+        <Card className={"roundedBorder extraPadding"}>
+          {Empty.PRESENTED_IMAGE_DEFAULT}
+          <p className={"removeMargin midText"}>No Media Found</p>
+        </Card>
       </div>
     );
   };
@@ -124,7 +119,13 @@ export default ({
         marginTop: "-10px"
       }}
     >
-      <Tabs defaultActiveKey="1" type="card">
+      <Tabs
+        defaultActiveKey="1"
+        type="card"
+        tabBarExtraContent={tabExtraActions}
+        className={"mediaTab"}
+        size={"large"}
+      >
         <TabPane
           tab={
             <span>
@@ -134,11 +135,13 @@ export default ({
           }
           key="1"
         >
-          {renderMediaList(
-            handleImageInfiniteOnLoad,
-            imageIds.length < imageTotal,
-            imageList
-          )}
+          <ConfigProvider renderEmpty={renderEmpty}>
+            {renderMediaList(
+              handleImageInfiniteOnLoad,
+              imageIds.length < imageTotal,
+              imageList
+            )}
+          </ConfigProvider>
         </TabPane>
         <TabPane
           tab={
@@ -149,11 +152,13 @@ export default ({
           }
           key="2"
         >
-          {renderMediaList(
-            handleVideoInfiniteOnLoad,
-            videoIds.length < videoTotal,
-            videoList
-          )}
+          <ConfigProvider renderEmpty={renderEmpty}>
+            {renderMediaList(
+              handleVideoInfiniteOnLoad,
+              videoIds.length < videoTotal,
+              videoList
+            )}
+          </ConfigProvider>
         </TabPane>
       </Tabs>
     </div>

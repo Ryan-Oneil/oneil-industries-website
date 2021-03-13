@@ -4,6 +4,7 @@ import biz.oneilindustries.website.entity.Album;
 import biz.oneilindustries.website.entity.Media;
 import biz.oneilindustries.website.exception.NotAuthorisedException;
 import biz.oneilindustries.website.service.MediaService;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -36,6 +37,9 @@ public class ImageGalleryAspect {
     @Pointcut("execution(* biz.oneilindustries.website.controller.ImageGalleryController.deleteMedia(..))")
     private void deleteMedia() {}
 
+    @Pointcut("execution(* biz.oneilindustries.website.controller.ImageGalleryController.massDeleteMedias(..))")
+    private void massDeleteMedias() {}
+
     @Pointcut("deleteMedia() || updateMedia()")
     private void combinedMediaManagement() {}
 
@@ -49,12 +53,14 @@ public class ImageGalleryAspect {
     @Pointcut("execution(* biz.oneilindustries.website.controller.ImageGalleryController.deleteAlbum(..))")
     private void deleteAlbum() {}
 
-    @Pointcut("manageAlbum() || updateAlbum() || deleteAlbum()")
+    @Pointcut("execution(* biz.oneilindustries.website.controller.ImageGalleryController.addMediasToAlbum(..))")
+    private void addMediasToAlbums() {}
+
+    @Pointcut("manageAlbum() || updateAlbum() || deleteAlbum() || addMediasToAlbums()")
     private void combinedAlbums() {}
 
     @Before("showUserMedia()")
     public void checkPermission(JoinPoint joinPoint) {
-
         Object[] args = joinPoint.getArgs();
 
         Authentication user = (Authentication) args[0];
@@ -68,7 +74,6 @@ public class ImageGalleryAspect {
 
     @Before("combinedMediaManagement()")
     public void checkMedia(JoinPoint joinPoint) {
-
         Object[] args = joinPoint.getArgs();
 
         int mediaInt = (int) args[0];
@@ -82,9 +87,25 @@ public class ImageGalleryAspect {
         }
     }
 
+    @Before("massDeleteMedias()")
+    public void checkMedias(JoinPoint joinPoint) {
+        Object[] args = joinPoint.getArgs();
+
+        Integer[] mediaInt = (Integer[]) args[0];
+        Authentication user = (Authentication) args[1];
+        HttpServletRequest request = (HttpServletRequest) args[2];
+
+        List<Media> medias = mediaService.getMediasByIds(mediaInt);
+
+        medias.forEach(media -> {
+            if (!media.getUploader().equals(user.getName()) && !request.isUserInRole(ADMIN_ROLE)) {
+                throw new NotAuthorisedException(user.getName() + NO_PERMISSION);
+            }
+        });
+    }
+
     @Before("combinedAlbums()")
     public void checkAlbum(JoinPoint joinPoint) {
-
         Object[] args = joinPoint.getArgs();
 
         String albumName = (String) args[0];

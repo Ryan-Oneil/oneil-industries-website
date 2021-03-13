@@ -122,6 +122,14 @@ public class ImageGalleryController {
         return mediaService.registerMedias(uploadedFiles, galleryUpload, userAuth);
     }
 
+    @DeleteMapping("/medias/delete")
+    public ResponseEntity<HttpStatus> massDeleteMedias(@RequestBody Integer[] mediaIds, Authentication user, HttpServletRequest request) {
+        long mediaSize = mediaService.deleteMedias(mediaIds);
+        userService.decreaseUsedAmount(user.getName(), mediaSize);
+
+        return ResponseEntity.ok(HttpStatus.OK);
+    }
+
     @DeleteMapping("/media/delete/{mediaId}")
     public ResponseEntity<HttpStatus> deleteMedia(@PathVariable int mediaId, Authentication user, HttpServletRequest request) throws IOException {
         long mediaSize = mediaService.deleteMedia(mediaId);
@@ -186,6 +194,14 @@ public class ImageGalleryController {
         Album album = mediaService.registerNewAlbum(albumDTO.getName(), user.getName());
 
         return ResponseEntity.ok(album);
+    }
+
+    @PutMapping("/myalbum/{albumID}/add")
+    public ResponseEntity<HttpStatus> addMediasToAlbum(@PathVariable String albumID, Authentication user, HttpServletRequest request,
+        @RequestBody int[] mediaIds) {
+        mediaService.addMediasToAlbum(albumID, mediaIds, user.getName());
+
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 
     // Admin related APIs

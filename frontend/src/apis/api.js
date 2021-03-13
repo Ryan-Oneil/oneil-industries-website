@@ -87,6 +87,6 @@ export const apiPutCall = async (endpoint, data) => {
   return await baseApi.put(endpoint, data);
 };
 
-export const apiDeleteCall = async endpoint => {
-  return await baseApi.delete(endpoint);
+export const apiDeleteCall = async (endpoint, config) => {
+  return await baseApi.delete(endpoint, config);
 };

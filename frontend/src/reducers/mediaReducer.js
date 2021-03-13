@@ -8,7 +8,11 @@ import {
 } from "../apis/api";
 import { getApiError } from "../helpers";
 import { setError } from "./globalErrorReducer";
-import { ALBUM_CREATE, ALBUM_UPDATE } from "../apis/endpoints";
+import {
+  ALBUM_CREATE,
+  ALBUM_UPDATE,
+  USER_DELETE_MEDIAS_ENDPOINTS
+} from "../apis/endpoints";
 
 export const fetchImages = (endpoint, page, size) => dispatch => {
   const params = new URLSearchParams();
@@ -55,6 +59,16 @@ export const deleteMedia = (endpoint, mediaID) => dispatch => {
     .catch(error => dispatch(setError(getApiError(error))));
 };
 
+export const deleteMedias = mediaIDs => dispatch => {
+  return apiDeleteCall(USER_DELETE_MEDIAS_ENDPOINTS, {
+    data: mediaIDs
+  })
+    .then(() => {
+      dispatch(deletedMedias(mediaIDs));
+    })
+    .catch(error => dispatch(setError(getApiError(error))));
+};
+
 export const updateMedia = (data, mediaID) => dispatch => {
   const media = {
     id: mediaID,
@@ -96,6 +110,12 @@ export const updateAlbum = (album, albumId) => dispatch => {
     .catch(error => dispatch(setError(getApiError(error))));
 };
 
+export const addMediasToAlbum = (albumId, mediaIds) => dispatch => {
+  return apiPutCall(`/gallery/myalbum/${albumId}/add`, mediaIds).catch(error =>
+    dispatch(setError(getApiError(error)))
+  );
+};
+
 const media = new schema.Entity("medias");
 const album = new schema.Entity("albums", { medias: [media] });
 const mediaList = new schema.Array(media);
@@ -127,6 +147,9 @@ export const slice = createSlice({
     fetchedAlbums(state, action) {
       const data = normalize(action.payload, albumList);
 
+      if (!data.entities.albums) {
+        return;
+      }
       state.entities.medias = Object.assign(
         {},
         state.entities.medias,
@@ -136,6 +159,9 @@ export const slice = createSlice({
     },
     deletedMedia(state, action) {
       delete state.entities.medias[action.payload];
+    },
+    deletedMedias(state, action) {
+      action.payload.forEach(mediaId => delete state.entities.medias[mediaId]);
     },
     updatedMedia(state, action) {
       const id = action.payload.id;
@@ -167,5 +193,6 @@ export const {
   updatedMedia,
   fetchedUserMediaStats,
   createdAlbum,
-  updatedAlbum
+  updatedAlbum,
+  deletedMedias
 } = slice.actions;

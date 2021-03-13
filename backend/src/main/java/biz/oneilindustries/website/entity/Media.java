@@ -42,12 +42,14 @@ public class Media {
     @Column(name = "media_type")
     private String mediaType;
 
+    private Long size;
+
     @OneToOne(mappedBy = "media", cascade = CascadeType.ALL)
     @JsonIgnore
     private PublicMediaApproval publicMediaApproval;
 
     public Media(String name, String fileName, String linkStatus, String uploader, String dateAdded,
-        Album album, String mediaType) {
+        Album album, String mediaType, Long size) {
         this.name = name;
         this.fileName = fileName;
         this.linkStatus = linkStatus;
@@ -55,14 +57,16 @@ public class Media {
         this.dateAdded = dateAdded;
         this.album = album;
         this.mediaType = mediaType;
+        this.size = size;
     }
 
-    public Media(String name, String fileName, String linkStatus, String uploader, String dateAdded) {
+    public Media(String name, String fileName, String linkStatus, String uploader, String dateAdded, Long size) {
         this.name = name;
         this.fileName = fileName;
         this.linkStatus = linkStatus;
         this.uploader = uploader;
         this.dateAdded = dateAdded;
+        this.size = size;
     }
 
     public Media(int mediaID) {
@@ -168,5 +172,13 @@ public class Media {
 
     public void setPublicMediaApproval(PublicMediaApproval publicMediaApproval) {
         this.publicMediaApproval = publicMediaApproval;
+    }
+
+    public Long getSize() {
+        return size;
+    }
+
+    public void setSize(Long size) {
+        this.size = size;
     }
 }

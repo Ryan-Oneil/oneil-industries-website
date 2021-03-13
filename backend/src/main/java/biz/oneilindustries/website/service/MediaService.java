@@ -71,7 +71,7 @@ public class MediaService {
             album = getOrRegisterAlbum(user.getUsername(), albumId);
         }
         for (File mediaFile : mediaFiles) {
-            Media media = registerMedia(mediaFile.getName(), galleryUpload.getPrivacy(), mediaFile, user.getUsername(), album);
+            Media media = registerMedia(mediaFile.getName(), galleryUpload.getPrivacy(), mediaFile, user.getUsername(), album, mediaFile.length());
             checkMediaPrivacy(media, user);
 
             mediaList.add(media);
@@ -146,11 +146,11 @@ public class MediaService {
         return mediaRepository.getFirstByFileName(fileName).orElseThrow(() -> new MediaException(FILE_NOT_EXISTS_ERROR_MESSAGE));
     }
 
-    public Media registerMedia(String mediaName, String privacy, File file, String user, Album album) throws IOException {
+    public Media registerMedia(String mediaName, String privacy, File file, String user, Album album, Long size) throws IOException {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         LocalDate localDate = LocalDate.now();
 
-        Media media = new Media(mediaName, file.getName() , privacy,user, localDate.format(dtf));
+        Media media = new Media(mediaName, file.getName() , privacy,user, localDate.format(dtf), size);
         Optional.ofNullable(album).ifPresent(media::setAlbum);
 
         String mediaType = FileHandler.getFileMediaType(file);
@@ -245,6 +245,14 @@ public class MediaService {
         return size;
     }
 
+    public Long deleteMedias(Integer[] mediaIds) {
+        Long totalSize = mediaRepository.getTotalMediasSize(mediaIds);
+
+        mediaRepository.deleteMediasByIds(mediaIds);
+
+        return totalSize;
+    }
+
     public File getMediaFile(String mediaFileName) {
         Media media = getMediaFileName(mediaFileName);
         File file = new File(GALLERY_IMAGES_DIRECTORY + media.getUploader() + "/" + media.getFileName());
@@ -337,6 +345,16 @@ public class MediaService {
         album.setName(name);
 
         albumRepository.save(album);
+    }
+
+    public void addMediasToAlbum(String albumId, int[] mediaIds, String uploader) {
+        Album album = getAlbum(albumId);
+
+        mediaRepository.setMediasAlbum(album, mediaIds, uploader);
+    }
+
+    public List<Media> getMediasByIds(Integer[] mediaIds) {
+        return mediaRepository.getAllByIds(mediaIds);
     }
 
     //DTOs converters
