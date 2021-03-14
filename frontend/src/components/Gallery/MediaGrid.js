@@ -5,7 +5,6 @@ import { fetchImages } from "../../reducers/mediaReducer";
 import { useDispatch, useSelector } from "react-redux";
 import VideoCameraOutlined from "@ant-design/icons/lib/icons/VideoCameraOutlined";
 import FileImageOutlined from "@ant-design/icons/lib/icons/FileImageOutlined";
-import PictureOutlined from "@ant-design/icons/lib/icons/PictureOutlined";
 const { TabPane } = Tabs;
 
 export default ({

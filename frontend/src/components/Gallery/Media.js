@@ -2,72 +2,74 @@ import React from "react";
 import { BASE_URL } from "../../apis/api";
 import { Image } from "antd";
 
-class Media extends React.Component {
-  renderImage = media => {
+export default ({
+  media,
+  fullSize,
+  renderVideoControls,
+  showVideoPlayButton,
+  showPreview
+}) => {
+  const renderImage = media => {
     const baseSrc = `${BASE_URL}/gallery/image`;
-    const endpoint = `${this.props.fullSize ? "" : "/thumbnail"}/${
-      media.fileName
-    }`;
-    //Checks if media.src exists as some pages send blobs instead or urls
+    const endpoint = `${fullSize ? "" : "/thumbnail"}/${media.fileName}`;
+    const previewConfig = {
+      src: `${BASE_URL}/gallery/image/${media.fileName}`
+    };
+
     return (
       <Image
         alt={media.name}
-        src={media.src ? media.src : baseSrc + endpoint}
-        preview={false}
+        src={baseSrc + endpoint}
+        preview={showPreview ? previewConfig : false}
         style={{ margin: "auto" }}
         width={"100%"}
       />
     );
   };
 
-  renderVideo = (media, renderVideoControls) => {
+  const renderVideo = (media, renderVideoControls) => {
     const src = `${BASE_URL}/gallery/video/${media.fileName}`;
-    //Checks if media.src exists as some pages send blobs instead or urls
+
     return (
-      <video
-        className="centerVideo"
-        src={media.src ? media.src : src}
-        controls={renderVideoControls}
-        style={{ width: " 100%", height: "auto" }}
+      <div className={"videoMedia"}>
+        <video
+          className="centerVideo"
+          src={src}
+          controls={renderVideoControls}
+          style={{ width: "100%", height: "100%" }}
+        />
+        {showVideoPlayButton && (
+          <div className={"playButton"}>
+            <img
+              src={require("../../assets/images/play-icon.jpg")}
+              alt={"Play video icon"}
+            />
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const RenderMedia = () => {
+    if (media.mediaType === "video") {
+      return renderVideo(media, renderVideoControls);
+    }
+    return renderImage(media);
+  };
+
+  const RenderMissingMedia = () => {
+    return (
+      <Image
+        alt={"No media"}
+        src={require("../../assets/images/noimage.png")}
+        preview={false}
+        style={{ margin: "auto" }}
+        width={"100%"}
       />
     );
   };
-
-  renderMedia = () => {
-    const { media, renderVideoControls } = this.props;
-
-    if (media.mediaType === "video") {
-      return this.renderVideo(media, renderVideoControls);
-    }
-    return this.renderImage(media);
-  };
-
-  renderMissingMedia = onClick => {
-    return (
-      <div className="imageBox" onClick={onClick}>
-        <Image
-          alt={"No image in album"}
-          src={require("../../assets/images/noimage.png")}
-          preview={false}
-          style={{ margin: "auto" }}
-          width={"100%"}
-        />
-      </div>
-    );
-  };
-
-  render() {
-    const { onClick, media } = this.props;
-
-    if (!media) {
-      return this.renderMissingMedia(onClick);
-    }
-
-    return (
-      <div className="imageBox" key={media.id} onClick={onClick}>
-        {this.renderMedia()}
-      </div>
-    );
+  if (!media) {
+    return <RenderMissingMedia />;
   }
-}
-export default Media;
+  return <RenderMedia />;
+};

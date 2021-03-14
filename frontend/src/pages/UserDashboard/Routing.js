@@ -22,6 +22,7 @@ import ManageFilesPage from "./FileShare/ManageFilesPage";
 import EditLinkPage from "./FileShare/EditLinkPage";
 import SharePage from "./FileShare/SharePage";
 import ShareAltOutlined from "@ant-design/icons/lib/icons/ShareAltOutlined";
+import { GALLERY_UPLOAD_URL } from "../../constants/constants";
 const { Content, Sider } = Layout;
 
 export default props => {
@@ -36,7 +37,7 @@ export default props => {
       title: "Gallery",
       icon: <PictureOutlined />,
       links: [
-        { path: "/gallery/upload", icon: <UploadOutlined />, name: "Upload" },
+        { path: GALLERY_UPLOAD_URL, icon: <UploadOutlined />, name: "Upload" },
         {
           path: "/gallery/medias",
           icon: <PictureOutlined />,
@@ -77,7 +78,7 @@ export default props => {
           subLinks={subLinks}
         />
       </Sider>
-      <Layout className={"blueBackgroundColor"}>
+      <Layout className={"mainBackgroundColor"}>
         <Content className="extraPadding">
           <Switch>
             <PrivateRoute>

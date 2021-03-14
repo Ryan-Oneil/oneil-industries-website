@@ -9,9 +9,10 @@ export default ({ mediaItem, handleShowDialog, cardExtras }) => {
       className={"roundedBorder darkGreyBackground"}
       hoverable
       extra={cardExtras}
+      style={{ overflow: "hidden" }}
     >
       <div onClick={handleShowDialog.bind(this, mediaItem)}>
-        <Media media={mediaItem} />
+        <Media media={mediaItem} showVideoPlayButton />
         <Meta
           title={mediaItem.name}
           description={

@@ -6,11 +6,14 @@ import DatabaseOutlined from "@ant-design/icons/lib/icons/DatabaseOutlined";
 
 const Home = () => {
   return (
-    <div className="whiteText">
-      <h1 className="centerText">
-        Oneil Industries a community dedicated to banter
+    <div className="whiteText topPadding">
+      <h1 className="centerText bigText" style={{ marginBottom: 0 }}>
+        We are Oneil Enterprise
       </h1>
-
+      <Divider className={"smallDivider"} />
+      <h2 className="centerText midText">
+        A gaming community dedicated to banter
+      </h2>
       <img
         src={require("../assets/images/oneilFactory.png")}
         className="centerContent imageResponse"
@@ -18,7 +21,9 @@ const Home = () => {
       />
 
       <Divider style={{ color: "white" }}>
-        Some of the things that makes us great
+        <span className={"formatInfo"}>
+          Some of the things that makes us great
+        </span>
       </Divider>
       <Row
         justify="center"

@@ -24,7 +24,7 @@ export default ({ menuDirection }) => {
       selectedKeys={[location.pathname]}
     >
       <Menu.Item key="/">
-        <NavLink to="/" className="header item" exact={true}>
+        <NavLink to="/" className="header item" exact>
           Home
         </NavLink>
       </Menu.Item>

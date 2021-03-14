@@ -9,7 +9,6 @@ import PrivateRoute from "./PrivateRoute";
 import ProfileRouting from "../pages/UserDashboard/Routing";
 import Admin from "../pages/admin/AdminRouting";
 import NotFound from "../pages/NotFound";
-import BottomFooter from "./site layout/BottomFooter";
 import { Layout } from "antd";
 import Login from "../pages/auth/Login";
 import PublicRoute from "./PublicRoute";
@@ -18,49 +17,66 @@ import ResetPassword from "../pages/auth/ResetPassword";
 import ChangePassword from "../pages/auth/ChangePassword";
 import EmailConfirmation from "../pages/auth/EmailConfirmation";
 import SharedLinkPage from "../pages/UserDashboard/FileShare/SharedLinkPage";
-const { Footer } = Layout;
+import {
+  ADMIN_BASE_URL,
+  CHANGE_PASSWORD_URL,
+  CONFIRM_EMAIL_URL,
+  DASHBOARD,
+  GALLERY_ALBUM_URL,
+  GALLERY_URL,
+  HOME_URL,
+  LOGIN_URL,
+  REGISTER_URL,
+  RESET_PASSWORD_URL,
+  SHARED_FILES_LINK_URL,
+  VOICE_SERVICES_URL
+} from "../constants/constants";
 
 class ClientApp extends React.Component {
   render() {
     return (
-      <Layout className={"blueBackgroundColor"} style={{ height: "100vh" }}>
+      <Layout style={{ height: "100vh" }}>
         <BrowserRouter>
           <NavMenu />
-          <Layout style={{ background: "rgb(61, 76, 104)" }}>
+          <Layout className={"mainBackgroundColor"}>
             <Switch>
-              <Route path="/" exact component={Home} />
-              <Route path="/images" component={Images} exact />
-              <Route path="/gallery/album/:albumName" component={Album} />
-              <PublicRoute path="/login">
-                <Route exact path="/login" component={Login} />
+              <Route path={HOME_URL} exact component={Home} />
+              <Route path={GALLERY_URL} component={Images} exact />
+              <Route path={GALLERY_ALBUM_URL} component={Album} />
+              <PublicRoute path={LOGIN_URL}>
+                <Route exact path={LOGIN_URL} component={Login} />
               </PublicRoute>
-              <PublicRoute path="/register">
-                <Route exact path="/register" component={Register} />
+              <PublicRoute path={REGISTER_URL}>
+                <Route exact path={REGISTER_URL} component={Register} />
               </PublicRoute>
-              <PublicRoute path="/confirmEmail/:token">
+              <PublicRoute path={CONFIRM_EMAIL_URL}>
                 <Route
                   exact
-                  path="/confirmEmail/:token"
+                  path={CONFIRM_EMAIL_URL}
                   component={EmailConfirmation}
                 />
               </PublicRoute>
-              <PublicRoute path="/resetPassword">
-                <Route exact path="/resetPassword" component={ResetPassword} />
-              </PublicRoute>
-              <PublicRoute path="/changePassword/:token">
+              <PublicRoute path={RESET_PASSWORD_URL}>
                 <Route
                   exact
-                  path="/changePassword/:token"
+                  path={RESET_PASSWORD_URL}
+                  component={ResetPassword}
+                />
+              </PublicRoute>
+              <PublicRoute path={CHANGE_PASSWORD_URL}>
+                <Route
+                  exact
+                  path={CHANGE_PASSWORD_URL}
                   component={ChangePassword}
                 />
               </PublicRoute>
-              <Route path="/shared/:id" component={SharedLinkPage} />
-              <Route path="/services" exact component={Services} />
-              <PrivateRoute path="/dashboard">
-                <Route path="/dashboard" component={ProfileRouting} />
+              <Route path={SHARED_FILES_LINK_URL} component={SharedLinkPage} />
+              <Route path={VOICE_SERVICES_URL} exact component={Services} />
+              <PrivateRoute path={DASHBOARD}>
+                <Route path={DASHBOARD} component={ProfileRouting} />
               </PrivateRoute>
-              <PrivateRoute path="/admin">
-                <Route path="/admin" component={Admin} />
+              <PrivateRoute path={ADMIN_BASE_URL}>
+                <Route path={ADMIN_BASE_URL} component={Admin} />
               </PrivateRoute>
               <Route path="*">
                 <NotFound />
@@ -68,9 +84,6 @@ class ClientApp extends React.Component {
             </Switch>
           </Layout>
         </BrowserRouter>
-        {/*<Footer className="lightBlack bottomFooter">*/}
-        {/*  <BottomFooter />*/}
-        {/*</Footer>*/}
       </Layout>
     );
   }

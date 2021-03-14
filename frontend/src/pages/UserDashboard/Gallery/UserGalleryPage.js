@@ -41,6 +41,7 @@ export default () => {
           onCancel={() => setActiveMedia("")}
           footer={null}
           width={550}
+          maskStyle={{ backgroundColor: "rgba(0, 0, 0, 0.7)" }}
         >
           <a
             href={`${BASE_URL}/gallery/${activeMedia.mediaType}/${activeMedia.fileName}`}
