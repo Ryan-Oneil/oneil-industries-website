@@ -1,6 +1,6 @@
 import React from "react";
-import { BASE_URL } from "../../apis/api";
 import { Image } from "antd";
+import { MEDIA_IMAGE_URL, MEDIA_VIDEO_URL } from "../../apis/endpoints";
 
 export default ({
   media,
@@ -10,16 +10,14 @@ export default ({
   showPreview
 }) => {
   const renderImage = media => {
-    const baseSrc = `${BASE_URL}/gallery/image`;
-    const endpoint = `${fullSize ? "" : "/thumbnail"}/${media.fileName}`;
+    const endpoint = `${fullSize ? "" : "thumbnail/"}${media.fileName}`;
     const previewConfig = {
-      src: `${BASE_URL}/gallery/image/${media.fileName}`
+      src: `${MEDIA_IMAGE_URL}${media.fileName}`
     };
-
     return (
       <Image
         alt={media.name}
-        src={baseSrc + endpoint}
+        src={MEDIA_IMAGE_URL + endpoint}
         preview={showPreview ? previewConfig : false}
         style={{ margin: "auto" }}
         width={"100%"}
@@ -28,7 +26,7 @@ export default ({
   };
 
   const renderVideo = (media, renderVideoControls) => {
-    const src = `${BASE_URL}/gallery/video/${media.fileName}`;
+    const src = `${MEDIA_VIDEO_URL}${media.fileName}`;
 
     return (
       <div className={"videoMedia"}>
