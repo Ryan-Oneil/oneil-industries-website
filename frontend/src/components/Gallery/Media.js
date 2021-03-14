@@ -48,14 +48,14 @@ export default ({
     );
   };
 
-  const RenderMedia = () => {
+  const renderMedia = () => {
     if (media.mediaType === "video") {
       return renderVideo(media, renderVideoControls);
     }
     return renderImage(media);
   };
 
-  const RenderMissingMedia = () => {
+  const renderMissingMedia = () => {
     return (
       <Image
         alt={"No media"}
@@ -67,7 +67,7 @@ export default ({
     );
   };
   if (!media) {
-    return <RenderMissingMedia />;
+    return renderMissingMedia();
   }
-  return <RenderMedia />;
+  return renderMedia();
 };
