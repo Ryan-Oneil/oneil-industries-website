@@ -11,3 +11,5 @@ backend/src/main/resources/application.properties
 frontend/.idea/*
 *.iml
 backend/oneilWeb.iml
+*.yml
+*.iml
