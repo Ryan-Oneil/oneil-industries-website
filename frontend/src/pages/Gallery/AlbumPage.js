@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import Media from "../../components/Gallery/Media";
 import RenderMedias from "../../components/Gallery/RenderMedias";
-import { BASE_URL } from "../../apis/api";
 import { fetchAlbumWithImages } from "../../reducers/mediaReducer";
-import { Empty, Modal, Row } from "antd";
+import { Empty, Row } from "antd";
+import MediaModal from "../../components/Gallery/MediaModal";
 
 export default props => {
   const {
@@ -24,7 +23,8 @@ export default props => {
   };
 
   return (
-    <div style={{ marginTop: "20px" }}>
+    <div className={"topPadding"}>
+      <h1 className="centerText bigText whiteText">{album.name}</h1>
       {album.medias.length === 0 && (
         <Empty
           description={`${loading ? "Loading Album" : "No album found"}`}
@@ -32,29 +32,15 @@ export default props => {
         />
       )}
       <Row gutter={[32, 32]} justify="center">
-        {RenderMedias(album.medias, handleShowDialog, true)}
+        {RenderMedias(album.medias, handleShowDialog)}
       </Row>
       {activeMedia && (
-        <Modal
-          title={activeMedia.name}
-          visible={activeMedia}
-          onCancel={() => setActiveMedia("")}
-          footer={null}
-        >
-          <a
-            href={`${BASE_URL}/gallery/${activeMedia.mediaType}/${activeMedia.fileName}`}
-          >
-            <Media
-              media={activeMedia}
-              renderVideoControls={true}
-              fullSize={true}
-            />
-          </a>
-          <div className="centerText">
-            <p>Uploader: {activeMedia.uploader}</p>
-            <p>Uploaded: {activeMedia.dateAdded}</p>
-          </div>
-        </Modal>
+        <MediaModal
+          activeMedia={activeMedia}
+          extraMediaInfo={<h1>{activeMedia.uploader}</h1>}
+          closeModalAction={() => setActiveMedia("")}
+          showMediaPreview
+        />
       )}
     </div>
   );

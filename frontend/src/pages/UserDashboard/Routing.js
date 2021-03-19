@@ -78,7 +78,7 @@ export default props => {
           subLinks={subLinks}
         />
       </Sider>
-      <Layout className={"mainBackgroundColor"}>
+      <Layout className={"mainBackgroundColor dashboard"}>
         <Content className="extraPadding">
           <Switch>
             <PrivateRoute>

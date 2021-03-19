@@ -87,7 +87,7 @@ export default ({
               md: 4,
               lg: 4,
               xl: 5,
-              xxl: 8
+              xxl: 7
             }}
             style={{ marginLeft: "-8px" }}
             dataSource={mediaList}
@@ -124,6 +124,7 @@ export default ({
         tabBarExtraContent={tabExtraActions}
         className={"mediaTab"}
         size={"large"}
+        centered={true}
       >
         <TabPane
           tab={

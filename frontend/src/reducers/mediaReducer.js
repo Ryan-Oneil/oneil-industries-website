@@ -10,6 +10,7 @@ import { getApiError } from "../helpers";
 import { setError } from "./globalErrorReducer";
 import {
   ALBUM_CREATE,
+  ALBUM_DELETE,
   ALBUM_UPDATE,
   USER_DELETE_MEDIAS_ENDPOINTS
 } from "../apis/endpoints";
@@ -30,13 +31,14 @@ export const fetchAlbums = endpoint => dispatch => {
     .catch(error => dispatch(setError(getApiError(error))));
 };
 
-export const uploadMedia = (endpoint, data, files) => {
+export const uploadMedia = (endpoint, data, files, uploadProgress) => {
   let postData = new FormData();
 
   files.forEach(media => postData.append("file[]", media, media.name));
 
   let options = {
-    params: { privacy: data.linkStatus, albumId: data.albumId }
+    params: { privacy: data.linkStatus, albumId: data.albumId },
+    onUploadProgress: progressEvent => uploadProgress(progressEvent)
   };
 
   if (data.albumName) {
@@ -81,10 +83,10 @@ export const updateMedia = (data, mediaID) => dispatch => {
   });
 };
 
-export const deleteAlbum = (endpoint, albumID) => dispatch => {
-  apiDeleteCall(endpoint + albumID).catch(error =>
-    dispatch(setError(getApiError(error)))
-  );
+export const deleteAlbum = albumID => dispatch => {
+  apiDeleteCall(ALBUM_DELETE + albumID)
+    .then(() => dispatch(deletedAlbum(albumID)))
+    .catch(error => dispatch(setError(getApiError(error))));
 };
 export const fetchAlbumWithImages = endpoint => {
   return apiGetCall(endpoint).then(({ data }) => data);
@@ -182,6 +184,9 @@ export const slice = createSlice({
         ...state.entities.albums[action.payload.id],
         ...action.payload.album
       };
+    },
+    deletedAlbum(state, action) {
+      delete state.entities.albums[action.payload];
     }
   }
 });
@@ -194,5 +199,6 @@ export const {
   fetchedUserMediaStats,
   createdAlbum,
   updatedAlbum,
-  deletedMedias
+  deletedMedias,
+  deletedAlbum
 } = slice.actions;

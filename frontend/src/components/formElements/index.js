@@ -22,7 +22,7 @@ export const SelectInputWithErrors = props => {
         {...props}
         size="large"
         className={hasError}
-        style={{ width: "100%" }}
+        style={{ width: "100%", textAlign: "start" }}
       >
         {props.children}
       </Select>

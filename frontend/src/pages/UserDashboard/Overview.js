@@ -13,9 +13,13 @@ export default () => {
   const dispatch = useDispatch();
   const { name } = useSelector(state => state.auth.user);
   const { used, max } = useSelector(state => state.user.storageQuota);
-  const { totalViews, totalLinks, mostViewedLinks, recentLinks } = useSelector(
-    state => state.fileSharer.stats
-  );
+  const {
+    totalViews,
+    totalLinks,
+    mostViewedLinks,
+    recentLinks,
+    totalFiles
+  } = useSelector(state => state.fileSharer.stats);
   const { totalMedias, recentMedias, totalAlbums } = useSelector(
     state => state.medias.stats
   );
@@ -33,7 +37,7 @@ export default () => {
     <>
       <Row gutter={[32, 32]}>
         <Col xs={24} sm={24} md={6} lg={6} xl={4}>
-          <StatisticCard title="Total Shared Links" value={totalLinks} />
+          <StatisticCard title="Total Shared Files" value={totalFiles} />
         </Col>
         <Col xs={24} sm={24} md={6} lg={6} xl={4}>
           <StatisticCard
@@ -54,7 +58,7 @@ export default () => {
           <StatisticCard title="Total Albums" value={totalAlbums} />
         </Col>
       </Row>
-      <Row gutter={[32, 32]} type="flex">
+      <Row gutter={[32, 32]} type="flex" className={"topPadding"}>
         <Col xs={24} sm={24} md={8} lg={8} xl={8}>
           <ListCard
             title="Most Viewed Links"
@@ -126,20 +130,22 @@ export default () => {
                 <List.Item.Meta
                   avatar={
                     <Avatar
-                      src={`${BASE_URL}/gallery/${item.mediaType}/${item.fileName}`}
+                      src={`${BASE_URL}/gallery/image/thumbnail/${item.fileName}`}
                       size="large"
                     />
                   }
                   title={
                     <a
-                      href={`${BASE_URL}/gallery/${item.mediaType}/${item.fileName}`}
+                      href={`${BASE_URL}/gallery/${item.mediaType.toLowerCase()}/${
+                        item.fileName
+                      }`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       {item.fileName}
                     </a>
                   }
-                  description={item.mediaType}
+                  description={item.mediaType.toLowerCase()}
                 />
               </List.Item>
             )}

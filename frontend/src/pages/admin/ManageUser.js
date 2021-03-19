@@ -145,8 +145,8 @@ export default props => {
             href={`${BASE_URL}/gallery/${activeMedia.mediaType}/${activeMedia.fileName}`}
           >
             <Media
-              media={activeMedia}
-              renderVideoControls={true}
+              fileName={activeMedia.fileName}
+              mediaType={activeMedia.mediaType}
               fullSize={true}
             />
           </a>

@@ -1,15 +1,13 @@
 import MediaGrid from "./MediaGrid";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { USER_MEDIAS_ENDPOINT } from "../../apis/endpoints";
 import { useDispatch, useSelector } from "react-redux";
-import { Card, Checkbox, Divider, Dropdown, List, Menu } from "antd";
+import { Checkbox, Dropdown, List, Menu } from "antd";
 import DeleteOutlined from "@ant-design/icons/lib/icons/DeleteOutlined";
 import FolderAddOutlined from "@ant-design/icons/lib/icons/FolderAddOutlined";
 import { addMediasToAlbum, deleteMedias } from "../../reducers/mediaReducer";
-import Media from "./Media";
 import MediaCard from "./MediaCard";
 const { SubMenu } = Menu;
-const { Meta } = Card;
 
 export default ({ handleShowDialog, albums = [] }) => {
   const { name } = useSelector(state => state.auth.user);
@@ -76,8 +74,11 @@ export default ({ handleShowDialog, albums = [] }) => {
     return (
       <List.Item key={item.id}>
         <MediaCard
-          mediaItem={item}
-          handleShowDialog={handleShowDialog}
+          mediaFileName={item.fileName}
+          title={item.name}
+          mediaType={item.mediaType}
+          dateAdded={item.dateAdded}
+          handleShowDialog={handleShowDialog.bind(this, item)}
           cardExtras={checkBox(item.id)}
         />
       </List.Item>

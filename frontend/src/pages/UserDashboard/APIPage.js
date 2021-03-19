@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import { Button, Card, Col, Input, Row } from "antd";
+import { Button, Card, Col, Input, Row, Space } from "antd";
 import {
   generateAPIToken,
   generateShareXConfig,
   getAPIToken
 } from "../../reducers/userReducer";
+import CopyOutlined from "@ant-design/icons/lib/icons/CopyOutlined";
+import DownloadOutlined from "@ant-design/icons/lib/icons/DownloadOutlined";
+import ReloadOutlined from "@ant-design/icons/lib/icons/ReloadOutlined";
 const { TextArea } = Input;
 
 export default () => {
@@ -29,19 +32,41 @@ export default () => {
       <Col xs={24} sm={24} md={6} lg={6} xl={10}>
         <Card title="ShareX Config">
           <TextArea readOnly value={JSON.stringify(shareXConfig)} />
-          <CopyToClipboard
-            text={JSON.stringify(shareXConfig)}
-            onCopy={() => setSharexText("Copied")}
-          >
-            <Button className="centerButton">{sharexText}</Button>
-          </CopyToClipboard>
+          <div className={"centerFlexContent topPadding"}>
+            <Space>
+              <Button
+                className={"formattedBackground"}
+                type="primary"
+                href={`data:text/json;charset=utf-8,${encodeURIComponent(
+                  JSON.stringify(shareXConfig)
+                )}`}
+                download="OneilEnterprise.sxcu"
+                icon={<DownloadOutlined />}
+              >
+                Download ShareX Config
+              </Button>
+              <CopyToClipboard
+                text={JSON.stringify(shareXConfig)}
+                onCopy={() => setSharexText("Copied")}
+              >
+                <Button
+                  type="primary"
+                  className={"formattedBackground"}
+                  icon={<CopyOutlined />}
+                >
+                  {sharexText}
+                </Button>
+              </CopyToClipboard>
+            </Space>
+          </div>
         </Card>
       </Col>
       <Col xs={24} sm={24} md={6} lg={6} xl={10}>
         <Card title="Api Token">
           <Input type="text" readOnly value={apiToken} />
           <Button
-            className="centerButton"
+            className="centerButton formattedBackground"
+            type="primary"
             onClick={() => {
               dispatch(
                 generateAPIToken(`/user/${name}/generateAPIToken`)
@@ -49,6 +74,7 @@ export default () => {
                 dispatch(generateShareXConfig(`/user/${name}/getShareX`))
               );
             }}
+            icon={<ReloadOutlined />}
           >
             Generate
           </Button>

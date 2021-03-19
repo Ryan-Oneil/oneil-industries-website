@@ -40,7 +40,7 @@ export default ({
       )}
     >
       {optionValues.map(item => (
-        <Option key={item.id} value={item.name}>
+        <Option key={item.id} value={item.id}>
           {item.name}
         </Option>
       ))}

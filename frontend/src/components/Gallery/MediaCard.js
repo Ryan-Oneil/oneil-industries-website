@@ -1,9 +1,29 @@
 import React from "react";
 import Media from "./Media";
-import { Card } from "antd";
+import { Card, Image } from "antd";
 const { Meta } = Card;
 
-export default ({ mediaItem, handleShowDialog, cardExtras }) => {
+export default ({
+  handleShowDialog,
+  cardExtras,
+  title = "",
+  mediaFileName = "",
+  mediaType = "",
+  dateAdded = "",
+  uploader = ""
+}) => {
+  const renderMissingMedia = () => {
+    return (
+      <Image
+        alt={"No media"}
+        src={require("../../assets/images/noimage.png")}
+        preview={false}
+        style={{ margin: "auto" }}
+        width={"100%"}
+      />
+    );
+  };
+
   return (
     <Card
       className={"roundedBorder darkGreyBackground"}
@@ -11,12 +31,22 @@ export default ({ mediaItem, handleShowDialog, cardExtras }) => {
       extra={cardExtras}
       style={{ overflow: "hidden" }}
     >
-      <div onClick={handleShowDialog.bind(this, mediaItem)}>
-        <Media media={mediaItem} showVideoPlayButton />
+      <div onClick={handleShowDialog.bind(this)}>
+        {mediaFileName && mediaType && (
+          <Media
+            fileName={mediaFileName}
+            mediaType={mediaType}
+            showVideoPlayButton
+          />
+        )}
+        {!mediaFileName && !mediaType && renderMissingMedia()}
         <Meta
-          title={mediaItem.name}
+          title={title}
           description={
-            <span className={"descriptionText"}>{mediaItem.dateAdded}</span>
+            <>
+              {dateAdded && <p className={"descriptionText"}>{dateAdded}</p>}
+              {uploader && <p className={"descriptionText"}>{uploader}</p>}
+            </>
           }
           style={{ textAlign: "center", color: "white" }}
         />

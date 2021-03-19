@@ -5,6 +5,7 @@ import { getApiError } from "../../helpers";
 import { Field, Formik } from "formik";
 import { Alert, Button } from "antd";
 import { updateAlbum } from "../../reducers/mediaReducer";
+import SaveOutlined from "@ant-design/icons/lib/icons/SaveOutlined";
 
 export default props => {
   const dispatch = useDispatch();
@@ -46,10 +47,11 @@ export default props => {
             <Button
               type="primary"
               htmlType="submit"
-              className="form-button"
+              className="fullWidth formattedBackground"
               disabled={!isValid || isSubmitting}
               loading={isSubmitting}
               size="large"
+              icon={<SaveOutlined />}
             >
               {isSubmitting ? "Updating" : "Update"}
             </Button>

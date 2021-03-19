@@ -3,71 +3,61 @@ import { Image } from "antd";
 import { MEDIA_IMAGE_URL, MEDIA_VIDEO_URL } from "../../apis/endpoints";
 
 export default ({
-  media,
   fullSize,
-  renderVideoControls,
   showVideoPlayButton,
-  showPreview
+  showPreview,
+  fileName,
+  mediaType
 }) => {
-  const renderImage = media => {
-    const endpoint = `${fullSize ? "" : "thumbnail/"}${media.fileName}`;
+  const renderImage = () => {
+    const endpoint = `${fullSize ? "" : "thumbnail/"}${fileName}`;
     const previewConfig = {
-      src: `${MEDIA_IMAGE_URL}${media.fileName}`
+      src: `${MEDIA_IMAGE_URL}${fileName}`
     };
     return (
       <Image
-        alt={media.name}
+        alt={"User uploaded image"}
         src={MEDIA_IMAGE_URL + endpoint}
         preview={showPreview ? previewConfig : false}
         style={{ margin: "auto" }}
         width={"100%"}
+        fallback={require("../../assets/images/noimage.png")}
       />
     );
   };
 
-  const renderVideo = (media, renderVideoControls) => {
-    const src = `${MEDIA_VIDEO_URL}${media.fileName}`;
+  const renderVideo = () => {
+    const src = `${MEDIA_VIDEO_URL}${fileName}`;
 
-    return (
-      <div className={"videoMedia"}>
-        <video
-          className="centerVideo"
-          src={src}
-          controls={renderVideoControls}
-          style={{ width: "100%", height: "100%" }}
-        />
-        {showVideoPlayButton && (
+    if (showVideoPlayButton) {
+      return (
+        <div className={"videoMedia"}>
+          {renderImage()}
           <div className={"playButton"}>
             <img
               src={require("../../assets/images/play-icon.jpg")}
               alt={"Play video icon"}
             />
           </div>
-        )}
-      </div>
+        </div>
+      );
+    }
+    return (
+      <video
+        className="centerVideo"
+        src={src}
+        style={{ width: "100%", height: "100%" }}
+        controls={true}
+        muted
+      />
     );
   };
 
   const renderMedia = () => {
-    if (media.mediaType === "video") {
-      return renderVideo(media, renderVideoControls);
+    if (mediaType.toLowerCase() === "video") {
+      return renderVideo();
     }
-    return renderImage(media);
+    return renderImage();
   };
-
-  const renderMissingMedia = () => {
-    return (
-      <Image
-        alt={"No media"}
-        src={require("../../assets/images/noimage.png")}
-        preview={false}
-        style={{ margin: "auto" }}
-        width={"100%"}
-      />
-    );
-  };
-  if (!media) {
-    return renderMissingMedia();
-  }
   return renderMedia();
 };

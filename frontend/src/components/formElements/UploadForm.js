@@ -8,9 +8,22 @@ import SelectWithDropDown from "./SelectWithDropDown";
 import { useDispatch } from "react-redux";
 const { Option } = Select;
 
-export default ({ mediaList, onSubmitSuccess, albums }) => {
+export default ({
+  mediaList,
+  onSubmitSuccess,
+  albums,
+  updateUploadProgress
+}) => {
   const onSubmit = (formValues, { setStatus }) => {
-    return uploadMedia("/gallery/upload", formValues, mediaList)
+    const uploadProgress = event => {
+      const total = parseFloat(event.total);
+      const current = event.loaded;
+
+      let percentCompleted = Math.floor((current / total) * 100);
+      updateUploadProgress(percentCompleted);
+    };
+
+    return uploadMedia("/gallery/upload", formValues, mediaList, uploadProgress)
       .then(data => {
         onSubmitSuccess();
         setStatus({ msg: data, type: "success" });
@@ -51,7 +64,7 @@ export default ({ mediaList, onSubmitSuccess, albums }) => {
             <SelectWithDropDown
               optionValues={albums}
               placeHolder={"Album"}
-              onChange={value => setFieldValue("albumId", value)}
+              onChange={albumId => setFieldValue("albumId", albumId)}
               onSubmit={value => dispatch(postNewAlbum(value))}
             />
             <Button

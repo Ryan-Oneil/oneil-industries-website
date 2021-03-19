@@ -79,7 +79,11 @@ export default () => {
         footer={null}
       >
         <a href={`${BASE_URL}/gallery/${media.mediaType}/${media.fileName}`}>
-          <Media media={media} renderVideoControls={true} fullSize={true} />
+          <Media
+            fileName={media.fileName}
+            mediaType={media.mediaType}
+            fullSize={true}
+          />
         </a>
         <div className="centerText">
           <p>Uploader: {media.uploader}</p>

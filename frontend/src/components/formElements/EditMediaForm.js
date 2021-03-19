@@ -24,6 +24,7 @@ export default props => {
       }}
       onSubmit={onSubmit}
       validate={validate}
+      enableReinitialize={true}
     >
       {props => {
         const {
@@ -58,7 +59,7 @@ export default props => {
             <Button
               type="primary"
               htmlType="submit"
-              className="form-button"
+              className="formattedBackground"
               disabled={!isValid || isSubmitting}
               loading={isSubmitting}
               size="large"

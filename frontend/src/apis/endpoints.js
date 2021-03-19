@@ -1,3 +1,5 @@
+import { BASE_URL } from "./api";
+
 export const PUBLIC_MEDIAS_ENDPOINT = "/gallery/medias";
 export const USER_MEDIAS_ENDPOINT = "/gallery/user/medias/";
 export const USER_ALBUMS_ENDPOINT = "/gallery/myalbums/";
@@ -11,3 +13,5 @@ export const ADMIN_GET_MEDIAS_ENDPOINT = "/gallery/admin/medias/";
 export const ADMIN_GET_PENDING_APPROVALS_ENDPOINT =
   "/gallery/admin/media/pendingApproval";
 export const ADMIN_GET_ROLES = "/user/admin/roles";
+export const MEDIA_IMAGE_URL = `${BASE_URL}/gallery/image/`;
+export const MEDIA_VIDEO_URL = `${BASE_URL}/gallery/video/`;

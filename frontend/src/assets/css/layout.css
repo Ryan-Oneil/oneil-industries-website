@@ -9,6 +9,11 @@ body {
     display: block;
 }
 
+.centerFlexContent {
+    display: flex;
+    justify-content: center;
+}
+
 .ant-divider-horizontal.ant-divider-with-text-center::before,
 .ant-divider-horizontal.ant-divider-with-text-center::after {
     border-top: 2px solid white;
@@ -16,10 +21,6 @@ body {
 
 .ant-divider {
     border-top: 2px solid white;
-}
-
-.dashboard {
-    margin-top: -50px;
 }
 
 .bottomFooter {
@@ -145,7 +146,7 @@ body {
 }
 
 .centerButton {
-    display: flex;
+    display: block;
     margin-left: auto;
     margin-right: auto;
     margin-top: 20px;
@@ -213,17 +214,8 @@ body {
     padding-top: 5%;
 }
 
-.form-button {
+.fullWidth {
     width: 100%;
-    background-color: #f1574d;
-    border-color: #f1574d;
-    color: white;
-}
-
-.form-button:hover {
-    background-color: #f76057;
-    border-color: #f76057;
-    color: white;
 }
 
 .inputField {
@@ -402,16 +394,22 @@ body {
     left: -5.5%;
 }
 
+.dashboard .ant-tabs-nav-list {
+    left: 0;
+}
+
 .mediaModal {
     background: none;
     box-shadow: none;
 }
 
 .mediaDescription {
-    background: white;
     border-radius: 15px;
-    padding: 20px;
     text-align: center;
+}
+
+.mediaDescription h1 {
+    margin-bottom: 0;
 }
 
 .whiteColor {
@@ -471,11 +469,12 @@ body {
     padding-bottom: 0;
 }
 
-.formattedButton {
+.formattedBackground {
     background-color: #54a7b2;
+    border: none;
 }
 
-.formattedButton:hover {
+.formattedBackground:hover, .formattedBackground:active, .formattedBackground:focus {
     background-color: #61aeb8;
 }
 
@@ -491,6 +490,20 @@ body {
     height: 100%;
 }
 
-.videoMedia {
+.videoMedia, .mediaModalContent {
     position: relative;
+}
+
+.shareMediaButton {
+    position: absolute;
+    bottom: 1%;
+    right: 1%;
+    transform: translate(-50%, -50%);
+}
+
+.deleteMediaButton {
+    position: absolute;
+    bottom: 1%;
+    right: 7%;
+    transform: translate(-50%, -50%);
 }

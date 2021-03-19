@@ -115,6 +115,7 @@ export const slice = createSlice({
     stats: {
       totalViews: 0,
       totalLinks: 0,
+      totalFiles: 0,
       mostViewedLinks: [],
       recentLinks: []
     },

@@ -1,23 +1,17 @@
-import Media from "./Media";
 import React from "react";
-import { Card, Col, Divider } from "antd";
-const { Meta } = Card;
+import { Col } from "antd";
+import MediaCard from "./MediaCard";
 
-export default (mediasList, mediaOnClick, displayUploader) => {
+export default (mediasList, mediaOnClick) => {
   return mediasList.map(media => {
     return (
-      <Col xs={24} sm={12} md={12} lg={8} xl={6} xxl={4}>
-        <Card>
-          <div className="pointerCursor">
-            <Media media={media} onClick={mediaOnClick.bind(this, media)} />
-          </div>
-          <Divider />
-          <Meta
-            title={displayUploader ? media.uploader : media.name}
-            description={media.dateAdded}
-            style={{ textAlign: "center" }}
-          />
-        </Card>
+      <Col xs={24} sm={12} md={12} lg={8} xl={6} xxl={4} key={media.id}>
+        <MediaCard
+          mediaFileName={media.fileName}
+          mediaType={media.mediaType}
+          dateAdded={media.dateAdded}
+          handleShowDialog={mediaOnClick.bind(this, media)}
+        />
       </Col>
     );
   });

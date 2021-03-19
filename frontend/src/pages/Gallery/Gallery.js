@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Modal } from "antd";
+import { Button } from "antd";
 import MediaGrid from "../../components/Gallery/MediaGrid";
 import { PUBLIC_MEDIAS_ENDPOINT } from "../../apis/endpoints";
 import MediaCard from "../../components/Gallery/MediaCard";
@@ -16,8 +16,8 @@ export default () => {
     history.push(DASHBOARD + GALLERY_UPLOAD_URL);
   };
 
-  const handleShowDialog = mediaID => {
-    setActiveMedia(mediaID);
+  const handleShowDialog = media => {
+    setActiveMedia(media);
   };
 
   const handleCloseDialog = () => {
@@ -36,9 +36,14 @@ export default () => {
       <MediaGrid
         imageEndpoint={`${PUBLIC_MEDIAS_ENDPOINT}/image`}
         videoEndpoint={`${PUBLIC_MEDIAS_ENDPOINT}/video`}
-        handleShowDialog={handleShowDialog}
         mediaCardLayout={item => (
-          <MediaCard mediaItem={item} handleShowDialog={handleShowDialog} />
+          <MediaCard
+            mediaFileName={item.fileName}
+            title={item.name}
+            mediaType={item.mediaType}
+            dateAdded={item.dateAdded}
+            handleShowDialog={handleShowDialog.bind(this, item)}
+          />
         )}
         tabExtraActions={{
           left: (
@@ -54,22 +59,11 @@ export default () => {
         }}
       />
       {activeMedia && (
-        <Modal
-          title={activeMedia.name}
-          visible={activeMedia}
-          onCancel={handleCloseDialog}
-          footer={null}
-          width={"80vw"}
-          maskStyle={{ backgroundColor: "rgba(0, 0, 0, 0.7)" }}
-          modalRender={() => {
-            return (
-              <MediaModal
-                activeMedia={activeMedia}
-                closeModalAction={handleCloseDialog}
-                showMediaPreview
-              />
-            );
-          }}
+        <MediaModal
+          activeMedia={activeMedia}
+          extraMediaInfo={<h1>{activeMedia.uploader}</h1>}
+          closeModalAction={handleCloseDialog}
+          showMediaPreview
         />
       )}
     </div>
