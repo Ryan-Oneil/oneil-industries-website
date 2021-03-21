@@ -25,14 +25,8 @@ export default () => {
   };
 
   return (
-    <div style={{ marginTop: "24px" }}>
-      <h1
-        className={"bigText centerText whiteColor"}
-        style={{ paddingLeft: 30 }}
-      >
-        Public
-      </h1>
-
+    <div className={"extraPadding"}>
+      <h1 className={"bigText centerText whiteColor"}>Public</h1>
       <MediaGrid
         imageEndpoint={`${PUBLIC_MEDIAS_ENDPOINT}/image`}
         videoEndpoint={`${PUBLIC_MEDIAS_ENDPOINT}/video`}
@@ -45,18 +39,16 @@ export default () => {
             handleShowDialog={handleShowDialog.bind(this, item)}
           />
         )}
-        tabExtraActions={{
-          left: (
-            <Button
-              className={"uploadButton"}
-              icon={<UploadOutlined />}
-              size={"large"}
-              onClick={uploadButtonClick}
-            >
-              Upload
-            </Button>
-          )
-        }}
+        tabExtraActions={
+          <Button
+            className={"uploadButton"}
+            icon={<UploadOutlined />}
+            size={"large"}
+            onClick={uploadButtonClick}
+          >
+            Upload
+          </Button>
+        }
       />
       {activeMedia && (
         <MediaModal

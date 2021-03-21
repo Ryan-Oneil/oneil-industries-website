@@ -31,9 +31,13 @@ export const fetchAlbums = endpoint => dispatch => {
     .catch(error => dispatch(setError(getApiError(error))));
 };
 
-export const uploadMedia = (endpoint, data, files, uploadProgress) => {
+export const uploadMedia = (
+  endpoint,
+  data,
+  files,
+  uploadProgress
+) => dispatch => {
   let postData = new FormData();
-
   files.forEach(media => postData.append("file[]", media, media.name));
 
   let options = {
@@ -47,14 +51,13 @@ export const uploadMedia = (endpoint, data, files, uploadProgress) => {
   } else if (data.album) {
     options.params.album = data.album;
   }
-
-  return apiPostCall(endpoint, postData, options).then(
-    response => response.data
+  return apiPostCall(endpoint, postData, options).then(response =>
+    dispatch(fetchedMedia({ medias: response.data }))
   );
 };
 
 export const deleteMedia = (endpoint, mediaID) => dispatch => {
-  apiDeleteCall(endpoint)
+  return apiDeleteCall(endpoint)
     .then(() => {
       dispatch(deletedMedia(mediaID));
     })
@@ -84,7 +87,7 @@ export const updateMedia = (data, mediaID) => dispatch => {
 };
 
 export const deleteAlbum = albumID => dispatch => {
-  apiDeleteCall(ALBUM_DELETE + albumID)
+  return apiDeleteCall(ALBUM_DELETE + albumID)
     .then(() => dispatch(deletedAlbum(albumID)))
     .catch(error => dispatch(setError(getApiError(error))));
 };

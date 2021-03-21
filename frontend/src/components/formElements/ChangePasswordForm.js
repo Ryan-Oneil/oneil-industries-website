@@ -43,7 +43,7 @@ export default props => {
             <Button
               type="primary"
               htmlType="submit"
-              className="form-button"
+              className="fullWidth formattedBackground"
               disabled={!isValid || isSubmitting}
               size="large"
               loading={isSubmitting}

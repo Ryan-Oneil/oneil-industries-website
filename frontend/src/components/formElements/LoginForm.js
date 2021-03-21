@@ -65,7 +65,7 @@ export default () => {
             <Button
               type="primary"
               htmlType="submit"
-              className="form-button"
+              className="fullWidth formattedBackground"
               disabled={!isValid || isSubmitting}
               loading={isSubmitting}
               size="large"

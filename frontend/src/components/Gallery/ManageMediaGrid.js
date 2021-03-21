@@ -2,11 +2,12 @@ import MediaGrid from "./MediaGrid";
 import React, { useState } from "react";
 import { USER_MEDIAS_ENDPOINT } from "../../apis/endpoints";
 import { useDispatch, useSelector } from "react-redux";
-import { Checkbox, Dropdown, List, Menu } from "antd";
+import { Checkbox, Dropdown, List, Menu, message } from "antd";
 import DeleteOutlined from "@ant-design/icons/lib/icons/DeleteOutlined";
 import FolderAddOutlined from "@ant-design/icons/lib/icons/FolderAddOutlined";
 import { addMediasToAlbum, deleteMedias } from "../../reducers/mediaReducer";
 import MediaCard from "./MediaCard";
+
 const { SubMenu } = Menu;
 
 export default ({ handleShowDialog, albums = [] }) => {
@@ -37,9 +38,14 @@ export default ({ handleShowDialog, albums = [] }) => {
       return (
         <Menu.Item
           key={album.id}
-          onClick={() => dispatch(addMediasToAlbum(album.id, selectedMedias))}
+          onClick={() =>
+            dispatch(addMediasToAlbum(album.id, selectedMedias)).then(() => {
+              setSelectedMedias([]);
+              message.success("Successfully added selected medias to Album");
+            })
+          }
         >
-          {album.name}
+          {album.name || album.id}
         </Menu.Item>
       );
     });
@@ -60,9 +66,10 @@ export default ({ handleShowDialog, albums = [] }) => {
         icon={<DeleteOutlined />}
         disabled={disableOptions}
         onClick={() =>
-          dispatch(deleteMedias(selectedMedias)).then(() =>
-            setSelectedMedias([])
-          )
+          dispatch(deleteMedias(selectedMedias)).then(() => {
+            setSelectedMedias([]);
+            message.success("Successfully deleted selected medias");
+          })
         }
       >
         Delete
@@ -91,6 +98,8 @@ export default ({ handleShowDialog, albums = [] }) => {
       videoEndpoint={`${USER_MEDIAS_ENDPOINT}${name}/video`}
       tabExtraActions={
         <Dropdown.Button
+          className={"bulkMediaManage"}
+          size={"large"}
           onClick={() => {
             setEnableManage(prevState => !prevState);
             setSelectedMedias([]);

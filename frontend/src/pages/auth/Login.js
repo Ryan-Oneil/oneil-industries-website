@@ -11,7 +11,7 @@ export default () => {
         <LoginForm />
         <Divider>OR</Divider>
         <Link to={REGISTER_URL}>
-          <Button style={{ width: "100%" }}>Sign Up</Button>
+          <Button className={"fullWidth formattedBorderColor"}>Sign Up</Button>
         </Link>
       </Card>
     </div>

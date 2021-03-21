@@ -98,6 +98,9 @@ body {
     .responsiveMenuButton {
         display: inline-block!important;
     }
+    .mediaTab .ant-tabs-extra-content {
+        display: none;
+    }
 }
 
 .whiteBackground {
@@ -105,44 +108,16 @@ body {
     overflow: hidden;
 }
 
-.lightBlack{
-    background-color: #363636 !important;
-}
-
-.navColor {
-    background-color: #FFFFFF !important;
-}
-
-.textColorScheme {
-    color: #2c2f3e;
-}
-
 .removeMargin {
     margin: 0!important;
 }
 
-.mainpage {
-    padding-top: 50px;
-    margin-bottom: 70px;
-    min-height: 96%;
-    height: auto;
-    font-family: "Open Sans", Arial, Helvetica, sans-serif;
-    background: rgb(61, 76, 104);
-}
-
 #root {
     height: 100%;
-    background: rgb(61, 76, 104);
 }
 
 .mainBackgroundColor {
     background: #84beb4;
-}
-
-.textFormat {
-    font-weight: 600;
-    color: #666;
-    font-family: 'Muli', sans-serif;
 }
 
 .centerButton {
@@ -152,38 +127,8 @@ body {
     margin-top: 20px;
 }
 
-.marginPadding {
-    margin: 1rem 0;
-}
-
-.bottomMargin {
-    margin-bottom: 1em!important;
-}
-
 .removeMargin {
     margin: 0!important;
-}
-
-.removePadding {
-    padding: 0!important;
-}
-
-.removeTopPadding {
-    padding-top: 0!important;
-}
-
-.navTextColor {
-    color: rgba(255,255,255,.9)!important;
-}
-
-.dashboardHeader {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: rgb(238, 238, 238);
-    background-color: rgb(35, 47, 62);
-    font-family: "Nunito Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    min-height: 56px;
-    padding: 20px;
 }
 
 .preventTextOverflow {
@@ -195,19 +140,9 @@ body {
     color: #FFFFFF!important;
 }
 
-.logoText {
-    color: #f92214;
-    white-space: nowrap;
-}
-
 .logo {
     float: left;
     width: 270px;
-}
-
-.headerMenu {
-    width: calc(100% - 200px);
-    float: left;
 }
 
 .login-form {
@@ -268,6 +203,7 @@ body {
     font-size: 20px;
     color: white;
 }
+
 .ant-menu-item {
     border-bottom: 0!important;
 }
@@ -359,7 +295,7 @@ body {
     margin: auto;
 }
 
-.mediaTab .ant-tabs-tab {
+.mediaTab .ant-tabs-tab, .circleBorderedButton {
     border-radius: 15px!important;
     border: 0!important;
     background: #97c7bf!important;
@@ -368,6 +304,9 @@ body {
 
 .uploadButton {
     background: #97c7bf;
+    position: absolute;
+    left: 0;
+    bottom: 0;
 }
 
 .ant-btn:hover .uploadButton, .ant-btn:focus .uploadButton, .ant-btn:active .uploadButton {
@@ -384,14 +323,18 @@ body {
     color: #36393f!important;
 }
 
-.mediaTab .ant-tabs-extra-content {
-    width: 10%;
+.mediaTab .ant-tabs-tab-btn:hover {
+    color: #36393f!important;
+}
+
+.mediaTab .bulkMediaManage {
+    position: absolute;
+    right: 1%;
+    bottom: 3%;
 }
 
 .mediaTab .ant-tabs-nav-list {
     margin: auto;
-    position:relative;
-    left: -5.5%;
 }
 
 .dashboard .ant-tabs-nav-list {
@@ -476,6 +419,23 @@ body {
 
 .formattedBackground:hover, .formattedBackground:active, .formattedBackground:focus {
     background-color: #61aeb8;
+}
+
+.formattedBorderColor:hover, .formattedBorderColor:active, .formattedBorderColor:focus {
+    border-color: #54a7b2;
+    color: #54a7b2;
+}
+
+.bulkMediaManage button, .bulkMediaManage button:focus {
+    background: #97c7bf;
+    border-color: #97c7bf;
+    color: white;
+}
+
+.bulkMediaManage button:hover, .bulkMediaManage button:active {
+    color: #36393f;
+    background: #97c7bf;
+    border-color: #97c7bf;
 }
 
 .playButton {

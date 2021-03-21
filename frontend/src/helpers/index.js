@@ -38,3 +38,10 @@ export const getFilterSort = sorter => {
   }
   return `${sorter.field},${order}`;
 };
+
+export const getUploadProgress = event => {
+  const total = parseFloat(event.total);
+  const current = event.loaded;
+
+  return Math.floor((current / total) * 100);
+};

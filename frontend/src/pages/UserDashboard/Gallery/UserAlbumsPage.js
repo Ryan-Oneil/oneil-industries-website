@@ -2,7 +2,17 @@ import React, { useEffect, useState } from "react";
 import Media from "../../../components/Gallery/Media";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteAlbum, fetchAlbums } from "../../../reducers/mediaReducer";
-import { Button, Card, Col, Empty, Image, Modal, Row, Space } from "antd";
+import {
+  Button,
+  Card,
+  Col,
+  Empty,
+  Image,
+  message,
+  Modal,
+  Row,
+  Space
+} from "antd";
 import EditAlbumForm from "../../../components/formElements/EditAlbumForm";
 import MediaCard from "../../../components/Gallery/MediaCard";
 import DeleteOutlined from "@ant-design/icons/lib/icons/DeleteOutlined";
@@ -35,7 +45,7 @@ export default () => {
         <Col key={album.id} xs={18} sm={6} md={6} lg={7} xl={4}>
           <MediaCard
             handleShowDialog={handleShowDialog.bind(this, album)}
-            title={album.name}
+            title={album.name || album.id}
             mediaType={mediaType}
             mediaFileName={fileName}
           />
@@ -45,19 +55,27 @@ export default () => {
   };
 
   return (
-    <div
-      className="marginPadding"
-      style={{
-        paddingLeft: "30px",
-        marginTop: "-10px"
-      }}
-    >
+    <>
+      <h1
+        className={"bigText centerText whiteColor"}
+        style={{ marginTop: "-30px" }}
+      >
+        My Albums
+      </h1>
       {Object.values(albums).length === 0 && (
         <Card>
           <Empty description={"You don't have any albums"} />
         </Card>
       )}
-      <Row gutter={[32, 32]}>{renderList()}</Row>
+      <Row
+        gutter={[32, 32]}
+        style={{
+          height: "84vh",
+          overflow: "auto"
+        }}
+      >
+        {renderList()}
+      </Row>
       {activeAlbum && (
         <Modal
           title={activeAlbum.name}
@@ -96,8 +114,10 @@ export default () => {
                 type="danger"
                 icon={<DeleteOutlined />}
                 onClick={() => {
-                  dispatch(deleteAlbum(activeAlbum.id));
-                  setActiveAlbum("");
+                  dispatch(deleteAlbum(activeAlbum.id)).then(() => {
+                    message.success("Successfully delete album");
+                    setActiveAlbum("");
+                  });
                 }}
               >
                 Delete
@@ -115,6 +135,6 @@ export default () => {
           />
         </Card>
       )}
-    </div>
+    </>
   );
 };

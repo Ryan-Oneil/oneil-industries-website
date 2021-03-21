@@ -112,55 +112,48 @@ export default ({
   };
 
   return (
-    <div
-      style={{
-        paddingLeft: "30px",
-        marginTop: "-10px"
-      }}
+    <Tabs
+      defaultActiveKey="1"
+      type="card"
+      tabBarExtraContent={tabExtraActions}
+      className={"mediaTab"}
+      size={"large"}
+      centered={true}
     >
-      <Tabs
-        defaultActiveKey="1"
-        type="card"
-        tabBarExtraContent={tabExtraActions}
-        className={"mediaTab"}
-        size={"large"}
-        centered={true}
+      <TabPane
+        tab={
+          <span>
+            <FileImageOutlined />
+            Images
+          </span>
+        }
+        key="1"
       >
-        <TabPane
-          tab={
-            <span>
-              <FileImageOutlined />
-              Images
-            </span>
-          }
-          key="1"
-        >
-          <ConfigProvider renderEmpty={renderEmpty}>
-            {renderMediaList(
-              handleImageInfiniteOnLoad,
-              imageIds.length < imageTotal,
-              imageList
-            )}
-          </ConfigProvider>
-        </TabPane>
-        <TabPane
-          tab={
-            <span>
-              <VideoCameraOutlined />
-              Videos
-            </span>
-          }
-          key="2"
-        >
-          <ConfigProvider renderEmpty={renderEmpty}>
-            {renderMediaList(
-              handleVideoInfiniteOnLoad,
-              videoIds.length < videoTotal,
-              videoList
-            )}
-          </ConfigProvider>
-        </TabPane>
-      </Tabs>
-    </div>
+        <ConfigProvider renderEmpty={renderEmpty}>
+          {renderMediaList(
+            handleImageInfiniteOnLoad,
+            imageIds.length < imageTotal,
+            imageList
+          )}
+        </ConfigProvider>
+      </TabPane>
+      <TabPane
+        tab={
+          <span>
+            <VideoCameraOutlined />
+            Videos
+          </span>
+        }
+        key="2"
+      >
+        <ConfigProvider renderEmpty={renderEmpty}>
+          {renderMediaList(
+            handleVideoInfiniteOnLoad,
+            videoIds.length < videoTotal,
+            videoList
+          )}
+        </ConfigProvider>
+      </TabPane>
+    </Tabs>
   );
 };
