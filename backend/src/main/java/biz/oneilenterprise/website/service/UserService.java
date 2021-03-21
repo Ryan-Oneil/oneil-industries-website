@@ -4,7 +4,7 @@ import static biz.oneilenterprise.website.security.SecurityConstants.SECRET;
 import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
 
 import biz.oneilenterprise.website.dto.QuotaDTO;
-import biz.oneilenterprise.website.dto.ShareXConfig;
+import biz.oneilenterprise.website.dto.ShareXConfigDTO;
 import biz.oneilenterprise.website.dto.UserDTO;
 import biz.oneilenterprise.website.entity.ApiToken;
 import biz.oneilenterprise.website.entity.PasswordResetToken;
@@ -280,14 +280,14 @@ public class UserService {
         apiTokenRepository.delete(apiToken);
     }
 
-    public ShareXConfig generateShareXAPIFile(String username) {
+    public ShareXConfigDTO generateShareXAPIFile(String username) {
         ApiToken apiToken = getApiTokenByUser(username);
 
         if (apiToken == null) {
             return null;
         }
         //Returns a shareX custom uploader config template
-        return new ShareXConfig(apiToken.getToken(), backendUrl);
+        return new ShareXConfigDTO(apiToken.getToken(), backendUrl);
     }
 
     private void checkExpired(Date date) {

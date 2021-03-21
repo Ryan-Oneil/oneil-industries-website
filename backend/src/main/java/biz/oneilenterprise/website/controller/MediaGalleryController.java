@@ -2,6 +2,7 @@ package biz.oneilenterprise.website.controller;
 
 import biz.oneilenterprise.website.config.ResourceHandler;
 import biz.oneilenterprise.website.dto.AlbumDTO;
+import biz.oneilenterprise.website.dto.MediaDTO;
 import biz.oneilenterprise.website.entity.Album;
 import biz.oneilenterprise.website.entity.PublicMediaApproval;
 import biz.oneilenterprise.website.entity.User;
@@ -109,7 +110,7 @@ public class MediaGalleryController {
     }
 
     @PostMapping("/upload")
-    public String uploadMediaAPI(GalleryUpload galleryUpload, Authentication user, HttpServletRequest request) throws IOException, FileUploadException {
+    public List<MediaDTO> uploadMediaAPI(GalleryUpload galleryUpload, Authentication user, HttpServletRequest request) throws IOException, FileUploadException {
         User userAuth = (User) user.getPrincipal();
         long remainingQuota = userService.getRemainingQuota(userAuth.getUsername());
 

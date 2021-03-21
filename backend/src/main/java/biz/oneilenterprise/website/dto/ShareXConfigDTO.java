@@ -2,7 +2,7 @@ package biz.oneilenterprise.website.dto;
 
 import java.util.HashMap;
 
-public class ShareXConfig {
+public class ShareXConfigDTO {
     private final String name = "Oneil Enterprise";
     private final String destinationType = "ImageUploader, TextUploader, FileUploader";
     private final String requestMethod = "POST";
@@ -11,8 +11,9 @@ public class ShareXConfig {
     private final HashMap<String, Object> headers = new HashMap<>();
     private final String body = "MultipartFormData";
     private final String FileFormName = "file";
+    private final String URL = "$json:..url$";
 
-    public ShareXConfig(String apiToken, String backendUrl) {
+    public ShareXConfigDTO(String apiToken, String backendUrl) {
         this.requestURL = backendUrl + "/gallery/upload";
 
         parameters.put("name", "%h.%mi.%s-%d.%mo.%yy");
@@ -52,5 +53,9 @@ public class ShareXConfig {
 
     public String getFileFormName() {
         return FileFormName;
+    }
+
+    public String getURL() {
+        return URL;
     }
 }

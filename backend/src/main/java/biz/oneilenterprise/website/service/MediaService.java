@@ -59,9 +59,6 @@ public class MediaService {
     @Value("${service.backendUrl}")
     private String backendUrl;
 
-    @Value("${service.frontendUrl}")
-    private String frontendUrl;
-
     public MediaService(MediaRepository mediaRepository, MediaApprovalRepository approvalRepository,
         AlbumRepository albumRepository, ModelMapper modelMapper) {
         this.mediaRepository = mediaRepository;
@@ -70,14 +67,12 @@ public class MediaService {
         this.modelMapper = modelMapper;
     }
 
-    public String registerMedias(List<File> mediaFiles, GalleryUpload galleryUpload, User user) throws IOException {
+    public List<MediaDTO> registerMedias(List<File> mediaFiles, GalleryUpload galleryUpload, User user) throws IOException {
         Album album = null;
         List<Media> mediaList = new ArrayList<>();
 
-        if (galleryUpload.getAlbumId() != null || mediaFiles.size() > 1) {
-            String albumId = galleryUpload.getAlbumId() != null ? galleryUpload.getAlbumId() : generateAlbumUUID();
-
-            album = getOrRegisterAlbum(user.getUsername(), albumId);
+        if (galleryUpload.getAlbumId() != null) {
+            album = getOrRegisterAlbum(user.getUsername(), galleryUpload.getAlbumId());
         }
         for (File mediaFile : mediaFiles) {
             Media media = registerMedia(mediaFile.getName(), galleryUpload.getPrivacy(), mediaFile, user.getUsername(), album, mediaFile.length());
@@ -88,12 +83,10 @@ public class MediaService {
         mediaRepository.saveAll(mediaList);
         writeMediaThumbnails(mediaFiles, user.getUsername());
 
-        if (mediaFiles.size() > 1) {
-            return String.format("%s/gallery/album/%s", frontendUrl, album.getId());
-        }
-        Media media = mediaList.get(0);
+        List<MediaDTO> uploadedMedias = mediaToDTOs(mediaList);
+        uploadedMedias.forEach(mediaDTO -> mediaDTO.setUrl(String.format("%s/gallery/%s/%s", backendUrl, mediaDTO.getMediaType().toLowerCase(), mediaDTO.getFileName())));
 
-        return String.format("%s/gallery/%s/%s", backendUrl, media.getMediaType().toLowerCase(), media.getFileName());
+        return uploadedMedias;
     }
 
     private void writeMediaThumbnails(List<File> medias, String user) {

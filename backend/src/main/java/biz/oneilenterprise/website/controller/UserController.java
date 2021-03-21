@@ -1,7 +1,7 @@
 package biz.oneilenterprise.website.controller;
 
 import biz.oneilenterprise.website.dto.QuotaDTO;
-import biz.oneilenterprise.website.dto.ShareXConfig;
+import biz.oneilenterprise.website.dto.ShareXConfigDTO;
 import biz.oneilenterprise.website.dto.UserDTO;
 import biz.oneilenterprise.website.entity.ApiToken;
 import biz.oneilenterprise.website.entity.Role;
@@ -67,7 +67,7 @@ public class UserController {
     }
 
     @GetMapping("/{username}/getShareX")
-    public ResponseEntity<ShareXConfig> getShareXConfig(@PathVariable String username, Authentication authentication) {
+    public ResponseEntity<ShareXConfigDTO> getShareXConfig(@PathVariable String username, Authentication authentication) {
         return ResponseEntity.ok(userService.generateShareXAPIFile(username));
     }
 
