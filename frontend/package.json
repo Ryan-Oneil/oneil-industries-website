@@ -6,7 +6,7 @@
     "@ant-design/icons": "^4.2.2",
     "@reduxjs/toolkit": "^1.4.0",
     "antd": "^4.6.4",
-    "axios": "^0.19.2",
+    "axios": "0.19.2",
     "customize-cra": "^0.9.1",
     "formik": "^2.1.5",
     "lodash": "^4.17.20",
