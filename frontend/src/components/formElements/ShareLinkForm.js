@@ -3,7 +3,11 @@ import { Field, withFormik } from "formik";
 import { ErrorDisplay, InputWithErrors } from "./index";
 import { Alert, Button, Card, DatePicker } from "antd";
 import moment from "moment";
-import { getApiError, getDateWithAddedDays } from "../../helpers";
+import {
+  getApiError,
+  getDateWithAddedDays,
+  getUploadProgress
+} from "../../helpers";
 import { uploadFiles } from "../../reducers/fileReducer";
 
 const LinkForm = props => {
@@ -49,7 +53,7 @@ const LinkForm = props => {
         <Button
           type="primary"
           htmlType="submit"
-          className="form-button"
+          className="fullWidth formattedBackground"
           disabled={!isValid || isSubmitting || (files && files.length === 0)}
           style={{ marginTop: 24 }}
           loading={isSubmitting}
@@ -88,19 +92,12 @@ export default withFormik({
     }
     return errors;
   },
-  handleSubmit: (values, { setStatus, resetForm, props }) => {
-    const { files } = props;
+  handleSubmit: (values, { props }) => {
     let params = {
       title: values.title,
       expires: values.expires.toISOString().replace(/\.[0-9]{3}/, "")
     };
-    return uploadFiles("/share", files, params)
-      .then(response => {
-        resetForm();
-        setStatus({ msg: response.data, type: "success" });
-        props.resetFiles();
-      })
-      .catch(error => setStatus({ msg: getApiError(error), type: "error" }));
+    return props.uploadAction(params);
   },
   validateOnMount: true
 })(LinkForm);

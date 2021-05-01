@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import org.apache.commons.fileupload.FileUploadException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
@@ -44,9 +43,6 @@ public class FileSharingController {
     private final UserService userService;
     private final ShareLinkService linkService;
 
-    @Value("${service.frontendUrl}")
-    private String frontendUrl;
-
     public FileSharingController(SystemFileService systemFileService, UserService userService,
         ShareLinkService linkService) {
         this.systemFileService = systemFileService;
@@ -55,22 +51,19 @@ public class FileSharingController {
     }
 
     @PostMapping("/share")
-    public ResponseEntity<String> createShareLink(@Valid ShareLinkForm form, BindingResult result, HttpServletRequest request, Authentication username)
+    public ResponseEntity<LinkDTO> createShareLink(@Valid ShareLinkForm form, HttpServletRequest request, Authentication username)
         throws ParseException, IOException, FileUploadException {
 
-        if (result.hasErrors()) {
-            throw new LinkException(result.getFieldErrors().get(0).getDefaultMessage());
-        }
         User user = (User) username.getPrincipal();
         long remainingQuota = userService.getRemainingQuota(user.getUsername());
 
         List<File> uploadedFiles = systemFileService.handleFileUpload(request, remainingQuota,
             linkService.getLinkDirectory(user.getUsername(), linkService.generateLinkUUID(7)), false);
 
-        Link link = linkService.generateShareLink(user, form.getExpires(), form.getTitle(), uploadedFiles);
-        userService.increaseUsedAmount( user.getUsername(), link.getSize());
+        LinkDTO link = linkService.generateShareLink(user, form.getExpires(), form.getTitle(), uploadedFiles);
+        userService.increaseUsedAmount(user.getUsername(), link.getSize());
 
-        return ResponseEntity.ok(frontendUrl + "/shared/" + link.getId());
+        return ResponseEntity.ok(link);
     }
 
     @GetMapping("/info/{link}")

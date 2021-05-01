@@ -42,13 +42,14 @@ export const addFilesToLink = (files, linkID) => dispatch => {
     .catch(error => dispatch(setError(getApiError(error))));
 };
 
-export const uploadFiles = (endpoint, files, params = {}) => {
+export const uploadFiles = (endpoint, files, params = {}, uploadProgress) => {
   let postData = new FormData();
 
   files.forEach(file => postData.append("file[]", file, file.name));
 
   let options = {
-    params: params
+    params: params,
+    onUploadProgress: progressEvent => uploadProgress(progressEvent)
   };
   return apiPostCall(endpoint, postData, options);
 };

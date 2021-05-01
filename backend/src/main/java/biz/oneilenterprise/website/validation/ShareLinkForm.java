@@ -1,6 +1,6 @@
 package biz.oneilenterprise.website.validation;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -9,7 +9,7 @@ public class ShareLinkForm {
     @Size(max = 255, message = "Title cannot exceed 255 characters")
     private String title;
 
-    @NotNull(message = "A expiry date is required yyyy-MM-dd'T'HH:mm:ss'Z'")
+    @NotBlank(message = "A expiry date is required yyyy-MM-dd'T'HH:mm:ss'Z'")
     @Pattern(regexp = "^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2})Z$", message = "Expiry date must follow UTC format yyyy-MM-dd'T'HH:mm:ss'Z'")
     private String expires;
 

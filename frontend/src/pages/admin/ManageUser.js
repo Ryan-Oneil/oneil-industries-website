@@ -158,7 +158,8 @@ export default props => {
               dispatch(
                 deleteMedia(
                   `/gallery/media/delete/${activeMedia.id}`,
-                  activeMedia.id
+                  activeMedia.id,
+                  activeMedia.size
                 )
               );
               setActiveMedia("");

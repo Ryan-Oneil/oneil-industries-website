@@ -105,6 +105,7 @@ export default props => {
                       <Button
                         shape="circle"
                         type="primary"
+                        className={"formattedBackground"}
                         icon={<DownloadOutlined />}
                         onClick={() => {
                           window.open(
@@ -140,6 +141,7 @@ export default props => {
                 <Tooltip title="Add files" key={"fileButton"}>
                   <Button
                     type="primary"
+                    className={"formattedBackground"}
                     icon={<FileAddOutlined />}
                     onClick={() => {
                       setShowUploadModal(true);
@@ -174,12 +176,16 @@ export default props => {
           }}
         >
           <Uploader
-            addFile={file => setNewFiles(prevState => [...prevState, file])}
+            addedFileAction={file =>
+              setNewFiles(prevState => [...prevState, file])
+            }
             removeFile={file =>
               setNewFiles(prevState =>
                 prevState.filter(prevFile => prevFile.uid !== file.uid)
               )
             }
+            fileList={newFiles}
+            showUploadList
           />
         </Modal>
       )}

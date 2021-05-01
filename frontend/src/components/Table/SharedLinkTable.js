@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { displayBytesInReadableForm } from "../../helpers";
-import { Button, Card, Tooltip } from "antd";
+import { Button, Space, Tooltip } from "antd";
 import EyeOutlined from "@ant-design/icons/lib/icons/EyeOutlined";
 import { Link } from "react-router-dom";
 import EditOutlined from "@ant-design/icons/lib/icons/EditOutlined";
@@ -61,7 +61,7 @@ export default ({ editPath, fetchData, extraColumns = [] }) => {
       title: "",
       key: "action",
       render: (text, record) => (
-        <>
+        <Space>
           <Tooltip title="View">
             <Button
               shape="circle"
@@ -84,7 +84,7 @@ export default ({ editPath, fetchData, extraColumns = [] }) => {
             modalTitle="Do you want to delete this link?"
             modalDescription="All files will also be deleted"
           />
-        </>
+        </Space>
       )
     }
   ];

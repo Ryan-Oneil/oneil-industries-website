@@ -47,7 +47,7 @@ const LinkForm = props => {
         <Button
           type="primary"
           htmlType="submit"
-          className="form-button"
+          className="fullWidth formattedBackground"
           disabled={!isValid || isSubmitting}
           style={{ marginTop: 24 }}
           loading={isSubmitting}

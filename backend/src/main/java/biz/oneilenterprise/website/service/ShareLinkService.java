@@ -52,7 +52,7 @@ public class ShareLinkService {
         this.viewRepository = viewRepository;
     }
 
-    public Link generateShareLink(User user, String expires, String title, List<File> files) throws ParseException {
+    public LinkDTO generateShareLink(User user, String expires, String title, List<File> files) throws ParseException {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
         long sizeOfFiles = files.stream().mapToLong(File::length).sum();
@@ -67,7 +67,7 @@ public class ShareLinkService {
             logger.error("Unable to rename directory " + files.get(0).getParent());
             throw new RuntimeException("Error changing directory name");
         }
-        return link;
+        return linkToDTO(link);
     }
 
     public boolean renameLinkDirectory(File file, String newLinkID, String creator) {

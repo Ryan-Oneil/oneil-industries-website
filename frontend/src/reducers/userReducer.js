@@ -70,6 +70,12 @@ export const slice = createSlice({
     },
     getShareXConfig(state, action) {
       state.shareXConfig = action.payload;
+    },
+    increasedQuotaUsed(state, action) {
+      state.storageQuota.used += action.payload;
+    },
+    decreaseQuotaUsed(state, action) {
+      state.storageQuota.used -= action.payload;
     }
   }
 });
@@ -79,5 +85,7 @@ export const {
   getDetails,
   getQuota,
   getToken,
-  getShareXConfig
+  getShareXConfig,
+  increasedQuotaUsed,
+  decreaseQuotaUsed
 } = slice.actions;

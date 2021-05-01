@@ -52,15 +52,15 @@ export const getMediaApprovals = () => dispatch => {
 };
 
 export const approvePublicMedia = (endpoint, mediaApprovalID) => dispatch => {
-  apiPutCall(endpoint).then(() => {
-    dispatch(removedMediaApproval(mediaApprovalID));
-  });
+  return apiPutCall(endpoint)
+    .then(() => dispatch(removedMediaApproval(mediaApprovalID)))
+    .catch(error => dispatch(setError(getApiError(error))));
 };
 
 export const denyPublicMedia = (endpoint, mediaApprovalID) => dispatch => {
-  apiPutCall(endpoint).then(() => {
-    dispatch(removedMediaApproval(mediaApprovalID));
-  });
+  return apiPutCall(endpoint)
+    .then(() => dispatch(removedMediaApproval(mediaApprovalID)))
+    .catch(error => dispatch(setError(getApiError(error))));
 };
 
 export const getAdminStats = () => dispatch => {
