@@ -82,7 +82,7 @@ export default () => {
   const renderUploadingMedias = () => {
     return files.map(file => {
       return (
-        <Col xs={24} sm={12} md={12} lg={8} xl={6} xxl={6} key={file.uid}>
+        <Col xs={24} sm={12} md={12} lg={12} xl={8} xxl={5} key={file.uid}>
           <UploadingMediaCard
             progress={file.progress}
             uploadStatus={file.uploadStatus}

@@ -1,6 +1,6 @@
 import React from "react";
 import Media from "./Media";
-import { Button, Card, message, Space } from "antd";
+import { Button, Card, message } from "antd";
 import {
   approvePublicMedia,
   denyPublicMedia

@@ -219,7 +219,7 @@ body {
 .ant-menu-horizontal  {
     background: #36393f;
     border-bottom: 0;
-    font-size: 20px;
+    font-size: 16px;
     color: white;
 }
 
@@ -478,4 +478,20 @@ body {
 
 .darkGreyBackground .ant-card-actions {
     border: 0;
+}
+
+.ant-layout-sider-dark, .ant-layout-sider-zero-width-trigger {
+    background-color: #4e535b!important;
+}
+
+.sideNav .ant-menu-sub {
+    background-color: #36393f!important;
+}
+
+.sideNav .ant-menu-item-selected {
+    background-color: #5a5f69!important;
+}
+
+.sideNav .anticon, .sideNav a, .appName, .sideNav span {
+    font-size: 16px;
 }
