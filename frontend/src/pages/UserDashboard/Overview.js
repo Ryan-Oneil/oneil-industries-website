@@ -13,13 +13,9 @@ export default () => {
   const dispatch = useDispatch();
   const { name } = useSelector(state => state.auth.user);
   const { used, max } = useSelector(state => state.user.storageQuota);
-  const {
-    totalViews,
-    totalLinks,
-    mostViewedLinks,
-    recentLinks,
-    totalFiles
-  } = useSelector(state => state.fileSharer.stats);
+  const { totalViews, mostViewedLinks, recentLinks, totalFiles } = useSelector(
+    state => state.fileSharer.stats
+  );
   const { totalMedias, recentMedias, totalAlbums } = useSelector(
     state => state.medias.stats
   );
@@ -36,29 +32,27 @@ export default () => {
   return (
     <>
       <Row gutter={[32, 32]}>
-        <Col xs={24} sm={24} md={6} lg={6} xl={4}>
+        <Col xs={12} sm={12} md={8} lg={8} xl={4}>
           <StatisticCard title="Total Shared Files" value={totalFiles} />
         </Col>
-        <Col xs={24} sm={24} md={6} lg={6} xl={4}>
+        <Col xs={12} sm={12} md={8} lg={8} xl={4}>
           <StatisticCard
             title="Used Storage Space"
             value={displayBytesInReadableForm(used)}
           />
         </Col>
-        <Col xs={24} sm={24} md={6} lg={6} xl={4}>
+        <Col xs={12} sm={12} md={8} lg={8} xl={4}>
           <StatisticCard title="Total Storage Space" value={max} suffix="GB" />
         </Col>
-        <Col xs={24} sm={24} md={6} lg={6} xl={4}>
+        <Col xs={12} sm={12} md={8} lg={8} xl={4}>
           <StatisticCard title="Total Link Views" value={totalViews} />
         </Col>
-        <Col xs={24} sm={24} md={6} lg={6} xl={4}>
+        <Col xs={12} sm={12} md={8} lg={8} xl={4}>
           <StatisticCard title="Total Medias" value={totalMedias} />
         </Col>
-        <Col xs={24} sm={24} md={6} lg={6} xl={4}>
+        <Col xs={12} sm={12} md={8} lg={8} xl={4}>
           <StatisticCard title="Total Albums" value={totalAlbums} />
         </Col>
-      </Row>
-      <Row gutter={[32, 32]} type="flex" className={"topPadding"}>
         <Col xs={24} sm={24} md={8} lg={8} xl={8}>
           <ListCard
             title="Most Viewed Links"

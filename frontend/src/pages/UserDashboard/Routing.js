@@ -29,7 +29,6 @@ export default props => {
   const { match } = props;
   const links = [
     { path: "", icon: <UserOutlined />, name: "Dashboard" },
-    { path: "/services", icon: <DatabaseOutlined />, name: "Services" },
     { path: "/api", icon: <ApiOutlined />, name: "Api" }
   ];
   const subLinks = [
@@ -79,15 +78,10 @@ export default props => {
         />
       </Sider>
       <Layout className={"mainBackgroundColor dashboard"}>
-        <Content className="extraPadding">
+        <Content className="extraPadding" style={{ overflow: "auto" }}>
           <Switch>
             <PrivateRoute>
               <Route exact path={match.path} component={ProfilePage} />
-              <Route
-                exact
-                path={`${match.path}/services`}
-                component={ManageServices}
-              />
               <Route exact path={`${match.path}/api`} component={APIPage} />
               <Route
                 exact

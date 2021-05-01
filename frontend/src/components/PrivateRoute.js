@@ -5,6 +5,7 @@ import { LOGIN_URL } from "../constants/constants";
 
 const PrivateRoute = props => {
   const { isAuthenticated } = props.auth;
+  const { pathname } = props.location;
 
   return (
     <Fragment>
@@ -14,7 +15,7 @@ const PrivateRoute = props => {
         <Redirect
           to={{
             pathname: LOGIN_URL,
-            state: { redirectBack: true }
+            state: { redirectBack: true, redirectTo: pathname }
           }}
         />
       )}

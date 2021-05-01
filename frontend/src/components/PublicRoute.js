@@ -1,24 +1,20 @@
 import React, { Fragment } from "react";
-import { Redirect, useHistory } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import { HOME_URL } from "../constants/constants";
 
 const PublicRoute = props => {
-  let history = useHistory();
   const redirectBack =
     props.location.state && props.location.state.redirectBack;
   const { isAuthenticated } = props.auth;
+  let redirectTo = HOME_URL;
 
   if (isAuthenticated && redirectBack) {
-    history.goBack();
+    redirectTo = props.location.state.redirectTo;
   }
   return (
     <Fragment>
-      {isAuthenticated && !redirectBack ? (
-        <Redirect to={HOME_URL} />
-      ) : (
-        props.children
-      )}
+      {isAuthenticated ? <Redirect to={redirectTo} /> : props.children}
     </Fragment>
   );
 };

@@ -5,9 +5,9 @@ export const loginUser = creds => dispatch => {
   return apiPostCall(BASE_URL + "/login", creds).then(response => {
     const token = response.headers["authorization"];
     localStorage.setItem("refreshToken", token);
-
-    dispatch(getRefreshTokenWithRole());
-    dispatch(loginSuccess(creds));
+    return dispatch(getRefreshTokenWithRole()).then(() =>
+      dispatch(loginSuccess(creds))
+    );
   });
 };
 
@@ -60,9 +60,9 @@ export const getRefreshTokenWithRole = () => dispatch => {
   const refreshToken = localStorage.getItem("refreshToken");
 
   if (refreshToken) {
-    getRefreshToken(refreshToken).then(() => {
-      dispatch(setUserRole(decodeJWT("authToken").role));
-    });
+    return getRefreshToken(refreshToken).then(() =>
+      dispatch(setUserRole(decodeJWT("authToken").role))
+    );
   }
 };
 

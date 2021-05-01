@@ -36,41 +36,39 @@ export default () => {
   return (
     <div className="extraPadding">
       <Row gutter={[32, 32]} type="flex">
-        <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+        <Col xs={12} sm={12} md={8} lg={8} xl={6}>
           <StatisticCard title="Total Media" value={totalMedia} />
         </Col>
-        <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+        <Col xs={12} sm={12} md={8} lg={8} xl={6}>
           <StatisticCard title="Total Albums" value={totalAlbums} />
         </Col>
-        <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+        <Col xs={12} sm={12} md={8} lg={8} xl={6}>
           <StatisticCard title="Total Users" value={totalUsers} />
         </Col>
-        <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+        <Col xs={12} sm={12} md={8} lg={8} xl={6}>
           <StatisticCard
             title="Used Storage"
             value={displayBytesInReadableForm(usedStorage)}
           />
         </Col>
-        <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+        <Col xs={12} sm={12} md={8} lg={8} xl={6}>
           <StatisticCard
             title="Uptime"
             value={new Date(upTime).toISOString().slice(11, -5)}
           />
         </Col>
-        <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+        <Col xs={12} sm={12} md={8} lg={8} xl={6}>
           <StatisticCard title="Total Shared Links" value={totalLinks} />
         </Col>
-        <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+        <Col xs={12} sm={12} md={8} lg={8} xl={6}>
           <StatisticCard title="Total Views" value={totalViews} />
         </Col>
-        <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+        <Col xs={12} sm={12} md={8} lg={8} xl={6}>
           <StatisticCard
             title="Available Storage"
             value={displayBytesInReadableForm(remainingStorage * 1000)}
           />
         </Col>
-      </Row>
-      <Row gutter={[32, 32]} type="flex">
         <Col xs={24} sm={24} md={12} lg={12} xl={8}>
           <ListCard
             title="Recent Users"

@@ -10,12 +10,12 @@ export default ({ menuDirection }) => {
   let location = useLocation();
 
   useEffect(() => {
-    if (role === "ROLE_ADMIN") {
+    if (role === "ROLE_ADMIN" && isAuthenticated) {
       setIsAdmin(true);
     } else {
       setIsAdmin(false);
     }
-  }, [role]);
+  }, [role, isAuthenticated]);
 
   return (
     <Menu

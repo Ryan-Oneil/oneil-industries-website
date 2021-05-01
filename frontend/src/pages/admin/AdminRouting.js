@@ -17,6 +17,7 @@ import CloudUploadOutlined from "@ant-design/icons/lib/icons/CloudUploadOutlined
 import FolderOutlined from "@ant-design/icons/lib/icons/FolderOutlined";
 import ViewAllLinks from "./fileshare/ViewAllLinks";
 import EditLinkPage from "../UserDashboard/FileShare/EditLinkPage";
+import { HOME_URL } from "../../constants/constants";
 const { Content, Sider } = Layout;
 
 export default props => {
@@ -55,7 +56,7 @@ export default props => {
 
   useEffect(() => {
     if (!isAuthenticated || role !== "ROLE_ADMIN") {
-      props.history.push("/");
+      props.history.push(HOME_URL);
     }
   }, []);
 
@@ -69,7 +70,10 @@ export default props => {
           subLinks={subLinks}
         />
       </Sider>
-      <Layout className={"mainBackgroundColor dashboard"}>
+      <Layout
+        className={"mainBackgroundColor dashboard"}
+        style={{ overflow: "auto" }}
+      >
         <Content>
           <Switch>
             <PrivateRoute>
