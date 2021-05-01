@@ -9,8 +9,7 @@ export default ({
   title = "",
   mediaFileName = "",
   mediaType = "",
-  dateAdded = "",
-  uploader = ""
+  dateAdded = ""
 }) => {
   const renderMissingMedia = () => {
     return (
@@ -43,10 +42,9 @@ export default ({
         <Meta
           title={title}
           description={
-            <>
-              {dateAdded && <p className={"descriptionText"}>{dateAdded}</p>}
-              {uploader && <p className={"descriptionText"}>{uploader}</p>}
-            </>
+            <div className={"descriptionText"}>
+              {dateAdded && <p>{dateAdded}</p>}
+            </div>
           }
           style={{ textAlign: "center", color: "white" }}
         />

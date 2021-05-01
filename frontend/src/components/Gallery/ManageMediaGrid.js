@@ -10,7 +10,7 @@ import MediaCard from "./MediaCard";
 
 const { SubMenu } = Menu;
 
-export default ({ handleShowDialog, albums = [] }) => {
+export default ({ handleShowDialog, albums = [], showUploader }) => {
   const { name } = useSelector(state => state.auth.user);
   const [enableManage, setEnableManage] = useState(false);
   const [selectedMedias, setSelectedMedias] = useState([]);
@@ -82,7 +82,7 @@ export default ({ handleShowDialog, albums = [] }) => {
       <List.Item key={item.id}>
         <MediaCard
           mediaFileName={item.fileName}
-          title={item.name}
+          title={showUploader ? item.uploader : item.name}
           mediaType={item.mediaType}
           dateAdded={item.dateAdded}
           handleShowDialog={handleShowDialog.bind(this, item)}

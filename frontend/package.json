@@ -45,7 +45,6 @@
     ]
   },
   "devDependencies": {
-    "prettier": "^1.19.1",
-    "redux-form": "^8.3.6"
+    "prettier": "^1.19.1"
   }
 }

@@ -38,6 +38,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 @Service
 public class MediaService {
@@ -71,7 +72,7 @@ public class MediaService {
         Album album = null;
         List<Media> mediaList = new ArrayList<>();
 
-        if (galleryUpload.getAlbumId() != null) {
+        if (!StringUtils.isEmpty(galleryUpload.getAlbumId())) {
             album = getOrRegisterAlbum(user.getUsername(), galleryUpload.getAlbumId());
         }
         for (File mediaFile : mediaFiles) {
@@ -107,7 +108,7 @@ public class MediaService {
     public void checkMediaPrivacy(Media media, User user) {
         if (media.getLinkStatus().equalsIgnoreCase(PUBLIC) && !CollectionUtils.containsAny(user.getAuthorities(), TRUSTED_ROLES)) {
             media.setLinkStatus(UNLISTED);
-            requestPublicApproval(media, media.getName(), media.getAlbum());
+            requestPublicApproval(media, media.getName());
         }
     }
 
@@ -187,11 +188,11 @@ public class MediaService {
         return approvalRepository.findAllByStatus(status);
     }
 
-    public void requestPublicApproval(Media media, String mediaName, Album album) {
+    public void requestPublicApproval(Media media, String mediaName) {
         PublicMediaApproval publicMediaStatus = this.getMediaApprovalByMediaID(media.getId());
 
         if (publicMediaStatus == null) {
-            publicMediaStatus = new PublicMediaApproval(media, album, mediaName, "pending");
+            publicMediaStatus = new PublicMediaApproval(media, mediaName, "pending");
             this.saveMediaApproval(publicMediaStatus);
         } else {
             throw new MediaApprovalException("This media has previously requested public access. Approval status: " + publicMediaStatus
@@ -209,10 +210,6 @@ public class MediaService {
         saveMediaApproval(publicMedia);
     }
 
-    public void deleteMediaApproval(int id) {
-        this.approvalRepository.deleteById(id);
-    }
-
     public void approvePublicMedia(int mediaID) {
         PublicMediaApproval approval = getMediaApprovalByMediaID(mediaID);
 
@@ -223,9 +220,9 @@ public class MediaService {
         Media media = approval.getMedia();
         media.setLinkStatus(PUBLIC);
         media.setName(approval.getPublicName());
-        saveMedia(media);
 
-        this.deleteMediaApproval(approval.getId());
+        saveMedia(media);
+        approvalRepository.delete(approval);
     }
 
     public long getTotalMedias() {

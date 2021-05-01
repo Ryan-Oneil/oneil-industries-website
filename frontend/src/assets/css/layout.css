@@ -4,6 +4,25 @@ body {
     background-color: #84beb4;
 }
 
+::-webkit-scrollbar {
+    width: 20px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #d6dee1;
+    border-radius: 20px;
+    border: 6px solid transparent;
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #a8bbbf;
+}
+
 .centerContent {
     margin: auto;
     display: block;
@@ -258,29 +277,32 @@ body {
 }
 
 .roundedBorder, .mediaComment .ant-comment-content-detail {
-    border-radius: 15px;
+    border-radius: 10px;
     border: 0;
 }
 
-.darkGreyBackground {
+.darkGreyBackground, .darkGreyBackground .ant-card-actions {
     background: #49494b;
 }
 
 .roundedBorder img {
-    border-top-left-radius: 15px;
-    border-top-right-radius: 15px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
 }
 
 .fullRoundedBorder img {
-    border-radius: 15px;
+    border-radius: 10px;
 }
 
 .roundedBorder .ant-card-meta-title, .roundedBorder .ant-card-meta-description {
     color: white;
 }
 
-.descriptionText {
+.descriptionText p {
     font-size: 1.2em;
+    color: white;
+    text-align: center;
+    margin-bottom: 0;
 }
 
 .roundedBorder .ant-card-meta-detail {
@@ -399,11 +421,6 @@ body {
     background: #d4d7db;
 }
 
-.addCommentButton {
-    float: right;
-    margin-top: 3%;
-}
-
 .commentReplyBox .ant-form-item {
     margin-bottom: 0;
 }
@@ -454,16 +471,11 @@ body {
     position: relative;
 }
 
-.shareMediaButton {
-    position: absolute;
-    bottom: 1%;
-    right: 1%;
-    transform: translate(-50%, -50%);
+.uploadedCard .ant-progress-inner {
+    width: 100%!important;
+    height: 100%!important;
 }
 
-.deleteMediaButton {
-    position: absolute;
-    bottom: 1%;
-    right: 7%;
-    transform: translate(-50%, -50%);
+.darkGreyBackground .ant-card-actions {
+    border: 0;
 }

@@ -44,7 +44,7 @@ public class Media {
 
     private Long size;
 
-    @OneToOne(mappedBy = "media", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "media", cascade = CascadeType.REMOVE)
     @JsonIgnore
     private PublicMediaApproval publicMediaApproval;
 

@@ -9,12 +9,14 @@ public class MediaDTO {
     private String uploader;
     private String dateAdded;
     private String mediaType;
-    private String url = "%s/gallery/%s/%s";
+    private Long size;
+    private String url;
 
     public MediaDTO() {
     }
 
-    public MediaDTO(int id, String name, String fileName, String linkStatus, String uploader, String dateAdded, String mediaType, String url) {
+    public MediaDTO(int id, String name, String fileName, String linkStatus, String uploader, String dateAdded, String mediaType, Long size,
+        String url) {
         this.id = id;
         this.name = name;
         this.fileName = fileName;
@@ -22,6 +24,7 @@ public class MediaDTO {
         this.uploader = uploader;
         this.dateAdded = dateAdded;
         this.mediaType = mediaType;
+        this.size = size;
         this.url = url;
     }
 
@@ -87,5 +90,13 @@ public class MediaDTO {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public Long getSize() {
+        return size;
+    }
+
+    public void setSize(Long size) {
+        this.size = size;
     }
 }

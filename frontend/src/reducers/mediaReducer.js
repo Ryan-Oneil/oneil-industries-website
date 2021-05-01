@@ -14,6 +14,7 @@ import {
   ALBUM_UPDATE,
   USER_DELETE_MEDIAS_ENDPOINTS
 } from "../apis/endpoints";
+import { decreaseQuotaUsed, increasedQuotaUsed } from "./userReducer";
 
 export const fetchImages = (endpoint, page, size) => dispatch => {
   const params = new URLSearchParams();
@@ -34,11 +35,11 @@ export const fetchAlbums = endpoint => dispatch => {
 export const uploadMedia = (
   endpoint,
   data,
-  files,
+  file,
   uploadProgress
 ) => dispatch => {
   let postData = new FormData();
-  files.forEach(media => postData.append("file[]", media, media.name));
+  postData.append("file[]", file, file.name);
 
   let options = {
     params: { privacy: data.linkStatus, albumId: data.albumId },
@@ -51,15 +52,18 @@ export const uploadMedia = (
   } else if (data.album) {
     options.params.album = data.album;
   }
-  return apiPostCall(endpoint, postData, options).then(response =>
-    dispatch(fetchedMedia({ medias: response.data }))
-  );
+  return apiPostCall(endpoint, postData, options).then(response => {
+    dispatch(increasedQuotaUsed(response.data[0].size));
+
+    return dispatch(fetchedMedia({ medias: response.data }));
+  });
 };
 
-export const deleteMedia = (endpoint, mediaID) => dispatch => {
+export const deleteMedia = (endpoint, mediaID, mediaSize) => dispatch => {
   return apiDeleteCall(endpoint)
     .then(() => {
       dispatch(deletedMedia(mediaID));
+      dispatch(decreaseQuotaUsed(mediaSize));
     })
     .catch(error => dispatch(setError(getApiError(error))));
 };
@@ -131,7 +135,17 @@ export const slice = createSlice({
   initialState: {
     entities: {
       medias: {},
-      albums: {}
+      albums: {},
+      comments: {
+        1: {
+          id: "dawd",
+          username: "AnEmma",
+          avatarLink:
+            "https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/avatars/ef/eff03c11994f816ffb2c8e29665851c124420187_full.jpg",
+          commentContent: "Loot Loot Loot",
+          date: "12/03/2021"
+        }
+      }
     },
     stats: {
       totalMedias: 0,

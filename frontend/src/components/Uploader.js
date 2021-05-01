@@ -2,21 +2,32 @@ import InboxOutlined from "@ant-design/icons/lib/icons/InboxOutlined";
 import Dragger from "antd/lib/upload/Dragger";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getQuotaStats } from "../reducers/userReducer";
 import { message } from "antd";
+import { getQuotaStats } from "../reducers/userReducer";
 
-export default props => {
+export default ({
+  removeFile,
+  addedFileAction,
+  fileList,
+  showUploadList = false
+}) => {
   const { used, max } = useSelector(state => state.user.storageQuota);
   const { name } = useSelector(state => state.auth.user);
   const maxInBytes = max * 1000000000;
   const dispatch = useDispatch();
   const [uploadSize, setUploadSize] = useState(0);
-  const { addFile, removeFile } = props;
 
   //Loads most recent quota count
   useEffect(() => {
     dispatch(getQuotaStats(name));
   }, []);
+
+  //Recalculates upload size since list is handled by other components
+  useEffect(() => {
+    let uploadSize = fileList.reduce((a, b) => a + b.size, 0);
+
+    setUploadSize(uploadSize);
+  }, [fileList]);
 
   const config = {
     name: "file",
@@ -25,18 +36,16 @@ export default props => {
       if (file.size + uploadSize + used > maxInBytes) {
         message.error("This file would exceed your quota of " + max + " GB");
       } else {
-        setUploadSize(prevState => prevState + file.size);
-        addFile(file);
+        addedFileAction(file);
       }
       return false;
     },
     onRemove: file => {
-      setUploadSize(prevState => prevState - file.size);
       removeFile(file);
     }
   };
   return (
-    <Dragger {...config} {...props}>
+    <Dragger {...config} showUploadList={showUploadList}>
       <p className="ant-upload-drag-icon">
         <InboxOutlined />
       </p>

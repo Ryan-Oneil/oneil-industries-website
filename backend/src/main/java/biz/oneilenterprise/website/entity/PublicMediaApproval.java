@@ -22,10 +22,6 @@ public class PublicMediaApproval {
     @MapsId
     private Media media;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
-    private Album album;
-
     @Column(name = "public_name")
     private String publicName;
 
@@ -34,9 +30,8 @@ public class PublicMediaApproval {
     public PublicMediaApproval() {
     }
 
-    public PublicMediaApproval(Media media, Album album, String publicName, String status) {
+    public PublicMediaApproval(Media media, String publicName, String status) {
         this.media = media;
-        this.album = album;
         this.publicName = publicName;
         this.status = status;
     }
@@ -73,11 +68,4 @@ public class PublicMediaApproval {
         this.publicName = publicName;
     }
 
-    public Album getAlbum() {
-        return album;
-    }
-
-    public void setAlbum(Album album) {
-        this.album = album;
-    }
 }

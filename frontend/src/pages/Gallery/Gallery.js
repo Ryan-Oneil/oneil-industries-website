@@ -25,7 +25,7 @@ export default () => {
   };
 
   return (
-    <div className={"extraPadding"}>
+    <div style={{ paddingLeft: 24, paddingRight: 24 }}>
       <h1 className={"bigText centerText whiteColor"}>Public</h1>
       <MediaGrid
         imageEndpoint={`${PUBLIC_MEDIAS_ENDPOINT}/image`}

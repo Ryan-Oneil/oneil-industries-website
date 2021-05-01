@@ -1,14 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ApprovalCard from "../../../components/Gallery/ApprovalCard";
-import { BASE_URL } from "../../../apis/api";
-import Media from "../../../components/Gallery/Media";
-import {
-  approvePublicMedia,
-  denyPublicMedia,
-  getMediaApprovals
-} from "../../../reducers/adminReducer";
-import { Card, Col, Empty, Modal, Row } from "antd";
+import { getMediaApprovals } from "../../../reducers/adminReducer";
+import { Card, Col, Empty, Row } from "antd";
+import MediaModal from "../../../components/Gallery/MediaModal";
 
 export default () => {
   const dispatch = useDispatch();
@@ -27,29 +22,12 @@ export default () => {
   const renderApprovalList = () => {
     return mediaApprovals.map(mediaApproval => {
       return (
-        <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+        <Col xs={24} sm={24} md={12} lg={8} xl={6} xxl={4}>
           <ApprovalCard
             media={mediaApproval.media}
             onClick={handleShowDialog.bind(this, mediaApproval.media)}
-            uploaderName={mediaApproval.media.uploader}
             fileName={mediaApproval.publicName}
             dateAdded={mediaApproval.media.dateAdded}
-            onApproveClick={() => {
-              dispatch(
-                approvePublicMedia(
-                  `/gallery/admin/media/${mediaApproval.id}/approve`,
-                  mediaApproval.id
-                )
-              );
-            }}
-            onDeclineClick={() => {
-              dispatch(
-                denyPublicMedia(
-                  `/gallery/admin/media/${mediaApproval.id}/deny`,
-                  mediaApproval.id
-                )
-              );
-            }}
           />
         </Col>
       );
@@ -57,8 +35,15 @@ export default () => {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <Row gutter={[32, 32]} style={{ padding: "24px" }}>
+    <>
+      <Row
+        gutter={[32, 32]}
+        className={"extraPadding"}
+        style={{
+          height: "90vh",
+          overflow: "auto"
+        }}
+      >
         {renderApprovalList()}
       </Row>
       {mediaApprovals.length === 0 && (
@@ -72,24 +57,14 @@ export default () => {
           />
         </Card>
       )}
-      <Modal
-        title={media.name}
-        visible={media}
-        onCancel={() => setMedia("")}
-        footer={null}
-      >
-        <a href={`${BASE_URL}/gallery/${media.mediaType}/${media.fileName}`}>
-          <Media
-            fileName={media.fileName}
-            mediaType={media.mediaType}
-            fullSize={true}
-          />
-        </a>
-        <div className="centerText">
-          <p>Uploader: {media.uploader}</p>
-          <p>Uploaded: {media.dateAdded}</p>
-        </div>
-      </Modal>
-    </div>
+      {media && (
+        <MediaModal
+          activeMedia={media}
+          closeModalAction={() => setMedia("")}
+          showMediaPreview
+          enableManagement
+        />
+      )}
+    </>
   );
 };
