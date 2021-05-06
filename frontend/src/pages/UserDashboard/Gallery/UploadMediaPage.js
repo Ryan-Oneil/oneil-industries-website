@@ -1,27 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { Card, Col, Row, Select, message } from "antd";
+import { Col, Row, Select, message } from "antd";
 import { getApiError, getUploadProgress } from "../../../helpers";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  addMediasToAlbum,
   deleteMedia,
   fetchAlbums,
   postNewAlbum,
+  updateMediasLinkStatus,
   uploadMedia
 } from "../../../reducers/mediaReducer";
 import SelectWithDropDown from "../../../components/formElements/SelectWithDropDown";
 import UploadingMediaCard from "../../../components/Gallery/UploadingMediaCard";
 import MediaModal from "../../../components/Gallery/MediaModal";
 import Uploader from "../../../components/Uploader";
+import PictureOutlined from "@ant-design/icons/lib/icons/PictureOutlined";
 const { Option } = Select;
 
 export default () => {
   const [files, setFiles] = useState([]);
+  const [linkStatus, setLinkStatus] = useState("unlisted");
   const [selectedAlbumId, setSelectedAlbumId] = useState("");
-  const [selectedPrivacyStatus, setPrivacyStatus] = useState("unlisted");
   const [activeMedia, setActiveMedia] = useState("");
   const { name } = useSelector(state => state.auth.user);
   const { albums } = useSelector(state => state.medias.entities);
   const dispatch = useDispatch();
+  const textStyle = { fontWeight: 600, padding: 10 };
 
   useEffect(() => {
     dispatch(fetchAlbums(`/gallery/myalbums/${name}`));
@@ -48,16 +52,20 @@ export default () => {
   };
 
   const onMediaSelected = file => {
+    if (!file.type.includes("image") && !file.type.includes("video")) {
+      message.error("This file format isn't supported");
+      return;
+    }
     file.progress = 0;
     file.url = "";
     file.id = "";
-    file.uploadStatus = "uploading";
+    file.uploadStatus = "active";
 
     setFiles(prevState => [...prevState, file]);
     dispatch(
       uploadMedia(
         "/gallery/upload",
-        { linkStatus: selectedPrivacyStatus, albumId: selectedAlbumId },
+        { linkStatus: linkStatus, albumId: selectedAlbumId },
         file,
         event => {
           file.progress = getUploadProgress(event);
@@ -76,18 +84,27 @@ export default () => {
         };
         updateMediaUploadProgress(file);
       })
-      .catch(error => message.error(getApiError(error)));
+      .catch(error => {
+        message.error(getApiError(error));
+        file.uploadStatus = "exception";
+
+        updateMediaUploadProgress(file);
+      });
   };
 
   const renderUploadingMedias = () => {
     return files.map(file => {
       return (
-        <Col xs={24} sm={12} md={12} lg={12} xl={8} xxl={5} key={file.uid}>
+        <Col xs={24} sm={12} md={12} lg={12} xl={8} xxl={4} key={file.uid}>
           <UploadingMediaCard
             progress={file.progress}
             uploadStatus={file.uploadStatus}
             url={file.url}
             deleteAction={() => {
+              if (file.uploadStatus === "exception") {
+                removeFile(file.uid);
+                return;
+              }
               dispatch(
                 deleteMedia(
                   `/gallery/media/delete/${file.id}`,
@@ -106,44 +123,78 @@ export default () => {
     });
   };
 
+  const changeUploadedMediasLinkStatus = linkStatus => {
+    setLinkStatus(linkStatus);
+    const mediaIds = files
+      .filter(file => file.uploadStatus === "complete")
+      .map(media => media.id);
+
+    dispatch(updateMediasLinkStatus(mediaIds, linkStatus)).then(() =>
+      message.success(`Links status changed to ${linkStatus}`)
+    );
+  };
+
+  const changeUploadedAlbum = album => {
+    setSelectedAlbumId(album);
+    const mediaIds = files
+      .filter(file => file.uploadStatus === "complete")
+      .map(media => media.id);
+
+    dispatch(addMediasToAlbum(album, mediaIds)).then(() => {
+      message.success("Successfully added selected medias to Album");
+    });
+  };
+
   return (
     <>
-      <Row gutter={[64, 32]} type="flex">
-        <Col span={5}>
-          <Card>
-            <Select
-              onSelect={value => setPrivacyStatus(value)}
-              size="large"
-              style={{ width: "100%", textAlign: "start", marginBottom: "5%" }}
-              defaultValue={"unlisted"}
-            >
-              <Option value="unlisted">Unlisted</Option>
-              <Option value="public">Public</Option>
-            </Select>
-            <SelectWithDropDown
-              optionValues={Object.values(albums)}
-              placeHolder={"Album"}
-              onChange={albumId => setSelectedAlbumId(albumId)}
-              onSubmit={value => dispatch(postNewAlbum(value))}
-            />
-          </Card>
-        </Col>
-        <Col span={19}>
-          <Uploader
-            addedFileAction={onMediaSelected}
-            fileList={files.filter(file => file.uploadStatus !== "complete")}
-          />
-        </Col>
-      </Row>
-      <Row
-        gutter={[64, 32]}
-        type="flex"
-        className={"topPadding"}
-        style={{
-          height: "76vh",
-          overflow: "auto"
-        }}
-      >
+      <Uploader
+        addedFileAction={onMediaSelected}
+        fileList={files.filter(file => file.uploadStatus !== "complete")}
+        icon={<PictureOutlined style={{ color: "#54a7b2" }} />}
+        style={{ width: "40%", height: "30%" }}
+      />
+      {files.length > 0 && (
+        <div
+          style={{
+            marginLeft: 32,
+            marginTop: "2%",
+            display: "flex"
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "white",
+              padding: 10,
+              margin: "auto"
+            }}
+          >
+            <div style={{ display: "inline-block" }}>
+              <span style={textStyle}>Album</span>
+              <SelectWithDropDown
+                style={{ width: "auto" }}
+                optionValues={Object.values(albums)}
+                placeHolder={"Add medias to album"}
+                onChange={albumId => changeUploadedAlbum(albumId)}
+                onSubmit={value => dispatch(postNewAlbum(value))}
+              />
+            </div>
+
+            <div style={{ display: "inline-block" }}>
+              <span style={textStyle}>Privacy</span>
+              <Select
+                onSelect={value => changeUploadedMediasLinkStatus(value)}
+                size="large"
+                style={{ textAlign: "start" }}
+                defaultValue={"unlisted"}
+              >
+                <Option value="unlisted">Unlisted</Option>
+                <Option value="public">Public</Option>
+              </Select>
+            </div>
+          </div>
+        </div>
+      )}
+      <Row gutter={[64, 32]} type="flex" className={"topPadding"}>
         {renderUploadingMedias()}
       </Row>
       {activeMedia && (

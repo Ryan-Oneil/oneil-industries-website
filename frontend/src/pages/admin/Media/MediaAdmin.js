@@ -19,7 +19,9 @@ export default () => {
 
   return (
     <>
-      <h1 className={"bigText centerText whiteColor"}>User's Medias</h1>
+      <h1 className={"bigText centerText whiteColor removeMargin"}>
+        User's Medias
+      </h1>
       <ManageMediaGrid
         handleShowDialog={handleShowDialog}
         albums={[]}

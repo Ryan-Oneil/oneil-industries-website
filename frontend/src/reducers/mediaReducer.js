@@ -125,6 +125,19 @@ export const addMediasToAlbum = (albumId, mediaIds) => dispatch => {
   );
 };
 
+export const updateMediasLinkStatus = (mediaIds, status) => dispatch => {
+  return apiPutCall("/gallery/medias/linkstatus/update", {
+    mediaIds: mediaIds,
+    linkStatus: status
+  })
+    .then(() =>
+      dispatch(
+        updatedMediaLinkStatus({ linkStatus: status, mediaIds: mediaIds })
+      )
+    )
+    .catch(error => dispatch(setError(getApiError(error))));
+};
+
 const media = new schema.Entity("medias");
 const album = new schema.Entity("albums", { medias: [media] });
 const mediaList = new schema.Array(media);
@@ -204,6 +217,13 @@ export const slice = createSlice({
     },
     deletedAlbum(state, action) {
       delete state.entities.albums[action.payload];
+    },
+    updatedMediaLinkStatus(state, action) {
+      action.payload.mediaIds.forEach(
+        mediaId =>
+          (state.entities.medias[mediaId].linkStatus =
+            action.payload.linkStatus)
+      );
     }
   }
 });
@@ -217,5 +237,6 @@ export const {
   createdAlbum,
   updatedAlbum,
   deletedMedias,
-  deletedAlbum
+  deletedAlbum,
+  updatedMediaLinkStatus
 } = slice.actions;

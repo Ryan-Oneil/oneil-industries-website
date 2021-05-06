@@ -27,7 +27,9 @@ export default () => {
 
   return (
     <div style={{ marginTop: "-30px" }}>
-      <h1 className={"bigText centerText whiteColor"}>My Medias</h1>
+      <h1 className={"bigText centerText whiteColor removeMargin"}>
+        My Medias
+      </h1>
       <ManageMediaGrid
         handleShowDialog={handleShowDialog}
         albums={Object.values(albums)}

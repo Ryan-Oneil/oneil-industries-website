@@ -107,7 +107,7 @@ export default ({ handleShowDialog, albums = [], showUploader }) => {
         Bulk Manage
       </Dropdown.Button>
       <MediaGrid
-        height={"79vh"}
+        height={"82vh"}
         mediaEndpoint={`${USER_MEDIAS_ENDPOINT}${name}`}
         mediaCardLayout={cardRender}
         style={{ width: "100%" }}

@@ -121,10 +121,6 @@ body {
     background: #84beb4;
 }
 
-.removeMargin {
-    margin: 0!important;
-}
-
 .preventTextOverflow {
     overflow-wrap: break-word;
     word-break: break-word;
@@ -473,4 +469,19 @@ body {
 .uploadedCard .ant-card-body {
     display: none!important;
     border: 0 !important;
+}
+
+.userManagementNav .ant-tabs-nav {
+    background-color: white;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-top: 1%;
+}
+
+.userManagementNav .ant-tabs-tab:hover, .userManagementNav .ant-tabs-tab:active, .userManagementNav .ant-tabs-tab-active .ant-tabs-tab-btn{
+ color: #58a0aa!important;
+}
+
+.userManagementNav .ant-tabs-ink-bar {
+    background-color: #58a0aa!important;
 }

@@ -12,7 +12,7 @@ import UploadOutlined from "@ant-design/icons/lib/icons/UploadOutlined";
 import PictureOutlined from "@ant-design/icons/lib/icons/PictureOutlined";
 import FileImageOutlined from "@ant-design/icons/lib/icons/FileImageOutlined";
 import { Layout } from "antd";
-import UploadPage from "./Gallery/UploadPage";
+import UploadPage from "./Gallery/UploadMediaPage";
 import Profile from "../Profile";
 import CloudUploadOutlined from "@ant-design/icons/lib/icons/CloudUploadOutlined";
 import FolderOutlined from "@ant-design/icons/lib/icons/FolderOutlined";
