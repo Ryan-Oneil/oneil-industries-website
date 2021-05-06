@@ -1,13 +1,10 @@
 package biz.oneilenterprise.website.voiceservices.teamspeak;
 
-import biz.oneilenterprise.website.rank.Rank;
-import biz.oneilenterprise.website.pojo.CustomChannel;
-import biz.oneilenterprise.website.pojo.ServiceClient;
+import biz.oneilenterprise.website.dto.CustomChannelDTO;
+import biz.oneilenterprise.website.dto.ServiceClientDTO;
 import com.github.theholywaffle.teamspeak3.TS3Api;
-import com.github.theholywaffle.teamspeak3.api.wrapper.Ban;
 import com.github.theholywaffle.teamspeak3.api.wrapper.Channel;
 import com.github.theholywaffle.teamspeak3.api.wrapper.Client;
-import com.github.theholywaffle.teamspeak3.api.wrapper.ServerGroup;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,22 +31,22 @@ public class TSManager {
         return ts3Api.getChannels();
     }
 
-    public List<CustomChannel> getChannelsMapped() {
+    public List<CustomChannelDTO> getChannelsMapped() {
         List<Channel> channels = getServerChannels();
         List<Client> clients = getOnlineUsers();
 
-        ArrayList<CustomChannel> customChannels = new ArrayList<>();
+        ArrayList<CustomChannelDTO> customChannelDTOS = new ArrayList<>();
 
         channels.forEach(channel -> {
             if (channel.getParentChannelId() == 0) {
-                customChannels.add(recursiveTSChannelMapping(channels, null, channel, clients));
+                customChannelDTOS.add(recursiveTSChannelMapping(channels, null, channel, clients));
             }
         });
-        return customChannels;
+        return customChannelDTOS;
     }
 
-    private CustomChannel recursiveTSChannelMapping(List<Channel> channelList, CustomChannel parentChannel, Channel childChannel, List<Client> clients) {
-        CustomChannel child = new CustomChannel(childChannel.getName(), "" + childChannel.getId());
+    private CustomChannelDTO recursiveTSChannelMapping(List<Channel> channelList, CustomChannelDTO parentChannel, Channel childChannel, List<Client> clients) {
+        CustomChannelDTO child = new CustomChannelDTO(childChannel.getName(), "" + childChannel.getId());
         child.setUsersInChannel(getTSClientsForChannel(childChannel.getId(), clients));
 
         if (parentChannel != null) {
@@ -63,57 +60,11 @@ public class TSManager {
         return child;
     }
 
-    private List<ServiceClient> getTSClientsForChannel(int channelID, List<Client> clients) {
+    private List<ServiceClientDTO> getTSClientsForChannel(int channelID, List<Client> clients) {
         return clients.stream()
             .filter(client -> client.getChannelId() == channelID && client.isRegularClient())
-            .map(client -> new ServiceClient(client.getNickname(), client.getUniqueIdentifier()))
+            .map(client -> new ServiceClientDTO(client.getNickname(), client.getUniqueIdentifier()))
             .collect(Collectors.toList());
     }
-
-    public List<ServerGroup> getServerGroups() {
-        return ts3Api.getServerGroups();
-    }
-
-    public void sendPrivateMessage(String uuid, String message) {
-        ts3Api.sendPrivateMessage(ts3Api.getClientByUId(uuid).getId(), message);
-    }
-
-    public void pokeUser(String uuid, String message) {
-        ts3Api.pokeClient(ts3Api.getDatabaseClientByUId(uuid).getDatabaseId(), message);
-    }
-
-    public void addUserRole(String uuid, String roleName) {
-        Rank.setTeamspeakServerRoles(ts3Api.getServerGroups());
-        ServerGroup serverGroup = Rank.getRequiredTeamspeakRole(roleName);
-
-        ts3Api.addClientToServerGroup(serverGroup.getId(), ts3Api.getClientByUId(uuid).getDatabaseId());
-    }
-
-    public void removeUserRoles(String uuid) {
-        int[] roles = ts3Api.getClientByUId(uuid).getServerGroups();
-
-        for (int role : roles) {
-            ts3Api.removeClientFromServerGroup(role, ts3Api.getClientByUId(uuid).getDatabaseId());
-        }
-    }
-
-    public void kickUser(String uuid, String reason) {
-        ts3Api.kickClientFromServer(reason, ts3Api.getDatabaseClientByUId(uuid).getDatabaseId());
-    }
-
-    public void banUser(String uuid, long time, String reason) {
-        ts3Api.banClient(ts3Api.getDatabaseClientByUId(uuid).getDatabaseId(), time, reason);
-    }
-
-    public void unbanUser(int banID) {
-        ts3Api.deleteBan(banID);
-    }
-
-    public List<Ban> getBanList() {
-        return ts3Api.getBans();
-    }
-
-    public void moveUserToChannel(String uuid, int channelID) {
-        ts3Api.moveClient(ts3Api.getDatabaseClientByUId(uuid).getDatabaseId(), channelID);
-    }
+    
 }

@@ -6,11 +6,10 @@ import biz.oneilenterprise.website.dto.LinkDTO;
 import biz.oneilenterprise.website.entity.Link;
 import biz.oneilenterprise.website.entity.SharedFile;
 import biz.oneilenterprise.website.entity.User;
-import biz.oneilenterprise.website.exception.LinkException;
 import biz.oneilenterprise.website.service.ShareLinkService;
 import biz.oneilenterprise.website.service.SystemFileService;
 import biz.oneilenterprise.website.service.UserService;
-import biz.oneilenterprise.website.validation.ShareLinkForm;
+import biz.oneilenterprise.website.dto.ShareLinkFormDTO;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
@@ -26,7 +25,6 @@ import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,7 +49,7 @@ public class FileSharingController {
     }
 
     @PostMapping("/share")
-    public ResponseEntity<LinkDTO> createShareLink(@Valid ShareLinkForm form, HttpServletRequest request, Authentication username)
+    public ResponseEntity<LinkDTO> createShareLink(@Valid ShareLinkFormDTO form, HttpServletRequest request, Authentication username)
         throws ParseException, IOException, FileUploadException {
 
         User user = (User) username.getPrincipal();
@@ -118,12 +116,7 @@ public class FileSharingController {
     }
 
     @PutMapping("/link/edit/{linkID}")
-    public ResponseEntity<HttpStatus> editLink(@PathVariable String linkID, Authentication username, @Valid @RequestBody ShareLinkForm form,
-        BindingResult result) throws ParseException {
-
-        if (result.hasErrors()) {
-            throw new LinkException(result.getFieldErrors().get(0).getDefaultMessage());
-        }
+    public ResponseEntity<HttpStatus> editLink(@PathVariable String linkID, Authentication username, @Valid @RequestBody ShareLinkFormDTO form) throws ParseException {
         linkService.editLink(linkID, form.getTitle(), form.getExpires());
 
         return ResponseEntity.ok(HttpStatus.OK);

@@ -7,8 +7,6 @@ import biz.oneilenterprise.website.entity.ApiToken;
 import biz.oneilenterprise.website.entity.Role;
 import biz.oneilenterprise.website.entity.User;
 import biz.oneilenterprise.website.service.UserService;
-import biz.oneilenterprise.website.validation.UpdatedQuota;
-import biz.oneilenterprise.website.validation.UpdatedUser;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,8 +39,8 @@ public class UserController {
     }
 
     @PutMapping("/{username}/details/update")
-    public ResponseEntity<HttpStatus> updateUserDetails(@PathVariable String username, Authentication user, @RequestBody UpdatedUser updatedUser) {
-        userService.updateUser(updatedUser, username);
+    public ResponseEntity<HttpStatus> updateUserDetails(@PathVariable String username, Authentication user, @RequestBody UserDTO userDTO) {
+        userService.updateUser(userDTO, username);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
@@ -83,8 +81,8 @@ public class UserController {
     }
 
     @PutMapping("/admin/user/{username}/update/quota")
-    public ResponseEntity<HttpStatus> adminUpdateUserQuota(@PathVariable String username, @RequestBody UpdatedQuota updatedQuota) {
-        userService.updateUserQuota(updatedQuota, username);
+    public ResponseEntity<HttpStatus> adminUpdateUserQuota(@PathVariable String username, @RequestBody QuotaDTO quotaDTO) {
+        userService.updateUserQuota(quotaDTO, username);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }

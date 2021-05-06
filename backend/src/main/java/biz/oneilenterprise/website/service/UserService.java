@@ -3,6 +3,7 @@ package biz.oneilenterprise.website.service;
 import static biz.oneilenterprise.website.security.SecurityConstants.SECRET;
 import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
 
+import biz.oneilenterprise.website.dto.LoginFormDTO;
 import biz.oneilenterprise.website.dto.QuotaDTO;
 import biz.oneilenterprise.website.dto.ShareXConfigDTO;
 import biz.oneilenterprise.website.dto.UserDTO;
@@ -21,9 +22,6 @@ import biz.oneilenterprise.website.repository.ResetPasswordTokenRepository;
 import biz.oneilenterprise.website.repository.RoleRepository;
 import biz.oneilenterprise.website.repository.UserRepository;
 import biz.oneilenterprise.website.repository.VerificationTokenRepository;
-import biz.oneilenterprise.website.validation.LoginForm;
-import biz.oneilenterprise.website.validation.UpdatedQuota;
-import biz.oneilenterprise.website.validation.UpdatedUser;
 import com.auth0.jwt.JWT;
 import java.util.Calendar;
 import java.util.Date;
@@ -99,14 +97,14 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public User registerUser(LoginForm loginForm) {
-        String username = loginForm.getName();
-        String email = loginForm.getEmail();
+    public User registerUser(LoginFormDTO loginFormDTO) {
+        String username = loginFormDTO.getName();
+        String email = loginFormDTO.getEmail();
 
         validateUsername(username);
         validateEmail(email);
 
-        String encryptedPassword = passwordEncoder.encode(loginForm.getPassword());
+        String encryptedPassword = passwordEncoder.encode(loginFormDTO.getPassword());
 
         User user = new User(username.toLowerCase(), encryptedPassword,false, email, "ROLE_UNREGISTERED");
         Quota quota = new Quota(username, 0, 25, false);
@@ -134,17 +132,21 @@ public class UserService {
         }
     }
 
-    public void updateUser(UpdatedUser updatedUser, String name) {
+    public void updateUser(UserDTO userDTO, String name) {
         User user = getUser(name);
 
-        updatedUser.getEmail().ifPresent(email -> {
-            if (!email.equals(user.getEmail())) {
-                validateEmail(email);
+        Optional<String> email = Optional.ofNullable(userDTO.getEmail());
+        Optional<String> password = Optional.ofNullable(userDTO.getPassword());
+        Optional<String> role = Optional.ofNullable(userDTO.getRole());
+
+        email.ifPresent(newEmail -> {
+            if (!newEmail.equals(user.getEmail())) {
+                validateEmail(newEmail);
             }
-            user.setEmail(email);
+            user.setEmail(newEmail);
         });
-        updatedUser.getPassword().ifPresent(password -> user.setPassword(passwordEncoder.encode(password)));
-        updatedUser.getRole().ifPresent(user::setRole);
+        password.ifPresent(newPassword -> user.setPassword(passwordEncoder.encode(newPassword)));
+        role.ifPresent(user::setRole);
 
         saveUser(user);
     }
@@ -208,11 +210,11 @@ public class UserService {
         quotaRepository.save(quota);
     }
 
-    public void updateUserQuota(UpdatedQuota updatedQuota, String username) {
+    public void updateUserQuota(QuotaDTO quotaDTO, String username) {
         Quota quota = getQuotaByUsername(username);
 
-        quota.setIgnoreQuota(updatedQuota.isIgnoreQuota());
-        quota.setMax(updatedQuota.getMax());
+        quota.setIgnoreQuota(quotaDTO.isIgnoreQuota());
+        quota.setMax(quotaDTO.getMax());
         saveUserQuota(quota);
     }
 

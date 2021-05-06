@@ -1,9 +1,9 @@
-package biz.oneilenterprise.website.validation;
+package biz.oneilenterprise.website.dto;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
-public class ContactForm {
+public class ContactFormDTO {
 
     @NotEmpty(message = "Please enter your name")
     private String name;
@@ -15,7 +15,7 @@ public class ContactForm {
     @NotEmpty(message = "Please enter your message")
     private String message;
 
-    public ContactForm(@NotEmpty(message = "Please enter your name") String name,
+    public ContactFormDTO(@NotEmpty(message = "Please enter your name") String name,
                        @Email @NotEmpty(message = "Please enter an email") String email,
                        @NotEmpty(message = "Please enter a subject") String subject,
                        @NotEmpty(message = "Please enter your message") String message) {
@@ -25,7 +25,7 @@ public class ContactForm {
         this.message = message;
     }
 
-    public ContactForm() {
+    public ContactFormDTO() {
     }
 
     public String getName() {

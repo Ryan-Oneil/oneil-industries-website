@@ -2,7 +2,7 @@ package biz.oneilenterprise.website.service;
 
 import biz.oneilenterprise.website.dao.FeedBackDAO;
 import biz.oneilenterprise.website.entity.FeedBack;
-import biz.oneilenterprise.website.validation.ContactForm;
+import biz.oneilenterprise.website.dto.ContactFormDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -76,12 +76,13 @@ public class ContactService {
     }
 
     @Transactional
-    public void registerFeedback(ContactForm contactForm, String ip) {
-        FeedBack feedBack = new FeedBack(contactForm.getName(), contactForm.getEmail(), contactForm.getSubject(),
-                contactForm.getMessage(), ip);
+    public void registerFeedback(ContactFormDTO contactFormDTO, String ip) {
+        FeedBack feedBack = new FeedBack(contactFormDTO.getName(), contactFormDTO.getEmail(), contactFormDTO.getSubject(),
+                contactFormDTO.getMessage(), ip);
 
         saveFeedBack(feedBack);
 
-        emailSender.sendSimpleEmail(RECEIVER_EMAIL,contactForm.getSubject(),contactForm.getMessage() + "\n From " + contactForm.getName(),contactForm.getName(), contactForm.getEmail());
+        emailSender.sendSimpleEmail(RECEIVER_EMAIL, contactFormDTO.getSubject(), contactFormDTO.getMessage() + "\n From " + contactFormDTO.getName(),
+            contactFormDTO.getName(), contactFormDTO.getEmail());
     }
 }

@@ -5,6 +5,7 @@ import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -29,7 +30,9 @@ public class Media {
     @Column(name = "link_status")
     private String linkStatus;
 
-    private String uploader;
+    @ManyToOne(targetEntity = User.class, fetch = FetchType.EAGER)
+    @JoinColumn(nullable = false, name = "uploader", referencedColumnName = "username")
+    private User uploader;
 
     @Column(name = "date_added")
     private String dateAdded;
@@ -48,7 +51,7 @@ public class Media {
     @JsonIgnore
     private PublicMediaApproval publicMediaApproval;
 
-    public Media(String name, String fileName, String linkStatus, String uploader, String dateAdded,
+    public Media(String name, String fileName, String linkStatus, User uploader, String dateAdded,
         Album album, String mediaType, Long size) {
         this.name = name;
         this.fileName = fileName;
@@ -60,7 +63,7 @@ public class Media {
         this.size = size;
     }
 
-    public Media(String name, String fileName, String linkStatus, String uploader, String dateAdded, Long size) {
+    public Media(String name, String fileName, String linkStatus, User uploader, String dateAdded, Long size) {
         this.name = name;
         this.fileName = fileName;
         this.linkStatus = linkStatus;
@@ -108,11 +111,11 @@ public class Media {
         this.linkStatus = linkStatus;
     }
 
-    public String getUploader() {
+    public User getUploader() {
         return uploader;
     }
 
-    public void setUploader(String uploader) {
+    public void setUploader(User uploader) {
         this.uploader = uploader;
     }
 

@@ -29,20 +29,21 @@ public class ImageThumbnailWriter {
         File thumbnailDestination = new File(dest + "/" + image.getName());
 
         //Writes thumbnail
-        write(getThumbnailImage(src), extension, thumbnailDestination);
+        write(getThumbnailImage(src, extension), extension, thumbnailDestination);
     }
 
     public static void write(BufferedImage src, String imageFormat, File destination) throws IOException {
         ImageIO.write(src, imageFormat, destination);
     }
 
-    private static BufferedImage getThumbnailImage(BufferedImage original) {
-        BufferedImage thumbNail = new BufferedImage(
-            IMAGE_RESIZE_SIZE, IMAGE_RESIZE_SIZE,
-            BufferedImage.TYPE_INT_RGB);
+    private static BufferedImage getThumbnailImage(BufferedImage original, String extension) {
+        int type = extension.equalsIgnoreCase("gif") ||  extension.equalsIgnoreCase("png") ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_INT_RGB;
+
+        BufferedImage thumbNail = new BufferedImage(IMAGE_RESIZE_SIZE, IMAGE_RESIZE_SIZE, type);
         Graphics2D g = thumbNail.createGraphics();
         g.drawImage(original, 0, 0, IMAGE_RESIZE_SIZE, IMAGE_RESIZE_SIZE, null);
         g.dispose();
+
         return thumbNail;
     }
 
@@ -56,7 +57,7 @@ public class ImageThumbnailWriter {
             BufferedImage bufferedImage = frameConverter.convert(frame);
 
             while (bufferedImage != null) {
-                write(getThumbnailImage(bufferedImage), "png", new File(dest+ "/" + video.getName() + ".png"));
+                write(getThumbnailImage(bufferedImage, "png"), "png", new File(dest+ "/" + video.getName() + ".png"));
 
                 frame = frameGrabber.grabKeyFrame();
                 bufferedImage = frameConverter.convert(frame);

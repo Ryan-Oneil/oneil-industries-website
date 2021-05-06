@@ -1,6 +1,6 @@
 package biz.oneilenterprise.website.service;
 
-import biz.oneilenterprise.RandomIDGen;
+import biz.oneilenterprise.website.utils.RandomIDGen;
 import biz.oneilenterprise.website.dto.FileDTO;
 import biz.oneilenterprise.website.dto.LinkDTO;
 import biz.oneilenterprise.website.entity.Link;

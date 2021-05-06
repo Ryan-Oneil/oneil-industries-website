@@ -4,7 +4,7 @@ import static biz.oneilenterprise.website.filecreater.FileHandler.writeImageThum
 import static biz.oneilenterprise.website.filecreater.FileHandler.writeVideoThumbnail;
 import static biz.oneilenterprise.website.security.SecurityConstants.TRUSTED_ROLES;
 
-import biz.oneilenterprise.RandomIDGen;
+import biz.oneilenterprise.website.utils.RandomIDGen;
 import biz.oneilenterprise.website.dto.AlbumDTO;
 import biz.oneilenterprise.website.dto.MediaDTO;
 import biz.oneilenterprise.website.entity.Album;
@@ -19,7 +19,7 @@ import biz.oneilenterprise.website.filecreater.FileHandler;
 import biz.oneilenterprise.website.repository.AlbumRepository;
 import biz.oneilenterprise.website.repository.MediaApprovalRepository;
 import biz.oneilenterprise.website.repository.MediaRepository;
-import biz.oneilenterprise.website.validation.GalleryUpload;
+import biz.oneilenterprise.website.dto.GalleryUploadDTO;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -66,17 +66,20 @@ public class MediaService {
         this.approvalRepository = approvalRepository;
         this.albumRepository = albumRepository;
         this.modelMapper = modelMapper;
+
+        this.modelMapper.typeMap(Media.class, MediaDTO.class)
+            .addMappings(m -> m.map(src -> src.getUploader().getUsername(), MediaDTO::setUploader));
     }
 
-    public List<MediaDTO> registerMedias(List<File> mediaFiles, GalleryUpload galleryUpload, User user) throws IOException {
+    public List<MediaDTO> registerMedias(List<File> mediaFiles, GalleryUploadDTO galleryUploadDTO, User user) throws IOException {
         Album album = null;
         List<Media> mediaList = new ArrayList<>();
 
-        if (!StringUtils.isEmpty(galleryUpload.getAlbumId())) {
-            album = getOrRegisterAlbum(user.getUsername(), galleryUpload.getAlbumId());
+        if (!StringUtils.isEmpty(galleryUploadDTO.getAlbumId())) {
+            album = getOrRegisterAlbum(user.getUsername(), galleryUploadDTO.getAlbumId());
         }
         for (File mediaFile : mediaFiles) {
-            Media media = registerMedia(mediaFile.getName(), galleryUpload.getPrivacy(), mediaFile, user.getUsername(), album, mediaFile.length());
+            Media media = registerMedia(mediaFile.getName(), galleryUploadDTO.getPrivacy(), mediaFile, user, album, mediaFile.length());
             checkMediaPrivacy(media, user);
 
             mediaList.add(media);
@@ -130,7 +133,7 @@ public class MediaService {
 
     public HashMap<String, Object> getMediasByUser(String username, Pageable pageable) {
         HashMap<String, Object> medias = new HashMap<>();
-        medias.put("medias", mediaToDTOs(mediaRepository.getAllByUploaderOrderByIdDesc(username, pageable)));
+        medias.put("medias", mediaToDTOs(mediaRepository.getAllByUploader_UsernameOrderByIdDesc(username, pageable)));
         medias.put("total", mediaRepository.getTotalMediasByUser(username));
 
         return medias;
@@ -152,11 +155,11 @@ public class MediaService {
         return mediaRepository.getFirstByFileName(fileName).orElseThrow(() -> new MediaException(FILE_NOT_EXISTS_ERROR_MESSAGE));
     }
 
-    public Media registerMedia(String mediaName, String privacy, File file, String user, Album album, Long size) throws IOException {
+    public Media registerMedia(String mediaName, String privacy, File file, User user, Album album, Long size) throws IOException {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         LocalDate localDate = LocalDate.now();
 
-        Media media = new Media(mediaName, file.getName() , privacy,user, localDate.format(dtf), size);
+        Media media = new Media(mediaName, file.getName(), privacy, user, localDate.format(dtf), size);
         Optional.ofNullable(album).ifPresent(media::setAlbum);
 
         String mediaType = FileHandler.getFileMediaType(file);
@@ -165,15 +168,15 @@ public class MediaService {
         return media;
     }
 
-    public void updateMedia(GalleryUpload galleryUpload, int mediaID, User user) {
+    public void updateMedia(GalleryUploadDTO galleryUploadDTO, int mediaID, User user) {
         Media media = getMedia(mediaID);
 
-        if (galleryUpload.getAlbumId() != null) {
-            Album album = getAlbum(galleryUpload.getAlbumId());
+        if (galleryUploadDTO.getAlbumId() != null) {
+            Album album = getAlbum(galleryUploadDTO.getAlbumId());
             media.setAlbum(album);
         }
-        media.setName(galleryUpload.getName());
-        media.setLinkStatus(galleryUpload.getPrivacy());
+        media.setName(galleryUploadDTO.getName());
+        media.setLinkStatus(galleryUploadDTO.getPrivacy());
 
         checkMediaPrivacy(media, user);
 
@@ -236,7 +239,7 @@ public class MediaService {
     public long deleteMedia(int mediaID) throws IOException {
         Media media = getMedia(mediaID);
 
-        File mediaFile = new File(getUserMediaDirectory(media.getUploader()) + media.getFileName());
+        File mediaFile = new File(getUserMediaDirectory(media.getUploader().getUsername()) + media.getFileName());
         long size = mediaFile.length();
 
         if (mediaFile.exists()) {
@@ -255,9 +258,13 @@ public class MediaService {
         return totalSize;
     }
 
+    public void updateMediasLinkStatus(Integer[] mediaIds, String linkStatus, String uploader) {
+        mediaRepository.updateMediaPrivacy(linkStatus, mediaIds, uploader);
+    }
+
     public File getMediaFile(String mediaFileName) {
         Media media = getMediaFileName(mediaFileName);
-        File file = new File(mediaDirectory + media.getUploader() + "/" + media.getFileName());
+        File file = new File(mediaDirectory + media.getUploader().getUsername() + "/" + media.getFileName());
 
         if (!file.exists()) {
             file = new File(mediaDirectory + "noimage.png");
@@ -267,7 +274,7 @@ public class MediaService {
 
     public File getMediaThumbnailFile(String mediaFileName) {
         Media media = getMediaFileName(mediaFileName);
-        String mediaThumbnailLocation = mediaDirectory + "thumbnail/" + media.getUploader() + "/" + media.getFileName();
+        String mediaThumbnailLocation = mediaDirectory + "thumbnail/" + media.getUploader().getUsername() + "/" + media.getFileName();
 
         //Gets the generated thumbnail of the video instead
         if (media.getMediaType().equalsIgnoreCase(MediaType.VIDEO.toString())) {
@@ -284,7 +291,7 @@ public class MediaService {
     public HashMap<String, Object> getMediaStats(String username) {
         HashMap<String, Object> stats = new HashMap<>();
         stats.put("totalMedias", mediaRepository.getTotalByUser(username));
-        stats.put("recentMedias", mediaRepository.findTop5ByUploaderOrderByIdDesc(username));
+        stats.put("recentMedias", mediaRepository.findTop5ByUploader_UsernameOrderByIdDesc(username));
         stats.put("totalAlbums", albumRepository.getTotalAlbumsByUser(username));
 
         return stats;

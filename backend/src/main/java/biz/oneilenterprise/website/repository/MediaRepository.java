@@ -16,16 +16,16 @@ public interface MediaRepository extends CrudRepository<Media, Integer> {
     List<Media> getAllByOrderByIdDesc(Pageable page);
     List<Media> getAllByLinkStatusOrderByIdDesc(String linkStatus, Pageable page);
     Optional<Media> getFirstByFileName(String filename);
-    List<Media> getAllByUploaderOrderByIdDesc(String uploade, Pageable page);
-    List<Media> findTop5ByUploaderOrderByIdDesc(String uploader);
+    List<Media> getAllByUploader_UsernameOrderByIdDesc(String uploader, Pageable page);
+    List<Media> findTop5ByUploader_UsernameOrderByIdDesc(String uploader);
 
-    @Query("select count(m) from Media m where m.uploader = ?1")
+    @Query("select count(m) from Media m where m.uploader.username = ?1")
     long getTotalMediasByUser(String username);
 
     @Query("select count(m) from Media m where m.linkStatus = ?1")
     long getTotalMediaByStatus(String status);
 
-    @Query("select count(m) from Media m where m.uploader = ?1")
+    @Query("select count(m) from Media m where m.uploader.username = ?1")
     long getTotalByUser(String username);
 
     @Query("select sum(m.size) from Media m where m.id in ?1")
@@ -36,8 +36,13 @@ public interface MediaRepository extends CrudRepository<Media, Integer> {
 
     @Transactional
     @Modifying
-    @Query("update Media m set m.album = ?1 where m.id in ?2 and m.uploader = ?3")
+    @Query("update Media m set m.album = ?1 where m.id in ?2 and m.uploader.username = ?3")
     void setMediasAlbum(Album album, int[] mediaIds, String uploader);
+
+    @Transactional
+    @Modifying
+    @Query("update Media m set m.linkStatus = ?1 where m.id in ?2 and m.uploader.username = ?3")
+    void updateMediaPrivacy(String privacyStatus, Integer[] mediaIds, String uploader);
 
     @Transactional
     @Modifying

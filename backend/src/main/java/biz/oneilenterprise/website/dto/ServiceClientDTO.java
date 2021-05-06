@@ -1,14 +1,14 @@
-package biz.oneilenterprise.website.pojo;
+package biz.oneilenterprise.website.dto;
 
-public class ServiceClient {
+public class ServiceClientDTO {
 
     private String name;
     private String uuid;
 
-    public ServiceClient() {
+    public ServiceClientDTO() {
     }
 
-    public ServiceClient(String name, String uuid) {
+    public ServiceClientDTO(String name, String uuid) {
         this.name = name;
         this.uuid = uuid;
     }

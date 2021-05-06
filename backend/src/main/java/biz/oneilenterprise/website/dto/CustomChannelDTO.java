@@ -1,16 +1,16 @@
-package biz.oneilenterprise.website.pojo;
+package biz.oneilenterprise.website.dto;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CustomChannel {
+public class CustomChannelDTO {
 
     private String title;
     private String key;
-    private List<CustomChannel> children;
-    private List<ServiceClient> usersInChannel;
+    private List<CustomChannelDTO> children;
+    private List<ServiceClientDTO> usersInChannel;
 
-    public CustomChannel(String title, String key) {
+    public CustomChannelDTO(String title, String key) {
         this.title = title;
         if (title.contains("spacer")) {
             this.title = "";
@@ -20,7 +20,7 @@ public class CustomChannel {
         this.usersInChannel = new ArrayList<>();
     }
 
-    public void addClient(ServiceClient client) {
+    public void addClient(ServiceClientDTO client) {
         this.usersInChannel.add(client);
     }
 
@@ -40,23 +40,23 @@ public class CustomChannel {
         this.key = key;
     }
 
-    public List<ServiceClient> getUsersInChannel() {
+    public List<ServiceClientDTO> getUsersInChannel() {
         return usersInChannel;
     }
 
-    public void setUsersInChannel(List<ServiceClient> usersInChannel) {
+    public void setUsersInChannel(List<ServiceClientDTO> usersInChannel) {
         this.usersInChannel = usersInChannel;
     }
 
-    public List<CustomChannel> getChildren() {
+    public List<CustomChannelDTO> getChildren() {
         return children;
     }
 
-    public void setChildren(List<CustomChannel> children) {
+    public void setChildren(List<CustomChannelDTO> children) {
         this.children = children;
     }
 
-    public void addChild(CustomChannel customChannel) {
-        this.children.add(customChannel);
+    public void addChild(CustomChannelDTO customChannelDTO) {
+        this.children.add(customChannelDTO);
     }
 }

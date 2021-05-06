@@ -1,10 +1,10 @@
-package biz.oneilenterprise.website.validation;
+package biz.oneilenterprise.website.dto;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-public class LoginForm {
+public class LoginFormDTO {
 
     @NotNull
     @Size(min = 2, max = 30)
@@ -17,13 +17,13 @@ public class LoginForm {
     @Email
     private String email;
 
-    public LoginForm(@NotNull @Size(min = 2, max = 30) String name, @NotNull String password, @NotNull String email) {
+    public LoginFormDTO(@NotNull @Size(min = 2, max = 30) String name, @NotNull String password, @NotNull String email) {
         this.name = name;
         this.password = password;
         this.email = email;
     }
 
-    public LoginForm() {
+    public LoginFormDTO() {
     }
 
     public String getName() {

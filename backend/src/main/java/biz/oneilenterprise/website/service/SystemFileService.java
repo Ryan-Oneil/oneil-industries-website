@@ -1,6 +1,6 @@
 package biz.oneilenterprise.website.service;
 
-import biz.oneilenterprise.RandomIDGen;
+import biz.oneilenterprise.website.utils.RandomIDGen;
 import biz.oneilenterprise.website.exception.ResourceNotFoundException;
 import biz.oneilenterprise.website.filecreater.FileHandler;
 import java.io.File;

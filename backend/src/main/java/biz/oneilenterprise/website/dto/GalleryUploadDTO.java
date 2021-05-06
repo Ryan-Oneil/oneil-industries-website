@@ -1,8 +1,8 @@
-package biz.oneilenterprise.website.validation;
+package biz.oneilenterprise.website.dto;
 
 import javax.validation.constraints.NotNull;
 
-public class GalleryUpload {
+public class GalleryUploadDTO {
 
     @NotNull
     private String name;
@@ -11,7 +11,7 @@ public class GalleryUpload {
 
     private String albumId;
 
-    public GalleryUpload() {
+    public GalleryUploadDTO() {
     }
 
     public String getName() {

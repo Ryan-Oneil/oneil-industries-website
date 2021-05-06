@@ -1,4 +1,4 @@
-package biz.oneilenterprise;
+package biz.oneilenterprise.website.utils;
 
 import java.util.Random;
 

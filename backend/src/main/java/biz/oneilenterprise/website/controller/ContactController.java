@@ -2,7 +2,7 @@ package biz.oneilenterprise.website.controller;
 
 import biz.oneilenterprise.website.entity.FeedBack;
 import biz.oneilenterprise.website.service.ContactService;
-import biz.oneilenterprise.website.validation.ContactForm;
+import biz.oneilenterprise.website.dto.ContactFormDTO;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -28,7 +28,7 @@ public class ContactController {
     private ContactService contactService;
 
     @PostMapping("/send")
-    public ResponseEntity sendContact(@RequestBody @Valid ContactForm contactForm, BindingResult result, HttpServletRequest request) {
+    public ResponseEntity sendContact(@RequestBody @Valid ContactFormDTO contactFormDTO, BindingResult result, HttpServletRequest request) {
 
         if (result.hasErrors()) {
             return ResponseEntity.badRequest().body(result.getAllErrors().toString());
@@ -38,7 +38,7 @@ public class ContactController {
         if (feedBacks.size() >= MAX_FORMS_PER_DAY) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Reached maximum contact form count within 24 hours");
         }
-        contactService.registerFeedback(contactForm, getClientIpAddr(request).toString());
+        contactService.registerFeedback(contactFormDTO, getClientIpAddr(request).toString());
 
         return ResponseEntity.ok("Email has been sent!");
     }

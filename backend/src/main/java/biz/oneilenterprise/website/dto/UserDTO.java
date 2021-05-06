@@ -6,6 +6,7 @@ public class UserDTO {
     private String name;
     private String email;
     private String role;
+    private String password;
     private boolean enabled;
     private QuotaDTO quota = new QuotaDTO(0, 0, false);
 
@@ -17,13 +18,7 @@ public class UserDTO {
         this.enabled = enabled;
     }
 
-    public UserDTO(int id, String name, String email, String role, boolean enabled, QuotaDTO quota) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.role = role;
-        this.enabled = enabled;
-        this.quota = quota;
+    public UserDTO() {
     }
 
     public String getName() {
@@ -56,5 +51,13 @@ public class UserDTO {
 
     public void setQuota(QuotaDTO quota) {
         this.quota = quota;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
