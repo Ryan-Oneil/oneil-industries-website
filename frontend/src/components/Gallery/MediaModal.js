@@ -61,7 +61,11 @@ export default ({
                 </Card>
               </Col>
               <Col xs={24} sm={24} md={12} lg={14} xl={12} xxl={10}>
-                <div className={"fullRoundedBorder mediaModalContent"}>
+                <div
+                  className={
+                    "fullRoundedBorder mediaModalContent centerFlexContent"
+                  }
+                >
                   <Media
                     fileName={activeMedia.fileName}
                     mediaType={activeMedia.mediaType}
@@ -79,7 +83,9 @@ export default ({
                       Comments
                     </h2>
                   }
-                  className={"roundedBorder preventTextOverflow"}
+                  className={
+                    "roundedBorder preventTextOverflow modalCommentSection"
+                  }
                   extra={
                     <Button
                       onClick={closeModalAction}
@@ -90,7 +96,11 @@ export default ({
                   {renderComments()}
                   <Comment
                     className={"commentReplyBox"}
-                    style={{ paddingTop: 0 }}
+                    style={{
+                      paddingTop: 0,
+                      borderBottomLeftRadius: 10,
+                      borderBottomRightRadius: 10
+                    }}
                     content={
                       <>
                         <TextArea

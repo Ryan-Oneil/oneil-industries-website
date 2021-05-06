@@ -9,7 +9,9 @@ export default ({
   title = "",
   mediaFileName = "",
   mediaType = "",
-  dateAdded = ""
+  dateAdded = "",
+  children,
+  extraClasses
 }) => {
   const renderMissingMedia = () => {
     return (
@@ -25,30 +27,29 @@ export default ({
 
   return (
     <Card
-      className={"roundedBorder darkGreyBackground"}
+      className={`roundedBorder darkGreyBackground ${extraClasses}`}
       hoverable
       extra={cardExtras}
       style={{ overflow: "hidden" }}
+      cover={
+        <div onClick={handleShowDialog.bind(this)}>
+          {mediaFileName && mediaType && (
+            <Media
+              fileName={mediaFileName}
+              mediaType={mediaType}
+              showVideoPlayButton
+            />
+          )}
+          {!mediaFileName && !mediaType && renderMissingMedia()}
+          {children}
+        </div>
+      }
     >
-      <div onClick={handleShowDialog.bind(this)}>
-        {mediaFileName && mediaType && (
-          <Media
-            fileName={mediaFileName}
-            mediaType={mediaType}
-            showVideoPlayButton
-          />
-        )}
-        {!mediaFileName && !mediaType && renderMissingMedia()}
-        <Meta
-          title={title}
-          description={
-            <div className={"descriptionText"}>
-              {dateAdded && <p>{dateAdded}</p>}
-            </div>
-          }
-          style={{ textAlign: "center", color: "white" }}
-        />
-      </div>
+      <Meta
+        title={title}
+        description={dateAdded}
+        style={{ textAlign: "center", color: "white" }}
+      />
     </Card>
   );
 };

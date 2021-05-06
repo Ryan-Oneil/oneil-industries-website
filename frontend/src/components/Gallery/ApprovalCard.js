@@ -1,6 +1,6 @@
 import React from "react";
 import Media from "./Media";
-import { Button, Card, message } from "antd";
+import { Card, message, Tooltip } from "antd";
 import {
   approvePublicMedia,
   denyPublicMedia
@@ -29,44 +29,39 @@ export default props => {
         </div>
       }
       actions={[
-        <Button
-          type="primary"
-          onClick={() => {
-            dispatch(
-              approvePublicMedia(
-                `/gallery/admin/media/${media.id}/approve`,
-                media.id
-              )
-            ).then(() =>
-              message.success("Media has been approved public view")
-            );
-          }}
-          className={"formattedBackground"}
-          icon={<CheckOutlined />}
-        >
-          Approve
-        </Button>,
-        <Button
-          type="danger"
-          onClick={() => {
-            dispatch(
-              denyPublicMedia(`/gallery/admin/media/${media.id}/deny`, media.id)
-            ).then(() => message.success("Media has been denied public view"));
-          }}
-          icon={<CloseOutlined />}
-        >
-          Deny
-        </Button>
+        <Tooltip title={"Approve"}>
+          <CheckOutlined
+            style={{ color: "#54a7b2" }}
+            onClick={() => {
+              dispatch(
+                approvePublicMedia(
+                  `/gallery/admin/media/${media.id}/approve`,
+                  media.id
+                )
+              ).then(() =>
+                message.success("Media has been approved public view")
+              );
+            }}
+          />
+        </Tooltip>,
+        <Tooltip title={"Deny"}>
+          <CloseOutlined
+            style={{ color: "red" }}
+            onClick={() => {
+              dispatch(
+                denyPublicMedia(
+                  `/gallery/admin/media/${media.id}/deny`,
+                  media.id
+                )
+              ).then(() =>
+                message.success("Media has been denied public view")
+              );
+            }}
+          />
+        </Tooltip>
       ]}
     >
-      <Meta
-        title={fileName}
-        description={
-          <div className={"descriptionText"}>
-            <p>{dateAdded}</p>
-          </div>
-        }
-      />
+      <Meta title={fileName} description={dateAdded} />
     </Card>
   );
 };

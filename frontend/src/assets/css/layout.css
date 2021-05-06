@@ -42,15 +42,6 @@ body {
     border-top: 2px solid white;
 }
 
-.bottomFooter {
-    position: fixed!important;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    z-index: 10;
-    text-align: center;
-}
-
 .centerText {
     text-align: center;
 }
@@ -93,12 +84,6 @@ body {
     margin-right: auto;
 }
 
-.appName {
-    color: rgba(255, 255, 255, 0.65);
-    text-align: center;
-    padding: 20px;
-}
-
 @media only screen and (max-width: 800px) {
     .username {
         display: none;
@@ -117,9 +102,6 @@ body {
     .responsiveMenuButton {
         display: inline-block!important;
     }
-    .mediaTab .ant-tabs-extra-content {
-        display: none;
-    }
 }
 
 .whiteBackground {
@@ -137,13 +119,6 @@ body {
 
 .mainBackgroundColor {
     background: #84beb4;
-}
-
-.centerButton {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 20px;
 }
 
 .removeMargin {
@@ -195,11 +170,7 @@ body {
     display: none;
 }
 
-.pointerCursor {
-    cursor: pointer;
-}
-
-.ant-drawer-body{
+.ant-drawer-body, .modalCommentSection .ant-card-body {
     padding: 0;
 }
 
@@ -272,12 +243,8 @@ body {
     font-size: 1.5em;
 }
 
-.roundedBorder > .ant-card-body {
-    padding: 0
-}
-
-.roundedBorder, .mediaComment .ant-comment-content-detail {
-    border-radius: 10px;
+.roundedBorder, .mediaComment .ant-comment-content-detail, .ant-upload-drag, .modalCommentSection .ant-card-body {
+    border-radius: 10px!important;
     border: 0;
 }
 
@@ -298,65 +265,8 @@ body {
     color: white;
 }
 
-.descriptionText p {
-    font-size: 1.2em;
-    color: white;
-    text-align: center;
-    margin-bottom: 0;
-}
-
-.roundedBorder .ant-card-meta-detail {
-    padding-bottom: 5px;
-}
-
-.mediaTab .ant-tabs-nav::before {
-    border: 0;
-}
-
-.mediaTab .ant-tabs-nav-list {
-    margin: auto;
-}
-
-.mediaTab .ant-tabs-tab, .circleBorderedButton {
-    border-radius: 15px!important;
-    border: 0!important;
-    background: #97c7bf!important;
-    margin-right: 16px!important;
-}
-
-.uploadButton {
-    background: #97c7bf;
-    position: absolute;
-    left: 0;
-    bottom: 0;
-}
-
 .ant-btn:hover .uploadButton, .ant-btn:focus .uploadButton, .ant-btn:active .uploadButton {
     color: white!important;
-}
-
-.mediaTab .ant-tabs-tab-btn, .uploadButton {
-    color: white;
-    border-radius: 15px!important;
-    border: 0!important;
-}
-
-.mediaTab .ant-tabs-tab-active .ant-tabs-tab-btn {
-    color: #36393f!important;
-}
-
-.mediaTab .ant-tabs-tab-btn:hover {
-    color: #36393f!important;
-}
-
-.mediaTab .bulkMediaManage {
-    position: absolute;
-    right: 1%;
-    bottom: 3%;
-}
-
-.mediaTab .ant-tabs-nav-list {
-    margin: auto;
 }
 
 .dashboard .ant-tabs-nav-list {
@@ -429,6 +339,15 @@ body {
     padding-bottom: 0;
 }
 
+.lightGreenBackground {
+    background: #97c7bf;
+    border: none;
+}
+
+.lightGreenBackground:hover, .lightGreenBackground:active, .lightGreenBackground:focus {
+    background-color: #acd2cc;
+}
+
 .formattedBackground {
     background-color: #54a7b2;
     border: none;
@@ -449,10 +368,10 @@ body {
     color: white;
 }
 
-.bulkMediaManage button:hover, .bulkMediaManage button:active {
-    color: #36393f;
-    background: #97c7bf;
-    border-color: #97c7bf;
+.bulkMediaManage button:hover, .bulkMediaManage button:active, .bulkMediaManageSelected button {
+    color: white;
+    background: #bbdbd5!important;
+    border-color: #bbdbd5!important;
 }
 
 .playButton {
@@ -481,7 +400,7 @@ body {
 }
 
 .ant-layout-sider-dark, .ant-layout-sider-zero-width-trigger {
-    background-color: #4e535b!important;
+    background-color: #484c54!important;
 }
 
 .sideNav .ant-menu-sub {
@@ -492,6 +411,66 @@ body {
     background-color: #5a5f69!important;
 }
 
-.sideNav .anticon, .sideNav a, .appName, .sideNav span {
+.sideNav .anticon, .sideNav a, .sideNav span {
     font-size: 16px;
+}
+
+.uploaderBox {
+    background-color: white;
+    padding: 20px;
+}
+
+.ant-upload-drag {
+    background-color: white!important;
+    border: 4px dashed #e6f1ff!important;
+}
+
+.ant-upload.ant-upload-drag:not(.ant-upload-disabled):hover {
+    background-color: #e6f1ff!important;
+    border: 4px dashed #54a7b2!important;
+}
+
+.roundedShadowBox {
+    border-radius: .42rem;
+    box-shadow: 0 0 30px 0 rgb(82 63 105 / 5%);
+}
+
+.manageBox {
+    position: absolute;
+    z-index: 99;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+}
+
+.manageBox:hover, .box-selected {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.manageBox span {
+    display: none;
+}
+
+.manageBox:hover span, .box-selected span {
+    display: block;
+}
+
+.manageMediaCard .ant-card-body {
+    z-index: 500;
+    background-color: #49494b;
+    position: relative;
+}
+
+.mediaModal .ant-image-img {
+    max-height: 90vh;
+}
+
+.ant-image-img {
+    max-width: 100%;
+}
+
+.uploadedCard .ant-card-body {
+    display: none!important;
+    border: 0 !important;
 }

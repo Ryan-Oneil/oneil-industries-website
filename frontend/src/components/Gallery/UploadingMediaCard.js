@@ -1,9 +1,8 @@
 import React from "react";
 import Media from "./Media";
-import { Button, Card, Progress, Tooltip } from "antd";
+import { Card, Progress, Tooltip } from "antd";
 import DeleteOutlined from "@ant-design/icons/lib/icons/DeleteOutlined";
 import LinkOutlined from "@ant-design/icons/lib/icons/LinkOutlined";
-import EyeOutlined from "@ant-design/icons/lib/icons/EyeOutlined";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
 export default ({
@@ -19,60 +18,50 @@ export default ({
 
   return (
     <Card
-      className={"roundedBorder uploadedCard"}
+      className={"roundedBorder uploadedCard darkGreyBackground"}
       hoverable
       style={{ overflow: "hidden" }}
+      cover={
+        <>
+          {completedUpload && (
+            <div onClick={handleShowDialog.bind(this)}>
+              <Media
+                fileName={mediaFileName}
+                mediaType={mediaType}
+                showVideoPlayButton
+              />
+            </div>
+          )}
+
+          {!completedUpload && (
+            <Progress
+              className={"centerFlexContent extraPadding"}
+              percent={progress}
+              status={uploadStatus}
+              type="circle"
+              strokeColor={uploadStatus === "exception" ? "#ff4d4f" : "#54a7b2"}
+            />
+          )}
+        </>
+      }
       actions={[
-        <Tooltip title={"View"}>
-          <Button
-            type={"primary"}
-            icon={<EyeOutlined />}
-            className={"formattedBackground"}
-            onClick={() => window.open(url, "_blank")}
-            disabled={!completedUpload}
-          />
-        </Tooltip>,
         <CopyToClipboard text={url}>
           <Tooltip title={"Copy Link"}>
-            <Button
-              type={"primary"}
-              icon={<LinkOutlined />}
-              className={"formattedBackground"}
-              disabled={!completedUpload}
-            />
+            <LinkOutlined style={{ color: "#54a7b2" }} />
           </Tooltip>
         </CopyToClipboard>,
         <Tooltip title={"Delete"}>
-          <Button
-            type={"danger"}
-            icon={<DeleteOutlined />}
-            onClick={deleteAction}
-            disabled={!completedUpload}
+          <DeleteOutlined
+            style={{ color: "red" }}
+            onClick={() => {
+              if (!completedUpload && uploadStatus !== "exception") {
+                return;
+              }
+              deleteAction();
+            }}
           />
         </Tooltip>
       ]}
-    >
-      <>
-        {completedUpload && (
-          <div onClick={handleShowDialog.bind(this)}>
-            <Media
-              fileName={mediaFileName}
-              mediaType={mediaType}
-              showVideoPlayButton
-            />
-          </div>
-        )}
-
-        {!completedUpload && (
-          <Progress
-            className={"centerFlexContent extraPadding"}
-            percent={progress}
-            status={`${uploadStatus === "complete" ? "" : "active"}`}
-            type="circle"
-            strokeColor={"#54a7b2"}
-          />
-        )}
-      </>
-    </Card>
+    />
   );
 };

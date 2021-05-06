@@ -112,26 +112,26 @@ public class MediaService {
         }
     }
 
-    public HashMap<String, Object> getMedias(String mediaType, Pageable pageable) {
+    public HashMap<String, Object> getMedias(Pageable pageable) {
         HashMap<String, Object> medias = new HashMap<>();
-        medias.put("medias", mediaToDTOs(mediaRepository.getAllByMediaTypeOrderByIdDesc(mediaType, pageable)));
-        medias.put("total", mediaRepository.getTotalMediaByType(mediaType));
+        medias.put("medias", mediaToDTOs(mediaRepository.getAllByOrderByIdDesc(pageable)));
+        medias.put("total", mediaRepository.count());
 
         return medias;
     }
 
-    public HashMap<String, Object> getPublicMedias(Pageable pageable, String mediaType) {
+    public HashMap<String, Object> getPublicMedias(Pageable pageable) {
         HashMap<String, Object> publicMedias = new HashMap<>();
-        publicMedias.put("medias", mediaToDTOs(mediaRepository.getAllByLinkStatusAndMediaTypeOrderByIdDesc(PUBLIC, mediaType, pageable)));
-        publicMedias.put("total", mediaRepository.getTotalMediaByStatusAndMediaType(PUBLIC, mediaType));
+        publicMedias.put("medias", mediaToDTOs(mediaRepository.getAllByLinkStatusOrderByIdDesc(PUBLIC, pageable)));
+        publicMedias.put("total", mediaRepository.getTotalMediaByStatus(PUBLIC));
 
         return publicMedias;
     }
 
-    public HashMap<String, Object> getMediasByUser(String username, Pageable pageable, String mediaType) {
+    public HashMap<String, Object> getMediasByUser(String username, Pageable pageable) {
         HashMap<String, Object> medias = new HashMap<>();
-        medias.put("medias", mediaToDTOs(mediaRepository.getAllByUploaderAndMediaTypeOrderByIdDesc(username, mediaType, pageable)));
-        medias.put("total", mediaRepository.getTotalMediasByUserAndType(username, mediaType));
+        medias.put("medias", mediaToDTOs(mediaRepository.getAllByUploaderOrderByIdDesc(username, pageable)));
+        medias.put("total", mediaRepository.getTotalMediasByUser(username));
 
         return medias;
     }

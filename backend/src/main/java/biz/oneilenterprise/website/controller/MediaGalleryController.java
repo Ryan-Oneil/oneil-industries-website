@@ -56,9 +56,9 @@ public class MediaGalleryController {
         this.fileService = fileService;
     }
 
-    @GetMapping("/medias/{mediaType}")
-    public HashMap<String, Object> showAllMedia(@PathVariable String mediaType, Pageable pageable) {
-        return mediaService.getPublicMedias(pageable, mediaType);
+    @GetMapping("/medias")
+    public HashMap<String, Object> showAllMedia(Pageable pageable) {
+        return mediaService.getPublicMedias(pageable);
     }
 
     @GetMapping("/image/{imageName}")
@@ -139,10 +139,9 @@ public class MediaGalleryController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @GetMapping("/user/medias/{username}/{mediaType}")
-    public HashMap<String, Object> showUserMedias(Authentication user, @PathVariable String username, HttpServletRequest request, Pageable pageable,
-        @PathVariable String mediaType) {
-        return mediaService.getMediasByUser(username, pageable, mediaType);
+    @GetMapping("/user/medias/{username}")
+    public HashMap<String, Object> showUserMedias(Authentication user, @PathVariable String username, HttpServletRequest request, Pageable pageable) {
+        return mediaService.getMediasByUser(username, pageable);
     }
 
     @GetMapping("/user/{username}/stats")
@@ -207,9 +206,9 @@ public class MediaGalleryController {
 
     // Admin related APIs
 
-    @GetMapping("/admin/medias/{mediaType}")
-    public ResponseEntity<HashMap<String, Object>> getAllMedias(@PathVariable String mediaType, Pageable pageable) {
-        return  ResponseEntity.ok(mediaService.getMedias(mediaType, pageable));
+    @GetMapping("/admin/medias")
+    public ResponseEntity<HashMap<String, Object>> getAllMedias(Pageable pageable) {
+        return  ResponseEntity.ok(mediaService.getMedias(pageable));
     }
 
     @GetMapping("/admin/media/pendingApproval")

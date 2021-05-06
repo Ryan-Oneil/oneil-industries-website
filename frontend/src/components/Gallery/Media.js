@@ -19,8 +19,6 @@ export default ({
         alt={"User uploaded image"}
         src={MEDIA_IMAGE_URL + endpoint}
         preview={showPreview ? previewConfig : false}
-        style={{ margin: "auto" }}
-        width={"100%"}
         fallback={require("../../assets/images/noimage.png")}
       />
     );

@@ -16,7 +16,7 @@ import {
 } from "../apis/endpoints";
 import { decreaseQuotaUsed, increasedQuotaUsed } from "./userReducer";
 
-export const fetchImages = (endpoint, page, size) => dispatch => {
+export const fetchMedia = (endpoint, page, size) => dispatch => {
   const params = new URLSearchParams();
   params.append("page", page);
   params.append("size", size);

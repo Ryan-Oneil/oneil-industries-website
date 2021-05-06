@@ -13,20 +13,17 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MediaRepository extends CrudRepository<Media, Integer> {
-    List<Media> getAllByMediaTypeOrderByIdDesc(String mediaType, Pageable page);
-    List<Media> getAllByLinkStatusAndMediaTypeOrderByIdDesc(String linkStatus, String mediaType, Pageable page);
+    List<Media> getAllByOrderByIdDesc(Pageable page);
+    List<Media> getAllByLinkStatusOrderByIdDesc(String linkStatus, Pageable page);
     Optional<Media> getFirstByFileName(String filename);
-    List<Media> getAllByUploaderAndMediaTypeOrderByIdDesc(String uploader, String mediaType, Pageable page);
+    List<Media> getAllByUploaderOrderByIdDesc(String uploade, Pageable page);
     List<Media> findTop5ByUploaderOrderByIdDesc(String uploader);
 
-    @Query("select count(m) from Media m where m.uploader = ?1 and m.mediaType = ?2")
-    long getTotalMediasByUserAndType(String username, String mediaType);
+    @Query("select count(m) from Media m where m.uploader = ?1")
+    long getTotalMediasByUser(String username);
 
-    @Query("select count(m) from Media m where m.linkStatus = ?1 and m.mediaType = ?2")
-    long getTotalMediaByStatusAndMediaType(String status, String mediaType);
-
-    @Query("select count(m) from Media m where m.mediaType = ?1")
-    long getTotalMediaByType(String mediaType);
+    @Query("select count(m) from Media m where m.linkStatus = ?1")
+    long getTotalMediaByStatus(String status);
 
     @Query("select count(m) from Media m where m.uploader = ?1")
     long getTotalByUser(String username);

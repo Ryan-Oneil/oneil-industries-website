@@ -2,11 +2,12 @@ import MediaGrid from "./MediaGrid";
 import React, { useState } from "react";
 import { USER_MEDIAS_ENDPOINT } from "../../apis/endpoints";
 import { useDispatch, useSelector } from "react-redux";
-import { Checkbox, Dropdown, List, Menu, message } from "antd";
+import { Dropdown, List, Menu, message } from "antd";
 import DeleteOutlined from "@ant-design/icons/lib/icons/DeleteOutlined";
 import FolderAddOutlined from "@ant-design/icons/lib/icons/FolderAddOutlined";
 import { addMediasToAlbum, deleteMedias } from "../../reducers/mediaReducer";
-import MediaCard from "./MediaCard";
+import ManageMediaCard from "./ManageMediaCard";
+import SettingOutlined from "@ant-design/icons/lib/icons/SettingOutlined";
 
 const { SubMenu } = Menu;
 
@@ -24,13 +25,6 @@ export default ({ handleShowDialog, albums = [], showUploader }) => {
       const filteredArray = selectedMedias.filter(id => id !== mediaId);
       setSelectedMedias(filteredArray);
     }
-  };
-
-  const checkBox = mediaId => {
-    if (!enableManage) {
-      return null;
-    }
-    return <Checkbox onChange={() => toggleManagedMedia(mediaId)} />;
   };
 
   const renderAlbums = () => {
@@ -59,7 +53,9 @@ export default ({ handleShowDialog, albums = [], showUploader }) => {
         disabled={disableOptions}
         title={"Add to Album"}
       >
-        <Menu>{renderAlbums()}</Menu>
+        <Menu style={{ maxHeight: "60vh", overflow: "auto" }}>
+          {renderAlbums()}
+        </Menu>
       </SubMenu>
       <Menu.Item
         key="2"
@@ -80,36 +76,42 @@ export default ({ handleShowDialog, albums = [], showUploader }) => {
   const cardRender = item => {
     return (
       <List.Item key={item.id}>
-        <MediaCard
+        <ManageMediaCard
           mediaFileName={item.fileName}
           title={showUploader ? item.uploader : item.name}
           mediaType={item.mediaType}
           dateAdded={item.dateAdded}
           handleShowDialog={handleShowDialog.bind(this, item)}
-          cardExtras={checkBox(item.id)}
+          manageEnabled={enableManage}
+          onSelect={() => toggleManagedMedia(item.id)}
+          isSelected={selectedMedias.includes(item.id)}
         />
       </List.Item>
     );
   };
 
   return (
-    <MediaGrid
-      imageEndpoint={`${USER_MEDIAS_ENDPOINT}${name}/image`}
-      videoEndpoint={`${USER_MEDIAS_ENDPOINT}${name}/video`}
-      tabExtraActions={
-        <Dropdown.Button
-          className={"bulkMediaManage"}
-          size={"large"}
-          onClick={() => {
-            setEnableManage(prevState => !prevState);
-            setSelectedMedias([]);
-          }}
-          overlay={options}
-        >
-          Bulk Manage
-        </Dropdown.Button>
-      }
-      mediaCardLayout={cardRender}
-    />
+    <>
+      <Dropdown.Button
+        className={`bulkMediaManage ${
+          enableManage ? "bulkMediaManageSelected" : ""
+        }`}
+        size={"large"}
+        onClick={() => {
+          setEnableManage(prevState => !prevState);
+        }}
+        overlay={options}
+        style={{ float: "right", marginBottom: "1%", marginRight: 35 }}
+      >
+        <SettingOutlined />
+        Bulk Manage
+      </Dropdown.Button>
+      <MediaGrid
+        height={"79vh"}
+        mediaEndpoint={`${USER_MEDIAS_ENDPOINT}${name}`}
+        mediaCardLayout={cardRender}
+        style={{ width: "100%" }}
+      />
+    </>
   );
 };
