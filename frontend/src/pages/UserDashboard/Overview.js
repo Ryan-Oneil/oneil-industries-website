@@ -13,10 +13,10 @@ export default () => {
   const dispatch = useDispatch();
   const { name } = useSelector(state => state.auth.user);
   const { used, max } = useSelector(state => state.user.storageQuota);
-  const { totalViews, mostViewedLinks, recentLinks, totalFiles } = useSelector(
+  const { totalViews, recentLinks, totalFiles } = useSelector(
     state => state.fileSharer.stats
   );
-  const { totalMedias, recentMedias, totalAlbums } = useSelector(
+  const { totalMedias, recentMedias } = useSelector(
     state => state.medias.stats
   );
   const [loadingData, setLoadingData] = useState(true);
@@ -32,58 +32,23 @@ export default () => {
   return (
     <>
       <Row gutter={[32, 32]}>
-        <Col xs={12} sm={12} md={8} lg={8} xl={4}>
+        <Col xs={12} sm={12} md={8} lg={8} xl={6}>
           <StatisticCard title="Total Shared Files" value={totalFiles} />
         </Col>
-        <Col xs={12} sm={12} md={8} lg={8} xl={4}>
+        <Col xs={12} sm={12} md={8} lg={8} xl={6}>
           <StatisticCard
             title="Used Storage Space"
             value={displayBytesInReadableForm(used)}
+            suffix={`/ ${max} GB`}
           />
         </Col>
-        <Col xs={12} sm={12} md={8} lg={8} xl={4}>
-          <StatisticCard title="Total Storage Space" value={max} suffix="GB" />
-        </Col>
-        <Col xs={12} sm={12} md={8} lg={8} xl={4}>
+        <Col xs={12} sm={12} md={8} lg={8} xl={6}>
           <StatisticCard title="Total Link Views" value={totalViews} />
         </Col>
-        <Col xs={12} sm={12} md={8} lg={8} xl={4}>
+        <Col xs={12} sm={12} md={8} lg={8} xl={6}>
           <StatisticCard title="Total Medias" value={totalMedias} />
         </Col>
-        <Col xs={12} sm={12} md={8} lg={8} xl={4}>
-          <StatisticCard title="Total Albums" value={totalAlbums} />
-        </Col>
-        <Col xs={24} sm={24} md={8} lg={8} xl={8}>
-          <ListCard
-            title="Most Viewed Links"
-            itemLayout="horizontal"
-            loading={loadingData}
-            dataSource={mostViewedLinks}
-            renderItem={item => (
-              <List.Item>
-                <List.Item.Meta
-                  avatar={
-                    <Avatar
-                      src={require("../../assets/images/file.png")}
-                      size="large"
-                    />
-                  }
-                  title={
-                    <a
-                      href={`/shared/${item.id}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {item.title ? item.title : item.id}
-                    </a>
-                  }
-                  description={`${item.views} views`}
-                />
-              </List.Item>
-            )}
-          />
-        </Col>
-        <Col xs={24} sm={24} md={8} lg={8} xl={8}>
+        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
           <ListCard
             title="Recent Links"
             itemLayout="horizontal"
@@ -113,11 +78,11 @@ export default () => {
             )}
           />
         </Col>
-        <Col xs={24} sm={24} md={8} lg={8} xl={8}>
+        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
           <ListCard
             title="Recent Medias"
             itemLayout="horizontal"
-            loading={loadingData}
+            loading={loadingMediaData}
             dataSource={recentMedias}
             renderItem={item => (
               <List.Item>

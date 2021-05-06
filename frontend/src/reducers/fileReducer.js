@@ -48,9 +48,11 @@ export const uploadFiles = (endpoint, files, params = {}, uploadProgress) => {
   files.forEach(file => postData.append("file[]", file, file.name));
 
   let options = {
-    params: params,
-    onUploadProgress: progressEvent => uploadProgress(progressEvent)
+    params: params
   };
+  if (uploadProgress) {
+    options.onUploadProgress = progressEvent => uploadProgress(progressEvent);
+  }
   return apiPostCall(endpoint, postData, options);
 };
 

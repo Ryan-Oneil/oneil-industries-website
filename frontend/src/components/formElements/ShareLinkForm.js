@@ -29,7 +29,7 @@ const LinkForm = props => {
   };
 
   return (
-    <Card>
+    <Card className={"roundedShadowBox"}>
       <form onSubmit={handleSubmit}>
         <Field
           name="title"

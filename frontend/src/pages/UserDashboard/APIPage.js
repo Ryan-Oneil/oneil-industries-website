@@ -30,8 +30,8 @@ export default () => {
   return (
     <Row gutter={[32, 32]} justify="center">
       <Col xs={24} sm={24} md={6} lg={6} xl={10}>
-        <Card title="ShareX Config">
-          <TextArea readOnly value={JSON.stringify(shareXConfig)} />
+        <Card title="ShareX Config" className={"roundedShadowBox"}>
+          <TextArea readOnly value={JSON.stringify(shareXConfig, null, 2)} />
           <div className={"centerFlexContent topPadding"}>
             <Space>
               <Button
@@ -62,11 +62,12 @@ export default () => {
         </Card>
       </Col>
       <Col xs={24} sm={24} md={6} lg={6} xl={10}>
-        <Card title="Api Token">
-          <Input type="text" readOnly value={apiToken} />
+        <Card title="Api Token" className={"roundedShadowBox"}>
+          <TextArea readOnly value={apiToken} />
           <Button
-            className="centerButton formattedBackground"
+            className="centerContent formattedBackground"
             type="primary"
+            style={{ marginTop: "2%" }}
             onClick={() => {
               dispatch(
                 generateAPIToken(`/user/${name}/generateAPIToken`)

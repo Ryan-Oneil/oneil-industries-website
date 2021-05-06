@@ -112,13 +112,7 @@ export const updateUserAccountStatus = (username, status) => dispatch => {
     )
     .catch(error => dispatch(setError(getApiError(error))));
 };
-export const getAPIUptime = () => dispatch => {
-  return apiGetCall("/actuator/metrics/process.uptime")
-    .then(({ data }) => {
-      dispatch(fetchedUptime(data));
-    })
-    .catch(error => dispatch(setError(getApiError(error))));
-};
+
 const user = new schema.Entity("user", {}, { idAttribute: "name" });
 const userList = new schema.Array(user);
 
@@ -142,8 +136,7 @@ export const slice = createSlice({
       totalAlbums: 0,
       totalUsers: 0,
       usedStorage: 0,
-      recentUsers: [],
-      upTime: 0
+      recentUsers: []
     },
     userStats: {
       totalViews: 0,
@@ -188,9 +181,6 @@ export const slice = createSlice({
     },
     getUserFileShareStats(state, action) {
       state.userStats = action.payload;
-    },
-    fetchedUptime(state, action) {
-      state.stats.upTime = action.payload.measurements[0].value;
     }
   }
 });
@@ -204,6 +194,5 @@ export const {
   getUserDetails,
   updateUserDetails,
   getFileShareStats,
-  getUserFileShareStats,
-  fetchedUptime
+  getUserFileShareStats
 } = slice.actions;

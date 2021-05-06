@@ -1,4 +1,3 @@
-import InboxOutlined from "@ant-design/icons/lib/icons/InboxOutlined";
 import Dragger from "antd/lib/upload/Dragger";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,7 +8,9 @@ export default ({
   removeFile,
   addedFileAction,
   fileList,
-  showUploadList = false
+  showUploadList = false,
+  icon,
+  style
 }) => {
   const { used, max } = useSelector(state => state.user.storageQuota);
   const { name } = useSelector(state => state.auth.user);
@@ -45,11 +46,13 @@ export default ({
     }
   };
   return (
-    <Dragger {...config} showUploadList={showUploadList}>
-      <p className="ant-upload-drag-icon">
-        <InboxOutlined />
-      </p>
-      <p>Click or drag file to this area to upload</p>
-    </Dragger>
+    <div className="uploaderBox roundedShadowBox centerContent" style={style}>
+      <Dragger {...config} showUploadList={showUploadList}>
+        <p className="ant-upload-drag-icon">{icon}</p>
+        <p style={{ fontWeight: 600, fontSize: "16px" }}>
+          Click or drag file to this area to upload
+        </p>
+      </Dragger>
+    </div>
   );
 };

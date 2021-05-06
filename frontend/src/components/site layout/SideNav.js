@@ -3,7 +3,7 @@ import { Menu } from "antd";
 import { NavLink, withRouter } from "react-router-dom";
 import SubMenu from "antd/es/menu/SubMenu";
 
-const SideNav = ({ path, location, links = [], title, subLinks = [] }) => {
+const SideNav = ({ path, location, links = [], subLinks = [] }) => {
   const renderLink = (link, backgroundColour) => {
     return (
       <Menu.Item
@@ -38,16 +38,15 @@ const SideNav = ({ path, location, links = [], title, subLinks = [] }) => {
   };
 
   return (
-    <div className={"sideNav"}>
-      <div className="appName">{title}</div>
+    <div className={"sideNav"} style={{ marginTop: "10%" }}>
       <Menu
         theme="dark"
         mode="inline"
         defaultSelectedKeys={[location.pathname]}
         selectedKeys={[location.pathname]}
-        style={{ backgroundColor: "#4e535b" }}
+        style={{ backgroundColor: "#484c54" }}
       >
-        {renderLinks("#4e535b")}
+        {renderLinks("#484c54")}
         {renderSubLinks()}
       </Menu>
     </div>

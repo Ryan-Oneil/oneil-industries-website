@@ -5,7 +5,7 @@ export default props => {
   const { loading } = props;
 
   return (
-    <Card loading={loading}>
+    <Card loading={loading} className={"roundedShadowBox"}>
       <Statistic {...props} />
     </Card>
   );

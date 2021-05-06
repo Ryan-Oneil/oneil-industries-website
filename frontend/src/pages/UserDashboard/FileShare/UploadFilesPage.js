@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Avatar, Button, Card, Col, List, Progress, Result, Row } from "antd";
+import { Avatar, Button, Card, List, Progress, Result } from "antd";
 import DeleteOutlined from "@ant-design/icons/lib/icons/DeleteOutlined";
 import Uploader from "../../../components/Uploader";
 import {
@@ -11,6 +11,7 @@ import { uploadFiles } from "../../../reducers/fileReducer";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import EditOutlined from "@ant-design/icons/lib/icons/EditOutlined";
 import ShareAltOutlined from "@ant-design/icons/lib/icons/ShareAltOutlined";
+import FileAddOutlined from "@ant-design/icons/lib/icons/FileAddOutlined";
 
 export default props => {
   const [files, setFiles] = useState([]);
@@ -48,54 +49,52 @@ export default props => {
     <>
       {uploadStatus === "" && (
         <>
-          <Row gutter={[32, 32]} type="flex">
-            <Col span={8}>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <div style={{ width: "35%" }}>
               <ShareLinkForm uploadAction={uploadAction} />
-            </Col>
-            <Col span={16}>
+            </div>
+            <div style={{ width: "60%" }}>
               <Uploader
+                style={{ height: "100%" }}
                 removeFile={removeFile}
                 addedFileAction={file =>
                   setFiles(prevState => [...prevState, file])
                 }
                 fileList={files}
+                icon={<FileAddOutlined style={{ color: "#54a7b2" }} />}
               />
-            </Col>
-          </Row>
-          <Row gutter={[32, 32]} type="flex" className={"topPadding"}>
-            <Col span={24}>
-              <Card>
-                <List
-                  dataSource={files}
-                  renderItem={item => (
-                    <List.Item
-                      actions={[
-                        <Button
-                          danger
-                          type="primary"
-                          shape="circle"
-                          icon={<DeleteOutlined />}
-                          onClick={() => {
-                            removeFile(item.uid);
-                          }}
-                        />
-                      ]}
-                    >
-                      <List.Item.Meta
-                        avatar={
-                          <Avatar
-                            src={require("../../../assets/images/file.png")}
-                          />
-                        }
-                        title={item.name}
-                        description={displayBytesInReadableForm(item.size)}
+            </div>
+          </div>
+          <Card style={{ marginTop: "2%" }} className={"roundedShadowBox"}>
+            <List
+              dataSource={files}
+              renderItem={item => (
+                <List.Item
+                  actions={[
+                    <Button
+                      danger
+                      type="primary"
+                      shape="circle"
+                      icon={<DeleteOutlined />}
+                      onClick={() => {
+                        removeFile(item.uid);
+                      }}
+                    />
+                  ]}
+                >
+                  <List.Item.Meta
+                    avatar={
+                      <Avatar
+                        src={require("../../../assets/images/file.png")}
                       />
-                    </List.Item>
-                  )}
-                />
-              </Card>
-            </Col>
-          </Row>
+                    }
+                    title={item.name}
+                    description={displayBytesInReadableForm(item.size)}
+                  />
+                </List.Item>
+              )}
+            />
+          </Card>
         </>
       )}
       {uploadStatus !== "" && (

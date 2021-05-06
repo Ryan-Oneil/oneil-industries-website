@@ -57,7 +57,7 @@ export default props => {
       {!invalidLink && (
         <Row style={{ padding: "2%" }}>
           <Col span={6}>
-            <Card title={link.title}>
+            <Card title={link.title} className={"roundedShadowBox"}>
               <Statistic title="Views" value={link.views} />
               <Statistic title="Files" value={link.files.length} />
               <Statistic

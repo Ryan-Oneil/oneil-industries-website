@@ -3,7 +3,11 @@ import React from "react";
 
 export default props => {
   return (
-    <Card title={props.title} headStyle={{ color: "rgba(0, 0, 0, 0.45)" }}>
+    <Card
+      title={props.title}
+      headStyle={{ color: "rgba(0, 0, 0, 0.45)" }}
+      className={"roundedShadowBox"}
+    >
       <List {...props} />
     </Card>
   );

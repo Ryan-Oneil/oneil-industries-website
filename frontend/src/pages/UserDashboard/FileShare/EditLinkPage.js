@@ -186,6 +186,7 @@ export default props => {
             }
             fileList={newFiles}
             showUploadList
+            icon={<FileAddOutlined style={{ color: "#54a7b2" }} />}
           />
         </Modal>
       )}
