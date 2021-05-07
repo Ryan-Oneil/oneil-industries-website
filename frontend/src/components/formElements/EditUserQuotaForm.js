@@ -1,7 +1,7 @@
 import React from "react";
 import { InputWithErrors, SelectInputWithErrors } from "./index";
 import { useDispatch } from "react-redux";
-import { getApiError } from "../../helpers";
+import { getApiFormError } from "../../helpers";
 import { updateUserQuota } from "../../reducers/adminReducer";
 import { Field, Formik } from "formik";
 import { Alert, Button, Card, Select } from "antd";
@@ -11,11 +11,20 @@ export default props => {
   const { username } = props;
   const dispatch = useDispatch();
 
-  const onSubmit = (formValues, { setStatus }) => {
-    return dispatch(updateUserQuota(username, formValues)).catch(error =>
-      setStatus(getApiError(error))
-    );
+  const onSubmit = (formValues, { setStatus, setFieldError }) => {
+    return dispatch(updateUserQuota(username, formValues)).catch(error => {
+      const apiError = getApiFormError(error);
+
+      if (Array.isArray(apiError)) {
+        apiError.forEach(fieldError =>
+          setFieldError(fieldError.property, fieldError.message)
+        );
+      } else {
+        setStatus(apiError);
+      }
+    });
   };
+
   return (
     <Card title="Quota Settings">
       <Formik

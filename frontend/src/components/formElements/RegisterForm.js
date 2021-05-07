@@ -2,14 +2,14 @@ import React from "react";
 import { Field, Formik } from "formik";
 import { InputWithErrors } from "./index";
 import { Alert, Button } from "antd";
-import { getApiError } from "../../helpers";
 import MailOutlined from "@ant-design/icons/lib/icons/MailOutlined";
 import LockOutlined from "@ant-design/icons/lib/icons/LockOutlined";
 import UserOutlined from "@ant-design/icons/lib/icons/UserOutlined";
 import { registerUser } from "../../reducers/authReducer";
+import { getApiFormError } from "../../helpers";
 
 export default () => {
-  const onSubmit = (formValues, { setStatus }) => {
+  const onSubmit = (formValues, { setStatus, setFieldError }) => {
     const creds = {
       name: formValues.username.trim(),
       password: formValues.password.trim(),
@@ -18,7 +18,15 @@ export default () => {
     return registerUser(creds)
       .then(response => setStatus({ msg: response.data, type: "success" }))
       .catch(error => {
-        setStatus({ msg: getApiError(error), type: "error" });
+        const apiError = getApiFormError(error);
+
+        if (Array.isArray(apiError)) {
+          apiError.forEach(fieldError =>
+            setFieldError(fieldError.property, fieldError.message)
+          );
+        } else {
+          setStatus({ msg: apiError, type: "error" });
+        }
       });
   };
 

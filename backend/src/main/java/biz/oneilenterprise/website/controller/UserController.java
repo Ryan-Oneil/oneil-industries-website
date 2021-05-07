@@ -8,6 +8,7 @@ import biz.oneilenterprise.website.entity.Role;
 import biz.oneilenterprise.website.entity.User;
 import biz.oneilenterprise.website.service.UserService;
 import java.util.List;
+import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -81,7 +82,7 @@ public class UserController {
     }
 
     @PutMapping("/admin/user/{username}/update/quota")
-    public ResponseEntity<HttpStatus> adminUpdateUserQuota(@PathVariable String username, @RequestBody QuotaDTO quotaDTO) {
+    public ResponseEntity<HttpStatus> adminUpdateUserQuota(@PathVariable String username, @RequestBody @Valid QuotaDTO quotaDTO) {
         userService.updateUserQuota(quotaDTO, username);
 
         return ResponseEntity.ok(HttpStatus.OK);

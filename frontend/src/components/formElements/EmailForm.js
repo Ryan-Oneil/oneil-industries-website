@@ -2,12 +2,12 @@ import React from "react";
 import { Field, Formik } from "formik";
 import { InputWithErrors } from "./index";
 import { Alert, Button } from "antd";
-import { getApiError } from "../../helpers";
+import { getApiFormError } from "../../helpers";
 
 import MailOutlined from "@ant-design/icons/lib/icons/MailOutlined";
 
 export default props => {
-  const onSubmit = (formValues, { setStatus }) => {
+  const onSubmit = (formValues, { setStatus, setFieldError }) => {
     return props
       .action(formValues)
       .then(response => {
@@ -16,7 +16,15 @@ export default props => {
         }
       })
       .catch(error => {
-        setStatus({ msg: getApiError(error), type: "error" });
+        const apiError = getApiFormError(error);
+
+        if (Array.isArray(apiError)) {
+          apiError.forEach(fieldError =>
+            setFieldError(fieldError.property, fieldError.message)
+          );
+        } else {
+          setStatus({ msg: apiError, type: "error" });
+        }
       });
   };
 

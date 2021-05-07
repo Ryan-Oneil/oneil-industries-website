@@ -1,7 +1,7 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { InputWithErrors } from "./index";
-import { getApiError } from "../../helpers";
+import { getApiFormError } from "../../helpers";
 import { Field, Formik } from "formik";
 import { Alert, Button } from "antd";
 import { updateAlbum } from "../../reducers/mediaReducer";
@@ -10,10 +10,18 @@ import SaveOutlined from "@ant-design/icons/lib/icons/SaveOutlined";
 export default props => {
   const dispatch = useDispatch();
 
-  const onSubmit = (formValues, { setStatus }) => {
-    return dispatch(updateAlbum(formValues, props.album.id)).catch(error =>
-      setStatus(getApiError(error))
-    );
+  const onSubmit = (formValues, { setStatus, setFieldError }) => {
+    return dispatch(updateAlbum(formValues, props.album.id)).catch(error => {
+      const apiError = getApiFormError(error);
+
+      if (Array.isArray(apiError)) {
+        apiError.forEach(fieldError =>
+          setFieldError(fieldError.property, fieldError.message)
+        );
+      } else {
+        setStatus(apiError);
+      }
+    });
   };
 
   return (

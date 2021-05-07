@@ -1,10 +1,13 @@
 package biz.oneilenterprise.website.dto;
 
 import java.util.List;
+import javax.validation.constraints.NotEmpty;
 
 public class AlbumDTO {
 
     private String id;
+
+    @NotEmpty
     private String name;
     private String creator;
     private List<MediaDTO> medias;

@@ -161,7 +161,7 @@ public class MediaGalleryController {
     }
 
     @PutMapping("/medias/linkstatus/update")
-    public ResponseEntity<HttpStatus> massUpdateMediaLinkStatus(@RequestBody MediasDTO mediasDTO, Authentication user, HttpServletRequest request) {
+    public ResponseEntity<HttpStatus> massUpdateMediaLinkStatus(@RequestBody @Valid MediasDTO mediasDTO, Authentication user, HttpServletRequest request) {
         mediaService.updateMediasLinkStatus(mediasDTO.getMediaIds(), mediasDTO.getLinkStatus(), user.getName());
 
         return ResponseEntity.ok(HttpStatus.OK);
@@ -184,7 +184,7 @@ public class MediaGalleryController {
 
     @PutMapping("/myalbums/update/{albumID}")
     public ResponseEntity<HttpStatus> updateAlbum(@PathVariable String albumID, Authentication user, HttpServletRequest request,
-        @RequestBody AlbumDTO albumDTO) {
+        @RequestBody @Valid AlbumDTO albumDTO) {
         mediaService.updateAlbum(albumID, albumDTO.getName());
 
         return ResponseEntity.ok(HttpStatus.OK);

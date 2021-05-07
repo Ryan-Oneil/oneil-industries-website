@@ -1,14 +1,22 @@
 import React from "react";
-import { getApiError } from "../../helpers";
+import { getApiFormError } from "../../helpers";
 import { Field, Formik } from "formik";
 import { InputWithErrors } from "./index";
 import { Alert, Button } from "antd";
 import LockOutlined from "@ant-design/icons/lib/icons/LockOutlined";
 
 export default props => {
-  const onSubmit = (formValues, { setStatus }) => {
+  const onSubmit = (formValues, { setStatus, setFieldError }) => {
     return props.action(formValues).catch(error => {
-      setStatus(getApiError(error));
+      const apiError = getApiFormError(error);
+
+      if (Array.isArray(apiError)) {
+        apiError.forEach(fieldError =>
+          setFieldError(fieldError.property, fieldError.message)
+        );
+      } else {
+        setStatus(apiError);
+      }
     });
   };
 

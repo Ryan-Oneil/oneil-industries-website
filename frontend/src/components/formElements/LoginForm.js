@@ -2,7 +2,7 @@ import React from "react";
 import { Field, Formik } from "formik";
 import { InputWithErrors } from "./index";
 import { Alert, Button } from "antd";
-import { getApiError } from "../../helpers";
+import { getApiFormError } from "../../helpers";
 import { Link } from "react-router-dom";
 import UserOutlined from "@ant-design/icons/lib/icons/UserOutlined";
 import LockOutlined from "@ant-design/icons/lib/icons/LockOutlined";
@@ -12,14 +12,22 @@ import { loginUser } from "../../reducers/authReducer";
 export default () => {
   const dispatch = useDispatch();
 
-  const onSubmit = (formValues, { setStatus }) => {
+  const onSubmit = (formValues, { setStatus, setFieldError }) => {
     const creds = {
       username: formValues.username.trim(),
       password: formValues.password.trim()
     };
-    return dispatch(loginUser(creds)).catch(error =>
-      setStatus(getApiError(error))
-    );
+    return dispatch(loginUser(creds)).catch(error => {
+      const apiError = getApiFormError(error);
+
+      if (Array.isArray(apiError)) {
+        apiError.forEach(fieldError =>
+          setFieldError(fieldError.property, fieldError.message)
+        );
+      } else {
+        setStatus(apiError);
+      }
+    });
   };
 
   return (

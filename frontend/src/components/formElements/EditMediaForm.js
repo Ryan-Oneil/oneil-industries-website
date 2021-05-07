@@ -1,7 +1,7 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { InputWithErrors, SelectInputWithErrors } from "./index";
-import { getApiError } from "../../helpers";
+import { getApiFormError } from "../../helpers";
 import { Field, Formik } from "formik";
 import { Alert, Button, Select } from "antd";
 import { updateMedia } from "../../reducers/mediaReducer";
@@ -10,10 +10,18 @@ const { Option } = Select;
 export default props => {
   const dispatch = useDispatch();
 
-  const onSubmit = (formValues, { setStatus }) => {
-    return dispatch(updateMedia(formValues, props.media.id)).catch(error =>
-      setStatus(getApiError(error))
-    );
+  const onSubmit = (formValues, { setStatus, setFieldError }) => {
+    return dispatch(updateMedia(formValues, props.media.id)).catch(error => {
+      const apiError = getApiFormError(error);
+
+      if (Array.isArray(apiError)) {
+        apiError.forEach(fieldError =>
+          setFieldError(fieldError.property, fieldError.message)
+        );
+      } else {
+        setStatus(apiError);
+      }
+    });
   };
 
   return (

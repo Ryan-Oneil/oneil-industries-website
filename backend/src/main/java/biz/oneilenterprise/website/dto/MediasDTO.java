@@ -1,5 +1,6 @@
 package biz.oneilenterprise.website.dto;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 public class MediasDTO {
@@ -7,6 +8,7 @@ public class MediasDTO {
     @NotNull
     private Integer[] mediaIds;
 
+    @NotEmpty
     private String linkStatus;
 
     public MediasDTO() {

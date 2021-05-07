@@ -2,7 +2,7 @@ import React from "react";
 import { Field, withFormik } from "formik";
 import { InputWithErrors } from "./index";
 import { Alert, Button, Card } from "antd";
-import { getApiError } from "../../helpers";
+import { getApiFormError } from "../../helpers";
 import { connect } from "react-redux";
 import { updateUser } from "../../reducers/adminReducer";
 
@@ -81,10 +81,18 @@ const EditUserForm = withFormik({
     }
     return errors;
   },
-  handleSubmit: (values, { props, setStatus }) => {
-    return props
-      .updateUser(values)
-      .catch(error => setStatus({ msg: getApiError(error), type: "error" }));
+  handleSubmit: (values, { props, setStatus, setFieldError }) => {
+    return props.updateUser(values).catch(error => {
+      const apiError = getApiFormError(error);
+
+      if (Array.isArray(apiError)) {
+        apiError.forEach(fieldError =>
+          setFieldError(fieldError.property, fieldError.message)
+        );
+      } else {
+        setStatus({ msg: apiError, type: "error" });
+      }
+    });
   },
   validateOnMount: true
 })(LinkForm);
