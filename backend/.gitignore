@@ -102,6 +102,5 @@ spring-security-demo.iml
 
 src/main/java/hibernate.cfg.xml
 
-src/test/
 target/
 /src/main/resources/keystore/

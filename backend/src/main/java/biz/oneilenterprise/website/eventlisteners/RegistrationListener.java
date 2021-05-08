@@ -38,7 +38,7 @@ public class RegistrationListener implements
 
         String message = "You have successfully registered your account. Note that an admin will still need to manually approve your account, Please confirm your email with this link to complete registration";
 
-        emailSender.sendSimpleEmail(recipientAddress,subject,message + " " + confirmationUrl,"Oneil_Industries", null);
-        emailSender.sendSimpleEmail(RECEIVER_EMAIL, "New User",user.getUsername() + " has registered to Oneil Industries","Oneil_Industries", null);
+        emailSender.sendSimpleEmail(recipientAddress,subject,message + " " + confirmationUrl,"noreply@oneilenterprise.com", null);
+        emailSender.sendSimpleEmail(RECEIVER_EMAIL, "New User",user.getUsername() + " has registered to Oneil Industries","noreply@oneilenterprise.com", null);
     }
 }

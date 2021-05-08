@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AlbumRepository extends CrudRepository<Album, String> {
 
-    Optional<Album> getFirstByName(String albumName);
     @EntityGraph(attributePaths  = {"medias"})
     Optional<Album> getFirstById(String id);
 

@@ -1,6 +1,5 @@
 package biz.oneilenterprise.website.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -39,7 +38,6 @@ public class Media {
 
     @ManyToOne
     @JoinColumn(name="album_id")
-    @JsonIgnore
     private Album album;
 
     @Column(name = "media_type")
@@ -48,7 +46,6 @@ public class Media {
     private Long size;
 
     @OneToOne(mappedBy = "media", cascade = CascadeType.REMOVE)
-    @JsonIgnore
     private PublicMediaApproval publicMediaApproval;
 
     public Media(String name, String fileName, String linkStatus, User uploader, String dateAdded,

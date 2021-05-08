@@ -174,7 +174,7 @@ public class UserService {
         PasswordResetToken token = new PasswordResetToken(tokenUUID,user);
         passwordTokenRepository.save(token);
 
-        emailSender.sendSimpleEmail(user.getEmail(),"Password Reset","Reset Password Link " + frontendUrl + "/changePassword/" + token,"Oneil-Industries",null);
+        emailSender.sendSimpleEmail(user.getEmail(),"Password Reset","Reset Password Link " + frontendUrl + "/changePassword/" + token,"noreply@oneilenterprise.com",null);
     }
 
     public PasswordResetToken getResetToken(String token) {
