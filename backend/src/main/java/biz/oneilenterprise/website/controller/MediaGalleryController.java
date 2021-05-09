@@ -7,7 +7,7 @@ import biz.oneilenterprise.website.dto.MediasDTO;
 import biz.oneilenterprise.website.entity.Album;
 import biz.oneilenterprise.website.entity.PublicMediaApproval;
 import biz.oneilenterprise.website.entity.User;
-import biz.oneilenterprise.website.filecreater.FileHandler;
+import biz.oneilenterprise.website.utils.FileHandlerUtil;
 import biz.oneilenterprise.website.service.MediaService;
 import biz.oneilenterprise.website.service.SystemFileService;
 import biz.oneilenterprise.website.service.UserService;
@@ -91,7 +91,7 @@ public class MediaGalleryController {
         Counter counter = Metrics.counter("request.media.view", "mediaName", serverFile.getName(), "type", "video");
         counter.increment();
 
-        response.setContentType("video/" + FileHandler.getContentType(serverFile.getName()));
+        response.setContentType("video/" + FileHandlerUtil.getContentType(serverFile.getName()));
         request.setAttribute(ResourceHandler.ATTR_FILE, serverFile);
         try {
             handler.handleRequest(request, response);
@@ -101,7 +101,7 @@ public class MediaGalleryController {
     }
 
     private ResponseEntity<StreamingResponseBody> displayMedia(HttpServletResponse response, File mediaFile) {
-        response.setContentType("image/" + FileHandler.getContentType(mediaFile.getName()));
+        response.setContentType("image/" + FileHandlerUtil.getContentType(mediaFile.getName()));
         StreamingResponseBody stream = out -> Files.copy(mediaFile.toPath(), out);
 
         return ResponseEntity.status(HttpStatus.OK)

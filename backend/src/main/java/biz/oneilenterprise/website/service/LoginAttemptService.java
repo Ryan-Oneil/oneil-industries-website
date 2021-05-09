@@ -40,7 +40,7 @@ public class LoginAttemptService {
         attemptsCache.put(key, attempts);
     }
 
-    boolean isBlocked(final String key) {
+    public boolean isBlocked(final String key) {
         try {
             return attemptsCache.get(key) >= MAX_LOGIN_ATTEMPTS;
         } catch (final ExecutionException e) {

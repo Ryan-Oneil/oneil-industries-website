@@ -1,10 +1,10 @@
 package biz.oneilenterprise.website.service;
 
-import static biz.oneilenterprise.website.filecreater.FileHandler.writeImageThumbnail;
-import static biz.oneilenterprise.website.filecreater.FileHandler.writeVideoThumbnail;
+import static biz.oneilenterprise.website.utils.FileHandlerUtil.writeImageThumbnail;
+import static biz.oneilenterprise.website.utils.FileHandlerUtil.writeVideoThumbnail;
 import static biz.oneilenterprise.website.security.SecurityConstants.TRUSTED_ROLES;
 
-import biz.oneilenterprise.website.utils.RandomIDGen;
+import biz.oneilenterprise.website.utils.RandomIDGenUtil;
 import biz.oneilenterprise.website.dto.AlbumDTO;
 import biz.oneilenterprise.website.dto.MediaDTO;
 import biz.oneilenterprise.website.entity.Album;
@@ -15,7 +15,7 @@ import biz.oneilenterprise.website.enums.MediaType;
 import biz.oneilenterprise.website.exception.AlbumMissingException;
 import biz.oneilenterprise.website.exception.MediaApprovalException;
 import biz.oneilenterprise.website.exception.MediaException;
-import biz.oneilenterprise.website.filecreater.FileHandler;
+import biz.oneilenterprise.website.utils.FileHandlerUtil;
 import biz.oneilenterprise.website.repository.AlbumRepository;
 import biz.oneilenterprise.website.repository.MediaApprovalRepository;
 import biz.oneilenterprise.website.repository.MediaRepository;
@@ -43,7 +43,7 @@ import org.springframework.util.StringUtils;
 @Service
 public class MediaService {
 
-    private static final Logger logger = LogManager.getLogger(biz.oneilenterprise.website.service.MediaService.class);
+    private static final Logger logger = LogManager.getLogger(MediaService.class);
 
     private static final String FILE_NOT_EXISTS_ERROR_MESSAGE = "Media does not exist on this server";
     private static final String PUBLIC = "public";
@@ -97,7 +97,7 @@ public class MediaService {
         medias
             .forEach(media -> {
                 try {
-                    if (FileHandler.isImageFile(media.getName())) {
+                    if (FileHandlerUtil.isImageFile(media.getName())) {
                         writeImageThumbnail(media, String.format("%s/thumbnail/%s/", mediaDirectory, user));
                     } else {
                         writeVideoThumbnail(media, String.format("%s/thumbnail/%s/", mediaDirectory, user));
@@ -158,7 +158,7 @@ public class MediaService {
         Media media = new Media(mediaName, file.getName(), privacy, user, localDate.format(dtf), size);
         Optional.ofNullable(album).ifPresent(media::setAlbum);
 
-        String mediaType = FileHandler.getFileMediaType(file);
+        String mediaType = FileHandlerUtil.getFileMediaType(file);
         media.setMediaType(mediaType);
 
         return media;
@@ -300,9 +300,9 @@ public class MediaService {
     }
 
     public String generateAlbumUUID() {
-        String id = RandomIDGen.getBase62(16);
+        String id = RandomIDGenUtil.getBase62(16);
         while(albumRepository.existsById(id)) {
-            id = RandomIDGen.getBase62(16);
+            id = RandomIDGenUtil.getBase62(16);
         }
         return id;
     }

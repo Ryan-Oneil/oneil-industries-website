@@ -1,4 +1,4 @@
-package biz.oneilenterprise.website.filecreater;
+package biz.oneilenterprise.website.utils;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -12,12 +12,12 @@ import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameConverter;
 
-public class ImageThumbnailWriter {
+public class ImageThumbnailWriterUtil {
 
-    private static final Logger logger = LogManager.getLogger(ImageThumbnailWriter.class);
+    private static final Logger logger = LogManager.getLogger(ImageThumbnailWriterUtil.class);
     private static final int IMAGE_RESIZE_SIZE = 400;
 
-    private ImageThumbnailWriter() {}
+    private ImageThumbnailWriterUtil() {}
 
     public static void writeImage(File image, String dest, String extension) throws IOException {
         BufferedImage src = ImageIO.read(image);

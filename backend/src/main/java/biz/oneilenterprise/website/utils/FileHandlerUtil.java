@@ -1,4 +1,4 @@
-package biz.oneilenterprise.website.filecreater;
+package biz.oneilenterprise.website.utils;
 
 import biz.oneilenterprise.website.enums.MediaType;
 import biz.oneilenterprise.website.exception.MediaException;
@@ -15,16 +15,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tika.Tika;
 
-public class FileHandler {
+public class FileHandlerUtil {
 
-    private static final Logger logger = LogManager.getLogger(FileHandler.class);
+    private static final Logger logger = LogManager.getLogger(FileHandlerUtil.class);
     private static final List<String> supportImageFormats;
 
     static {
         supportImageFormats = Arrays.asList(ImageIO.getWriterFormatNames());
     }
 
-    private FileHandler() {}
+    private FileHandlerUtil() {}
 
     public static File writeFile(FileItemStream file, String fileName, String dest) throws IOException {
         File destFolder = new File(dest);
@@ -99,11 +99,11 @@ public class FileHandler {
     public static void writeImageThumbnail(File file, String dest) throws IOException {
         String extension = getExtensionType(file.getName());
 
-        ImageThumbnailWriter.writeImage(file, dest, extension);
+        ImageThumbnailWriterUtil.writeImage(file, dest, extension);
     }
 
     public static void writeVideoThumbnail(File video, String dest) {
-        ImageThumbnailWriter.writeThumbnailFromVideo(video, dest);
+        ImageThumbnailWriterUtil.writeThumbnailFromVideo(video, dest);
     }
 
     public static String getExtensionType(String originalFileName) {
@@ -133,10 +133,11 @@ public class FileHandler {
     }
 
     public static boolean isImageFile(String extension) {
+        String fileExtension = extension;
 
-        if (extension.contains(".")) extension = getExtensionType(extension);
+        if (extension.contains(".")) fileExtension = getExtensionType(extension);
 
-        return supportImageFormats.contains(extension);
+        return supportImageFormats.contains(fileExtension);
     }
 
     public static boolean isVideoFile(File file) throws IOException {

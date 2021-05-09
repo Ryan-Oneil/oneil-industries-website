@@ -1,8 +1,8 @@
 package biz.oneilenterprise.website.service;
 
-import biz.oneilenterprise.website.utils.RandomIDGen;
+import biz.oneilenterprise.website.utils.RandomIDGenUtil;
 import biz.oneilenterprise.website.exception.ResourceNotFoundException;
-import biz.oneilenterprise.website.filecreater.FileHandler;
+import biz.oneilenterprise.website.utils.FileHandlerUtil;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -29,7 +29,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 @Service
 public class SystemFileService {
 
-    private static final Logger logger = LogManager.getLogger(biz.oneilenterprise.website.service.SystemFileService.class);
+    private static final Logger logger = LogManager.getLogger(SystemFileService.class);
 
     public List<File> handleFileUpload(HttpServletRequest request, long uploadLimit, String destination, boolean generateRandomName)
         throws IOException, FileUploadException {
@@ -42,7 +42,7 @@ public class SystemFileService {
         try {
             iterator = upload.getItemIterator(request);
         } catch (IOException e) {
-            throw new RuntimeException("No form data");
+            throw new FileNotFoundException("No form data");
         }
 
         while(iterator.hasNext()) {
@@ -50,10 +50,10 @@ public class SystemFileService {
 
             if (item.isFormField()) continue;
 
-            String fileName = generateRandomName ? RandomIDGen.getBase62(16) + "." + FileHandler.getExtensionType(item.getName()) :
+            String fileName = generateRandomName ? RandomIDGenUtil.getBase62(16) + "." + FileHandlerUtil.getExtensionType(item.getName()) :
                 item.getName();
 
-            File file = FileHandler.writeFile(item, fileName,  destination);
+            File file = FileHandlerUtil.writeFile(item, fileName,  destination);
 
             uploadedFiles.add(file);
         }

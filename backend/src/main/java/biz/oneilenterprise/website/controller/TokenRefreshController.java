@@ -9,7 +9,6 @@ import biz.oneilenterprise.website.entity.User;
 import biz.oneilenterprise.website.exception.TokenException;
 import biz.oneilenterprise.website.service.UserService;
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +31,7 @@ public class TokenRefreshController {
     @PostMapping("/refresh")
     public String refreshToken(@RequestBody String refreshToken) {
         // parse the token.
-        DecodedJWT decodedToken = JWT.require(Algorithm.HMAC512(SECRET.getBytes()))
+        DecodedJWT decodedToken = JWT.require(HMAC512(SECRET.getBytes()))
             .build()
             .verify(refreshToken.replace(REFRESH_TOKEN_PREFIX, ""));
 

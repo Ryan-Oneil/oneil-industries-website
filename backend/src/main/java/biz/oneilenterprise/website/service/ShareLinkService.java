@@ -8,11 +8,11 @@ import biz.oneilenterprise.website.entity.SharedFile;
 import biz.oneilenterprise.website.entity.User;
 import biz.oneilenterprise.website.exception.LinkException;
 import biz.oneilenterprise.website.exception.ResourceNotFoundException;
-import biz.oneilenterprise.website.filecreater.FileHandler;
+import biz.oneilenterprise.website.utils.FileHandlerUtil;
 import biz.oneilenterprise.website.repository.FileRepository;
 import biz.oneilenterprise.website.repository.LinkRepository;
 import biz.oneilenterprise.website.repository.LinkViewRepository;
-import biz.oneilenterprise.website.utils.RandomIDGen;
+import biz.oneilenterprise.website.utils.RandomIDGenUtil;
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -36,7 +36,7 @@ public class ShareLinkService {
     private final FileRepository fileRepository;
     private final LinkViewRepository viewRepository;
 
-    private static final Logger logger = LogManager.getLogger(biz.oneilenterprise.website.service.ShareLinkService.class);
+    private static final Logger logger = LogManager.getLogger(ShareLinkService.class);
     private static final int UUID_LENGTH = 16;
 
     @Value("${service.fileSharing.location}")
@@ -61,7 +61,7 @@ public class ShareLinkService {
         //If files are uploaded using rest API then it is first put into a temp folder
         if (!renameLinkDirectory(files.get(0), link.getId(), user.getUsername())) {
             logger.error("Unable to rename directory " + files.get(0).getParent());
-            throw new RuntimeException("Error changing directory name");
+            throw new LinkException("Error changing directory name");
         }
         return linkToDTO(link);
     }
@@ -83,11 +83,11 @@ public class ShareLinkService {
     }
 
     public String generateLinkUUID(int length) {
-        String id = RandomIDGen.getBase62(length);
+        String id = RandomIDGenUtil.getBase62(length);
         Optional<Link> link = getLink(id);
 
         while (link.isPresent()) {
-            id = RandomIDGen.getBase62(length);
+            id = RandomIDGenUtil.getBase62(length);
 
             link = getLink(id);
         }
@@ -95,11 +95,11 @@ public class ShareLinkService {
     }
 
     public String generateFileUUID(int length) {
-        String id = RandomIDGen.getBase62(length);
+        String id = RandomIDGenUtil.getBase62(length);
         Optional<SharedFile> file = getFile(id);
 
         while (file.isPresent()) {
-            id = RandomIDGen.getBase62(length);
+            id = RandomIDGenUtil.getBase62(length);
 
             file = getFile(id);
         }
@@ -139,7 +139,7 @@ public class ShareLinkService {
         Link link = getLinkFileWithValidation(linkID);
         User user = link.getCreator();
 
-        FileHandler.deleteDirectory(getLinkDirectory(user.getUsername(), linkID));
+        FileHandlerUtil.deleteDirectory(getLinkDirectory(user.getUsername(), linkID));
         linkRepository.delete(link);
 
         return link;
@@ -154,7 +154,7 @@ public class ShareLinkService {
         linkRepository.save(link);
 
         String fileLocation = getFileLocation(link.getCreator().getUsername(), link.getId(), file.getName());
-        FileHandler.deleteFile(fileLocation);
+        FileHandlerUtil.deleteFile(fileLocation);
 
         return file;
     }
@@ -194,7 +194,7 @@ public class ShareLinkService {
         linkRepository.save(link);
         fileRepository.saveAll(sharedFiles);
 
-        FileHandler.moveNewFilesToDirectory(files, getLinkDirectory(link.getCreator().getUsername(), link.getId()));
+        FileHandlerUtil.moveNewFilesToDirectory(files, getLinkDirectory(link.getCreator().getUsername(), link.getId()));
 
         return filesToDTO(sharedFiles);
     }

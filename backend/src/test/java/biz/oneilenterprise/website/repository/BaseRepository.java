@@ -12,7 +12,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 public class BaseRepository {
 
     @Autowired
-    TestEntityManager entityManager;
+    protected TestEntityManager entityManager;
 
     @AfterEach
     public void cleanup() {

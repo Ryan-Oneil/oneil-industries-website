@@ -7,6 +7,7 @@ import static biz.oneilenterprise.website.security.SecurityConstants.SECRET;
 import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
 
 import biz.oneilenterprise.website.entity.User;
+import biz.oneilenterprise.website.exception.LoginException;
 import com.auth0.jwt.JWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -46,7 +47,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                     new ArrayList<>())
             );
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new LoginException(e.getMessage());
         }
     }
 

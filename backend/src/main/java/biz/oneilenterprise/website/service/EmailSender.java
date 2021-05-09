@@ -15,14 +15,11 @@ public class EmailSender {
     }
 
     public void sendSimpleEmail(String recipientAddress, String subject, String message, String sender, String replyTo) {
-
-        sender = StringUtils.trimAllWhitespace(sender);
-
         SimpleMailMessage email = new SimpleMailMessage();
         email.setTo(recipientAddress);
         email.setSubject(subject);
         email.setText(message);
-        email.setFrom(sender);
+        email.setFrom(StringUtils.trimAllWhitespace(sender));
 
         if (replyTo != null) {
             email.setReplyTo(replyTo);
