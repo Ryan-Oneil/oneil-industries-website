@@ -59,7 +59,7 @@ public class FileSharingController {
             linkService.getLinkDirectory(user.getUsername(), linkService.generateLinkUUID(7)), false);
 
         LinkDTO link = linkService.generateShareLink(user, form.getExpires(), form.getTitle(), uploadedFiles);
-        userService.increaseUsedAmount(user.getUsername(), link.getSize());
+        userService.increaseQuotaUsedAmount(user.getUsername(), link.getSize());
 
         return ResponseEntity.ok(link);
     }
@@ -92,7 +92,7 @@ public class FileSharingController {
     @DeleteMapping("/delete/{linkID}")
     public ResponseEntity<HttpStatus> deleteSharedLink(@PathVariable String linkID, Authentication user) {
         Link link = linkService.deleteLink(linkID);
-        userService.decreaseUsedAmount(user.getName(), link.getSize());
+        userService.decreaseQuotaUsedAmount(user.getName(), link.getSize());
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
@@ -110,7 +110,7 @@ public class FileSharingController {
         List<FileDTO> files = linkService.addFilesToLink(linkID, uploadedFiles);
 
         long sizeOfFiles = files.stream().mapToLong(FileDTO::getSize).sum();
-        userService.increaseUsedAmount(user.getUsername(), sizeOfFiles);
+        userService.increaseQuotaUsedAmount(user.getUsername(), sizeOfFiles);
 
         return ResponseEntity.ok(files);
     }
@@ -139,7 +139,7 @@ public class FileSharingController {
     @DeleteMapping("/file/delete/{fileID}")
     public ResponseEntity<HttpStatus> deleteFile(@PathVariable String fileID, Authentication user) {
         SharedFile deletedFile = linkService.deleteFile(fileID);
-        userService.decreaseUsedAmount(user.getName(), deletedFile.getSize());
+        userService.decreaseQuotaUsedAmount(user.getName(), deletedFile.getSize());
 
         return ResponseEntity.ok(HttpStatus.OK);
     }

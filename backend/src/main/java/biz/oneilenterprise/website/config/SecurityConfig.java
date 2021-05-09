@@ -74,7 +74,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .authorizeRequests().expressionHandler(webExpressionHandler())
             .antMatchers(SIGN_UP_URL).permitAll()
             .antMatchers("/gallery/upload").access("(hasRole('ROLE_USER') or hasRole('ROLE_ADMIN') or hasRole('ROLE_LIMITED_API'))")
-            .antMatchers("/gallery/image/**", "/gallery/video/**", "/gallery/medias/**", "/auth/**", "/contact/**", "/services/public/**",
+            .antMatchers("/gallery/image/**", "/gallery/video/**", "/gallery/medias/**", "/auth/**", "/services/public/**",
                 "/token/**", "/gallery/album/**", "/download/**", "/file/dl/*", "/info/*").permitAll()
             .antMatchers("/services/user/**").hasRole("USER")
             .antMatchers("/admin/**", "/services/admin/**", "/gallery/admin/**", "/user/admin/**", "/**/admin/**", "/actuator/**").access("hasRole('ROLE_ADMIN')")

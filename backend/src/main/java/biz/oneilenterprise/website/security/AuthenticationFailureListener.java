@@ -1,8 +1,7 @@
 package biz.oneilenterprise.website.security;
 
+import biz.oneilenterprise.website.service.CustomUserDetailsService;
 import biz.oneilenterprise.website.service.LoginAttemptService;
-import javax.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.event.AuthenticationFailureBadCredentialsEvent;
 import org.springframework.stereotype.Component;
@@ -11,13 +10,17 @@ import org.springframework.stereotype.Component;
 public class AuthenticationFailureListener
         implements ApplicationListener<AuthenticationFailureBadCredentialsEvent> {
 
-    @Autowired
-    private HttpServletRequest request;
+    private final LoginAttemptService loginAttemptService;
 
-    @Autowired
-    private LoginAttemptService loginAttemptService;
+    private final CustomUserDetailsService customUserDetailsService;
+
+    public AuthenticationFailureListener(LoginAttemptService loginAttemptService,
+        CustomUserDetailsService customUserDetailsService) {
+        this.loginAttemptService = loginAttemptService;
+        this.customUserDetailsService = customUserDetailsService;
+    }
 
     public void onApplicationEvent(AuthenticationFailureBadCredentialsEvent e) {
-        loginAttemptService.loginFailed(request.getRemoteAddr());
+        loginAttemptService.loginFailed(customUserDetailsService.getClientIP());
     }
 }

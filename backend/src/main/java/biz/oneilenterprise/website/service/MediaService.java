@@ -143,10 +143,6 @@ public class MediaService {
         return mediaRepository.findById(id).orElseThrow(() -> new MediaException(FILE_NOT_EXISTS_ERROR_MESSAGE));
     }
 
-    public void saveMedia(Media media) {
-        mediaRepository.save(media);
-    }
-
     public void saveMediaApproval(PublicMediaApproval media) {
         approvalRepository.save(media);
     }
@@ -180,7 +176,7 @@ public class MediaService {
 
         checkMediaPrivacy(media, user);
 
-        saveMedia(media);
+        mediaRepository.save(media);
     }
 
     public PublicMediaApproval getMediaApprovalByMediaID(int mediaID) {
@@ -224,7 +220,7 @@ public class MediaService {
         media.setLinkStatus(PUBLIC);
         media.setName(approval.getPublicName());
 
-        saveMedia(media);
+        mediaRepository.save(media);
         approvalRepository.delete(approval);
     }
 
@@ -267,6 +263,7 @@ public class MediaService {
         File file = new File(mediaDirectory + media.getUploader().getUsername() + "/" + media.getFileName());
 
         if (!file.exists()) {
+            logger.error("Media file isn't present: {}", file.getPath());
             file = new File(mediaDirectory + "noimage.png");
         }
         return file;
@@ -291,7 +288,7 @@ public class MediaService {
     public HashMap<String, Object> getMediaStats(String username) {
         HashMap<String, Object> stats = new HashMap<>();
         stats.put("totalMedias", mediaRepository.getTotalByUser(username));
-        stats.put("recentMedias", mediaRepository.findTop5ByUploader_UsernameOrderByIdDesc(username));
+        stats.put("recentMedias", mediaToDTOs(mediaRepository.findTop5ByUploader_UsernameOrderByIdDesc(username)));
         stats.put("totalAlbums", albumRepository.getTotalAlbumsByUser(username));
 
         return stats;

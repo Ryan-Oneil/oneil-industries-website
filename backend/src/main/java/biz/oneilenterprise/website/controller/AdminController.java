@@ -1,12 +1,12 @@
 package biz.oneilenterprise.website.controller;
 
-import biz.oneilenterprise.website.service.ContactService;
 import biz.oneilenterprise.website.service.MediaService;
 import biz.oneilenterprise.website.service.UserService;
 import java.io.IOException;
 import java.util.HashMap;
 import org.apache.commons.io.FileSystemUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,19 +14,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/admin")
-public class AdminController {
+public class  AdminController {
 
     private final UserService userService;
     private final MediaService mediaService;
-    private final ContactService contactService;
 
     @Value("${service.media.location}")
     private String mediaDirectory;
 
-    public AdminController(UserService userService, MediaService mediaService, ContactService contactService) {
+    public AdminController(UserService userService, MediaService mediaService) {
         this.userService = userService;
         this.mediaService = mediaService;
-        this.contactService = contactService;
     }
 
     @GetMapping("/stats")
@@ -39,7 +37,7 @@ public class AdminController {
         stats.put("recentUsers", userService.getRecentUsers());
         stats.put("remainingStorage", FileSystemUtils.freeSpaceKb(mediaDirectory));
         stats.put("usedStorage", userService.getTotalUsedQuota());
-        stats.put("feedback", contactService.getRecentFeedbacks(3));
+        stats.put("recentMedia", mediaService.getMedias(PageRequest.of(0, 5)).get("medias"));
 
         return ResponseEntity.ok(stats);
     }

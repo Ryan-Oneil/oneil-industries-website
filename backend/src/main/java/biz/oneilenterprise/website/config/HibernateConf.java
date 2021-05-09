@@ -15,7 +15,6 @@ import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement
-
 public class HibernateConf {
 
     @Value("${database.url}")

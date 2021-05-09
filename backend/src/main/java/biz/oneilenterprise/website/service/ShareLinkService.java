@@ -1,6 +1,5 @@
 package biz.oneilenterprise.website.service;
 
-import biz.oneilenterprise.website.utils.RandomIDGen;
 import biz.oneilenterprise.website.dto.FileDTO;
 import biz.oneilenterprise.website.dto.LinkDTO;
 import biz.oneilenterprise.website.entity.Link;
@@ -13,10 +12,8 @@ import biz.oneilenterprise.website.filecreater.FileHandler;
 import biz.oneilenterprise.website.repository.FileRepository;
 import biz.oneilenterprise.website.repository.LinkRepository;
 import biz.oneilenterprise.website.repository.LinkViewRepository;
+import biz.oneilenterprise.website.utils.RandomIDGen;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -25,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -143,13 +139,7 @@ public class ShareLinkService {
         Link link = getLinkFileWithValidation(linkID);
         User user = link.getCreator();
 
-        link.getFiles().forEach(sharedFile -> {
-            String fileLocation = getFileLocation(user.getUsername(), linkID, sharedFile.getName());
-
-            deleteLocalFile(fileLocation);
-        });
-        deleteLocalFile(getLinkDirectory(user.getUsername(), linkID));
-
+        FileHandler.deleteDirectory(getLinkDirectory(user.getUsername(), linkID));
         linkRepository.delete(link);
 
         return link;
@@ -164,17 +154,9 @@ public class ShareLinkService {
         linkRepository.save(link);
 
         String fileLocation = getFileLocation(link.getCreator().getUsername(), link.getId(), file.getName());
-        deleteLocalFile(fileLocation);
+        FileHandler.deleteFile(fileLocation);
 
         return file;
-    }
-
-    public void deleteLocalFile(String path) {
-        try {
-            Files.deleteIfExists(Paths.get(path));
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
     }
 
     public Optional<SharedFile> getFile(String id) {
@@ -183,14 +165,6 @@ public class ShareLinkService {
 
     public Optional<SharedFile> getFileWithLink(String id) {
         return fileRepository.getById(id);
-    }
-
-    public SharedFile checkFileExists(String name) {
-        Optional<SharedFile> file = getFile(name);
-
-        if (!file.isPresent()) throw new ResourceNotFoundException("Invalid File");
-
-        return file.get();
     }
 
     public SharedFile checkFileLinkValidation(String name) {
@@ -210,18 +184,6 @@ public class ShareLinkService {
         return String.format(sharedFilesDirectory + "%s", user, linkID);
     }
 
-    public List<Link> getUserLinks(String user) {
-        return linkRepository.getAllByCreator(user);
-    }
-
-    public List<Link> getExpiredUserLinks(String user) {
-        return linkRepository.getAllExpiredByCreator(user);
-    }
-
-    public List<Link> getActiveUserLinks(String user) {
-        return linkRepository.getAllActiveByCreator(user);
-    }
-
     public List<FileDTO> addFilesToLink(String linkID, List<File> files) {
         Link link = getLinkValidate(linkID);
 
@@ -232,36 +194,9 @@ public class ShareLinkService {
         linkRepository.save(link);
         fileRepository.saveAll(sharedFiles);
 
-        moveNewFilesToDirectory(files, getLinkDirectory(link.getCreator().getUsername(), link.getId()));
+        FileHandler.moveNewFilesToDirectory(files, getLinkDirectory(link.getCreator().getUsername(), link.getId()));
 
         return filesToDTO(sharedFiles);
-    }
-
-    private void moveNewFilesToDirectory(List<File> files, String dest) {
-        File destFolder = new File(dest);
-        File originalParent = files.get(0).getParentFile();
-
-        files.forEach(file -> {
-            try {
-                File newFile = new File(dest + "/" + file.getName());
-
-                //Renames the original file
-                if (newFile.exists()) {
-                    String newFileName = FileHandler.renameFile(file, dest).getName();
-                    File renamedFile = new File(originalParent.getAbsolutePath() + "/" + newFileName);
-                    file.renameTo(renamedFile);
-                    file = renamedFile;
-                }
-                FileUtils.moveFileToDirectory(file, destFolder, false);
-            } catch (IOException e) {
-                logger.error(e.getMessage());
-            }
-        });
-        try {
-            Files.deleteIfExists(originalParent.toPath());
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
     }
 
     public void editLink(String linkID, String title, String expires) throws ParseException {

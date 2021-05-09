@@ -4,25 +4,27 @@ import biz.oneilenterprise.website.enums.MediaType;
 import biz.oneilenterprise.website.exception.MediaException;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import javax.imageio.ImageIO;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.tika.Tika;
-import org.springframework.stereotype.Component;
 
-@Component
 public class FileHandler {
 
-    private static List<String> supportImageFormats;
+    private static final Logger logger = LogManager.getLogger(FileHandler.class);
+    private static final List<String> supportImageFormats;
 
     static {
         supportImageFormats = Arrays.asList(ImageIO.getWriterFormatNames());
     }
 
-    private FileHandler() {
-    }
+    private FileHandler() {}
 
     public static File writeFile(FileItemStream file, String fileName, String dest) throws IOException {
         File destFolder = new File(dest);
@@ -39,6 +41,59 @@ public class FileHandler {
         FileUtils.copyInputStreamToFile(file.openStream(), newFile);
 
         return newFile;
+    }
+
+    public static void moveNewFilesToDirectory(List<File> files, String dest) {
+        File destFolder = new File(dest);
+        File originalParent = files.get(0).getParentFile();
+
+        files.forEach(file -> {
+            try {
+                File newFile = new File(dest + "/" + file.getName());
+
+                //Renames the original file
+                if (newFile.exists()) {
+                    String newFileName = renameFile(file, dest).getName();
+                    File renamedFile = new File(originalParent.getAbsolutePath() + "/" + newFileName);
+                    file.renameTo(renamedFile);
+                    file = renamedFile;
+                }
+                FileUtils.moveFileToDirectory(file, destFolder, false);
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+            }
+        });
+        try {
+            Files.deleteIfExists(originalParent.toPath());
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    public static void deleteFile(String path) {
+        try {
+            Files.deleteIfExists(Paths.get(path));
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    public static void deleteDirectory(String directoryPath) {
+        File directory = new File(directoryPath);
+        File[] childrenFiles = directory.listFiles();
+
+        if (childrenFiles == null) {
+            logger.error("{}: Not a directory or doesn't exist", directoryPath);
+            return;
+        }
+
+        for (File childrenFile : childrenFiles) {
+            if (childrenFile.isDirectory()) {
+                deleteDirectory(childrenFile.getPath());
+            }
+            deleteFile(childrenFile.getPath());
+        }
+        deleteFile(directory.getPath());
     }
 
     public static void writeImageThumbnail(File file, String dest) throws IOException {

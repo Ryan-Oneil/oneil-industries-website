@@ -93,11 +93,7 @@ public class UserService {
         return userRepository.getUsersByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email + " doesn't exist"));
     }
 
-    public void saveUser(User user) {
-        userRepository.save(user);
-    }
-
-    public User registerUser(LoginFormDTO loginFormDTO) {
+    public void registerUser(LoginFormDTO loginFormDTO) {
         String username = loginFormDTO.getName();
         String email = loginFormDTO.getEmail();
 
@@ -109,11 +105,9 @@ public class UserService {
         User user = new User(username.toLowerCase(), encryptedPassword,false, email, "ROLE_UNREGISTERED");
         Quota quota = new Quota(username, 0, 25, false);
 
-        saveUser(user);
+        userRepository.save(user);
         quotaRepository.save(quota);
         eventPublisher.publishEvent(new OnRegistrationCompleteEvent(user, frontendUrl));
-
-        return user;
     }
 
     public void validateUsername(String username) {
@@ -148,7 +142,7 @@ public class UserService {
         password.ifPresent(newPassword -> user.setPassword(passwordEncoder.encode(newPassword)));
         role.ifPresent(user::setRole);
 
-        saveUser(user);
+        userRepository.save(user);
     }
 
     public void createVerificationToken(User user, String tokenUUID) {
@@ -193,21 +187,11 @@ public class UserService {
     public void changeUserPassword(User user, String password) {
         user.setPassword(passwordEncoder.encode(password));
 
-        saveUser(user);
-    }
-
-    public boolean isExpired(Date date) {
-
-        Calendar cal = Calendar.getInstance();
-        return (date.getTime() - cal.getTime().getTime()) <= 0;
+        userRepository.save(user);
     }
 
     public Quota getQuotaByUsername(String username) {
         return quotaRepository.getFirstByUsername(username);
-    }
-
-    public void saveUserQuota(Quota quota) {
-        quotaRepository.save(quota);
     }
 
     public void updateUserQuota(QuotaDTO quotaDTO, String username) {
@@ -215,40 +199,33 @@ public class UserService {
 
         quota.setIgnoreQuota(quotaDTO.isIgnoreQuota());
         quota.setMax(quotaDTO.getMax());
-        saveUserQuota(quota);
+        quotaRepository.save(quota);
     }
 
-    public void increaseUsedAmount(String username, long amount) {
-        Optional<Quota> userQuota = quotaRepository.findById(username);
+    public void increaseQuotaUsedAmount(String username, long amount) {
+        Quota userQuota = getQuotaByUsername(username);
 
-        userQuota.ifPresent(quota -> {
-            quota.increaseUsed(amount);
-            quotaRepository.save(quota);
-        });
+        userQuota.increaseUsed(amount);
+        quotaRepository.save(userQuota);
     }
 
-    public void decreaseUsedAmount(String username, long amount) {
-      Optional<Quota> userQuota = quotaRepository.findById(username);
+    public void decreaseQuotaUsedAmount(String username, long amount) {
+        Quota userQuota = getQuotaByUsername(username);
 
-        userQuota.ifPresent(quota -> {
-            quota.decreaseUsed(amount);
-            quotaRepository.save(quota);
-        });
+        userQuota.decreaseUsed(amount);
+        quotaRepository.save(userQuota);
     }
 
     public long getRemainingQuota(String username) {
         AtomicReference<Long> remaining = new AtomicReference<>(0L);
+        Quota userQuota = getQuotaByUsername(username);
 
-        Optional<Quota> userQuota = quotaRepository.findById(username);
-
-        userQuota.ifPresent(quota -> {
-            if (quota.isIgnoreQuota()) {
-                remaining.set(-1L);
-            }else {
-                long remainingAmount = (quota.getMax() * FileUtils.ONE_GB) - quota.getUsed();
-                remaining.set(Math.max(remainingAmount, 0));
-            }
-        });
+        if (userQuota.isIgnoreQuota()) {
+            remaining.set(-1L);
+        }else {
+            long remainingAmount = (userQuota.getMax() * FileUtils.ONE_GB) - userQuota.getUsed();
+            remaining.set(Math.max(remainingAmount, 0));
+        }
         return remaining.get();
     }
 
@@ -293,7 +270,6 @@ public class UserService {
     }
 
     private void checkExpired(Date date) {
-
         Calendar cal = Calendar.getInstance();
         if ((date.getTime() - cal.getTime().getTime()) <= 0) {
             throw new TokenException("Token has expired");
@@ -309,7 +285,7 @@ public class UserService {
         deleteVerificationToken(verificationToken);
 
         user.setEnabled(true);
-        saveUser(user);
+        userRepository.save(user);
     }
 
     public UserDTO getUserStats(String username) {

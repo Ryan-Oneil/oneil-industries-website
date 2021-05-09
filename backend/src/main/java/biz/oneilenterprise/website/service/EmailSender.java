@@ -1,6 +1,5 @@
 package biz.oneilenterprise.website.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -9,8 +8,11 @@ import org.springframework.util.StringUtils;
 @Service
 public class EmailSender {
 
-    @Autowired
-    private JavaMailSender mailSender;
+    private final JavaMailSender mailSender;
+
+    public EmailSender(JavaMailSender mailSender) {
+        this.mailSender = mailSender;
+    }
 
     public void sendSimpleEmail(String recipientAddress, String subject, String message, String sender, String replyTo) {
 

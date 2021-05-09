@@ -119,7 +119,7 @@ public class MediaGalleryController {
             .handleFileUpload(request, remainingQuota, mediaService.getUserMediaDirectory(userAuth.getUsername()), true);
 
         long sizeOfFiles = uploadedFiles.stream().mapToLong(File::length).sum();
-        userService.increaseUsedAmount(userAuth.getUsername(), sizeOfFiles);
+        userService.increaseQuotaUsedAmount(userAuth.getUsername(), sizeOfFiles);
 
         return mediaService.registerMedias(uploadedFiles, galleryUploadDTO, userAuth);
     }
@@ -127,7 +127,7 @@ public class MediaGalleryController {
     @DeleteMapping("/medias/delete")
     public ResponseEntity<HttpStatus> massDeleteMedias(@RequestBody Integer[] mediaIds, Authentication user, HttpServletRequest request) {
         long mediaSize = mediaService.deleteMedias(mediaIds);
-        userService.decreaseUsedAmount(user.getName(), mediaSize);
+        userService.decreaseQuotaUsedAmount(user.getName(), mediaSize);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
@@ -135,7 +135,7 @@ public class MediaGalleryController {
     @DeleteMapping("/media/delete/{mediaId}")
     public ResponseEntity<HttpStatus> deleteMedia(@PathVariable int mediaId, Authentication user, HttpServletRequest request) throws IOException {
         long mediaSize = mediaService.deleteMedia(mediaId);
-        userService.decreaseUsedAmount(user.getName(), mediaSize);
+        userService.decreaseQuotaUsedAmount(user.getName(), mediaSize);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
