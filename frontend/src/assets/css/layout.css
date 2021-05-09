@@ -74,7 +74,7 @@ body {
 }
 
 .userDropdown:hover {
-    background: rgba(0,0,0,.025);
+    background: rgba(0, 0, 0, .025);
 }
 
 .login {
@@ -88,19 +88,23 @@ body {
     .username {
         display: none;
     }
+
     .right {
         position: absolute;
         top: 0;
         right: 12px;
     }
+
     .right .account .avatar {
         margin-right: 0;
     }
-    .leftMenu,.rightMenu{
+
+    .leftMenu, .rightMenu {
         display: none;
     }
+
     .responsiveMenuButton {
-        display: inline-block!important;
+        display: inline-block !important;
     }
 }
 
@@ -110,7 +114,7 @@ body {
 }
 
 .removeMargin {
-    margin: 0!important;
+    margin: 0 !important;
 }
 
 #root {
@@ -127,7 +131,7 @@ body {
 }
 
 .whiteText, .whiteText h1, .whiteText h2, .whiteText h3 {
-    color: #FFFFFF!important;
+    color: #FFFFFF !important;
 }
 
 .logo {
@@ -170,20 +174,20 @@ body {
     padding: 0;
 }
 
-.ant-drawer-body .ant-menu-horizontal > .ant-menu-item, .ant-drawer-body .ant-menu-horizontal > .ant-menu-submenu{
+.ant-drawer-body .ant-menu-horizontal > .ant-menu-item, .ant-drawer-body .ant-menu-horizontal > .ant-menu-submenu {
     display: inline-block;
     width: 100%;
 }
 
-.ant-drawer-body .ant-menu-horizontal{
+.ant-drawer-body .ant-menu-horizontal {
     border-bottom: none;
 }
 
-.ant-drawer-body .ant-menu-horizontal > .ant-menu-item:hover{
+.ant-drawer-body .ant-menu-horizontal > .ant-menu-item:hover {
     border-bottom-color: transparent;
 }
 
-.ant-menu-horizontal  {
+.ant-menu-horizontal {
     background: #36393f;
     border-bottom: 0;
     font-size: 16px;
@@ -191,7 +195,7 @@ body {
 }
 
 .ant-menu-item {
-    border-bottom: 0!important;
+    border-bottom: 0 !important;
 }
 
 .ant-menu-horizontal > .ant-menu-item a {
@@ -240,7 +244,7 @@ body {
 }
 
 .roundedBorder, .mediaComment .ant-comment-content-detail, .ant-upload-drag, .modalCommentSection .ant-card-body {
-    border-radius: 10px!important;
+    border-radius: 10px !important;
     border: 0;
 }
 
@@ -262,7 +266,7 @@ body {
 }
 
 .ant-btn:hover .uploadButton, .ant-btn:focus .uploadButton, .ant-btn:active .uploadButton {
-    color: white!important;
+    color: white !important;
 }
 
 .dashboard .ant-tabs-nav-list {
@@ -304,7 +308,7 @@ body {
     margin-left: 1%;
 }
 
-.darkTextColor,.ant-comment-content-author-name > *:hover {
+.darkTextColor, .ant-comment-content-author-name > *:hover {
     color: #36393f;
 }
 
@@ -366,8 +370,8 @@ body {
 
 .bulkMediaManage button:hover, .bulkMediaManage button:active, .bulkMediaManageSelected button {
     color: white;
-    background: #bbdbd5!important;
-    border-color: #bbdbd5!important;
+    background: #bbdbd5 !important;
+    border-color: #bbdbd5 !important;
 }
 
 .playButton {
@@ -387,8 +391,8 @@ body {
 }
 
 .uploadedCard .ant-progress-inner {
-    width: 100%!important;
-    height: 100%!important;
+    width: 100% !important;
+    height: 100% !important;
 }
 
 .darkGreyBackground .ant-card-actions {
@@ -396,15 +400,15 @@ body {
 }
 
 .ant-layout-sider-dark, .ant-layout-sider-zero-width-trigger {
-    background-color: #484c54!important;
+    background-color: #484c54 !important;
 }
 
 .sideNav .ant-menu-sub {
-    background-color: #36393f!important;
+    background-color: #36393f !important;
 }
 
 .sideNav .ant-menu-item-selected {
-    background-color: #5a5f69!important;
+    background-color: #5a5f69 !important;
 }
 
 .sideNav .anticon, .sideNav a, .sideNav span {
@@ -417,13 +421,13 @@ body {
 }
 
 .ant-upload-drag {
-    background-color: white!important;
-    border: 4px dashed #e6f1ff!important;
+    background-color: white !important;
+    border: 4px dashed #e6f1ff !important;
 }
 
 .ant-upload.ant-upload-drag:not(.ant-upload-disabled):hover {
-    background-color: #e6f1ff!important;
-    border: 4px dashed #54a7b2!important;
+    background-color: #e6f1ff !important;
+    border: 4px dashed #54a7b2 !important;
 }
 
 .roundedShadowBox {
@@ -467,7 +471,7 @@ body {
 }
 
 .uploadedCard .ant-card-body {
-    display: none!important;
+    display: none !important;
     border: 0 !important;
 }
 
@@ -478,10 +482,10 @@ body {
     margin-top: 1%;
 }
 
-.userManagementNav .ant-tabs-tab:hover, .userManagementNav .ant-tabs-tab:active, .userManagementNav .ant-tabs-tab-active .ant-tabs-tab-btn{
- color: #58a0aa!important;
+.userManagementNav .ant-tabs-tab:hover, .userManagementNav .ant-tabs-tab:active, .userManagementNav .ant-tabs-tab-active .ant-tabs-tab-btn {
+    color: #58a0aa !important;
 }
 
 .userManagementNav .ant-tabs-ink-bar {
-    background-color: #58a0aa!important;
+    background-color: #58a0aa !important;
 }
