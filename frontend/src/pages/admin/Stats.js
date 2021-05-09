@@ -5,6 +5,10 @@ import StatisticCard from "../../components/Stats/StatisticCard";
 import ListCard from "../../components/Stats/ListCard";
 import { useDispatch, useSelector } from "react-redux";
 import { getAdminLinkStats, getAdminStats } from "../../reducers/adminReducer";
+import { BASE_URL } from "../../apis/api";
+import UserOutlined from "@ant-design/icons/lib/icons/UserOutlined";
+import FileZipOutlined from "@ant-design/icons/lib/icons/FileZipOutlined";
+import { Link } from "react-router-dom";
 
 export default () => {
   const [loading, setLoading] = useState(true);
@@ -19,7 +23,8 @@ export default () => {
     totalUsers,
     recentUsers,
     remainingStorage,
-    usedStorage
+    usedStorage,
+    recentMedia
   } = useSelector(state => state.admin.stats);
 
   useEffect(() => {
@@ -60,45 +65,44 @@ export default () => {
             loading={loading}
             renderItem={item => (
               <List.Item>
-                <List.Item.Meta
-                  avatar={
-                    <Avatar
-                      src={require("../../assets/images/file.png")}
-                      size="large"
-                    />
-                  }
-                  title={item.name}
-                  description={item.email}
-                />
+                <Link to={`/admin/users/${item.name}`}>
+                  <List.Item.Meta
+                    avatar={<Avatar icon={<UserOutlined />} size="large" />}
+                    title={item.name}
+                    description={item.email}
+                  />
+                </Link>
               </List.Item>
             )}
           />
         </Col>
         <Col xs={24} sm={24} md={12} lg={12} xl={8}>
           <ListCard
-            title="Popular Links"
+            title="Recent Media"
             itemLayout="horizontal"
-            dataSource={mostViewed}
-            loading={loadingFileShareData}
+            dataSource={recentMedia}
+            loading={loading}
             renderItem={item => (
               <List.Item>
                 <List.Item.Meta
                   avatar={
                     <Avatar
-                      src={require("../../assets/images/file.png")}
+                      src={`${BASE_URL}/gallery/image/thumbnail/${item.fileName}`}
                       size="large"
                     />
                   }
                   title={
                     <a
-                      href={`/shared/${item.id}`}
+                      href={`${BASE_URL}/gallery/${item.mediaType.toLowerCase()}/${
+                        item.fileName
+                      }`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      {item.title ? item.title : item.id}
+                      {item.fileName}
                     </a>
                   }
-                  description={`${item.views} views`}
+                  description={item.mediaType.toLowerCase()}
                 />
               </List.Item>
             )}
@@ -113,12 +117,7 @@ export default () => {
             renderItem={item => (
               <List.Item>
                 <List.Item.Meta
-                  avatar={
-                    <Avatar
-                      src={require("../../assets/images/file.png")}
-                      size="large"
-                    />
-                  }
+                  avatar={<Avatar icon={<FileZipOutlined />} size="large" />}
                   title={
                     <a
                       href={`/shared/${item.id}`}

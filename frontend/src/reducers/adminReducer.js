@@ -51,13 +51,10 @@ export const getMediaApprovals = () => dispatch => {
     .catch(error => dispatch(setError(getApiError(error))));
 };
 
-export const approvePublicMedia = (endpoint, mediaApprovalID) => dispatch => {
-  return apiPutCall(endpoint)
-    .then(() => dispatch(removedMediaApproval(mediaApprovalID)))
-    .catch(error => dispatch(setError(getApiError(error))));
-};
-
-export const denyPublicMedia = (endpoint, mediaApprovalID) => dispatch => {
+export const changePublicMediaStatus = (
+  endpoint,
+  mediaApprovalID
+) => dispatch => {
   return apiPutCall(endpoint)
     .then(() => dispatch(removedMediaApproval(mediaApprovalID)))
     .catch(error => dispatch(setError(getApiError(error))));
@@ -136,7 +133,8 @@ export const slice = createSlice({
       totalAlbums: 0,
       totalUsers: 0,
       usedStorage: 0,
-      recentUsers: []
+      recentUsers: [],
+      recentMedia: []
     },
     userStats: {
       totalViews: 0,

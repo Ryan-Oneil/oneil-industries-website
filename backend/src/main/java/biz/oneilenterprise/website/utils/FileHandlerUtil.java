@@ -4,12 +4,12 @@ import biz.oneilenterprise.website.enums.MediaType;
 import biz.oneilenterprise.website.exception.MediaException;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import javax.imageio.ImageIO;
-import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,7 +26,7 @@ public class FileHandlerUtil {
 
     private FileHandlerUtil() {}
 
-    public static File writeFile(FileItemStream file, String fileName, String dest) throws IOException {
+    public static File writeFile(InputStream inputStream, String fileName, String dest) throws IOException {
         File destFolder = new File(dest);
 
         if (!destFolder.exists()) {
@@ -38,7 +38,7 @@ public class FileHandlerUtil {
             newFile = renameFile(newFile, dest);
         }
         //Copy file to new file
-        FileUtils.copyInputStreamToFile(file.openStream(), newFile);
+        FileUtils.copyInputStreamToFile(inputStream, newFile);
 
         return newFile;
     }

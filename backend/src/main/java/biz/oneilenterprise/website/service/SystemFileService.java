@@ -53,7 +53,7 @@ public class SystemFileService {
             String fileName = generateRandomName ? RandomIDGenUtil.getBase62(16) + "." + FileHandlerUtil.getExtensionType(item.getName()) :
                 item.getName();
 
-            File file = FileHandlerUtil.writeFile(item, fileName,  destination);
+            File file = FileHandlerUtil.writeFile(item.openStream(), fileName,  destination);
 
             uploadedFiles.add(file);
         }

@@ -1,10 +1,7 @@
 import React from "react";
 import Media from "./Media";
 import { Card, message, Tooltip } from "antd";
-import {
-  approvePublicMedia,
-  denyPublicMedia
-} from "../../reducers/adminReducer";
+import { changePublicMediaStatus } from "../../reducers/adminReducer";
 import { useDispatch } from "react-redux";
 import CheckOutlined from "@ant-design/icons/lib/icons/CheckOutlined";
 import CloseOutlined from "@ant-design/icons/lib/icons/CloseOutlined";
@@ -34,7 +31,7 @@ export default props => {
             style={{ color: "#54a7b2" }}
             onClick={() => {
               dispatch(
-                approvePublicMedia(
+                changePublicMediaStatus(
                   `/gallery/admin/media/${media.id}/approve`,
                   media.id
                 )
@@ -49,7 +46,7 @@ export default props => {
             style={{ color: "red" }}
             onClick={() => {
               dispatch(
-                denyPublicMedia(
+                changePublicMediaStatus(
                   `/gallery/admin/media/${media.id}/deny`,
                   media.id
                 )

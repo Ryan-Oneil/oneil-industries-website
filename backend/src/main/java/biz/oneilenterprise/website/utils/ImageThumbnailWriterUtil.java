@@ -36,7 +36,7 @@ public class ImageThumbnailWriterUtil {
         ImageIO.write(src, imageFormat, destination);
     }
 
-    private static BufferedImage getThumbnailImage(BufferedImage original, String extension) {
+    public static BufferedImage getThumbnailImage(BufferedImage original, String extension) {
         int type = extension.equalsIgnoreCase("gif") ||  extension.equalsIgnoreCase("png") ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_INT_RGB;
 
         BufferedImage thumbNail = new BufferedImage(IMAGE_RESIZE_SIZE, IMAGE_RESIZE_SIZE, type);

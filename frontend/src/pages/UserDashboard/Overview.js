@@ -8,6 +8,7 @@ import StatisticCard from "../../components/Stats/StatisticCard";
 import ListCard from "../../components/Stats/ListCard";
 import { getUserMediaStats } from "../../reducers/mediaReducer";
 import { BASE_URL } from "../../apis/api";
+import FileZipOutlined from "@ant-design/icons/lib/icons/FileZipOutlined";
 
 export default () => {
   const dispatch = useDispatch();
@@ -57,12 +58,7 @@ export default () => {
             renderItem={item => (
               <List.Item>
                 <List.Item.Meta
-                  avatar={
-                    <Avatar
-                      src={require("../../assets/images/file.png")}
-                      size="large"
-                    />
-                  }
+                  avatar={<Avatar icon={<FileZipOutlined />} size="large" />}
                   title={
                     <a
                       href={`/shared/${item.id}`}

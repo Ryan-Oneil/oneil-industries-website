@@ -3,9 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Button, Card, Col, Input, Row, Space } from "antd";
 import {
-  generateAPIToken,
   generateShareXConfig,
-  getAPIToken
+  fetchAPIToken
 } from "../../reducers/userReducer";
 import CopyOutlined from "@ant-design/icons/lib/icons/CopyOutlined";
 import DownloadOutlined from "@ant-design/icons/lib/icons/DownloadOutlined";
@@ -20,7 +19,7 @@ export default () => {
 
   useEffect(() => {
     if (!apiToken) {
-      dispatch(getAPIToken(`/user/${name}/getAPIToken`));
+      dispatch(fetchAPIToken(`/user/${name}/getAPIToken`));
     }
     if (!shareXConfig) {
       dispatch(generateShareXConfig(`/user/${name}/getShareX`));
@@ -70,7 +69,7 @@ export default () => {
             style={{ marginTop: "2%" }}
             onClick={() => {
               dispatch(
-                generateAPIToken(`/user/${name}/generateAPIToken`)
+                fetchAPIToken(`/user/${name}/generateAPIToken`)
               ).then(() =>
                 dispatch(generateShareXConfig(`/user/${name}/getShareX`))
               );

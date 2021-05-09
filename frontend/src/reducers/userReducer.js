@@ -21,7 +21,7 @@ export const updateEmail = (username, email) => dispatch => {
   );
 };
 
-export const getAPIToken = endpoint => dispatch => {
+export const fetchAPIToken = endpoint => dispatch => {
   apiGetCall(endpoint)
     .then(({ data }) => {
       dispatch(getToken(data));
@@ -33,14 +33,6 @@ export const generateShareXConfig = endpoint => dispatch => {
   apiGetCall(endpoint)
     .then(({ data }) => {
       dispatch(getShareXConfig(data));
-    })
-    .catch(error => dispatch(setError(getApiError(error))));
-};
-
-export const generateAPIToken = endpoint => dispatch => {
-  return apiGetCall(endpoint)
-    .then(({ data }) => {
-      dispatch(getToken(data));
     })
     .catch(error => dispatch(setError(getApiError(error))));
 };
