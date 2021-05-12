@@ -5,12 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import biz.oneilenterprise.website.entity.Album;
-import biz.oneilenterprise.website.entity.Media;
-import biz.oneilenterprise.website.entity.User;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -23,18 +19,6 @@ public class AlbumRepositoryTest extends BaseRepository {
     private static final String ALBUM_ID = "albumID";
     private static final String ALBUM_NAME = "albumName";
     private static final String ALBUM_CREATOR = "albumCreator";
-
-    @BeforeEach
-    public void setupDatabase() {
-        User user = new User("albumCreator", "test");
-        Album album = new Album(ALBUM_ID, ALBUM_NAME, ALBUM_CREATOR);
-        Media media = new Media("test", "test", "test", user, "test", album, "test", 5L);
-        album.setMedias(Collections.singletonList(media));
-
-        entityManager.persist(user);
-        entityManager.persist(album);
-        entityManager.persist(media);
-    }
 
     @Test
     public void getByIDTest() {

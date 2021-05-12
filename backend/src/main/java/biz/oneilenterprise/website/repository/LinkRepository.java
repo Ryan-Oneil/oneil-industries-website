@@ -19,12 +19,6 @@ public interface  LinkRepository extends PagingAndSortingRepository<Link, String
     @EntityGraph(attributePaths  = {"files"})
     Optional<Link> getById(String id);
 
-    @Query("select l from Link l where l.creator.username = ?1 and l.expiryDatetime < CURRENT_TIMESTAMP ")
-    List<Link> getAllExpiredByCreator(String username);
-
-    @Query("select l from Link l where l.creator.username = ?1 and l.expiryDatetime > CURRENT_TIMESTAMP ")
-    List<Link> getAllActiveByCreator(String username);
-
     List<Link> findTop5ByCreator_UsernameOrderByCreationDateDesc(String username);
 
     @Query("select count(l) from Link l where l.creator.username = ?1")

@@ -4,11 +4,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import biz.oneilenterprise.website.entity.Album;
 import biz.oneilenterprise.website.entity.Media;
-import biz.oneilenterprise.website.entity.User;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -20,39 +18,15 @@ public class MediaRepositoryTest extends BaseRepository {
     @Autowired
     private MediaRepository mediaRepository;
 
-    private static final int AMOUNT_OF_MEDIAS = 10;
+    private static final int AMOUNT_OF_MEDIAS = 15;
     private static final int AMOUNT_OF_MEDIAS_PER_USER = 5;
     private static final String PUBLIC = "public";
-    private static final String PRIVATE = "private";
+    private static final String UNLISTED = "unlisted";
     private static final String USERNAME1 = "user1";
     private static final String USERNAME2 = "user2";
     private static final Pageable page = PageRequest.of(0, AMOUNT_OF_MEDIAS_PER_USER);
-    private final Integer[] mediaIds = new Integer[AMOUNT_OF_MEDIAS];
-    private final Album album = new Album("awd", "awd", USERNAME1);
-
-    @BeforeEach
-    public void setupDatabase() {
-        User user = new User(USERNAME1, "test");
-        User user2 = new User(USERNAME2, "test");
-
-        entityManager.persist(album);
-        entityManager.persist(user);
-        entityManager.persist(user2);
-
-        for (int i = 0; i < AMOUNT_OF_MEDIAS_PER_USER; i++) {
-            Media media = new Media("test", "test", PUBLIC, user, "", 10L);
-
-            entityManager.persist(media);
-            mediaIds[i] = media.getId();
-        }
-
-        for (int i = 0; i < AMOUNT_OF_MEDIAS_PER_USER; i++) {
-            Media media = new Media("test", "test", PRIVATE, user2, "", 10L);
-
-            entityManager.persist(media);
-            mediaIds[i + AMOUNT_OF_MEDIAS_PER_USER] = media.getId();
-        }
-    }
+    private final Integer[] mediaIds = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+    private final Album album = new Album("test", "test", USERNAME1);
 
     @Test
     public void get10ByOrderByIdDescTest() {
@@ -78,10 +52,10 @@ public class MediaRepositoryTest extends BaseRepository {
 
     @Test
     public void getAllByLinkStatusPrivateOrderByIdDescTest() {
-        List<Media> medias = mediaRepository.getAllByLinkStatusOrderByIdDesc(PRIVATE, page);
+        List<Media> medias = mediaRepository.getAllByLinkStatusOrderByIdDesc(UNLISTED, page);
 
         assertThat(medias.size()).isEqualTo(AMOUNT_OF_MEDIAS_PER_USER);
-        medias.forEach(media -> assertThat(media.getLinkStatus()).isEqualTo(PRIVATE));
+        medias.forEach(media -> assertThat(media.getLinkStatus()).isEqualTo(UNLISTED));
     }
 
     @Test
@@ -141,14 +115,14 @@ public class MediaRepositoryTest extends BaseRepository {
         Long mediasSize = mediaRepository.getTotalMediasSize(mediaIds);
 
         assertThat(mediasSize).isNotNull();
-        assertThat(mediasSize).isEqualTo(10L * AMOUNT_OF_MEDIAS);
+        assertThat(mediasSize).isEqualTo(2400093L);
     }
 
     @Test
     public void getAllByIdsTest() {
         List<Media> medias = mediaRepository.getAllByIds(mediaIds);
 
-        assertThat(medias.size()).isEqualTo(AMOUNT_OF_MEDIAS);
+        assertThat(medias.size()).isEqualTo(mediaIds.length);
     }
 
     @Test

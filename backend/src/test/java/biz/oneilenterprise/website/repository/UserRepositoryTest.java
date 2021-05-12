@@ -5,7 +5,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import biz.oneilenterprise.website.entity.User;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,19 +15,12 @@ public class UserRepositoryTest extends BaseRepository {
     @Autowired
     private UserRepository repository;
 
-    @BeforeEach
-    public void setupDatabase() {
-        User user = new User("UnitTest", "test", true, EMAIL);
-
-        entityManager.persist(user);
-    }
-
     @Test
     public void getByUsernameTest() {
-        Optional<User> user = repository.getByUsername("UnitTest");
+        Optional<User> user = repository.getByUsername("test");
 
         assertThat(user.isPresent()).isTrue();
-        assertThat(user.get().getUsername()).isEqualTo("UnitTest");
+        assertThat(user.get().getUsername()).isEqualTo("test");
     }
 
     @Test
@@ -43,19 +35,19 @@ public class UserRepositoryTest extends BaseRepository {
     public void getAllUsersTest() {
         List<User> users = repository.getAllUsers();
 
-        assertThat(users.size()).isEqualTo(1);
+        assertThat(users.size()).isEqualTo(15);
     }
 
     @Test
     public void isUsernameTakenTest() {
-        boolean usernameTaken = repository.isUsernameTaken("UnitTest");
+        boolean usernameTaken = repository.isUsernameTaken("test");
 
         assertThat(usernameTaken).isTrue();
     }
 
     @Test
     public void isUsernameNotTakenTest() {
-        boolean usernameTaken = repository.isUsernameTaken("test");
+        boolean usernameTaken = repository.isUsernameTaken("free");
 
         assertThat(usernameTaken).isFalse();
     }
