@@ -1,4 +1,4 @@
-package biz.oneilenterprise.website.eventlisteners;
+package biz.oneilenterprise.website.events;
 
 import biz.oneilenterprise.website.entity.User;
 import org.springframework.context.ApplicationEvent;

@@ -102,7 +102,7 @@ public class FileHandlerUtil {
         ImageThumbnailWriterUtil.writeImage(file, dest, extension);
     }
 
-    public static void writeVideoThumbnail(File video, String dest) {
+    public static void writeVideoThumbnail(File video, String dest) throws IOException {
         ImageThumbnailWriterUtil.writeThumbnailFromVideo(video, dest);
     }
 

@@ -102,7 +102,7 @@ public class FileHandlerUtilTest {
     }
 
     @Test
-    public void writeVideoThumbnailTest() {
+    public void writeVideoThumbnailTest() throws IOException {
         File thumbnailDirectory = new File(testDirectory.getAbsolutePath() + "/thumbnails");
         thumbnailDirectory.mkdir();
 

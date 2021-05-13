@@ -1,4 +1,4 @@
-package biz.oneilenterprise.website.security;
+package biz.oneilenterprise.website.eventlisteners;
 
 import biz.oneilenterprise.website.service.CustomUserDetailsService;
 import biz.oneilenterprise.website.service.LoginAttemptService;
@@ -7,14 +7,14 @@ import org.springframework.security.authentication.event.AuthenticationFailureBa
 import org.springframework.stereotype.Component;
 
 @Component
-public class AuthenticationFailureListener
+public class AuthenticationFailureEventListener
         implements ApplicationListener<AuthenticationFailureBadCredentialsEvent> {
 
     private final LoginAttemptService loginAttemptService;
 
     private final CustomUserDetailsService customUserDetailsService;
 
-    public AuthenticationFailureListener(LoginAttemptService loginAttemptService,
+    public AuthenticationFailureEventListener(LoginAttemptService loginAttemptService,
         CustomUserDetailsService customUserDetailsService) {
         this.loginAttemptService = loginAttemptService;
         this.customUserDetailsService = customUserDetailsService;

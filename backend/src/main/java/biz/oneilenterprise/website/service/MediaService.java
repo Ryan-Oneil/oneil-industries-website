@@ -1,11 +1,11 @@
 package biz.oneilenterprise.website.service;
 
+import static biz.oneilenterprise.website.security.SecurityConstants.TRUSTED_ROLES;
 import static biz.oneilenterprise.website.utils.FileHandlerUtil.writeImageThumbnail;
 import static biz.oneilenterprise.website.utils.FileHandlerUtil.writeVideoThumbnail;
-import static biz.oneilenterprise.website.security.SecurityConstants.TRUSTED_ROLES;
 
-import biz.oneilenterprise.website.utils.RandomIDGenUtil;
 import biz.oneilenterprise.website.dto.AlbumDTO;
+import biz.oneilenterprise.website.dto.GalleryUploadDTO;
 import biz.oneilenterprise.website.dto.MediaDTO;
 import biz.oneilenterprise.website.entity.Album;
 import biz.oneilenterprise.website.entity.Media;
@@ -15,14 +15,13 @@ import biz.oneilenterprise.website.enums.MediaType;
 import biz.oneilenterprise.website.exception.AlbumMissingException;
 import biz.oneilenterprise.website.exception.MediaApprovalException;
 import biz.oneilenterprise.website.exception.MediaException;
-import biz.oneilenterprise.website.utils.FileHandlerUtil;
 import biz.oneilenterprise.website.repository.AlbumRepository;
 import biz.oneilenterprise.website.repository.MediaApprovalRepository;
 import biz.oneilenterprise.website.repository.MediaRepository;
-import biz.oneilenterprise.website.dto.GalleryUploadDTO;
+import biz.oneilenterprise.website.utils.FileHandlerUtil;
+import biz.oneilenterprise.website.utils.RandomIDGenUtil;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -93,7 +92,7 @@ public class MediaService {
         return uploadedMedias;
     }
 
-    private void writeMediaThumbnails(List<File> medias, String user) {
+    public void writeMediaThumbnails(List<File> medias, String user) {
         medias
             .forEach(media -> {
                 try {
@@ -111,7 +110,7 @@ public class MediaService {
     public void checkMediaPrivacy(Media media, User user) {
         if (media.getLinkStatus().equalsIgnoreCase(PUBLIC) && !CollectionUtils.containsAny(user.getAuthorities(), TRUSTED_ROLES)) {
             media.setLinkStatus(UNLISTED);
-            requestPublicApproval(media, media.getName());
+            media.setPublicMediaApproval(requestPublicApproval(media, media.getName()));
         }
     }
 
@@ -187,12 +186,13 @@ public class MediaService {
         return approvalRepository.findAllByStatus(status);
     }
 
-    public void requestPublicApproval(Media media, String mediaName) {
+    public PublicMediaApproval requestPublicApproval(Media media, String mediaName) {
         PublicMediaApproval publicMediaStatus = this.getMediaApprovalByMediaID(media.getId());
 
         if (publicMediaStatus == null) {
             publicMediaStatus = new PublicMediaApproval(media, mediaName, "pending");
-            this.saveMediaApproval(publicMediaStatus);
+
+            return publicMediaStatus;
         } else {
             throw new MediaApprovalException("This media has previously requested public access. Approval status: " + publicMediaStatus
                 .getStatus());
@@ -203,7 +203,7 @@ public class MediaService {
         PublicMediaApproval publicMedia = getMediaApprovalByMediaID(mediaApprovalID);
 
         if (publicMedia == null) {
-            throw new MediaException("Media approval item not found");
+            throw new MediaApprovalException("Media approval item not found");
         }
         publicMedia.setStatus(newStatus);
         saveMediaApproval(publicMedia);
@@ -219,9 +219,9 @@ public class MediaService {
         Media media = approval.getMedia();
         media.setLinkStatus(PUBLIC);
         media.setName(approval.getPublicName());
+        media.setPublicMediaApproval(null);
 
         mediaRepository.save(media);
-        approvalRepository.delete(approval);
     }
 
     public long getTotalMedias() {
@@ -232,18 +232,13 @@ public class MediaService {
         return String.format("%s%s/", mediaDirectory, username);
     }
 
-    public long deleteMedia(int mediaID) throws IOException {
+    public long deleteMedia(int mediaID) {
         Media media = getMedia(mediaID);
+        FileHandlerUtil.deleteFile(getUserMediaDirectory(media.getUploader().getUsername()) + media.getFileName());
 
-        File mediaFile = new File(getUserMediaDirectory(media.getUploader().getUsername()) + media.getFileName());
-        long size = mediaFile.length();
-
-        if (mediaFile.exists()) {
-            Files.delete(mediaFile.toPath());
-        }
         mediaRepository.delete(media);
 
-        return size;
+        return media.getSize();
     }
 
     public Long deleteMedias(Integer[] mediaIds) {

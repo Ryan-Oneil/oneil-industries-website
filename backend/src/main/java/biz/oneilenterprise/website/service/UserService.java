@@ -13,7 +13,7 @@ import biz.oneilenterprise.website.entity.Quota;
 import biz.oneilenterprise.website.entity.Role;
 import biz.oneilenterprise.website.entity.User;
 import biz.oneilenterprise.website.entity.VerificationToken;
-import biz.oneilenterprise.website.eventlisteners.OnRegistrationCompleteEvent;
+import biz.oneilenterprise.website.events.OnRegistrationCompleteEvent;
 import biz.oneilenterprise.website.exception.TokenException;
 import biz.oneilenterprise.website.exception.UserException;
 import biz.oneilenterprise.website.repository.APITokenRepository;

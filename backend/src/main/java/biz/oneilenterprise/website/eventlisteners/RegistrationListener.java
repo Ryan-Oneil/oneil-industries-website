@@ -1,6 +1,7 @@
 package biz.oneilenterprise.website.eventlisteners;
 
 import biz.oneilenterprise.website.entity.User;
+import biz.oneilenterprise.website.events.OnRegistrationCompleteEvent;
 import biz.oneilenterprise.website.service.EmailSender;
 import biz.oneilenterprise.website.service.UserService;
 import java.util.UUID;

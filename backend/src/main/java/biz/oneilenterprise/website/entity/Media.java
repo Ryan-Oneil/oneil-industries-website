@@ -45,7 +45,7 @@ public class Media {
 
     private Long size;
 
-    @OneToOne(mappedBy = "media", cascade = CascadeType.REMOVE)
+    @OneToOne(mappedBy = "media", cascade = CascadeType.ALL, orphanRemoval = true)
     private PublicMediaApproval publicMediaApproval;
 
     public Media(String name, String fileName, String linkStatus, User uploader, String dateAdded,
@@ -68,11 +68,7 @@ public class Media {
         this.dateAdded = dateAdded;
         this.size = size;
     }
-
-    public Media(int mediaID) {
-        this.id = mediaID;
-    }
-
+    
     public Media() {
     }
 

@@ -12,6 +12,9 @@ public class MediaDTO {
     private Long size;
     private String url;
 
+    public MediaDTO() {
+    }
+
     public MediaDTO(int id, String name, String fileName, String linkStatus, String uploader, String dateAdded, String mediaType, Long size,
         String url) {
         this.id = id;

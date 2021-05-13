@@ -10,8 +10,10 @@ import okhttp3.Request;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 @Configuration
+@Profile("prod")
 public class InfluxDbConfig {
 
     @Value("${management.metrics.export.influx.org}")

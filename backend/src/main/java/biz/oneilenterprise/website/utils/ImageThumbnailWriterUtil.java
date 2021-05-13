@@ -21,11 +21,8 @@ public class ImageThumbnailWriterUtil {
 
     public static void writeImage(File image, String dest, String extension) throws IOException {
         BufferedImage src = ImageIO.read(image);
-        File destFolder = new File(dest);
+        createDirectoryIfNotExists(dest);
 
-        if (!destFolder.exists()) {
-            Files.createDirectory(destFolder.toPath());
-        }
         File thumbnailDestination = new File(dest + "/" + image.getName());
 
         //Writes thumbnail
@@ -47,8 +44,9 @@ public class ImageThumbnailWriterUtil {
         return thumbNail;
     }
 
-    public static void writeThumbnailFromVideo(File video, String dest) {
+    public static void writeThumbnailFromVideo(File video, String dest) throws IOException {
         FFmpegFrameGrabber frameGrabber = new FFmpegFrameGrabber(video.getPath());
+        createDirectoryIfNotExists(dest);
 
         try {
             frameGrabber.start();
@@ -70,6 +68,14 @@ public class ImageThumbnailWriterUtil {
             } catch (Exception e) {
                 logger.error("Error creating video thumbnail", e);
             }
+        }
+    }
+
+    public static void createDirectoryIfNotExists(String dest) throws IOException {
+        File destFolder = new File(dest);
+
+        if (!destFolder.exists()) {
+            Files.createDirectory(destFolder.toPath());
         }
     }
 }
