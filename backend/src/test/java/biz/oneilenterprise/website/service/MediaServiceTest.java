@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import biz.oneilenterprise.website.dto.AlbumDTO;
 import biz.oneilenterprise.website.dto.GalleryUploadDTO;
 import biz.oneilenterprise.website.dto.MediaDTO;
+import biz.oneilenterprise.website.dto.PublicMediaApprovalDTO;
 import biz.oneilenterprise.website.entity.Album;
 import biz.oneilenterprise.website.entity.Media;
 import biz.oneilenterprise.website.entity.PublicMediaApproval;
@@ -260,7 +261,7 @@ public class MediaServiceTest {
 
     @Test
     public void getMediaApprovalsByStatusTest() {
-        List<PublicMediaApproval> mediaApprovals = mediaService.getMediaApprovalsByStatus(PENDING);
+        List<PublicMediaApprovalDTO> mediaApprovals = mediaService.getMediaApprovalsByStatus(PENDING);
 
         assertThat(mediaApprovals).size().isEqualTo(4);
         mediaApprovals.forEach(publicMediaApproval -> assertThat(publicMediaApproval.getStatus()).isEqualTo(PENDING));
@@ -571,6 +572,7 @@ public class MediaServiceTest {
 
         List<Media> medias = mediaService.getMediasByIds(new Integer[]{2, 3, 4, 5});
 
+        assertThat(medias).isNotEmpty();
         medias.forEach(media -> assertThat(media.getAlbum()).isNotNull());
     }
 

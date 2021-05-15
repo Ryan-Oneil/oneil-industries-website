@@ -68,7 +68,11 @@ public class Media {
         this.dateAdded = dateAdded;
         this.size = size;
     }
-    
+
+    public Media(int id) {
+        this.id = id;
+    }
+
     public Media() {
     }
 

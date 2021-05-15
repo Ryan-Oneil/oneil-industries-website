@@ -20,7 +20,7 @@ public class ImageGalleryAspect {
 
     private final MediaService mediaService;
 
-    private static final String NO_PERMISSION = "You don't have the permission to access this resource";
+    private static final String NO_PERMISSION = " You don't have the permission to access this resource";
     private static final String ADMIN_ROLE = "ROLE_ADMIN";
 
     @Autowired
@@ -82,7 +82,7 @@ public class ImageGalleryAspect {
 
         Media media = mediaService.getMedia(mediaInt);
 
-        if (!media.getUploader().equals(user.getName()) && !request.isUserInRole(ADMIN_ROLE)) {
+        if (!media.getUploader().getUsername().equals(user.getName()) && !request.isUserInRole(ADMIN_ROLE)) {
             throw new NotAuthorisedException(user.getName() + NO_PERMISSION);
         }
     }
@@ -98,7 +98,7 @@ public class ImageGalleryAspect {
         List<Media> medias = mediaService.getMediasByIds(mediaInt);
 
         medias.forEach(media -> {
-            if (!media.getUploader().equals(user.getName()) && !request.isUserInRole(ADMIN_ROLE)) {
+            if (!media.getUploader().getUsername().equals(user.getName()) && !request.isUserInRole(ADMIN_ROLE)) {
                 throw new NotAuthorisedException(user.getName() + NO_PERMISSION);
             }
         });

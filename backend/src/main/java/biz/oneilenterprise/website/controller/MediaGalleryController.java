@@ -2,16 +2,16 @@ package biz.oneilenterprise.website.controller;
 
 import biz.oneilenterprise.website.config.ResourceHandler;
 import biz.oneilenterprise.website.dto.AlbumDTO;
+import biz.oneilenterprise.website.dto.GalleryUploadDTO;
 import biz.oneilenterprise.website.dto.MediaDTO;
 import biz.oneilenterprise.website.dto.MediasDTO;
+import biz.oneilenterprise.website.dto.PublicMediaApprovalDTO;
 import biz.oneilenterprise.website.entity.Album;
-import biz.oneilenterprise.website.entity.PublicMediaApproval;
 import biz.oneilenterprise.website.entity.User;
-import biz.oneilenterprise.website.utils.FileHandlerUtil;
 import biz.oneilenterprise.website.service.MediaService;
 import biz.oneilenterprise.website.service.SystemFileService;
 import biz.oneilenterprise.website.service.UserService;
-import biz.oneilenterprise.website.dto.GalleryUploadDTO;
+import biz.oneilenterprise.website.utils.FileHandlerUtil;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Metrics;
 import java.io.File;
@@ -162,7 +162,9 @@ public class MediaGalleryController {
 
     @PutMapping("/medias/linkstatus/update")
     public ResponseEntity<HttpStatus> massUpdateMediaLinkStatus(@RequestBody @Valid MediasDTO mediasDTO, Authentication user, HttpServletRequest request) {
-        mediaService.updateMediasLinkStatus(mediasDTO.getMediaIds(), mediasDTO.getLinkStatus(), user.getName());
+        User userAuth = (User) user.getPrincipal();
+
+        mediaService.updateMediasLinkStatus(mediasDTO.getMediaIds(), mediasDTO.getLinkStatus(), userAuth);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
@@ -220,7 +222,7 @@ public class MediaGalleryController {
     }
 
     @GetMapping("/admin/media/pendingApproval")
-    public ResponseEntity<List<PublicMediaApproval>> getMediasRequiringApproval() {
+    public ResponseEntity<List<PublicMediaApprovalDTO>> getMediasRequiringApproval() {
         return ResponseEntity.ok(mediaService.getMediaApprovalsByStatus("pending"));
     }
 

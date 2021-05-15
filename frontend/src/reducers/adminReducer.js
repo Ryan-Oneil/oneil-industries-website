@@ -155,7 +155,7 @@ export const slice = createSlice({
     },
     removedMediaApproval(state, action) {
       state.mediaApprovals = state.mediaApprovals.filter(
-        mediaApproval => mediaApproval.id !== action.payload
+        mediaApproval => mediaApproval.mediaId !== action.payload
       );
     },
     fetchedRoles(state, action) {

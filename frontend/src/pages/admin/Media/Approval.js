@@ -36,18 +36,20 @@ export default () => {
 
   return (
     <>
-      <Row
-        gutter={[32, 32]}
-        className={"extraPadding"}
-        style={{
-          height: "90vh",
-          overflow: "auto"
-        }}
-      >
-        {renderApprovalList()}
-      </Row>
+      {mediaApprovals.length > 0 && (
+        <Row
+          gutter={[32, 32]}
+          className={"extraPadding"}
+          style={{
+            height: "90vh",
+            overflow: "auto"
+          }}
+        >
+          {renderApprovalList()}
+        </Row>
+      )}
       {mediaApprovals.length === 0 && (
-        <Card>
+        <Card style={{ margin: 24 }}>
           <Empty
             description={
               loading

@@ -7,6 +7,7 @@ import static biz.oneilenterprise.website.utils.FileHandlerUtil.writeVideoThumbn
 import biz.oneilenterprise.website.dto.AlbumDTO;
 import biz.oneilenterprise.website.dto.GalleryUploadDTO;
 import biz.oneilenterprise.website.dto.MediaDTO;
+import biz.oneilenterprise.website.dto.PublicMediaApprovalDTO;
 import biz.oneilenterprise.website.entity.Album;
 import biz.oneilenterprise.website.entity.Media;
 import biz.oneilenterprise.website.entity.PublicMediaApproval;
@@ -182,8 +183,8 @@ public class MediaService {
         return approvalRepository.getFirstByMedia_Id(mediaID).orElse(null);
     }
 
-    public List<PublicMediaApproval> getMediaApprovalsByStatus(String status) {
-        return approvalRepository.findAllByStatus(status);
+    public List<PublicMediaApprovalDTO> getMediaApprovalsByStatus(String status) {
+        return publicMediaApprovalToDTOS(approvalRepository.findAllByStatus(status));
     }
 
     public PublicMediaApproval requestPublicApproval(Media media, String mediaName) {
@@ -197,6 +198,14 @@ public class MediaService {
             throw new MediaApprovalException("This media has previously requested public access. Approval status: " + publicMediaStatus
                 .getStatus());
         }
+    }
+
+    public void massRequestPublicApproval(Integer[] mediaIds) {
+        List<Media> medias = getMediasByIds(mediaIds);
+
+        medias.forEach(media -> media.setPublicMediaApproval(requestPublicApproval(media, media.getName())));
+
+        mediaRepository.saveAll(medias);
     }
 
     public void setMediaApprovalStatus(int mediaApprovalID, String newStatus) {
@@ -251,8 +260,12 @@ public class MediaService {
         return totalSize;
     }
 
-    public void updateMediasLinkStatus(Integer[] mediaIds, String linkStatus, String uploader) {
-        mediaRepository.updateMediaPrivacy(linkStatus, mediaIds, uploader);
+    public void updateMediasLinkStatus(Integer[] mediaIds, String linkStatus, User uploader) {
+        if (!CollectionUtils.containsAny(uploader.getAuthorities(), TRUSTED_ROLES)) {
+            massRequestPublicApproval(mediaIds);
+            return;
+        }
+        mediaRepository.updateMediaPrivacy(linkStatus, mediaIds, uploader.getUsername());
     }
 
     public File getMediaFile(String mediaFileName) {
@@ -391,5 +404,15 @@ public class MediaService {
 
     public MediaDTO mediaToDTO(Media media) {
         return modelMapper.map(media, MediaDTO.class);
+    }
+
+    public List<PublicMediaApprovalDTO> publicMediaApprovalToDTOS(List<PublicMediaApproval> approvals) {
+        return approvals.stream()
+            .map(this::publicMediaApprovalToDTO)
+            .collect(Collectors.toList());
+    }
+
+    public PublicMediaApprovalDTO publicMediaApprovalToDTO(PublicMediaApproval mediaApproval) {
+        return modelMapper.map(mediaApproval, PublicMediaApprovalDTO.class);
     }
 }

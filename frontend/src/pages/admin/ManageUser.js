@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Breadcrumb, Button, Col, PageHeader, Row, Tabs } from "antd";
+import { Breadcrumb, Button, Col, message, Row, Tabs } from "antd";
 import { displayBytesInReadableForm } from "../../helpers";
 import StatisticCard from "../../components/Stats/StatisticCard";
 import {
@@ -73,7 +73,15 @@ export default props => {
             key="1"
             type={`${account.enabled ? "danger" : "primary"}`}
             onClick={() =>
-              dispatch(updateUserAccountStatus(user, !account.enabled))
+              dispatch(
+                updateUserAccountStatus(user, !account.enabled)
+              ).then(() =>
+                message.success(
+                  `User account has been ${
+                    !account.enabled ? "enabled" : "disabled"
+                  }`
+                )
+              )
             }
           >
             {account.enabled ? "Disable Account" : "Enable Account"}
