@@ -3,12 +3,15 @@ package biz.oneilenterprise.website.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import biz.oneilenterprise.website.dto.AlbumDTO;
 import biz.oneilenterprise.website.dto.GalleryUploadDTO;
 import biz.oneilenterprise.website.dto.MediaDTO;
+import biz.oneilenterprise.website.entity.Album;
 import biz.oneilenterprise.website.entity.Media;
 import biz.oneilenterprise.website.entity.PublicMediaApproval;
 import biz.oneilenterprise.website.entity.User;
 import biz.oneilenterprise.website.enums.MediaType;
+import biz.oneilenterprise.website.exception.AlbumMissingException;
 import biz.oneilenterprise.website.exception.MediaApprovalException;
 import biz.oneilenterprise.website.exception.MediaException;
 import biz.oneilenterprise.website.utils.FileHandlerUtil;
@@ -18,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -249,7 +253,7 @@ public class MediaServiceTest {
 
     @Test
     public void getMediaApprovalByMediaIDNotFoundTest() {
-        PublicMediaApproval publicMediaApproval = mediaService.getMediaApprovalByMediaID(12);
+        PublicMediaApproval publicMediaApproval = mediaService.getMediaApprovalByMediaID(56);
 
         assertThat(publicMediaApproval).isNull();
     }
@@ -332,13 +336,9 @@ public class MediaServiceTest {
 
     @Test
     public void deleteMediaTest() throws IOException {
-        FileHandlerUtil.writeImageThumbnail(imageFile, mediaService.getUserMediaDirectory(testUser.getUsername()));
-        File file = new File(mediaService.getUserMediaDirectory(testUser.getUsername()) + imageFile.getName());
-
-        assertThat(file).exists();
+        File file = writeMediaFileForTests();
 
         Media media = mediaService.getMedia(4);
-
         long deletedMediaSize = mediaService.deleteMedia(4);
 
         assertThat(file).doesNotExist();
@@ -346,5 +346,283 @@ public class MediaServiceTest {
         assertThatThrownBy(() -> mediaService.getMedia(4))
             .isExactlyInstanceOf(MediaException.class)
             .hasMessage("Media does not exist on this server");
+    }
+
+    @NotNull
+    private File writeMediaFileForTests() throws IOException {
+        FileHandlerUtil.writeImageThumbnail(imageFile, mediaService.getUserMediaDirectory(testUser.getUsername()));
+        File file = new File(mediaService.getUserMediaDirectory(testUser.getUsername()) + imageFile.getName());
+
+        assertThat(file).exists();
+        return file;
+    }
+
+    @Test
+    public void deleteMediasTest() throws IOException {
+        Integer[] medias = new Integer[]{1, 2, 3, 4};
+        File file = writeMediaFileForTests();
+
+        Long deletedSize = mediaService.deleteMedias(medias);
+        List<Media> mediaList = mediaService.getMediasByIds(medias);
+
+        assertThat(file).doesNotExist();
+        assertThat(deletedSize).isEqualTo(432944L);
+        assertThat(mediaList).isEmpty();
+    }
+
+    public void updateMediasLinkStatusTest() {
+
+    }
+
+    @Test
+    public void getMediaFileTest() throws IOException {
+        File file = writeMediaFileForTests();
+
+        File mediaFile = mediaService.getMediaFile("image.png");
+
+        assertThat(mediaFile).exists();
+        assertThat(mediaFile).isFile();
+        assertThat(mediaFile).hasSameBinaryContentAs(file);
+        assertThat(mediaFile).hasName(file.getName());
+    }
+
+    @Test
+    public void getMediaFileNotExistsTest() {
+        File mediaFile = mediaService.getMediaFile("image.png");
+
+        assertThat(mediaFile).isNotNull();
+        assertThat(mediaFile).hasName("noimage.png");
+    }
+
+    @Test
+    public void getMediaThumbnailFileTest() {
+        mediaService.writeMediaThumbnails(Collections.singletonList(imageFile), testUser.getUsername());
+
+        File mediaThumbnail = mediaService.getMediaThumbnailFile("image.png");
+
+        assertThat(mediaThumbnail).exists();
+        assertThat(mediaThumbnail).isFile();
+    }
+
+    @Test
+    public void getMediaThumbnailFileNotExistsTest() {
+        File mediaThumbnail = mediaService.getMediaThumbnailFile("image.png");
+
+        assertThat(mediaThumbnail).isNotNull();
+        assertThat(mediaThumbnail).hasName("noimage.png");
+    }
+
+    @Test
+    public void getMediaStatsTest() {
+        HashMap<String, Object> stats = mediaService.getMediaStats(testUser.getUsername());
+
+        assertThat(stats).containsKey("totalMedias").containsValue(5L);
+        assertThat(stats).containsKey("totalAlbums").containsValue(0L);
+        assertThat(stats).containsKey("recentMedias");
+    }
+
+    @Test
+    public void getOrRegisterAlbumTest() {
+        Album album = mediaService.getOrRegisterAlbum("", "albumID");
+
+        assertThat(album).isNotNull();
+        assertThat(album.getCreator()).isEqualTo("albumCreator");
+        assertThat(album.getMedias()).size().isEqualTo(1);
+    }
+
+    @Test
+    public void getOrRegisterAlbumNotExistsTest() {
+        Album album = mediaService.getOrRegisterAlbum(testUser.getUsername(), "awds");
+
+        assertThat(album).isNotNull();
+        assertThat(album.getCreator()).isEqualTo(testUser.getUsername());
+        assertThat(album.getMedias()).isEmpty();
+        assertThat(album.getName()).isEqualTo("awds");
+    }
+
+    @Test
+    public void registerNewAlbumTest() {
+        Album album = mediaService.registerNewAlbum("test", testUser.getUsername());
+        Album wasAlbumSaved = mediaService.getAlbum(album.getId());
+
+        assertThat(album.getName()).isEqualTo("test");
+        assertThat(album.getCreator()).isEqualTo(testUser.getUsername());
+        assertThat(wasAlbumSaved).isNotNull();
+    }
+
+    @Test
+    public void resetMediaAlbumIDsTest() {
+        Album album = mediaService.getAlbum("albumID");
+
+        mediaService.resetMediaAlbumIDs(album);
+        Media media = mediaService.getMedia(album.getMedias().get(0).getId());
+
+        assertThat(media.getAlbum()).isNull();
+    }
+
+    @Test
+    public void getAlbumTest() {
+        Album album = mediaService.getAlbum("albumID");
+
+        assertThat(album).isNotNull();
+        assertThat(album.getCreator()).isEqualTo("albumCreator");
+        assertThat(album.getName()).isEqualTo("albumName");
+    }
+
+    @Test
+    public void getAlbumNotExistsTest() {
+        assertThatThrownBy(() -> mediaService.getAlbum("notFound"))
+            .isExactlyInstanceOf(AlbumMissingException.class)
+            .hasMessage("Album not found");
+    }
+
+    @Test
+    public void getAlbumWithMediasTest() {
+        Album album = mediaService.getAlbumWithMedias("albumID");
+
+        assertThat(album).isNotNull();
+        assertThat(album.getCreator()).isEqualTo("albumCreator");
+        assertThat(album.getName()).isEqualTo("albumName");
+        assertThat(album.getMedias()).isNotEmpty();
+    }
+
+    @Test
+    public void getAlbumWithMediasNotExistsTest() {
+        assertThatThrownBy(() -> mediaService.getAlbumWithMedias("notFound"))
+            .isExactlyInstanceOf(AlbumMissingException.class)
+            .hasMessage("Album not found");
+    }
+
+    @Test
+    public void getPublicAlbumTest() {
+        AlbumDTO albumDTO = mediaService.getPublicAlbum("albumID");
+
+        assertThat(albumDTO).isNotNull();
+        assertThat(albumDTO.getMedias()).isNotEmpty();
+        assertThat(albumDTO.getName()).isEqualTo("albumName");
+    }
+
+    @Test
+    public void getPublicAlbumNotExistsTest() {
+        assertThatThrownBy(() -> mediaService.getPublicAlbum("notFound"))
+            .isExactlyInstanceOf(AlbumMissingException.class)
+            .hasMessage("Album not found");
+    }
+
+    @Test
+    public void deleteAlbumTest() {
+        mediaService.deleteAlbum("albumID");
+        Media media = mediaService.getMedia(1);
+
+        assertThatThrownBy(() -> mediaService.getAlbumWithMedias("notFound"))
+            .isExactlyInstanceOf(AlbumMissingException.class)
+            .hasMessage("Album not found");
+        assertThat(media.getAlbum()).isNull();
+    }
+
+    @Test
+    public void deleteAlbumNotExistsTest() {
+        assertThatThrownBy(() -> mediaService.deleteAlbum("notFound"))
+            .isExactlyInstanceOf(AlbumMissingException.class)
+            .hasMessage("Album not found");
+    }
+
+    @Test
+    public void getAlbumsByUserTest() {
+        List<AlbumDTO> albumDTOS = mediaService.getAlbumsByUser("albumCreator");
+
+        assertThat(albumDTOS).isNotEmpty();
+    }
+
+    @Test
+    public void getAlbumsByUserNoAlbumsTest() {
+        List<AlbumDTO> albumDTOS = mediaService.getAlbumsByUser("nouser");
+
+        assertThat(albumDTOS).isEmpty();
+    }
+
+    @Test
+    public void getTotalAlbumsTest() {
+        long totalAlbums = mediaService.getTotalAlbums();
+
+        assertThat(totalAlbums).isEqualTo(2L);
+    }
+
+    @Test
+    public void updateAlbumTest() {
+        mediaService.updateAlbum("albumID", "test_name");
+
+        Album album = mediaService.getAlbum("albumID");
+
+        assertThat(album.getName()).isEqualTo("test_name");
+    }
+
+    @Test
+    public void updateAlbumNotFoundTest() {
+        assertThatThrownBy(() -> mediaService.updateAlbum("noAlbum", "test_name"))
+            .isExactlyInstanceOf(AlbumMissingException.class)
+            .hasMessage("Album not found");
+    }
+
+    @Test
+    public void addMediasToAlbumTest() {
+        int[] mediaIds = {2, 3, 4, 5};
+        mediaService.addMediasToAlbum("albumID", mediaIds, testUser.getUsername());
+
+        List<Media> medias = mediaService.getMediasByIds(new Integer[]{2, 3, 4, 5});
+
+        medias.forEach(media -> assertThat(media.getAlbum()).isNotNull());
+    }
+
+    @Test
+    public void getMediasByIdsTest() {
+        Integer[] mediaIds = {1, 2, 3, 4};
+        List<Media> medias = mediaService.getMediasByIds(mediaIds);
+
+        assertThat(medias).isNotEmpty();
+        assertThat(medias).size().isEqualTo(mediaIds.length);
+    }
+
+    @Test
+    public void getMediasByIdsNotExistsTest() {
+        Integer[] mediaIds = {100, 200, 300, 400};
+        List<Media> medias = mediaService.getMediasByIds(mediaIds);
+
+        assertThat(medias).isEmpty();
+    }
+
+    @Test
+    public void albumToDTOsTest() {
+        Album album = new Album("test", "test", "test");
+        Media media = new Media();
+        album.setMedias(Collections.singletonList(media));
+
+        List<AlbumDTO> albumDTOS = mediaService.albumToDTOs(Collections.singletonList(album));
+
+        assertThat(albumDTOS).isNotEmpty();
+
+        AlbumDTO albumDTO = albumDTOS.get(0);
+
+        assertThat(albumDTO.getName()).isEqualTo(album.getName());
+        assertThat(albumDTO.getCreator()).isEqualTo(album.getCreator());
+        assertThat(albumDTO.getId()).isEqualTo(album.getId());
+        assertThat(albumDTO.getMedias()).isNotEmpty();
+    }
+
+    @Test
+    public void mediaToDTOsTest() {
+        Media media = new Media("test", "test", "test", testUser, "test", 10L);
+        List<MediaDTO> mediaDTOS = mediaService.mediaToDTOs(Collections.singletonList(media));
+
+        assertThat(mediaDTOS).isNotEmpty();
+
+        MediaDTO mediaDTO = mediaDTOS.get(0);
+
+        assertThat(mediaDTO.getId()).isEqualTo(media.getId());
+        assertThat(mediaDTO.getUploader()).isEqualTo(media.getUploader().getUsername());
+        assertThat(mediaDTO.getLinkStatus()).isEqualTo(media.getLinkStatus());
+        assertThat(mediaDTO.getFileName()).isEqualTo(media.getFileName());
+        assertThat(mediaDTO.getSize()).isEqualTo(media.getSize());
+        assertThat(mediaDTO.getDateAdded()).isEqualTo(media.getDateAdded());
     }
 }

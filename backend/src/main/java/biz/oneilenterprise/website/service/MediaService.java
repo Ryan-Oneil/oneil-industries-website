@@ -243,8 +243,10 @@ public class MediaService {
 
     public Long deleteMedias(Integer[] mediaIds) {
         Long totalSize = mediaRepository.getTotalMediasSize(mediaIds);
+        List<Media> mediaList = mediaRepository.getAllByIds(mediaIds);
 
         mediaRepository.deleteMediasByIds(mediaIds);
+        mediaList.forEach(media -> FileHandlerUtil.deleteFile(getUserMediaDirectory(media.getUploader().getUsername()) + media.getFileName()));
 
         return totalSize;
     }
