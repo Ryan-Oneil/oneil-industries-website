@@ -7,9 +7,6 @@ public class PublicMediaApprovalDTO {
     private String status;
     private MediaDTO media;
 
-    public PublicMediaApprovalDTO() {
-    }
-
     public int getMediaId() {
         return mediaId;
     }
