@@ -3,40 +3,6 @@ import { apiGetCall, apiPutCall } from "../apis/api";
 import { getApiError } from "../helpers";
 import { setError } from "./globalErrorReducer";
 
-export const getQuotaStats = username => dispatch => {
-  return apiGetCall(`/user/${username}/quota`)
-    .then(response => dispatch(getQuota(response.data)))
-    .catch(error => dispatch(setError(getApiError(error))));
-};
-
-export const getUserDetails = username => dispatch => {
-  apiGetCall(`/user/${username}/details`)
-    .then(response => dispatch(getDetails(response.data)))
-    .catch(error => dispatch(setError(getApiError(error))));
-};
-
-export const updateEmail = (username, email) => dispatch => {
-  return apiPutCall(`/user/${username}/details/update`, email).then(() =>
-    dispatch(updateMyEmail(email))
-  );
-};
-
-export const fetchAPIToken = endpoint => dispatch => {
-  apiGetCall(endpoint)
-    .then(({ data }) => {
-      dispatch(getToken(data));
-    })
-    .catch(error => dispatch(setError(getApiError(error))));
-};
-
-export const generateShareXConfig = endpoint => dispatch => {
-  apiGetCall(endpoint)
-    .then(({ data }) => {
-      dispatch(getShareXConfig(data));
-    })
-    .catch(error => dispatch(setError(getApiError(error))));
-};
-
 export const slice = createSlice({
   name: "users",
   initialState: {
@@ -81,3 +47,37 @@ export const {
   increasedQuotaUsed,
   decreaseQuotaUsed
 } = slice.actions;
+
+export const getQuotaStats = username => dispatch => {
+  return apiGetCall(`/user/${username}/quota`)
+    .then(response => dispatch(getQuota(response.data)))
+    .catch(error => dispatch(setError(getApiError(error))));
+};
+
+export const getUserDetails = username => dispatch => {
+  apiGetCall(`/user/${username}/details`)
+    .then(response => dispatch(getDetails(response.data)))
+    .catch(error => dispatch(setError(getApiError(error))));
+};
+
+export const updateEmail = (username, email) => dispatch => {
+  return apiPutCall(`/user/${username}/details/update`, email).then(() =>
+    dispatch(updateMyEmail(email))
+  );
+};
+
+export const fetchAPIToken = endpoint => dispatch => {
+  apiGetCall(endpoint)
+    .then(({ data }) => {
+      dispatch(getToken(data));
+    })
+    .catch(error => dispatch(setError(getApiError(error))));
+};
+
+export const generateShareXConfig = endpoint => dispatch => {
+  apiGetCall(endpoint)
+    .then(({ data }) => {
+      dispatch(getShareXConfig(data));
+    })
+    .catch(error => dispatch(setError(getApiError(error))));
+};

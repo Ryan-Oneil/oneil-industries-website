@@ -16,6 +16,109 @@ import {
 } from "../apis/endpoints";
 import { decreaseQuotaUsed, increasedQuotaUsed } from "./userReducer";
 
+const media = new schema.Entity("medias");
+const album = new schema.Entity("albums", { medias: [media] });
+const mediaList = new schema.Array(media);
+const albumList = new schema.Array(album);
+
+export const slice = createSlice({
+  name: "media",
+  initialState: {
+    entities: {
+      medias: {},
+      albums: {},
+      comments: {
+        1: {
+          id: "dawd",
+          username: "AnEmma",
+          avatarLink:
+            "https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/avatars/ef/eff03c11994f816ffb2c8e29665851c124420187_full.jpg",
+          commentContent: "Loot Loot Loot",
+          date: "12/03/2021"
+        }
+      }
+    },
+    stats: {
+      totalMedias: 0,
+      recentMedias: [],
+      totalAlbums: 0
+    }
+  },
+  reducers: {
+    fetchedMedia(state, action) {
+      const data = normalize(action.payload.medias, mediaList);
+
+      state.entities.medias = Object.assign(
+        {},
+        state.entities.medias,
+        data.entities.medias
+      );
+    },
+    fetchedAlbums(state, action) {
+      const data = normalize(action.payload, albumList);
+
+      if (!data.entities.albums) {
+        return;
+      }
+      state.entities.medias = Object.assign(
+        {},
+        state.entities.medias,
+        data.entities.medias
+      );
+      state.entities.albums = data.entities.albums;
+    },
+    deletedMedia(state, action) {
+      delete state.entities.medias[action.payload];
+    },
+    deletedMedias(state, action) {
+      action.payload.forEach(mediaId => delete state.entities.medias[mediaId]);
+    },
+    updatedMedia(state, action) {
+      const id = action.payload.id;
+
+      state.entities.medias[id] = {
+        ...state.entities.medias[id],
+        ...action.payload
+      };
+    },
+    fetchedUserMediaStats(state, action) {
+      state.stats = action.payload;
+    },
+    createdAlbum(state, action) {
+      state.entities.albums[action.payload.id] = action.payload;
+    },
+    updatedAlbum(state, action) {
+      state.entities.albums[action.payload.id] = {
+        ...state.entities.albums[action.payload.id],
+        ...action.payload.album
+      };
+    },
+    deletedAlbum(state, action) {
+      delete state.entities.albums[action.payload];
+    },
+    updatedMediaLinkStatus(state, action) {
+      action.payload.mediaIds.forEach(
+        mediaId =>
+          (state.entities.medias[mediaId].linkStatus =
+            action.payload.linkStatus)
+      );
+    }
+  }
+});
+export default slice.reducer;
+export const {
+  fetchedMedia,
+  fetchedAlbums,
+  deletedMedia,
+  updatedMedia,
+  fetchedUserMediaStats,
+  createdAlbum,
+  updatedAlbum,
+  deletedMedias,
+  deletedAlbum,
+  updatedMediaLinkStatus
+} = slice.actions;
+
 export const fetchMedia = (endpoint, page, size) => dispatch => {
   const params = new URLSearchParams();
   params.append("page", page);
@@ -137,106 +240,3 @@ export const updateMediasLinkStatus = (mediaIds, status) => dispatch => {
     )
     .catch(error => dispatch(setError(getApiError(error))));
 };
-
-const media = new schema.Entity("medias");
-const album = new schema.Entity("albums", { medias: [media] });
-const mediaList = new schema.Array(media);
-const albumList = new schema.Array(album);
-
-export const slice = createSlice({
-  name: "media",
-  initialState: {
-    entities: {
-      medias: {},
-      albums: {},
-      comments: {
-        1: {
-          id: "dawd",
-          username: "AnEmma",
-          avatarLink:
-            "https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/avatars/ef/eff03c11994f816ffb2c8e29665851c124420187_full.jpg",
-          commentContent: "Loot Loot Loot",
-          date: "12/03/2021"
-        }
-      }
-    },
-    stats: {
-      totalMedias: 0,
-      recentMedias: [],
-      totalAlbums: 0
-    }
-  },
-  reducers: {
-    fetchedMedia(state, action) {
-      const data = normalize(action.payload.medias, mediaList);
-
-      state.entities.medias = Object.assign(
-        {},
-        state.entities.medias,
-        data.entities.medias
-      );
-    },
-    fetchedAlbums(state, action) {
-      const data = normalize(action.payload, albumList);
-
-      if (!data.entities.albums) {
-        return;
-      }
-      state.entities.medias = Object.assign(
-        {},
-        state.entities.medias,
-        data.entities.medias
-      );
-      state.entities.albums = data.entities.albums;
-    },
-    deletedMedia(state, action) {
-      delete state.entities.medias[action.payload];
-    },
-    deletedMedias(state, action) {
-      action.payload.forEach(mediaId => delete state.entities.medias[mediaId]);
-    },
-    updatedMedia(state, action) {
-      const id = action.payload.id;
-
-      state.entities.medias[id] = {
-        ...state.entities.medias[id],
-        ...action.payload
-      };
-    },
-    fetchedUserMediaStats(state, action) {
-      state.stats = action.payload;
-    },
-    createdAlbum(state, action) {
-      state.entities.albums[action.payload.id] = action.payload;
-    },
-    updatedAlbum(state, action) {
-      state.entities.albums[action.payload.id] = {
-        ...state.entities.albums[action.payload.id],
-        ...action.payload.album
-      };
-    },
-    deletedAlbum(state, action) {
-      delete state.entities.albums[action.payload];
-    },
-    updatedMediaLinkStatus(state, action) {
-      action.payload.mediaIds.forEach(
-        mediaId =>
-          (state.entities.medias[mediaId].linkStatus =
-            action.payload.linkStatus)
-      );
-    }
-  }
-});
-export default slice.reducer;
-export const {
-  fetchedMedia,
-  fetchedAlbums,
-  deletedMedia,
-  updatedMedia,
-  fetchedUserMediaStats,
-  createdAlbum,
-  updatedAlbum,
-  deletedMedias,
-  deletedAlbum,
-  updatedMediaLinkStatus
-} = slice.actions;

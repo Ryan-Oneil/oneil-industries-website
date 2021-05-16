@@ -10,6 +10,102 @@ import { setError } from "./globalErrorReducer";
 import { getApiError, getFilterSort } from "../helpers";
 import { normalize, schema } from "normalizr";
 
+const file = new schema.Entity("files");
+const link = new schema.Entity("links", { files: [file] });
+const linkList = new schema.Array(link);
+
+export const slice = createSlice({
+  name: "fileSharer",
+  initialState: {
+    entities: { files: {}, links: {} },
+    stats: {
+      totalViews: 0,
+      totalLinks: 0,
+      totalFiles: 0,
+      mostViewedLinks: [],
+      recentLinks: []
+    },
+    linkUpload: {
+      files: [],
+      size: 0,
+      reachedLimit: false
+    }
+  },
+  reducers: {
+    removeLink(state, action) {
+      delete state.entities.links[action.payload.linkID];
+    },
+    addLinkInfo(state, action) {
+      const normalizedData = normalize(action.payload, link);
+
+      state.entities.files = Object.assign(
+        {},
+        state.entities.files,
+        normalizedData.entities.files
+      );
+
+      state.entities.links = Object.assign(
+        {},
+        state.entities.links,
+        normalizedData.entities.links
+      );
+    },
+    removeFile(state, action) {
+      const { files } = state.entities.links[action.payload.linkID];
+      state.entities.links[action.payload.linkID].files = files.filter(
+        fileID => fileID !== action.payload.fileID
+      );
+      delete state.entities.files[action.payload.fileID];
+    },
+    addFiles(state, action) {
+      let files = {};
+      let fileIds = [];
+
+      action.payload.files.forEach(file => {
+        files[file.id] = file;
+        fileIds.push(file.id);
+      });
+
+      state.entities.files = Object.assign({}, state.entities.files, files);
+      state.entities.links[action.payload.linkID].files = [
+        ...state.entities.links[action.payload.linkID].files,
+        ...fileIds
+      ];
+    },
+    getFileStats(state, action) {
+      //Change it so the files get added to entities
+      //Store Ids only in stats array
+      state.stats = action.payload;
+    },
+    updateLinkDetails(state, action) {
+      state.entities.links[action.payload.linkID] = {
+        ...state.entities.links[action.payload.linkID],
+        ...action.payload.link
+      };
+    },
+    addLinks(state, action) {
+      const data = normalize(action.payload.links, linkList);
+      state.stats.totalLinks = action.payload.total;
+
+      state.entities.links = Object.assign(
+        {},
+        state.entities.links,
+        data.entities.links
+      );
+    }
+  }
+});
+export default slice.reducer;
+export const {
+  removeLink,
+  addLinkInfo,
+  removeFile,
+  addFiles,
+  getFileStats,
+  updateLinkDetails,
+  addLinks
+} = slice.actions;
+
 export const deleteLink = linkID => dispatch => {
   apiDeleteCall(`/delete/${linkID}`)
     .then(() => {
@@ -106,99 +202,3 @@ export const getUserLinks = (username, page, size, sorter) => dispatch => {
     .then(response => dispatch(addLinks(response.data)))
     .catch(error => dispatch(setError(getApiError(error))));
 };
-
-const file = new schema.Entity("files");
-const link = new schema.Entity("links", { files: [file] });
-const linkList = new schema.Array(link);
-
-export const slice = createSlice({
-  name: "fileSharer",
-  initialState: {
-    entities: { files: {}, links: {} },
-    stats: {
-      totalViews: 0,
-      totalLinks: 0,
-      totalFiles: 0,
-      mostViewedLinks: [],
-      recentLinks: []
-    },
-    linkUpload: {
-      files: [],
-      size: 0,
-      reachedLimit: false
-    }
-  },
-  reducers: {
-    removeLink(state, action) {
-      delete state.entities.links[action.payload.linkID];
-    },
-    addLinkInfo(state, action) {
-      const normalizedData = normalize(action.payload, link);
-
-      state.entities.files = Object.assign(
-        {},
-        state.entities.files,
-        normalizedData.entities.files
-      );
-
-      state.entities.links = Object.assign(
-        {},
-        state.entities.links,
-        normalizedData.entities.links
-      );
-    },
-    removeFile(state, action) {
-      const { files } = state.entities.links[action.payload.linkID];
-      state.entities.links[action.payload.linkID].files = files.filter(
-        fileID => fileID !== action.payload.fileID
-      );
-      delete state.entities.files[action.payload.fileID];
-    },
-    addFiles(state, action) {
-      let files = {};
-      let fileIds = [];
-
-      action.payload.files.forEach(file => {
-        files[file.id] = file;
-        fileIds.push(file.id);
-      });
-
-      state.entities.files = Object.assign({}, state.entities.files, files);
-      state.entities.links[action.payload.linkID].files = [
-        ...state.entities.links[action.payload.linkID].files,
-        ...fileIds
-      ];
-    },
-    getFileStats(state, action) {
-      //Change it so the files get added to entities
-      //Store Ids only in stats array
-      state.stats = action.payload;
-    },
-    updateLinkDetails(state, action) {
-      state.entities.links[action.payload.linkID] = {
-        ...state.entities.links[action.payload.linkID],
-        ...action.payload.link
-      };
-    },
-    addLinks(state, action) {
-      const data = normalize(action.payload.links, linkList);
-      state.stats.totalLinks = action.payload.total;
-
-      state.entities.links = Object.assign(
-        {},
-        state.entities.links,
-        data.entities.links
-      );
-    }
-  }
-});
-export default slice.reducer;
-export const {
-  removeLink,
-  addLinkInfo,
-  removeFile,
-  addFiles,
-  getFileStats,
-  updateLinkDetails,
-  addLinks
-} = slice.actions;

@@ -1,6 +1,56 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { apiPostCall, BASE_URL, getRefreshToken } from "../apis/api";
 
+export const isTokenExpired = token => {
+  return Date.now() > token.exp * 1000;
+};
+
+export const decodeJWT = tokenType => {
+  const token = localStorage.getItem(tokenType);
+
+  if (!token) {
+    return "";
+  }
+  const base64Url = token.split(".")[1];
+  const base64 = base64Url.replace("-", "+").replace("_", "/");
+
+  return JSON.parse(window.atob(base64));
+};
+
+const isAuth = () => {
+  const token = decodeJWT("refreshToken");
+
+  if (!token) {
+    return false;
+  }
+  return !isTokenExpired(token);
+};
+
+export const slice = createSlice({
+  name: "auth",
+  initialState: {
+    isAuthenticated: isAuth(),
+    user: { name: decodeJWT("refreshToken").user, avatar: "" },
+    role: decodeJWT("authToken").role
+  },
+  reducers: {
+    loginSuccess(state, action) {
+      state.user = { name: action.payload.username };
+      state.isAuthenticated = true;
+    },
+    logout(state) {
+      state.isAuthenticated = false;
+      state.user = {};
+      state.role = "";
+    },
+    setUserRole(state, action) {
+      state.role = action.payload;
+    }
+  }
+});
+export default slice.reducer;
+export const { loginSuccess, logout, setUserRole } = slice.actions;
+
 export const loginUser = creds => dispatch => {
   return apiPostCall(BASE_URL + "/login", creds).then(response => {
     const token = response.headers["authorization"];
@@ -31,31 +81,6 @@ export const changePassword = (token, value) => {
   return apiPostCall(BASE_URL + "/auth/newPassword/" + token, value.password);
 };
 
-export const isTokenExpired = token => {
-  return Date.now() > token.exp * 1000;
-};
-
-export const decodeJWT = tokenType => {
-  const token = localStorage.getItem(tokenType);
-
-  if (!token) {
-    return "";
-  }
-  const base64Url = token.split(".")[1];
-  const base64 = base64Url.replace("-", "+").replace("_", "/");
-
-  return JSON.parse(window.atob(base64));
-};
-
-const isAuth = () => {
-  const token = decodeJWT("refreshToken");
-
-  if (!token) {
-    return false;
-  }
-  return !isTokenExpired(token);
-};
-
 export const getRefreshTokenWithRole = () => dispatch => {
   const refreshToken = localStorage.getItem("refreshToken");
 
@@ -65,28 +90,3 @@ export const getRefreshTokenWithRole = () => dispatch => {
     );
   }
 };
-
-export const slice = createSlice({
-  name: "auth",
-  initialState: {
-    isAuthenticated: isAuth(),
-    user: { name: decodeJWT("refreshToken").user, avatar: "" },
-    role: decodeJWT("authToken").role
-  },
-  reducers: {
-    loginSuccess(state, action) {
-      state.user = { name: action.payload.username };
-      state.isAuthenticated = true;
-    },
-    logout(state) {
-      state.isAuthenticated = false;
-      state.user = {};
-      state.role = "";
-    },
-    setUserRole(state, action) {
-      state.role = action.payload;
-    }
-  }
-});
-export default slice.reducer;
-export const { loginSuccess, logout, setUserRole } = slice.actions;
