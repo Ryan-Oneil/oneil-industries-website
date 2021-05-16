@@ -49,7 +49,7 @@ export default ({ mediaEndpoint, mediaCardLayout, height, style }) => {
     <ConfigProvider renderEmpty={renderEmpty}>
       <div
         style={{
-          height: height,
+          height,
           overflow: "auto",
           ...style
         }}

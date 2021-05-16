@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import RenderMedias from "../../components/Gallery/RenderMedias";
 import { fetchAlbumWithImages } from "../../reducers/mediaReducer";
-import { Empty, Row } from "antd";
+import { Col, Empty, Row } from "antd";
 import MediaModal from "../../components/Gallery/MediaModal";
+import MediaCard from "../../components/Gallery/MediaCard";
 
 export default props => {
   const {
@@ -22,6 +22,21 @@ export default props => {
     setActiveMedia(media);
   };
 
+  const renderMedias = () => {
+    return album.medias.map(media => {
+      return (
+        <Col xs={24} sm={12} md={12} lg={8} xl={6} xxl={4} key={media.id}>
+          <MediaCard
+            mediaFileName={media.fileName}
+            mediaType={media.mediaType}
+            dateAdded={media.dateAdded}
+            handleShowDialog={handleShowDialog.bind(this, media)}
+          />
+        </Col>
+      );
+    });
+  };
+
   return (
     <div className={"topPadding"}>
       <h1 className="centerText bigText whiteText">{album.name}</h1>
@@ -32,7 +47,7 @@ export default props => {
         />
       )}
       <Row gutter={[32, 32]} justify="center">
-        {RenderMedias(album.medias, handleShowDialog)}
+        {renderMedias()}
       </Row>
       {activeMedia && (
         <MediaModal

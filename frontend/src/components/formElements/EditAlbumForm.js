@@ -24,6 +24,15 @@ export default props => {
     });
   };
 
+  const validate = values => {
+    const errors = {};
+
+    if (!values.name) {
+      errors.name = "Name is required";
+    }
+    return errors;
+  };
+
   return (
     <Formik
       initialValues={{
@@ -78,13 +87,4 @@ export default props => {
       }}
     </Formik>
   );
-};
-
-const validate = values => {
-  const errors = {};
-
-  if (!values.name) {
-    errors.name = "Name is required";
-  }
-  return errors;
 };

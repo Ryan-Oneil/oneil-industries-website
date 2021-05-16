@@ -30,6 +30,24 @@ export default () => {
       });
   };
 
+  const validate = values => {
+    const errors = {};
+
+    if (!values.username) {
+      errors.username = "Username is required";
+    }
+    if (!values.password) {
+      errors.password = "Password is required";
+    }
+    if (values.password !== values.confirmPassword) {
+      errors.confirmPassword = "Passwords don't match";
+    }
+    if (!values.email) {
+      errors.email = "Email is required";
+    }
+    return errors;
+  };
+
   return (
     <Formik
       initialValues={{
@@ -109,22 +127,4 @@ export default () => {
       }}
     </Formik>
   );
-};
-
-const validate = values => {
-  const errors = {};
-
-  if (!values.username) {
-    errors.username = "Username is required";
-  }
-  if (!values.password) {
-    errors.password = "Password is required";
-  }
-  if (values.password !== values.confirmPassword) {
-    errors.confirmPassword = "Passwords don't match";
-  }
-  if (!values.email) {
-    errors.email = "Email is required";
-  }
-  return errors;
 };

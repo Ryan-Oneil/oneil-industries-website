@@ -25,6 +25,15 @@ export default props => {
     });
   };
 
+  const validate = formValues => {
+    const errors = {};
+
+    if (!formValues.max) {
+      errors.max = "You must enter a quota max amount";
+    }
+    return errors;
+  };
+
   return (
     <Card title="Quota Settings">
       <Formik
@@ -93,12 +102,4 @@ export default props => {
       </Formik>
     </Card>
   );
-};
-const validate = formValues => {
-  const errors = {};
-
-  if (!formValues.max) {
-    errors.max = "You must enter a quota max amount";
-  }
-  return errors;
 };
