@@ -1,12 +1,14 @@
 INSERT INTO album (id, name, creator) VALUES ('albumID', 'albumName', 'albumCreator');
 INSERT INTO album (id, name, creator) VALUES ('test', 'test', 'test');
 
-INSERT INTO quota (id, used, max, ignore_quota) VALUES (1, 2500, 25, 0);
-INSERT INTO quota (id, used, max, ignore_quota) VALUES (2, 36, 6, 0);
+INSERT INTO quota (id, used, max, ignore_quota) VALUES (1, 2500, 25, 1);
+INSERT INTO quota (id, used, max, ignore_quota) VALUES (2, 0, 1, 0);
+
+INSERT INTO api_access_tokens (id, token, uuid) VALUES (1, 'test', 'a8e0afcd-e52e-45d4-aace-a75bcc29b5f0');
 
 INSERT INTO users (id, username, password, enabled, email, role, quota_id, api_token_id) VALUES (34, 'albumCreator', 'test', 1, 'harrison.campbell0101@gmail.com', 'ROLE_UNREGISTERED', 1, null );
-INSERT INTO users (id, username, password, enabled, email, role, quota_id, api_token_id) VALUES (69, 'test', 'test', 1, 'test@example.com', 'ROLE_UNREGISTERED', 2, null );
-INSERT INTO users (id, username, password, enabled, email, role) VALUES (70, 'test2', 'test', 1, 'morinlynn@oneilindustries.biz', 'ROLE_UNREGISTERED');
+INSERT INTO users (id, username, password, enabled, email, role, quota_id, api_token_id) VALUES (69, 'test', 'test', 1, 'test@example.com', 'ROLE_UNREGISTERED', 2, 1 );
+INSERT INTO users (id, username, password, enabled, email, role) VALUES (70, 'test2', 'test', 0, 'morinlynn@oneilindustries.biz', 'ROLE_UNREGISTERED');
 INSERT INTO users (id, username, password, enabled, email, role) VALUES (71, 'user1', 'test', 1, 'francispate@oneilindustries.biz', 'ROLE_UNREGISTERED');
 INSERT INTO users (id, username, password, enabled, email, role) VALUES (72, 'user2', 'test', 1, 'lessiehubbard@oneilindustries.biz', 'ROLE_UNREGISTERED');
 INSERT INTO users (id, username, password, enabled, email, role) VALUES (73, 'henrywhitaker', 'test', 1, 'henrywhitaker@oneilindustries.biz', 'ROLE_UNREGISTERED');
@@ -99,5 +101,5 @@ INSERT INTO password_reset_token (id, token, username, expiry_date) VALUES (4, '
 
 INSERT INTO roles (id, role) VALUES (1, 'ROLE_USER');
 
-INSERT INTO verificationtoken (id, token, username, expiry_date) VALUES (1, 'e1d59296-5167-4986-897a-324c170f6e0f', '70', '2020-09-16 16:01:08');
-INSERT INTO verificationtoken (id, token, username, expiry_date) VALUES (2, '4f8fe42f-255f-471d-9e93-b8a06d1b0c2f', '69', '2021-05-08 19:23:13');
+INSERT INTO verificationtoken (id, token, username, expiry_date) VALUES (1, 'e1d59296-5167-4986-897a-324c170f6e0f', '70', '3020-09-16 16:01:08');
+INSERT INTO verificationtoken (id, token, username, expiry_date) VALUES (2, '4f8fe42f-255f-471d-9e93-b8a06d1b0c2f', '69', '2001-05-08 19:23:13');

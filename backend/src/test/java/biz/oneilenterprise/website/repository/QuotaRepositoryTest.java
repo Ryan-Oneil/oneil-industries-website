@@ -14,6 +14,6 @@ public class QuotaRepositoryTest extends BaseRepository {
     public void getTotalUsedTest() {
         long totalUsed = repository.getTotalUsed();
 
-        assertThat(totalUsed).isEqualTo(2536);
+        assertThat(totalUsed).isEqualTo(2500);
     }
 }

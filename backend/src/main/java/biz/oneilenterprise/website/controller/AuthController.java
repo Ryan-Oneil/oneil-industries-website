@@ -1,7 +1,7 @@
 package biz.oneilenterprise.website.controller;
 
 import biz.oneilenterprise.website.service.UserService;
-import biz.oneilenterprise.website.dto.LoginFormDTO;
+import biz.oneilenterprise.website.dto.RegisterUserDTO;
 import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,8 +21,8 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody @Valid LoginFormDTO loginFormDTO) {
-        userService.registerUser(loginFormDTO);
+    public ResponseEntity<String> registerUser(@RequestBody @Valid RegisterUserDTO registerUserDTO) {
+        userService.registerUser(registerUserDTO);
 
         return ResponseEntity.ok("A confirmation email has been sent. You will need to confirm it before you can login");
     }

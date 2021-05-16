@@ -11,7 +11,7 @@ import { handleFormError } from "../../apis/ApiErrorHandler";
 export default () => {
   const onSubmit = (formValues, { setStatus, setFieldError }) => {
     const creds = {
-      name: formValues.username.trim(),
+      username: formValues.username.trim(),
       password: formValues.password.trim(),
       email: formValues.email.trim()
     };

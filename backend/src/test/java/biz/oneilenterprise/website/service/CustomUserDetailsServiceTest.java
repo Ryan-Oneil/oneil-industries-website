@@ -6,22 +6,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import biz.oneilenterprise.website.entity.User;
 import biz.oneilenterprise.website.exception.TooManyLoginAttempts;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
-@Sql({"/testData.sql"})
-@Sql(scripts = "/delete.sql", executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
-public class CustomUserDetailsServiceTest {
+public class CustomUserDetailsServiceTest extends BaseIntegrationTest {
 
     private static final String CLIENT_IP = "0.0.0.0";
 

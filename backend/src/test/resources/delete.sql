@@ -9,3 +9,4 @@ DELETE FROM media;
 DELETE FROM album;
 DELETE FROM users;
 DELETE FROM quota;
+DELETE FROM api_access_tokens;

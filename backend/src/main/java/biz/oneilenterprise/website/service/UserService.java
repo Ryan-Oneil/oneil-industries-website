@@ -3,7 +3,7 @@ package biz.oneilenterprise.website.service;
 import static biz.oneilenterprise.website.security.SecurityConstants.SECRET;
 import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
 
-import biz.oneilenterprise.website.dto.LoginFormDTO;
+import biz.oneilenterprise.website.dto.RegisterUserDTO;
 import biz.oneilenterprise.website.dto.QuotaDTO;
 import biz.oneilenterprise.website.dto.ShareXConfigDTO;
 import biz.oneilenterprise.website.dto.UserDTO;
@@ -40,8 +40,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
-
-    private static final String USERNAME_REGEX = "^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$";
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
@@ -88,14 +86,14 @@ public class UserService {
         return userRepository.getUsersByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email + " doesn't exist"));
     }
 
-    public void registerUser(LoginFormDTO loginFormDTO) {
-        String username = loginFormDTO.getName();
-        String email = loginFormDTO.getEmail();
+    public void registerUser(RegisterUserDTO registerUserDTO) {
+        String username = registerUserDTO.getUsername();
+        String email = registerUserDTO.getEmail();
 
         validateUsername(username);
         validateEmail(email);
 
-        String encryptedPassword = passwordEncoder.encode(loginFormDTO.getPassword());
+        String encryptedPassword = passwordEncoder.encode(registerUserDTO.getPassword());
 
         User user = new User(username.toLowerCase(), encryptedPassword,false, email, "ROLE_UNREGISTERED");
         Quota quota = new Quota(user, 0, 25, false);
@@ -106,10 +104,6 @@ public class UserService {
     }
 
     public void validateUsername(String username) {
-        if (!username.matches(USERNAME_REGEX)) {
-            throw new UserException("Username may only contain a-Z . _");
-        }
-
         if (userRepository.isUsernameTaken(username.toLowerCase())) {
             throw new UserException("Username is taken");
         }
@@ -154,7 +148,7 @@ public class UserService {
         verificationTokenRepository.delete(token);
     }
 
-    public void generateResetToken(String userEmail) {
+    public PasswordResetToken generateResetToken(String userEmail) {
         User user = getUserByEmail(userEmail);
         Optional<PasswordResetToken> passwordResetToken = passwordTokenRepository.getByUsername(user);
         passwordResetToken.ifPresent(passwordTokenRepository::delete);
@@ -164,6 +158,8 @@ public class UserService {
         passwordTokenRepository.save(token);
 
         emailSender.sendSimpleEmail(user.getEmail(),"Password Reset","Reset Password Link " + frontendUrl + "/changePassword/" + token,"noreply@oneilenterprise.com",null);
+
+        return token;
     }
 
     public PasswordResetToken getResetToken(String token) {

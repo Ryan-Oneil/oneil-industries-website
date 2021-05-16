@@ -1,5 +1,6 @@
 package biz.oneilenterprise.website.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -18,6 +19,7 @@ public class ApiToken {
     @OneToOne(mappedBy = "apiToken")
     private User user;
 
+    @Column(length = 1000)
     private String token;
 
     private String uuid;
