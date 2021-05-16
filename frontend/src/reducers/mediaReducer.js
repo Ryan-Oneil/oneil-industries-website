@@ -218,7 +218,7 @@ export const postNewAlbum = albumName => dispatch => {
 
 export const updateAlbum = (album, albumId) => dispatch => {
   return apiPutCall(`${ALBUM_UPDATE}/${albumId}`, { name: album.name })
-    .then(() => dispatch(updatedAlbum({ id: albumId, album: album })))
+    .then(() => dispatch(updatedAlbum({ id: albumId, album })))
     .catch(error => dispatch(setError(getApiError(error))));
 };
 
@@ -230,13 +230,11 @@ export const addMediasToAlbum = (albumId, mediaIds) => dispatch => {
 
 export const updateMediasLinkStatus = (mediaIds, status) => dispatch => {
   return apiPutCall("/gallery/medias/linkstatus/update", {
-    mediaIds: mediaIds,
+    mediaIds,
     linkStatus: status
   })
     .then(() =>
-      dispatch(
-        updatedMediaLinkStatus({ linkStatus: status, mediaIds: mediaIds })
-      )
+      dispatch(updatedMediaLinkStatus({ linkStatus: status, mediaIds }))
     )
     .catch(error => dispatch(setError(getApiError(error))));
 };

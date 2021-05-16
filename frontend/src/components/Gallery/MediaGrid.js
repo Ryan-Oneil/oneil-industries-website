@@ -16,10 +16,6 @@ export default ({ mediaEndpoint, mediaCardLayout, height, style }) => {
     setMediaList(mediaIds.flatMap(id => (medias[id] ? medias[id] : [])));
   }, [mediaIds, medias]);
 
-  const loadMediasOnLoad = useEffect(() => {
-    handleMediaInfiniteOnLoad(0);
-  }, []);
-
   const handleMediaInfiniteOnLoad = page => {
     setLoading(true);
     dispatch(fetchMedia(mediaEndpoint, page, 30)).then(({ payload }) => {
@@ -33,6 +29,10 @@ export default ({ mediaEndpoint, mediaCardLayout, height, style }) => {
       setLoading(false);
     });
   };
+
+  const loadMediasOnLoad = useEffect(() => {
+    handleMediaInfiniteOnLoad(0);
+  }, []);
 
   const renderEmpty = () => {
     return (

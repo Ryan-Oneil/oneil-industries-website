@@ -109,7 +109,7 @@ export const {
 export const deleteLink = linkID => dispatch => {
   apiDeleteCall(`/delete/${linkID}`)
     .then(() => {
-      dispatch(removeLink({ linkID: linkID }));
+      dispatch(removeLink({ linkID }));
     })
     .catch(error => dispatch(setError(getApiError(error))));
 };
@@ -130,26 +130,26 @@ export const deleteFile = (fileID, linkID) => dispatch => {
     .catch(error => dispatch(setError(getApiError(error))));
 };
 
-export const addFilesToLink = (files, linkID) => dispatch => {
-  return uploadFiles(`/link/add/${linkID}`, files)
-    .then(response => {
-      dispatch(addFiles({ files: response.data, linkID: linkID }));
-    })
-    .catch(error => dispatch(setError(getApiError(error))));
-};
-
 export const uploadFiles = (endpoint, files, params = {}, uploadProgress) => {
   let postData = new FormData();
 
   files.forEach(file => postData.append("file[]", file, file.name));
 
   let options = {
-    params: params
+    params
   };
   if (uploadProgress) {
     options.onUploadProgress = progressEvent => uploadProgress(progressEvent);
   }
   return apiPostCall(endpoint, postData, options);
+};
+
+export const addFilesToLink = (files, linkID) => dispatch => {
+  return uploadFiles(`/link/add/${linkID}`, files)
+    .then(response => {
+      dispatch(addFiles({ files: response.data, linkID }));
+    })
+    .catch(error => dispatch(setError(getApiError(error))));
 };
 
 export const getUserLinkStats = user => dispatch => {
@@ -160,8 +160,19 @@ export const getUserLinkStats = user => dispatch => {
 
 export const editLink = (linkID, link) => dispatch => {
   return apiPutCall(`/link/edit/${linkID}`, link).then(() =>
-    dispatch(updateLinkDetails({ link: link, linkID: linkID }))
+    dispatch(updateLinkDetails({ link, linkID }))
   );
+};
+
+export const getLinksPageable = (endpoint, page, size, sortAttribute) => {
+  const params = new URLSearchParams();
+  params.append("page", page);
+  params.append("size", size);
+  if (sortAttribute) {
+    params.append("sort", sortAttribute);
+  }
+
+  return apiGetCall(endpoint, { params });
 };
 
 export const getAllLinksPageable = (
@@ -172,15 +183,6 @@ export const getAllLinksPageable = (
   return getLinksPageable("/admin/links", page, size, getFilterSort(sorter))
     .then(response => dispatch(addLinks(response.data)))
     .catch(error => dispatch(setError(getApiError(error))));
-};
-
-export const getLinksPageable = (endpoint, page, size, sortAttribute) => {
-  const params = new URLSearchParams();
-  params.append("page", page);
-  params.append("size", size);
-  if (sortAttribute) params.append("sort", sortAttribute);
-
-  return apiGetCall(endpoint, { params });
 };
 
 const baseGetUserLinks = (

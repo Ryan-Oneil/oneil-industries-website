@@ -18,7 +18,7 @@ const LinkForm = props => {
   const { name } = props.user;
 
   return (
-    <Card title={loading ? `Loading User...` : `${name} Settings`}>
+    <Card title={loading ? "Loading User..." : `${name} Settings`}>
       <form onSubmit={handleSubmit}>
         <Field
           name="Username"

@@ -51,6 +51,16 @@ export const slice = createSlice({
 export default slice.reducer;
 export const { loginSuccess, logout, setUserRole } = slice.actions;
 
+export const getRefreshTokenWithRole = () => dispatch => {
+  const refreshToken = localStorage.getItem("refreshToken");
+
+  if (refreshToken) {
+    return getRefreshToken(refreshToken).then(() =>
+      dispatch(setUserRole(decodeJWT("authToken").role))
+    );
+  }
+};
+
 export const loginUser = creds => dispatch => {
   return apiPostCall(BASE_URL + "/login", creds).then(response => {
     const token = response.headers["authorization"];
@@ -79,14 +89,4 @@ export const resetPassword = value => {
 
 export const changePassword = (token, value) => {
   return apiPostCall(BASE_URL + "/auth/newPassword/" + token, value.password);
-};
-
-export const getRefreshTokenWithRole = () => dispatch => {
-  const refreshToken = localStorage.getItem("refreshToken");
-
-  if (refreshToken) {
-    return getRefreshToken(refreshToken).then(() =>
-      dispatch(setUserRole(decodeJWT("authToken").role))
-    );
-  }
 };

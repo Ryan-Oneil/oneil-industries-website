@@ -17,6 +17,24 @@ const baseApi = axios.create({
 //   config => new Promise(resolve => setTimeout(() => resolve(config), 10000))
 // );
 
+export const getRefreshToken = refreshToken => {
+  return baseApi
+    .post("/token/refresh", refreshToken, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+    .then(({ data }) => {
+      localStorage.setItem("authToken", data);
+      baseApi.defaults.headers["Authorization"] = data;
+
+      return data;
+    })
+    .catch(error => {
+      return Promise.reject(error);
+    });
+};
+
 baseApi.interceptors.response.use(
   response => response,
   error => {
@@ -56,24 +74,6 @@ baseApi.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-export const getRefreshToken = refreshToken => {
-  return baseApi
-    .post("/token/refresh", refreshToken, {
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
-    .then(({ data }) => {
-      localStorage.setItem("authToken", data);
-      baseApi.defaults.headers["Authorization"] = data;
-
-      return data;
-    })
-    .catch(error => {
-      return Promise.reject(error);
-    });
-};
 
 export const apiGetCall = async (endpoint, options) => {
   return await baseApi.get(endpoint, options);

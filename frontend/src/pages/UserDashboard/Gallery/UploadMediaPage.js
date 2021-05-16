@@ -65,7 +65,7 @@ export default () => {
     dispatch(
       uploadMedia(
         "/gallery/upload",
-        { linkStatus: linkStatus, albumId: selectedAlbumId },
+        { linkStatus, albumId: selectedAlbumId },
         file,
         event => {
           file.progress = getUploadProgress(event);
