@@ -6,7 +6,6 @@ import {
   apiPostCall,
   apiPutCall
 } from "../apis/api";
-import { getApiError } from "../helpers";
 import { setError } from "./globalErrorReducer";
 import {
   ALBUM_CREATE,
@@ -15,6 +14,7 @@ import {
   USER_DELETE_MEDIAS_ENDPOINTS
 } from "../apis/endpoints";
 import { decreaseQuotaUsed, increasedQuotaUsed } from "./userReducer";
+import { getApiError } from "../apis/ApiErrorHandler";
 
 const media = new schema.Entity("medias");
 const album = new schema.Entity("albums", { medias: [media] });

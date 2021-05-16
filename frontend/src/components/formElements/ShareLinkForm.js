@@ -3,12 +3,7 @@ import { Field, withFormik } from "formik";
 import { ErrorDisplay, InputWithErrors } from "./index";
 import { Alert, Button, Card, DatePicker } from "antd";
 import moment from "moment";
-import {
-  getApiError,
-  getDateWithAddedDays,
-  getUploadProgress
-} from "../../helpers";
-import { uploadFiles } from "../../reducers/fileReducer";
+import { getDateWithAddedDays } from "../../helpers";
 
 const LinkForm = props => {
   const {

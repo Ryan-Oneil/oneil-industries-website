@@ -2,12 +2,12 @@ import React from "react";
 import { Field, Formik } from "formik";
 import { InputWithErrors } from "./index";
 import { Alert, Button } from "antd";
-import { getApiFormError } from "../../helpers";
 import { Link } from "react-router-dom";
 import UserOutlined from "@ant-design/icons/lib/icons/UserOutlined";
 import LockOutlined from "@ant-design/icons/lib/icons/LockOutlined";
 import { useDispatch } from "react-redux";
 import { loginUser } from "../../reducers/authReducer";
+import { handleFormError } from "../../apis/ApiErrorHandler";
 
 export default () => {
   const dispatch = useDispatch();
@@ -17,17 +17,9 @@ export default () => {
       username: formValues.username.trim(),
       password: formValues.password.trim()
     };
-    return dispatch(loginUser(creds)).catch(error => {
-      const apiError = getApiFormError(error);
-
-      if (Array.isArray(apiError)) {
-        apiError.forEach(fieldError =>
-          setFieldError(fieldError.property, fieldError.message)
-        );
-      } else {
-        setStatus(apiError);
-      }
-    });
+    return dispatch(loginUser(creds)).catch(error =>
+      handleFormError(error, setFieldError, setStatus)
+    );
   };
 
   const validate = values => {
@@ -94,9 +86,8 @@ export default () => {
             </Button>
             {status && (
               <Alert
-                message="Login Error"
-                description={status}
-                type="error"
+                message={status.msg}
+                type={status.type}
                 closable
                 showIcon
                 onClose={() => setStatus("")}

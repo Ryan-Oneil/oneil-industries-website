@@ -6,7 +6,7 @@ import MailOutlined from "@ant-design/icons/lib/icons/MailOutlined";
 import LockOutlined from "@ant-design/icons/lib/icons/LockOutlined";
 import UserOutlined from "@ant-design/icons/lib/icons/UserOutlined";
 import { registerUser } from "../../reducers/authReducer";
-import { getApiFormError } from "../../helpers";
+import { handleFormError } from "../../apis/ApiErrorHandler";
 
 export default () => {
   const onSubmit = (formValues, { setStatus, setFieldError }) => {
@@ -17,17 +17,7 @@ export default () => {
     };
     return registerUser(creds)
       .then(response => setStatus({ msg: response.data, type: "success" }))
-      .catch(error => {
-        const apiError = getApiFormError(error);
-
-        if (Array.isArray(apiError)) {
-          apiError.forEach(fieldError =>
-            setFieldError(fieldError.property, fieldError.message)
-          );
-        } else {
-          setStatus({ msg: apiError, type: "error" });
-        }
-      });
+      .catch(error => handleFormError(error, setFieldError, setStatus));
   };
 
   const validate = values => {

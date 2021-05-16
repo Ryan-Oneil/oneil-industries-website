@@ -2,9 +2,9 @@ import React from "react";
 import { Field, withFormik } from "formik";
 import { InputWithErrors } from "./index";
 import { Alert, Button, Card } from "antd";
-import { getApiFormError } from "../../helpers";
 import { connect } from "react-redux";
 import { updateUser } from "../../reducers/adminReducer";
+import { handleFormError } from "../../apis/ApiErrorHandler";
 
 const LinkForm = props => {
   const {
@@ -82,17 +82,9 @@ const EditUserForm = withFormik({
     return errors;
   },
   handleSubmit: (values, { props, setStatus, setFieldError }) => {
-    return props.updateUser(values).catch(error => {
-      const apiError = getApiFormError(error);
-
-      if (Array.isArray(apiError)) {
-        apiError.forEach(fieldError =>
-          setFieldError(fieldError.property, fieldError.message)
-        );
-      } else {
-        setStatus({ msg: apiError, type: "error" });
-      }
-    });
+    return props
+      .updateUser(values)
+      .catch(error => handleFormError(error, setFieldError, setStatus));
   },
   validateOnMount: true
 })(LinkForm);

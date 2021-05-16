@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { apiGetCall, apiPutCall } from "../apis/api";
-import { getApiError } from "../helpers";
 import { setError } from "./globalErrorReducer";
+import { getApiError } from "../apis/ApiErrorHandler";
 
 export const slice = createSlice({
   name: "users",

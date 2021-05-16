@@ -3,7 +3,7 @@ import { Field, withFormik } from "formik";
 import { ErrorDisplay, InputWithErrors } from "./index";
 import { Alert, Button, Card, DatePicker } from "antd";
 import moment from "moment";
-import { getApiFormError } from "../../helpers";
+import { handleFormError } from "../../apis/ApiErrorHandler";
 
 const LinkForm = props => {
   const {
@@ -92,17 +92,9 @@ export const EditLinkForm = withFormik({
       title: values.title,
       expires: values.expires.toISOString().replace(/\.[0-9]{3}/, "")
     };
-    return props.submitAction(props.id, updatedLink).catch(error => {
-      const apiError = getApiFormError(error);
-
-      if (Array.isArray(apiError)) {
-        apiError.forEach(fieldError =>
-          setFieldError(fieldError.property, fieldError.message)
-        );
-      } else {
-        setStatus({ msg: apiError, type: "error" });
-      }
-    });
+    return props
+      .submitAction(props.id, updatedLink)
+      .catch(error => handleFormError(error, setFieldError, setStatus));
   },
   validateOnMount: true
 })(LinkForm);

@@ -2,9 +2,9 @@ import React from "react";
 import { Field, Formik } from "formik";
 import { InputWithErrors } from "./index";
 import { Alert, Button } from "antd";
-import { getApiFormError } from "../../helpers";
 
 import MailOutlined from "@ant-design/icons/lib/icons/MailOutlined";
+import { handleFormError } from "../../apis/ApiErrorHandler";
 
 export default props => {
   const onSubmit = (formValues, { setStatus, setFieldError }) => {
@@ -15,17 +15,7 @@ export default props => {
           setStatus({ msg: response.data, type: "success" });
         }
       })
-      .catch(error => {
-        const apiError = getApiFormError(error);
-
-        if (Array.isArray(apiError)) {
-          apiError.forEach(fieldError =>
-            setFieldError(fieldError.property, fieldError.message)
-          );
-        } else {
-          setStatus({ msg: apiError, type: "error" });
-        }
-      });
+      .catch(error => handleFormError(error, setFieldError, setStatus));
   };
 
   const validate = values => {

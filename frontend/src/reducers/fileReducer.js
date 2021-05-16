@@ -7,8 +7,9 @@ import {
 } from "../apis/api";
 
 import { setError } from "./globalErrorReducer";
-import { getApiError, getFilterSort } from "../helpers";
+import { getFilterSort } from "../helpers";
 import { normalize, schema } from "normalizr";
+import { getApiError } from "../apis/ApiErrorHandler";
 
 const file = new schema.Entity("files");
 const link = new schema.Entity("links", { files: [file] });

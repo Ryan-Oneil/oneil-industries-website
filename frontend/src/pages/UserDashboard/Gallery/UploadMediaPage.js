@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Col, Row, Select, message } from "antd";
-import { getApiError, getUploadProgress } from "../../../helpers";
+import { getUploadProgress } from "../../../helpers";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addMediasToAlbum,
@@ -15,6 +15,7 @@ import UploadingMediaCard from "../../../components/Gallery/UploadingMediaCard";
 import MediaModal from "../../../components/Gallery/MediaModal";
 import Uploader from "../../../components/Uploader";
 import PictureOutlined from "@ant-design/icons/lib/icons/PictureOutlined";
+import { getApiError } from "../../../apis/ApiErrorHandler";
 const { Option } = Select;
 
 export default () => {

@@ -1,23 +1,3 @@
-export const getApiError = error => {
-  if (error.response) {
-    return error.response.data;
-  } else if (error.request) {
-    return error.request;
-  } else {
-    return error.message;
-  }
-};
-
-export const getApiFormError = error => {
-  if (error.response) {
-    return error.response.data.errors;
-  } else if (error.request) {
-    return error.request;
-  } else {
-    return error.message;
-  }
-};
-
 export const displayBytesInReadableForm = bytes => {
   if (bytes === 0 || bytes < 0) {
     return "0 Bytes";

@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { apiGetCall, apiPutCall } from "../apis/api";
-import { getApiError } from "../helpers";
 import { setError } from "./globalErrorReducer";
 import {
   ADMIN_GET_PENDING_APPROVALS_ENDPOINT,
@@ -9,6 +8,7 @@ import {
   ADMIN_GET_USERS_ENDPOINT
 } from "../apis/endpoints";
 import { normalize, schema } from "normalizr";
+import { getApiError } from "../apis/ApiErrorHandler";
 
 const user = new schema.Entity("user", {}, { idAttribute: "name" });
 const userList = new schema.Array(user);

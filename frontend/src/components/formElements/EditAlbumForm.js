@@ -1,27 +1,19 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { InputWithErrors } from "./index";
-import { getApiFormError } from "../../helpers";
 import { Field, Formik } from "formik";
 import { Alert, Button } from "antd";
 import { updateAlbum } from "../../reducers/mediaReducer";
 import SaveOutlined from "@ant-design/icons/lib/icons/SaveOutlined";
+import { handleFormError } from "../../apis/ApiErrorHandler";
 
 export default props => {
   const dispatch = useDispatch();
 
   const onSubmit = (formValues, { setStatus, setFieldError }) => {
-    return dispatch(updateAlbum(formValues, props.album.id)).catch(error => {
-      const apiError = getApiFormError(error);
-
-      if (Array.isArray(apiError)) {
-        apiError.forEach(fieldError =>
-          setFieldError(fieldError.property, fieldError.message)
-        );
-      } else {
-        setStatus(apiError);
-      }
-    });
+    return dispatch(updateAlbum(formValues, props.album.id)).catch(error =>
+      handleFormError(error, setFieldError, setStatus)
+    );
   };
 
   const validate = values => {
@@ -74,9 +66,8 @@ export default props => {
             </Button>
             {status && (
               <Alert
-                message="Album Update Error"
-                description={status}
-                type="error"
+                message={status.msg}
+                type={status.type}
                 closable
                 showIcon
                 onClose={() => setStatus("")}

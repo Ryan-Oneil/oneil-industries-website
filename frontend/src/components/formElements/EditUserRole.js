@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import { SelectInputWithErrors } from "./index";
 import { useDispatch, useSelector } from "react-redux";
-import { getApiFormError } from "../../helpers";
 import { getRoles, updateUserRole } from "../../reducers/adminReducer";
 import { Field, Formik } from "formik";
 import { Alert, Button, Card, Select } from "antd";
+import { handleFormError } from "../../apis/ApiErrorHandler";
 const { Option } = Select;
 
 export default props => {
@@ -22,17 +22,9 @@ export default props => {
   }, []);
 
   const onSubmit = (formValues, { setStatus, setFieldError }) => {
-    return dispatch(updateUserRole(username, formValues.role)).catch(error => {
-      const apiError = getApiFormError(error);
-
-      if (Array.isArray(apiError)) {
-        apiError.forEach(fieldError =>
-          setFieldError(fieldError.property, fieldError.message)
-        );
-      } else {
-        setStatus(apiError);
-      }
-    });
+    return dispatch(updateUserRole(username, formValues.role)).catch(error =>
+      handleFormError(error, setFieldError, setStatus)
+    );
   };
   return (
     <Card title="Role Settings">
@@ -75,9 +67,8 @@ export default props => {
               </Button>
               {status && (
                 <Alert
-                  message="Update Error"
-                  description={status}
-                  type="error"
+                  message={status.msg}
+                  type={status.type}
                   closable
                   showIcon
                   onClose={() => setStatus("")}
