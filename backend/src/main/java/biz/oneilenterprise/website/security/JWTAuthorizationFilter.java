@@ -77,7 +77,10 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
         if (decodedToken.getSubject().equalsIgnoreCase("apiToken")) {
             //Checks the cached database if the api token exists
             //Slightly inefficient but since the api JWTs never expire, I need some sort of blocking system
-            ApiToken apiTokenUUID = userService.getApiTokenByUser(decodedToken.getClaim("user").asString());
+            User user = new User();
+            user.setId(decodedToken.getClaim("userID").asInt());
+
+            ApiToken apiTokenUUID = userService.getApiTokenByUser(user);
             String tokenUUID = decodedToken.getClaim("uuid").asString();
 
             if (apiTokenUUID == null || !apiTokenUUID.getUuid().equals(tokenUUID)) {

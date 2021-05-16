@@ -11,6 +11,7 @@ public class MediaDTO {
     private String mediaType;
     private Long size;
     private String url;
+    private PublicMediaApprovalDTO publicMediaApproval;
 
     public MediaDTO() {
     }
@@ -98,5 +99,13 @@ public class MediaDTO {
 
     public void setSize(Long size) {
         this.size = size;
+    }
+
+    public PublicMediaApprovalDTO getPublicMediaApproval() {
+        return publicMediaApproval;
+    }
+
+    public void setPublicMediaApproval(PublicMediaApprovalDTO publicMediaApproval) {
+        this.publicMediaApproval = publicMediaApproval;
     }
 }

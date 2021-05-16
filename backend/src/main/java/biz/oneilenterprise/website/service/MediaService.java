@@ -17,7 +17,6 @@ import biz.oneilenterprise.website.exception.AlbumMissingException;
 import biz.oneilenterprise.website.exception.MediaApprovalException;
 import biz.oneilenterprise.website.exception.MediaException;
 import biz.oneilenterprise.website.repository.AlbumRepository;
-import biz.oneilenterprise.website.repository.MediaApprovalRepository;
 import biz.oneilenterprise.website.repository.MediaRepository;
 import biz.oneilenterprise.website.utils.FileHandlerUtil;
 import biz.oneilenterprise.website.utils.RandomIDGenUtil;
@@ -50,7 +49,6 @@ public class MediaService {
     private static final String UNLISTED = "unlisted";
 
     private final MediaRepository mediaRepository;
-    private final MediaApprovalRepository approvalRepository;
     private final AlbumRepository albumRepository;
     private final ModelMapper modelMapper;
 
@@ -60,13 +58,10 @@ public class MediaService {
     @Value("${service.backendUrl}")
     private String backendUrl;
 
-    public MediaService(MediaRepository mediaRepository, MediaApprovalRepository approvalRepository,
-        AlbumRepository albumRepository, ModelMapper modelMapper) {
+    public MediaService(MediaRepository mediaRepository, AlbumRepository albumRepository, ModelMapper modelMapper) {
         this.mediaRepository = mediaRepository;
-        this.approvalRepository = approvalRepository;
         this.albumRepository = albumRepository;
         this.modelMapper = modelMapper;
-
         this.modelMapper.typeMap(Media.class, MediaDTO.class)
             .addMappings(m -> m.map(src -> src.getUploader().getUsername(), MediaDTO::setUploader));
     }
@@ -111,7 +106,7 @@ public class MediaService {
     public void checkMediaPrivacy(Media media, User user) {
         if (media.getLinkStatus().equalsIgnoreCase(PUBLIC) && !CollectionUtils.containsAny(user.getAuthorities(), TRUSTED_ROLES)) {
             media.setLinkStatus(UNLISTED);
-            media.setPublicMediaApproval(requestPublicApproval(media, media.getName()));
+            media.setPublicMediaApproval(requestPublicApproval(media));
         }
     }
 
@@ -141,10 +136,6 @@ public class MediaService {
 
     public Media getMedia(int id) {
         return mediaRepository.findById(id).orElseThrow(() -> new MediaException(FILE_NOT_EXISTS_ERROR_MESSAGE));
-    }
-
-    public void saveMediaApproval(PublicMediaApproval media) {
-        approvalRepository.save(media);
     }
 
     public Media getMediaFileName(String fileName) {
@@ -179,19 +170,24 @@ public class MediaService {
         mediaRepository.save(media);
     }
 
-    public PublicMediaApproval getMediaApprovalByMediaID(int mediaID) {
-        return approvalRepository.getFirstByMedia_Id(mediaID).orElse(null);
+    public Media getMediaApprovalByMediaID(int mediaID) {
+        Media media = getMedia(mediaID);
+
+        if (media.getPublicMediaApproval() == null) {
+            throw new MediaApprovalException("Media approval item not found");
+        }
+        return media;
     }
 
-    public List<PublicMediaApprovalDTO> getMediaApprovalsByStatus(String status) {
-        return publicMediaApprovalToDTOS(approvalRepository.findAllByStatus(status));
+    public List<MediaDTO> getMediaApprovalsByStatus(String status) {
+        return mediaToDTOs(mediaRepository.getAllByPublicMediaApproval_StatusOrderByIdDesc(status));
     }
 
-    public PublicMediaApproval requestPublicApproval(Media media, String mediaName) {
-        PublicMediaApproval publicMediaStatus = this.getMediaApprovalByMediaID(media.getId());
+    public PublicMediaApproval requestPublicApproval(Media media) {
+        PublicMediaApproval publicMediaStatus = media.getPublicMediaApproval();
 
         if (publicMediaStatus == null) {
-            publicMediaStatus = new PublicMediaApproval(media, mediaName, "pending");
+            publicMediaStatus = new PublicMediaApproval(media, "pending");
 
             return publicMediaStatus;
         } else {
@@ -203,31 +199,21 @@ public class MediaService {
     public void massRequestPublicApproval(Integer[] mediaIds) {
         List<Media> medias = getMediasByIds(mediaIds);
 
-        medias.forEach(media -> media.setPublicMediaApproval(requestPublicApproval(media, media.getName())));
+        medias.forEach(media -> media.setPublicMediaApproval(requestPublicApproval(media)));
 
         mediaRepository.saveAll(medias);
     }
 
     public void setMediaApprovalStatus(int mediaApprovalID, String newStatus) {
-        PublicMediaApproval publicMedia = getMediaApprovalByMediaID(mediaApprovalID);
+        Media media = getMediaApprovalByMediaID(mediaApprovalID);
 
-        if (publicMedia == null) {
-            throw new MediaApprovalException("Media approval item not found");
-        }
-        publicMedia.setStatus(newStatus);
-        saveMediaApproval(publicMedia);
+        media.getPublicMediaApproval().setStatus(newStatus);
+        mediaRepository.save(media);
     }
 
     public void approvePublicMedia(int mediaID) {
-        PublicMediaApproval approval = getMediaApprovalByMediaID(mediaID);
-
-        if (approval == null) {
-            throw new MediaApprovalException("No media approval found for media id " + mediaID);
-        }
-        //Updates media with the approved public details
-        Media media = approval.getMedia();
+        Media media = getMediaApprovalByMediaID(mediaID);
         media.setLinkStatus(PUBLIC);
-        media.setName(approval.getPublicName());
         media.setPublicMediaApproval(null);
 
         mediaRepository.save(media);

@@ -36,7 +36,7 @@ public class UserController {
 
     @GetMapping("/{username}/quota")
     public ResponseEntity<QuotaDTO> getUserQuota(@PathVariable String username, Authentication user) {
-        return ResponseEntity.ok(userService.quotaToDTO(userService.getQuotaByUsername(username)));
+        return ResponseEntity.ok(userService.quotaToDTO(userService.getUser(username).getQuota()));
     }
 
     @PutMapping("/{username}/details/update")
@@ -48,18 +48,15 @@ public class UserController {
 
     @GetMapping("/{username}/getAPIToken")
     public ResponseEntity<String> getAPIJWT(@PathVariable String username, Authentication authentication) {
-        return ResponseEntity.ok(userService.getApiTokenByUser(username).getToken());
+        User user = (User) authentication.getPrincipal();
+
+        return ResponseEntity.ok(userService.getApiTokenByUser(user).getToken());
     }
 
     @GetMapping("/{username}/generateAPIToken")
     public ResponseEntity<String> generateAPIJWT(@PathVariable String username, Authentication authentication) {
-        ApiToken apiToken = userService.getApiTokenByUser(username);
         User user = (User) authentication.getPrincipal();
 
-        //Deletes existing token
-        if (apiToken != null) {
-            userService.deleteApiToken(apiToken);
-        }
         ApiToken token = userService.generateApiToken(user);
 
         return ResponseEntity.ok(token.getToken());
@@ -67,7 +64,9 @@ public class UserController {
 
     @GetMapping("/{username}/getShareX")
     public ResponseEntity<ShareXConfigDTO> getShareXConfig(@PathVariable String username, Authentication authentication) {
-        return ResponseEntity.ok(userService.generateShareXAPIFile(username));
+        User user = (User) authentication.getPrincipal();
+
+        return ResponseEntity.ok(userService.generateShareXAPIFile(user));
     }
 
     //admin related apis

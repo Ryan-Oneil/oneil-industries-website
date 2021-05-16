@@ -2,10 +2,13 @@ package biz.oneilenterprise.website.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,6 +29,14 @@ public class User implements UserDetails {
     private String email;
 
     private String role;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn
+    private Quota quota;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "api_token_id")
+    private ApiToken apiToken;
 
     public User(int id, String username, String role) {
         this.id = id;
@@ -127,21 +138,41 @@ public class User implements UserDetails {
         this.email = email;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-            "username='" + username + '\'' +
-            ", password='" + password + '\'' +
-            ", enabled=" + enabled +
-            ", email='" + email + '\'' +
-            '}';
-    }
-
     public String getRole() {
         return role;
     }
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public Quota getQuota() {
+        return quota;
+    }
+
+    public void setQuota(Quota quota) {
+        this.quota = quota;
+    }
+
+    public ApiToken getApiToken() {
+        return apiToken;
+    }
+
+    public void setApiToken(ApiToken apiToken) {
+        this.apiToken = apiToken;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+            "id=" + id +
+            ", username='" + username + '\'' +
+            ", password='" + password + '\'' +
+            ", enabled=" + enabled +
+            ", email='" + email + '\'' +
+            ", role='" + role + '\'' +
+            ", quota=" + quota +
+            ", apiToken=" + apiToken +
+            '}';
     }
 }

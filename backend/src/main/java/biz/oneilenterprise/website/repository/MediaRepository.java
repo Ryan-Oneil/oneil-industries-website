@@ -18,6 +18,7 @@ public interface MediaRepository extends JpaRepository<Media, Integer> {
     Optional<Media> getFirstByFileName(String filename);
     List<Media> getAllByUploader_UsernameOrderByIdDesc(String uploader, Pageable page);
     List<Media> findTop5ByUploader_UsernameOrderByIdDesc(String uploader);
+    List<Media> getAllByPublicMediaApproval_StatusOrderByIdDesc(String status);
 
     @Query("select count(m) from Media m where m.uploader.username = ?1")
     long getTotalMediasByUser(String username);

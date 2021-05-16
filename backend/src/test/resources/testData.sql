@@ -1,8 +1,11 @@
 INSERT INTO album (id, name, creator) VALUES ('albumID', 'albumName', 'albumCreator');
 INSERT INTO album (id, name, creator) VALUES ('test', 'test', 'test');
 
-INSERT INTO users (id, username, password, enabled, email, role) VALUES (34, 'albumCreator', 'test', 1, 'harrison.campbell0101@gmail.com', 'ROLE_UNREGISTERED');
-INSERT INTO users (id, username, password, enabled, email, role) VALUES (69, 'test', 'test', 1, 'test@example.com', 'ROLE_UNREGISTERED');
+INSERT INTO quota (id, used, max, ignore_quota) VALUES (1, 2500, 25, 0);
+INSERT INTO quota (id, used, max, ignore_quota) VALUES (2, 36, 6, 0);
+
+INSERT INTO users (id, username, password, enabled, email, role, quota_id, api_token_id) VALUES (34, 'albumCreator', 'test', 1, 'harrison.campbell0101@gmail.com', 'ROLE_UNREGISTERED', 1, null );
+INSERT INTO users (id, username, password, enabled, email, role, quota_id, api_token_id) VALUES (69, 'test', 'test', 1, 'test@example.com', 'ROLE_UNREGISTERED', 2, null );
 INSERT INTO users (id, username, password, enabled, email, role) VALUES (70, 'test2', 'test', 1, 'morinlynn@oneilindustries.biz', 'ROLE_UNREGISTERED');
 INSERT INTO users (id, username, password, enabled, email, role) VALUES (71, 'user1', 'test', 1, 'francispate@oneilindustries.biz', 'ROLE_UNREGISTERED');
 INSERT INTO users (id, username, password, enabled, email, role) VALUES (72, 'user2', 'test', 1, 'lessiehubbard@oneilindustries.biz', 'ROLE_UNREGISTERED');
@@ -87,13 +90,10 @@ INSERT INTO link_view (id, ip, link_id, date_time) VALUES (20, '0.0.0.0', 'kaUDr
 INSERT INTO link_view (id, ip, link_id, date_time) VALUES (21, '0.0.0.0', 'fKlpZEH869G6D8CI', '2020-06-11');
 INSERT INTO link_view (id, ip, link_id, date_time) VALUES (22, '0.0.0.0', 'Yoy1j229znwU9sfu', '2020-06-11');
 
-INSERT INTO public_media_approval (media_id, public_name, status) VALUES (12, 'TAMdr530hnUgNCRd.png', 'pending');
-INSERT INTO public_media_approval (media_id, public_name, status) VALUES (13, 'Pd04GfA1zi9xRVOD.jpg', 'pending');
-INSERT INTO public_media_approval (media_id, public_name, status) VALUES (14, 'loGHdJ154SvRejxu.png', 'pending');
-INSERT INTO public_media_approval (media_id, public_name, status) VALUES (15, '65Rz9IPpTg0jXMI9.png', 'pending');
-
-INSERT INTO quota (username, used, max, ignore_quota) VALUES ('test1', 2500, 25, 0);
-INSERT INTO quota (username, used, max, ignore_quota) VALUES ('test2', 36, 6, 0);
+INSERT INTO public_media_approval (media_id, status) VALUES (12, 'pending');
+INSERT INTO public_media_approval (media_id, status) VALUES (13, 'pending');
+INSERT INTO public_media_approval (media_id, status) VALUES (14, 'pending');
+INSERT INTO public_media_approval (media_id, status) VALUES (15, 'pending');
 
 INSERT INTO password_reset_token (id, token, username, expiry_date) VALUES (4, '19fcfd72-5532-44bb-9b06-90351cc6ec6d', 70, '2021-05-09 00:19:54');
 

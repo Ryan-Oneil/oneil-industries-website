@@ -39,7 +39,7 @@ public class ErrorPageControllerAdvice extends ResponseEntityExceptionHandler {
             .getBindingResult()
             .getFieldErrors()
             .stream()
-            .map(error -> new FieldError(error.getField(), error.getDefaultMessage(), (String) error.getRejectedValue()))
+            .map(error -> new FieldError(error.getField(), error.getDefaultMessage(), error.getRejectedValue() + ""))
             .collect(Collectors.toList());
         FormErrorDetails errorDetails = new FormErrorDetails(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), errorList);
 

@@ -2,7 +2,10 @@ package biz.oneilenterprise.website.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -10,7 +13,11 @@ import javax.persistence.Table;
 public class Quota {
 
     @Id
-    private String username;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    @OneToOne(mappedBy = "quota")
+    private User user;
 
     //Storage space used in KBs
     private long used;
@@ -24,24 +31,24 @@ public class Quota {
     public Quota() {
     }
 
-    public Quota(String username, long used) {
-        this.username = username;
+    public Quota(User user, long used) {
+        this.user = user;
         this.used = used;
     }
 
-    public Quota(String username, long used, int max, boolean ignoreQuota) {
-        this.username = username;
+    public Quota(User user, long used, int max, boolean ignoreQuota) {
+        this.user = user;
         this.used = used;
         this.max = max;
         this.ignoreQuota = ignoreQuota;
     }
 
-    public String getUsername() {
-        return username;
+    public User getUser() {
+        return user;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public long getUsed() {
@@ -74,5 +81,13 @@ public class Quota {
 
     public void decreaseUsed(long amount) {
         this.used -= amount;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

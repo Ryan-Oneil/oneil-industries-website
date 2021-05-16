@@ -9,6 +9,4 @@ import org.springframework.stereotype.Repository;
 public interface QuotaRepository extends CrudRepository<Quota, String> {
     @Query("select sum (q.used) from Quota q")
     long getTotalUsed();
-
-    Quota getFirstByUsername(String username);
 }

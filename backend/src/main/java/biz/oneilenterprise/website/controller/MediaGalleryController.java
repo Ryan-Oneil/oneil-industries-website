@@ -5,7 +5,6 @@ import biz.oneilenterprise.website.dto.AlbumDTO;
 import biz.oneilenterprise.website.dto.GalleryUploadDTO;
 import biz.oneilenterprise.website.dto.MediaDTO;
 import biz.oneilenterprise.website.dto.MediasDTO;
-import biz.oneilenterprise.website.dto.PublicMediaApprovalDTO;
 import biz.oneilenterprise.website.entity.Album;
 import biz.oneilenterprise.website.entity.User;
 import biz.oneilenterprise.website.service.MediaService;
@@ -119,7 +118,7 @@ public class MediaGalleryController {
             .handleFileUpload(request, remainingQuota, mediaService.getUserMediaDirectory(userAuth.getUsername()), true);
 
         long sizeOfFiles = uploadedFiles.stream().mapToLong(File::length).sum();
-        userService.increaseQuotaUsedAmount(userAuth.getUsername(), sizeOfFiles);
+        userService.changeQuotaUsedAmount(userAuth.getUsername(), sizeOfFiles);
 
         return mediaService.registerMedias(uploadedFiles, galleryUploadDTO, userAuth);
     }
@@ -127,7 +126,7 @@ public class MediaGalleryController {
     @DeleteMapping("/medias/delete")
     public ResponseEntity<HttpStatus> massDeleteMedias(@RequestBody Integer[] mediaIds, Authentication user, HttpServletRequest request) {
         long mediaSize = mediaService.deleteMedias(mediaIds);
-        userService.decreaseQuotaUsedAmount(user.getName(), mediaSize);
+        userService.changeQuotaUsedAmount(user.getName(), -mediaSize);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
@@ -135,7 +134,7 @@ public class MediaGalleryController {
     @DeleteMapping("/media/delete/{mediaId}")
     public ResponseEntity<HttpStatus> deleteMedia(@PathVariable int mediaId, Authentication user, HttpServletRequest request) throws IOException {
         long mediaSize = mediaService.deleteMedia(mediaId);
-        userService.decreaseQuotaUsedAmount(user.getName(), mediaSize);
+        userService.changeQuotaUsedAmount(user.getName(), -mediaSize);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
@@ -222,7 +221,7 @@ public class MediaGalleryController {
     }
 
     @GetMapping("/admin/media/pendingApproval")
-    public ResponseEntity<List<PublicMediaApprovalDTO>> getMediasRequiringApproval() {
+    public ResponseEntity<List<MediaDTO>> getMediasRequiringApproval() {
         return ResponseEntity.ok(mediaService.getMediaApprovalsByStatus("pending"));
     }
 
@@ -233,9 +232,9 @@ public class MediaGalleryController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @PutMapping("/admin/media/{approvalMediaID}/deny")
-    public ResponseEntity<HttpStatus> denyMediaApproval(@PathVariable int approvalMediaID) {
-        mediaService.setMediaApprovalStatus(approvalMediaID, "denied");
+    @PutMapping("/admin/media/{mediaID}/deny")
+    public ResponseEntity<HttpStatus> denyMediaApproval(@PathVariable int mediaID) {
+        mediaService.setMediaApprovalStatus(mediaID, "denied");
 
         return ResponseEntity.ok(HttpStatus.OK);
     }

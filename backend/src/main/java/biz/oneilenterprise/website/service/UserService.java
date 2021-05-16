@@ -16,7 +16,6 @@ import biz.oneilenterprise.website.entity.VerificationToken;
 import biz.oneilenterprise.website.events.OnRegistrationCompleteEvent;
 import biz.oneilenterprise.website.exception.TokenException;
 import biz.oneilenterprise.website.exception.UserException;
-import biz.oneilenterprise.website.repository.APITokenRepository;
 import biz.oneilenterprise.website.repository.QuotaRepository;
 import biz.oneilenterprise.website.repository.ResetPasswordTokenRepository;
 import biz.oneilenterprise.website.repository.RoleRepository;
@@ -32,7 +31,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
@@ -50,7 +48,6 @@ public class UserService {
     private final VerificationTokenRepository verificationTokenRepository;
     private final ResetPasswordTokenRepository passwordTokenRepository;
     private final QuotaRepository quotaRepository;
-    private final APITokenRepository apiTokenRepository;
     private final RoleRepository roleRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final EmailSender emailSender;
@@ -63,15 +60,13 @@ public class UserService {
 
     public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository,
         VerificationTokenRepository verificationTokenRepository,
-        ResetPasswordTokenRepository passwordTokenRepository, QuotaRepository quotaRepository,
-        APITokenRepository apiTokenRepository, RoleRepository roleRepository, ApplicationEventPublisher eventPublisher,
-        EmailSender emailSender) {
+        ResetPasswordTokenRepository passwordTokenRepository, QuotaRepository quotaRepository, RoleRepository roleRepository,
+        ApplicationEventPublisher eventPublisher, EmailSender emailSender) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.verificationTokenRepository = verificationTokenRepository;
         this.passwordTokenRepository = passwordTokenRepository;
         this.quotaRepository = quotaRepository;
-        this.apiTokenRepository = apiTokenRepository;
         this.roleRepository = roleRepository;
         this.eventPublisher = eventPublisher;
         this.emailSender = emailSender;
@@ -103,10 +98,10 @@ public class UserService {
         String encryptedPassword = passwordEncoder.encode(loginFormDTO.getPassword());
 
         User user = new User(username.toLowerCase(), encryptedPassword,false, email, "ROLE_UNREGISTERED");
-        Quota quota = new Quota(username, 0, 25, false);
+        Quota quota = new Quota(user, 0, 25, false);
+        user.setQuota(quota);
 
         userRepository.save(user);
-        quotaRepository.save(quota);
         eventPublisher.publishEvent(new OnRegistrationCompleteEvent(user, frontendUrl));
     }
 
@@ -190,35 +185,27 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public Quota getQuotaByUsername(String username) {
-        return quotaRepository.getFirstByUsername(username);
-    }
-
     public void updateUserQuota(QuotaDTO quotaDTO, String username) {
-        Quota quota = getQuotaByUsername(username);
+        User user = getUser(username);
+        Quota quota = user.getQuota();
 
         quota.setIgnoreQuota(quotaDTO.isIgnoreQuota());
         quota.setMax(quotaDTO.getMax());
-        quotaRepository.save(quota);
+
+        userRepository.save(user);
     }
 
-    public void increaseQuotaUsedAmount(String username, long amount) {
-        Quota userQuota = getQuotaByUsername(username);
+    public void changeQuotaUsedAmount(String username, long amount) {
+        User user = getUser(username);
+        Quota quota = user.getQuota();
 
-        userQuota.increaseUsed(amount);
-        quotaRepository.save(userQuota);
-    }
-
-    public void decreaseQuotaUsedAmount(String username, long amount) {
-        Quota userQuota = getQuotaByUsername(username);
-
-        userQuota.decreaseUsed(amount);
-        quotaRepository.save(userQuota);
+        quota.setUsed(Math.max(0, quota.getUsed() + amount));
+        userRepository.save(user);
     }
 
     public long getRemainingQuota(String username) {
         AtomicReference<Long> remaining = new AtomicReference<>(0L);
-        Quota userQuota = getQuotaByUsername(username);
+        Quota userQuota = getUser(username).getQuota();
 
         if (userQuota.isIgnoreQuota()) {
             remaining.set(-1L);
@@ -230,12 +217,15 @@ public class UserService {
     }
 
     @Cacheable(value = "apiToken")
-    public ApiToken getApiTokenByUser(String username) {
-        return apiTokenRepository.findById(username).orElse(null);
+    public ApiToken getApiTokenByUser(User user) {
+        User userWithToken = userRepository.findById(user.getId()).orElseThrow(() -> new UsernameNotFoundException(user.getId() + " doesn't exist"));
+
+        return userWithToken.getApiToken();
     }
 
-    @CachePut(value = "apiToken", key = "#result.username")
+    @CachePut(value = "apiToken", key = "#result.user")
     public ApiToken generateApiToken(User user) {
+        User userWithToken = getUser(user.getUsername());
         // Creates a non expiring user jwt with limited access. Currently can only upload media
         String uuid = UUID.randomUUID().toString();
 
@@ -248,19 +238,15 @@ public class UserService {
             .withClaim("uuid", uuid)
             .sign(HMAC512(SECRET.getBytes()));
 
-        ApiToken apiToken = new ApiToken(user.getUsername(), token, uuid);
-        apiTokenRepository.save(apiToken);
+        ApiToken apiToken = new ApiToken(userWithToken, token, uuid);
+        userWithToken.setApiToken(apiToken);
+        userRepository.save(userWithToken);
 
         return apiToken;
     }
 
-    @CacheEvict(value = "apiToken", key = "#apiToken.username")
-    public void deleteApiToken(ApiToken apiToken) {
-        apiTokenRepository.delete(apiToken);
-    }
-
-    public ShareXConfigDTO generateShareXAPIFile(String username) {
-        ApiToken apiToken = getApiTokenByUser(username);
+    public ShareXConfigDTO generateShareXAPIFile(User user) {
+        ApiToken apiToken = getApiTokenByUser(user);
 
         if (apiToken == null) {
             return null;
@@ -289,8 +275,8 @@ public class UserService {
     }
 
     public UserDTO getUserStats(String username) {
-        Quota quota = getQuotaByUsername(username);
         User user = getUser(username);
+        Quota quota = user.getQuota();
 
         QuotaDTO quotaDTO = quotaToDTO(quota);
         UserDTO userDTO = userToDTO(user);

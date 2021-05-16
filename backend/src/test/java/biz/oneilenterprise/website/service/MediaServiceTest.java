@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import biz.oneilenterprise.website.dto.AlbumDTO;
 import biz.oneilenterprise.website.dto.GalleryUploadDTO;
 import biz.oneilenterprise.website.dto.MediaDTO;
-import biz.oneilenterprise.website.dto.PublicMediaApprovalDTO;
 import biz.oneilenterprise.website.entity.Album;
 import biz.oneilenterprise.website.entity.Media;
 import biz.oneilenterprise.website.entity.PublicMediaApproval;
@@ -128,10 +127,7 @@ public class MediaServiceTest {
         Media media = new Media("test.png", "test.png", UNLISTED, testUser, "05/05/2000", 5000L);
 
         mediaService.checkMediaPrivacy(media, testUser);
-
-        PublicMediaApproval publicMediaApproval = mediaService.getMediaApprovalByMediaID(media.getId());
-
-        assertThat(publicMediaApproval).isNull();
+        assertThat(media.getPublicMediaApproval()).isNull();
     }
 
     @Test
@@ -166,10 +162,11 @@ public class MediaServiceTest {
 
         mediaService.updateMedia(galleryUploadDTO, 3, testUser);
 
-        PublicMediaApproval publicMediaApproval = mediaService.getMediaApprovalByMediaID(3);
+        Media media = mediaService.getMediaApprovalByMediaID(3);
 
-        assertThat(publicMediaApproval).isNotNull();
-        assertThat(publicMediaApproval.getMedia().getLinkStatus()).isEqualTo(UNLISTED);
+        assertThat(media).isNotNull();
+        assertThat(media.getPublicMediaApproval()).isNotNull();
+        assertThat(media.getLinkStatus()).isEqualTo(UNLISTED);
     }
 
     @Test
@@ -216,17 +213,6 @@ public class MediaServiceTest {
     }
 
     @Test
-    public void saveMediaApprovalTest() {
-        PublicMediaApproval publicMediaApproval = mediaService.getMediaApprovalByMediaID(12);
-        publicMediaApproval.setStatus("denied");
-        mediaService.saveMediaApproval(publicMediaApproval);
-
-        publicMediaApproval = mediaService.getMediaApprovalByMediaID(12);
-
-        assertThat(publicMediaApproval.getStatus()).isEqualTo("denied");
-    }
-
-    @Test
     public void getMediaFileNameTest() {
         Media media = mediaService.getMediaFileName("uYOHAkEEu00SCR7u.png");
 
@@ -246,32 +232,32 @@ public class MediaServiceTest {
 
     @Test
     public void getMediaApprovalByMediaIDTest() {
-        PublicMediaApproval publicMediaApproval = mediaService.getMediaApprovalByMediaID(12);
+        Media media = mediaService.getMediaApprovalByMediaID(12);
 
-        assertThat(publicMediaApproval).isNotNull();
-        assertThat(publicMediaApproval.getMedia()).isNotNull();
+        assertThat(media).isNotNull();
+        assertThat(media.getPublicMediaApproval()).isNotNull();
     }
 
     @Test
     public void getMediaApprovalByMediaIDNotFoundTest() {
-        PublicMediaApproval publicMediaApproval = mediaService.getMediaApprovalByMediaID(56);
-
-        assertThat(publicMediaApproval).isNull();
+        assertThatThrownBy(() -> mediaService.getMediaApprovalByMediaID(56))
+            .isExactlyInstanceOf(MediaException.class)
+            .hasMessage("Media does not exist on this server");
     }
 
     @Test
     public void getMediaApprovalsByStatusTest() {
-        List<PublicMediaApprovalDTO> mediaApprovals = mediaService.getMediaApprovalsByStatus(PENDING);
+        List<MediaDTO> mediaApprovals = mediaService.getMediaApprovalsByStatus(PENDING);
 
         assertThat(mediaApprovals).size().isEqualTo(4);
-        mediaApprovals.forEach(publicMediaApproval -> assertThat(publicMediaApproval.getStatus()).isEqualTo(PENDING));
+        mediaApprovals.forEach(mediaDTO -> assertThat(mediaDTO.getPublicMediaApproval().getStatus()).isEqualTo(PENDING));
     }
 
     @Test
     public void requestPublicApprovalTest() {
         Media media = new Media("test.png", "test.png", UNLISTED, testUser, "05/05/2000", 5000L);
 
-        PublicMediaApproval mediaApproval = mediaService.requestPublicApproval(media, "test.png");
+        PublicMediaApproval mediaApproval = mediaService.requestPublicApproval(media);
 
         assertThat(mediaApproval).isNotNull();
         assertThat(mediaApproval.getMedia()).isNotNull();
@@ -282,9 +268,9 @@ public class MediaServiceTest {
     public void requestPublicApprovalAgainTest() {
         Media media = new Media();
         media.setId(12);
+        media.setPublicMediaApproval(new PublicMediaApproval(media, "pending"));
 
-
-        assertThatThrownBy(() -> mediaService.requestPublicApproval(media, "test.png"))
+        assertThatThrownBy(() -> mediaService.requestPublicApproval(media))
             .isExactlyInstanceOf(MediaApprovalException.class)
             .hasMessage("This media has previously requested public access. Approval status: pending");
     }
@@ -293,32 +279,32 @@ public class MediaServiceTest {
     public void setMediaApprovalStatusTest() {
         mediaService.setMediaApprovalStatus(12, "denied");
 
-        PublicMediaApproval mediaApproval = mediaService.getMediaApprovalByMediaID(12);
+        Media media = mediaService.getMediaApprovalByMediaID(12);
 
-        assertThat(mediaApproval.getStatus()).isEqualTo("denied");
+        assertThat(media.getPublicMediaApproval().getStatus()).isEqualTo("denied");
     }
 
     @Test
     public void setMediaApprovalStatusNotExistingTest() {
         assertThatThrownBy(() ->mediaService.setMediaApprovalStatus(152, "denied"))
-            .isExactlyInstanceOf(MediaApprovalException.class)
-            .hasMessage("Media approval item not found");
+            .isExactlyInstanceOf(MediaException.class)
+            .hasMessage("Media does not exist on this server");
     }
 
     @Test
     public void approvePublicMediaTest() {
         mediaService.approvePublicMedia(12);
 
-        PublicMediaApproval publicMediaApproval = mediaService.getMediaApprovalByMediaID(12);
-
-        assertThat(publicMediaApproval).isNull();
+        assertThatThrownBy(() -> mediaService.getMediaApprovalByMediaID(12))
+            .isExactlyInstanceOf(MediaApprovalException.class)
+            .hasMessage("Media approval item not found");
     }
 
     @Test
     public void approvePublicMediaNotExistingTest() {
         assertThatThrownBy(() -> mediaService.approvePublicMedia(152))
-            .isExactlyInstanceOf(MediaApprovalException.class)
-            .hasMessage("No media approval found for media id 152");
+            .isExactlyInstanceOf(MediaException.class)
+            .hasMessage("Media does not exist on this server");
     }
 
     @Test

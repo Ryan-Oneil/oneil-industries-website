@@ -20,14 +20,14 @@ export default () => {
   };
 
   const renderApprovalList = () => {
-    return mediaApprovals.map(mediaApproval => {
+    return mediaApprovals.map(media => {
       return (
         <Col xs={24} sm={24} md={12} lg={8} xl={6} xxl={4}>
           <ApprovalCard
-            media={mediaApproval.media}
-            onClick={handleShowDialog.bind(this, mediaApproval.media)}
-            fileName={mediaApproval.publicName}
-            dateAdded={mediaApproval.media.dateAdded}
+            media={media}
+            onClick={handleShowDialog.bind(this, media)}
+            fileName={media.name}
+            dateAdded={media.dateAdded}
           />
         </Col>
       );

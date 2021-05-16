@@ -1,6 +1,5 @@
 package biz.oneilenterprise.website.entity;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -22,17 +21,13 @@ public class PublicMediaApproval {
     @MapsId
     private Media media;
 
-    @Column(name = "public_name")
-    private String publicName;
-
     private String status;
 
     public PublicMediaApproval() {
     }
 
-    public PublicMediaApproval(Media media, String publicName, String status) {
+    public PublicMediaApproval(Media media, String status) {
         this.media = media;
-        this.publicName = publicName;
         this.status = status;
     }
 
@@ -58,14 +53,6 @@ public class PublicMediaApproval {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public String getPublicName() {
-        return publicName;
-    }
-
-    public void setPublicName(String publicName) {
-        this.publicName = publicName;
     }
 
 }
