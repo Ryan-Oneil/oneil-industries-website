@@ -17,6 +17,24 @@ const baseApi = axios.create({
 //   config => new Promise(resolve => setTimeout(() => resolve(config), 10000))
 // );
 
+export const getRefreshToken = refreshToken => {
+  return baseApi
+    .post("/token/refresh", refreshToken, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+    .then(({ data }) => {
+      localStorage.setItem("authToken", data);
+      baseApi.defaults.headers["Authorization"] = data;
+
+      return data;
+    })
+    .catch(error => {
+      return Promise.reject(error);
+    });
+};
+
 baseApi.interceptors.response.use(
   response => response,
   error => {
@@ -57,24 +75,6 @@ baseApi.interceptors.response.use(
   }
 );
 
-export const getRefreshToken = refreshToken => {
-  return baseApi
-    .post("/token/refresh", refreshToken, {
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
-    .then(({ data }) => {
-      localStorage.setItem("authToken", data);
-      baseApi.defaults.headers["Authorization"] = data;
-
-      return data;
-    })
-    .catch(error => {
-      return Promise.reject(error);
-    });
-};
-
 export const apiGetCall = async (endpoint, options) => {
   return await baseApi.get(endpoint, options);
 };
@@ -87,6 +87,6 @@ export const apiPutCall = async (endpoint, data) => {
   return await baseApi.put(endpoint, data);
 };
 
-export const apiDeleteCall = async endpoint => {
-  return await baseApi.delete(endpoint);
+export const apiDeleteCall = async (endpoint, config) => {
+  return await baseApi.delete(endpoint, config);
 };

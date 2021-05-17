@@ -1,19 +1,28 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { InputWithErrors, SelectInputWithErrors } from "./index";
-import { getApiError } from "../../helpers";
 import { Field, Formik } from "formik";
 import { Alert, Button, Select } from "antd";
 import { updateMedia } from "../../reducers/mediaReducer";
+import { handleFormError } from "../../apis/ApiErrorHandler";
 const { Option } = Select;
 
 export default props => {
   const dispatch = useDispatch();
 
-  const onSubmit = (formValues, { setStatus }) => {
+  const onSubmit = (formValues, { setStatus, setFieldError }) => {
     return dispatch(updateMedia(formValues, props.media.id)).catch(error =>
-      setStatus(getApiError(error))
+      handleFormError(error, setFieldError, setStatus)
     );
+  };
+
+  const validate = values => {
+    const errors = {};
+
+    if (!values.name) {
+      errors.name = "Name is required";
+    }
+    return errors;
   };
 
   return (
@@ -24,6 +33,7 @@ export default props => {
       }}
       onSubmit={onSubmit}
       validate={validate}
+      enableReinitialize={true}
     >
       {props => {
         const {
@@ -58,7 +68,7 @@ export default props => {
             <Button
               type="primary"
               htmlType="submit"
-              className="form-button"
+              className="formattedBackground"
               disabled={!isValid || isSubmitting}
               loading={isSubmitting}
               size="large"
@@ -67,9 +77,8 @@ export default props => {
             </Button>
             {status && (
               <Alert
-                message="Media Update Error"
-                description={status}
-                type="error"
+                message={status.msg}
+                type={status.type}
                 closable
                 showIcon
                 onClose={() => setStatus("")}
@@ -80,13 +89,4 @@ export default props => {
       }}
     </Formik>
   );
-};
-
-const validate = values => {
-  const errors = {};
-
-  if (!values.name) {
-    errors.name = "Name is required";
-  }
-  return errors;
 };

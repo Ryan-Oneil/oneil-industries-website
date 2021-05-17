@@ -8,13 +8,14 @@ export default ({
   placeHolder,
   onChange,
   onSubmit,
-  optionValues
+  optionValues,
+  style
 }) => {
   const [inputValue, setInputValue] = useState("");
 
   return (
     <Select
-      style={{ width: "100%" }}
+      style={{ width: "100%", ...style }}
       size={"large"}
       placeholder={placeHolder}
       defaultValue={defaultValue}
@@ -40,8 +41,8 @@ export default ({
       )}
     >
       {optionValues.map(item => (
-        <Option key={item.id} value={item.name}>
-          {item.name}
+        <Option key={item.id} value={item.id}>
+          {item.name ? item.name : item.id}
         </Option>
       ))}
     </Select>

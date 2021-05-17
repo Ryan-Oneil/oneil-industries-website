@@ -2,24 +2,40 @@ import React from "react";
 import { Field, Formik } from "formik";
 import { InputWithErrors } from "./index";
 import { Alert, Button } from "antd";
-import { getApiError } from "../../helpers";
 import MailOutlined from "@ant-design/icons/lib/icons/MailOutlined";
 import LockOutlined from "@ant-design/icons/lib/icons/LockOutlined";
 import UserOutlined from "@ant-design/icons/lib/icons/UserOutlined";
 import { registerUser } from "../../reducers/authReducer";
+import { handleFormError } from "../../apis/ApiErrorHandler";
 
 export default () => {
-  const onSubmit = (formValues, { setStatus }) => {
+  const onSubmit = (formValues, { setStatus, setFieldError }) => {
     const creds = {
-      name: formValues.username.trim(),
+      username: formValues.username.trim(),
       password: formValues.password.trim(),
       email: formValues.email.trim()
     };
     return registerUser(creds)
       .then(response => setStatus({ msg: response.data, type: "success" }))
-      .catch(error => {
-        setStatus({ msg: getApiError(error), type: "error" });
-      });
+      .catch(error => handleFormError(error, setFieldError, setStatus));
+  };
+
+  const validate = values => {
+    const errors = {};
+
+    if (!values.username) {
+      errors.username = "Username is required";
+    }
+    if (!values.password) {
+      errors.password = "Password is required";
+    }
+    if (values.password !== values.confirmPassword) {
+      errors.confirmPassword = "Passwords don't match";
+    }
+    if (!values.email) {
+      errors.email = "Email is required";
+    }
+    return errors;
   };
 
   return (
@@ -80,7 +96,7 @@ export default () => {
             <Button
               type="primary"
               htmlType="submit"
-              className="form-button"
+              className="fullWidth formattedBackground"
               disabled={!isValid || isSubmitting}
               size="large"
               loading={isSubmitting}
@@ -101,22 +117,4 @@ export default () => {
       }}
     </Formik>
   );
-};
-
-const validate = values => {
-  const errors = {};
-
-  if (!values.username) {
-    errors.username = "Username is required";
-  }
-  if (!values.password) {
-    errors.password = "Password is required";
-  }
-  if (values.password !== values.confirmPassword) {
-    errors.confirmPassword = "Passwords don't match";
-  }
-  if (!values.email) {
-    errors.email = "Email is required";
-  }
-  return errors;
 };

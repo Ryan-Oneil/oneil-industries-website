@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { apiGetCall, apiPutCall } from "../apis/api";
-import { getApiError } from "../helpers";
 import { setError } from "./globalErrorReducer";
 import {
   ADMIN_GET_PENDING_APPROVALS_ENDPOINT,
@@ -9,6 +8,92 @@ import {
   ADMIN_GET_USERS_ENDPOINT
 } from "../apis/endpoints";
 import { normalize, schema } from "normalizr";
+import { getApiError } from "../apis/ApiErrorHandler";
+
+const user = new schema.Entity("user", {}, { idAttribute: "name" });
+const userList = new schema.Array(user);
+
+export const slice = createSlice({
+  name: "admin",
+  initialState: {
+    roles: [],
+    mediaApprovals: [],
+    entities: {
+      users: {}
+    },
+    fileShare: {
+      totalViews: 0,
+      totalLinks: 0,
+      mostViewed: [],
+      recentShared: []
+    },
+    stats: {
+      remainingStorage: 0,
+      totalMedia: 0,
+      totalAlbums: 0,
+      totalUsers: 0,
+      usedStorage: 0,
+      recentUsers: [],
+      recentMedia: []
+    },
+    userStats: {
+      totalViews: 0,
+      totalLinks: 0
+    }
+  },
+  reducers: {
+    fetchedStats(state, action) {
+      state.stats = { ...state.stats, ...action.payload };
+    },
+    fetchedUsers(state, action) {
+      const users = normalize(action.payload, userList);
+
+      state.entities.users = users.entities.user;
+    },
+    fetchedMediaApprovals(state, action) {
+      state.mediaApprovals = action.payload;
+    },
+    removedMediaApproval(state, action) {
+      state.mediaApprovals = state.mediaApprovals.filter(
+        media => media.id !== action.payload
+      );
+    },
+    fetchedRoles(state, action) {
+      state.roles = action.payload;
+    },
+    getUserDetails(state, action) {
+      state.entities.users[action.payload.name] = {
+        ...state.entities.users[action.payload.name],
+        ...action.payload
+      };
+    },
+    updateUserDetails(state, action) {
+      const user = state.entities.users[action.payload.name];
+      state.entities.users[action.payload.name] = {
+        ...user,
+        ...action.payload
+      };
+    },
+    getFileShareStats(state, action) {
+      state.fileShare = action.payload;
+    },
+    getUserFileShareStats(state, action) {
+      state.userStats = action.payload;
+    }
+  }
+});
+export default slice.reducer;
+export const {
+  fetchedStats,
+  fetchedUsers,
+  fetchedMediaApprovals,
+  removedMediaApproval,
+  fetchedRoles,
+  getUserDetails,
+  updateUserDetails,
+  getFileShareStats,
+  getUserFileShareStats
+} = slice.actions;
 
 export const getAllUsers = () => dispatch => {
   return apiGetCall(ADMIN_GET_USERS_ENDPOINT)
@@ -51,16 +136,13 @@ export const getMediaApprovals = () => dispatch => {
     .catch(error => dispatch(setError(getApiError(error))));
 };
 
-export const approvePublicMedia = (endpoint, mediaApprovalID) => dispatch => {
-  apiPutCall(endpoint).then(() => {
-    dispatch(removedMediaApproval(mediaApprovalID));
-  });
-};
-
-export const denyPublicMedia = (endpoint, mediaApprovalID) => dispatch => {
-  apiPutCall(endpoint).then(() => {
-    dispatch(removedMediaApproval(mediaApprovalID));
-  });
+export const changePublicMediaStatus = (
+  endpoint,
+  mediaApprovalID
+) => dispatch => {
+  return apiPutCall(endpoint)
+    .then(() => dispatch(removedMediaApproval(mediaApprovalID)))
+    .catch(error => dispatch(setError(getApiError(error))));
 };
 
 export const getAdminStats = () => dispatch => {
@@ -112,98 +194,3 @@ export const updateUserAccountStatus = (username, status) => dispatch => {
     )
     .catch(error => dispatch(setError(getApiError(error))));
 };
-export const getAPIUptime = () => dispatch => {
-  return apiGetCall("/actuator/metrics/process.uptime")
-    .then(({ data }) => {
-      dispatch(fetchedUptime(data));
-    })
-    .catch(error => dispatch(setError(getApiError(error))));
-};
-const user = new schema.Entity("user", {}, { idAttribute: "name" });
-const userList = new schema.Array(user);
-
-export const slice = createSlice({
-  name: "admin",
-  initialState: {
-    roles: [],
-    mediaApprovals: [],
-    entities: {
-      users: {}
-    },
-    fileShare: {
-      totalViews: 0,
-      totalLinks: 0,
-      mostViewed: [],
-      recentShared: []
-    },
-    stats: {
-      remainingStorage: 0,
-      totalMedia: 0,
-      totalAlbums: 0,
-      totalUsers: 0,
-      usedStorage: 0,
-      recentUsers: [],
-      upTime: 0
-    },
-    userStats: {
-      totalViews: 0,
-      totalLinks: 0
-    }
-  },
-  reducers: {
-    fetchedStats(state, action) {
-      state.stats = { ...state.stats, ...action.payload };
-    },
-    fetchedUsers(state, action) {
-      const users = normalize(action.payload, userList);
-
-      state.entities.users = users.entities.user;
-    },
-    fetchedMediaApprovals(state, action) {
-      state.mediaApprovals = action.payload;
-    },
-    removedMediaApproval(state, action) {
-      state.mediaApprovals = state.mediaApprovals.filter(
-        mediaApproval => mediaApproval.id !== action.payload
-      );
-    },
-    fetchedRoles(state, action) {
-      state.roles = action.payload;
-    },
-    getUserDetails(state, action) {
-      state.entities.users[action.payload.name] = {
-        ...state.entities.users[action.payload.name],
-        ...action.payload
-      };
-    },
-    updateUserDetails(state, action) {
-      const user = state.entities.users[action.payload.name];
-      state.entities.users[action.payload.name] = {
-        ...user,
-        ...action.payload
-      };
-    },
-    getFileShareStats(state, action) {
-      state.fileShare = action.payload;
-    },
-    getUserFileShareStats(state, action) {
-      state.userStats = action.payload;
-    },
-    fetchedUptime(state, action) {
-      state.stats.upTime = action.payload.measurements[0].value;
-    }
-  }
-});
-export default slice.reducer;
-export const {
-  fetchedStats,
-  fetchedUsers,
-  fetchedMediaApprovals,
-  removedMediaApproval,
-  fetchedRoles,
-  getUserDetails,
-  updateUserDetails,
-  getFileShareStats,
-  getUserFileShareStats,
-  fetchedUptime
-} = slice.actions;

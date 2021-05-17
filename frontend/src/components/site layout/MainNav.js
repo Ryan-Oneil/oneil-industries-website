@@ -10,12 +10,12 @@ export default ({ menuDirection }) => {
   let location = useLocation();
 
   useEffect(() => {
-    if (role === "ROLE_ADMIN") {
+    if (role === "ROLE_ADMIN" && isAuthenticated) {
       setIsAdmin(true);
     } else {
       setIsAdmin(false);
     }
-  }, [role]);
+  }, [role, isAuthenticated]);
 
   return (
     <Menu
@@ -24,7 +24,7 @@ export default ({ menuDirection }) => {
       selectedKeys={[location.pathname]}
     >
       <Menu.Item key="/">
-        <NavLink to="/" className="header item" exact={true}>
+        <NavLink to="/" className="header item" exact>
           Home
         </NavLink>
       </Menu.Item>

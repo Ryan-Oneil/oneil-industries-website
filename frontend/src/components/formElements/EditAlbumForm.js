@@ -1,18 +1,28 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { InputWithErrors } from "./index";
-import { getApiError } from "../../helpers";
 import { Field, Formik } from "formik";
 import { Alert, Button } from "antd";
 import { updateAlbum } from "../../reducers/mediaReducer";
+import SaveOutlined from "@ant-design/icons/lib/icons/SaveOutlined";
+import { handleFormError } from "../../apis/ApiErrorHandler";
 
 export default props => {
   const dispatch = useDispatch();
 
-  const onSubmit = (formValues, { setStatus }) => {
+  const onSubmit = (formValues, { setStatus, setFieldError }) => {
     return dispatch(updateAlbum(formValues, props.album.id)).catch(error =>
-      setStatus(getApiError(error))
+      handleFormError(error, setFieldError, setStatus)
     );
+  };
+
+  const validate = values => {
+    const errors = {};
+
+    if (!values.name) {
+      errors.name = "Name is required";
+    }
+    return errors;
   };
 
   return (
@@ -46,18 +56,18 @@ export default props => {
             <Button
               type="primary"
               htmlType="submit"
-              className="form-button"
+              className="fullWidth formattedBackground"
               disabled={!isValid || isSubmitting}
               loading={isSubmitting}
               size="large"
+              icon={<SaveOutlined />}
             >
               {isSubmitting ? "Updating" : "Update"}
             </Button>
             {status && (
               <Alert
-                message="Album Update Error"
-                description={status}
-                type="error"
+                message={status.msg}
+                type={status.type}
                 closable
                 showIcon
                 onClose={() => setStatus("")}
@@ -68,13 +78,4 @@ export default props => {
       }}
     </Formik>
   );
-};
-
-const validate = values => {
-  const errors = {};
-
-  if (!values.name) {
-    errors.name = "Name is required";
-  }
-  return errors;
 };

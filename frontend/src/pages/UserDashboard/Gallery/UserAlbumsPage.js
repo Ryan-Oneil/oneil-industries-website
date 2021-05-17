@@ -2,20 +2,31 @@ import React, { useEffect, useState } from "react";
 import Media from "../../../components/Gallery/Media";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteAlbum, fetchAlbums } from "../../../reducers/mediaReducer";
-import { Button, Card, Col, Divider, Empty, Image, Modal, Row } from "antd";
-import { ALBUM_DELETE } from "../../../apis/endpoints";
+import {
+  Button,
+  Card,
+  Col,
+  Empty,
+  Image,
+  message,
+  Modal,
+  Row,
+  Space
+} from "antd";
 import EditAlbumForm from "../../../components/formElements/EditAlbumForm";
-const { Meta } = Card;
+import MediaCard from "../../../components/Gallery/MediaCard";
+import DeleteOutlined from "@ant-design/icons/lib/icons/DeleteOutlined";
+import EyeOutlined from "@ant-design/icons/lib/icons/EyeOutlined";
 
 export default () => {
-  const [albumId, setAlbumId] = useState("");
+  const [activeAlbum, setActiveAlbum] = useState("");
   const [loading, setLoading] = useState(true);
   const { name } = useSelector(state => state.auth.user);
   const { albums, medias } = useSelector(state => state.medias.entities);
   const dispatch = useDispatch();
 
-  const handleShowDialog = albumId => {
-    setAlbumId(albumId);
+  const handleShowDialog = album => {
+    setActiveAlbum(album);
   };
 
   useEffect(() => {
@@ -26,57 +37,95 @@ export default () => {
 
   const renderList = () => {
     return Object.values(albums).map(album => {
+      const { fileName = "", mediaType = "" } = medias[album.medias[0]] || {
+        fileName: "",
+        mediaType: ""
+      };
       return (
         <Col key={album.id} xs={18} sm={6} md={6} lg={7} xl={4}>
-          <Card>
-            <div className="pointerCursor">
-              <Media
-                media={medias[album.medias[0]]}
-                onClick={handleShowDialog.bind(this, album.id)}
-              />
-            </div>
-            <Divider />
-            <Meta title={album.name} style={{ textAlign: "center" }} />
-          </Card>
+          <MediaCard
+            handleShowDialog={handleShowDialog.bind(this, album)}
+            title={album.name || album.id}
+            mediaType={mediaType}
+            mediaFileName={fileName}
+          />
         </Col>
       );
     });
   };
 
   return (
-    <div
-      className="marginPadding"
-      style={{
-        paddingLeft: "30px",
-        marginTop: "-10px"
-      }}
-    >
-      <Row gutter={[32, 32]}>{renderList()}</Row>
-      {albumId && (
+    <>
+      <h1
+        className={"bigText centerText whiteColor"}
+        style={{ marginTop: "-30px" }}
+      >
+        My Albums
+      </h1>
+      {Object.values(albums).length === 0 && (
+        <Card>
+          <Empty description={"You don't have any albums"} />
+        </Card>
+      )}
+      <Row
+        gutter={[32, 32]}
+        style={{
+          height: "84vh",
+          overflow: "auto"
+        }}
+      >
+        {renderList()}
+      </Row>
+      {activeAlbum && (
         <Modal
-          title={albums[albumId].name}
-          visible={albumId}
-          onCancel={() => setAlbumId("")}
+          title={activeAlbum.name}
+          visible={true}
+          onCancel={() => setActiveAlbum("")}
           footer={null}
         >
-          <a href={`/gallery/album/${albumId}`}>
+          {activeAlbum.medias.length > 0 && (
             <Media
-              media={medias[albums[albumId].medias[0]]}
-              renderVideoControls={true}
+              fileName={medias[activeAlbum.medias[0]].fileName}
+              mediaType={medias[activeAlbum.medias[0]].mediaType}
             />
-          </a>
-          <Button
-            value="Delete"
-            className="centerButton"
-            type="danger"
-            onClick={() => {
-              dispatch(deleteAlbum(ALBUM_DELETE, albumId));
-              setAlbumId("");
-            }}
-          >
-            Delete
-          </Button>
-          <EditAlbumForm album={albums[albumId]} />
+          )}
+          {activeAlbum.medias.length === 0 && (
+            <Image
+              alt={"No media"}
+              src={require("../../../assets/images/noimage.png")}
+              preview={false}
+              style={{ margin: "auto" }}
+              width={"100%"}
+            />
+          )}
+          <div className={"centerFlexContent"}>
+            <Space>
+              <Button
+                className="formattedBackground"
+                type="primary"
+                icon={<EyeOutlined />}
+                onClick={() =>
+                  window.open(`/gallery/album/${activeAlbum.id}`, "_blank")
+                }
+              >
+                View
+              </Button>
+              <Button
+                type="danger"
+                icon={<DeleteOutlined />}
+                onClick={() => {
+                  dispatch(deleteAlbum(activeAlbum.id)).then(() => {
+                    message.success("Successfully delete album");
+                    setActiveAlbum("");
+                  });
+                }}
+              >
+                Delete
+              </Button>
+            </Space>
+          </div>
+
+          <EditAlbumForm album={activeAlbum} />
         </Modal>
       )}
       {albums.length === 0 && (
@@ -86,6 +135,6 @@ export default () => {
           />
         </Card>
       )}
-    </div>
+    </>
   );
 };

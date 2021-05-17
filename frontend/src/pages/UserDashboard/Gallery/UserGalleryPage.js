@@ -1,16 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Media from "../../../components/Gallery/Media";
 import "../../../assets/css/layout.css";
-import { Button, Modal } from "antd";
-import MediaGrid from "../../../components/Gallery/MediaGrid";
-import { USER_MEDIAS_ENDPOINT } from "../../../apis/endpoints";
-import { BASE_URL } from "../../../apis/api";
-import { deleteMedia } from "../../../reducers/mediaReducer";
-import EditMediaForm from "../../../components/formElements/EditMediaForm";
+import { fetchAlbums } from "../../../reducers/mediaReducer";
+import ManageMediaGrid from "../../../components/Gallery/ManageMediaGrid";
+import MediaModal from "../../../components/Gallery/MediaModal";
 
 export default () => {
-  const { medias } = useSelector(state => state.medias.entities);
+  const { albums, medias } = useSelector(state => state.medias.entities);
   const [activeMedia, setActiveMedia] = useState("");
   const dispatch = useDispatch();
   const { name } = useSelector(state => state.auth.user);
@@ -20,53 +16,32 @@ export default () => {
   };
 
   useEffect(() => {
+    dispatch(fetchAlbums(`/gallery/myalbums/${name}`));
+  }, []);
+
+  useEffect(() => {
     if (activeMedia) {
       setActiveMedia(medias[activeMedia.id]);
     }
   }, [medias]);
 
   return (
-    <div>
-      <MediaGrid
-        imageEndpoint={`${USER_MEDIAS_ENDPOINT}${name}/image`}
-        videoEndpoint={`${USER_MEDIAS_ENDPOINT}${name}/video`}
+    <div style={{ marginTop: "-30px" }}>
+      <h1 className={"bigText centerText whiteColor removeMargin"}>
+        My Medias
+      </h1>
+      <ManageMediaGrid
         handleShowDialog={handleShowDialog}
+        albums={Object.values(albums)}
+        name={name}
       />
       {activeMedia && (
-        <Modal
-          title={activeMedia.name}
-          visible={activeMedia}
-          onCancel={() => setActiveMedia("")}
-          footer={null}
-          width={550}
-        >
-          <a
-            href={`${BASE_URL}/gallery/${activeMedia.mediaType}/${activeMedia.fileName}`}
-          >
-            <Media
-              media={activeMedia}
-              renderVideoControls={true}
-              fullSize={true}
-            />
-          </a>
-          <Button
-            value="Delete"
-            className="centerButton"
-            type="danger"
-            onClick={() => {
-              dispatch(
-                deleteMedia(
-                  `/gallery/media/delete/${activeMedia.id}`,
-                  activeMedia.id
-                )
-              );
-              setActiveMedia("");
-            }}
-          >
-            Delete
-          </Button>
-          <EditMediaForm media={activeMedia} />
-        </Modal>
+        <MediaModal
+          activeMedia={activeMedia}
+          closeModalAction={() => setActiveMedia("")}
+          showMediaPreview
+          enableManagement
+        />
       )}
     </div>
   );

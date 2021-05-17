@@ -1,18 +1,10 @@
-export const getApiError = error => {
-  if (error.response) {
-    return error.response.data;
-  } else if (error.request) {
-    return error.request;
-  } else {
-    return error.message;
-  }
-};
-
 export const displayBytesInReadableForm = bytes => {
-  if (bytes === 0 || bytes < 0) return "0 Bytes";
+  if (bytes === 0 || bytes < 0) {
+    return "0 Bytes";
+  }
 
   const k = 1024;
-  const dm = 2 < 0 ? 0 : 2;
+  let dm = 2 < 0 ? 0 : 2;
   const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
 
   const i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -37,4 +29,11 @@ export const getFilterSort = sorter => {
     order = "desc";
   }
   return `${sorter.field},${order}`;
+};
+
+export const getUploadProgress = event => {
+  const total = parseFloat(event.total);
+  const current = event.loaded;
+
+  return Math.floor((current / total) * 100);
 };

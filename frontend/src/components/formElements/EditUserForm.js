@@ -2,9 +2,9 @@ import React from "react";
 import { Field, withFormik } from "formik";
 import { InputWithErrors } from "./index";
 import { Alert, Button, Card } from "antd";
-import { getApiError } from "../../helpers";
 import { connect } from "react-redux";
 import { updateUser } from "../../reducers/adminReducer";
+import { handleFormError } from "../../apis/ApiErrorHandler";
 
 const LinkForm = props => {
   const {
@@ -18,7 +18,7 @@ const LinkForm = props => {
   const { name } = props.user;
 
   return (
-    <Card title={loading ? `Loading User...` : `${name} Settings`}>
+    <Card title={loading ? "Loading User..." : `${name} Settings`}>
       <form onSubmit={handleSubmit}>
         <Field
           name="Username"
@@ -45,7 +45,7 @@ const LinkForm = props => {
         <Button
           type="primary"
           htmlType="submit"
-          className="form-button"
+          className="centerContent formattedBackground"
           disabled={!isValid || isSubmitting || loading}
           loading={isSubmitting}
         >
@@ -81,10 +81,10 @@ const EditUserForm = withFormik({
     }
     return errors;
   },
-  handleSubmit: (values, { props, setStatus }) => {
+  handleSubmit: (values, { props, setStatus, setFieldError }) => {
     return props
       .updateUser(values)
-      .catch(error => setStatus({ msg: getApiError(error), type: "error" }));
+      .catch(error => handleFormError(error, setFieldError, setStatus));
   },
   validateOnMount: true
 })(LinkForm);

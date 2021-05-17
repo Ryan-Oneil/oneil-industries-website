@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Button, Card, Result } from "antd";
 import { apiPostCall } from "../../apis/api";
-import { getApiError } from "../../helpers";
 import { Link } from "react-router-dom";
+import { getApiError } from "../../apis/ApiErrorHandler";
 
 export default props => {
   const [successMessage, setSuccessMessage] = useState("");

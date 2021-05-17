@@ -4,7 +4,11 @@ import { Col, Row, List, Avatar } from "antd";
 import StatisticCard from "../../components/Stats/StatisticCard";
 import ListCard from "../../components/Stats/ListCard";
 import { useDispatch, useSelector } from "react-redux";
-import {getAdminLinkStats, getAdminStats, getAPIUptime} from "../../reducers/adminReducer";
+import { getAdminLinkStats, getAdminStats } from "../../reducers/adminReducer";
+import { BASE_URL } from "../../apis/api";
+import UserOutlined from "@ant-design/icons/lib/icons/UserOutlined";
+import FileZipOutlined from "@ant-design/icons/lib/icons/FileZipOutlined";
+import { Link } from "react-router-dom";
 
 export default () => {
   const [loading, setLoading] = useState(true);
@@ -20,50 +24,39 @@ export default () => {
     recentUsers,
     remainingStorage,
     usedStorage,
-      upTime
+    recentMedia
   } = useSelector(state => state.admin.stats);
 
   useEffect(() => {
     dispatch(getAdminStats()).then(() => setLoading(false));
-    dispatch(getAPIUptime())
     dispatch(getAdminLinkStats()).then(() => setLoadingFileShareData(false));
   }, []);
-    console.log(upTime)
+
   return (
     <div className="extraPadding">
       <Row gutter={[32, 32]} type="flex">
-        <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+        <Col xs={12} sm={12} md={8} lg={8} xl={8}>
           <StatisticCard title="Total Media" value={totalMedia} />
         </Col>
-        <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+        <Col xs={12} sm={12} md={8} lg={8} xl={8}>
           <StatisticCard title="Total Albums" value={totalAlbums} />
         </Col>
-        <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+        <Col xs={12} sm={12} md={8} lg={8} xl={8}>
           <StatisticCard title="Total Users" value={totalUsers} />
         </Col>
-        <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+        <Col xs={12} sm={12} md={8} lg={8} xl={8}>
           <StatisticCard
             title="Used Storage"
             value={displayBytesInReadableForm(usedStorage)}
+            suffix={` / ${displayBytesInReadableForm(remainingStorage * 1000)}`}
           />
         </Col>
-        <Col xs={24} sm={24} md={6} lg={6} xl={6}>
-          <StatisticCard title="Uptime" value={new Date(upTime).toISOString().slice(11, -5)} />
-        </Col>
-        <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+        <Col xs={12} sm={12} md={8} lg={8} xl={8}>
           <StatisticCard title="Total Shared Links" value={totalLinks} />
         </Col>
-        <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+        <Col xs={12} sm={12} md={8} lg={8} xl={8}>
           <StatisticCard title="Total Views" value={totalViews} />
         </Col>
-        <Col xs={24} sm={24} md={6} lg={6} xl={6}>
-          <StatisticCard
-            title="Available Storage"
-            value={displayBytesInReadableForm(remainingStorage * 1000)}
-          />
-        </Col>
-      </Row>
-      <Row gutter={[32, 32]} type="flex">
         <Col xs={24} sm={24} md={12} lg={12} xl={8}>
           <ListCard
             title="Recent Users"
@@ -72,45 +65,44 @@ export default () => {
             loading={loading}
             renderItem={item => (
               <List.Item>
-                <List.Item.Meta
-                  avatar={
-                    <Avatar
-                      src={require("../../assets/images/file.png")}
-                      size="large"
-                    />
-                  }
-                  title={item.name}
-                  description={item.email}
-                />
+                <Link to={`/admin/users/${item.name}`}>
+                  <List.Item.Meta
+                    avatar={<Avatar icon={<UserOutlined />} size="large" />}
+                    title={item.name}
+                    description={item.email}
+                  />
+                </Link>
               </List.Item>
             )}
           />
         </Col>
         <Col xs={24} sm={24} md={12} lg={12} xl={8}>
           <ListCard
-            title="Popular Links"
+            title="Recent Media"
             itemLayout="horizontal"
-            dataSource={mostViewed}
-            loading={loadingFileShareData}
+            dataSource={recentMedia}
+            loading={loading}
             renderItem={item => (
               <List.Item>
                 <List.Item.Meta
                   avatar={
                     <Avatar
-                      src={require("../../assets/images/file.png")}
+                      src={`${BASE_URL}/gallery/image/thumbnail/${item.fileName}`}
                       size="large"
                     />
                   }
                   title={
                     <a
-                      href={`/shared/${item.id}`}
+                      href={`${BASE_URL}/gallery/${item.mediaType.toLowerCase()}/${
+                        item.fileName
+                      }`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      {item.title ? item.title : item.id}
+                      {item.fileName}
                     </a>
                   }
-                  description={`${item.views} views`}
+                  description={item.mediaType.toLowerCase()}
                 />
               </List.Item>
             )}
@@ -125,12 +117,7 @@ export default () => {
             renderItem={item => (
               <List.Item>
                 <List.Item.Meta
-                  avatar={
-                    <Avatar
-                      src={require("../../assets/images/file.png")}
-                      size="large"
-                    />
-                  }
+                  avatar={<Avatar icon={<FileZipOutlined />} size="large" />}
                   title={
                     <a
                       href={`/shared/${item.id}`}

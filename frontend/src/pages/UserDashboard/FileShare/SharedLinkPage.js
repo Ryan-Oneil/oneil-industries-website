@@ -15,8 +15,9 @@ import DownloadOutlined from "@ant-design/icons/lib/icons/DownloadOutlined";
 import { useDispatch } from "react-redux";
 import { clearError, setError } from "../../../reducers/globalErrorReducer";
 import { apiGetCall, BASE_URL } from "../../../apis/api";
-import { displayBytesInReadableForm, getApiError } from "../../../helpers";
+import { displayBytesInReadableForm } from "../../../helpers";
 import ListCard from "../../../components/Stats/ListCard";
+import { getApiError } from "../../../apis/ApiErrorHandler";
 
 export default props => {
   const [link, setLink] = useState({
@@ -57,7 +58,7 @@ export default props => {
       {!invalidLink && (
         <Row style={{ padding: "2%" }}>
           <Col span={6}>
-            <Card title={link.title}>
+            <Card title={link.title} className={"roundedShadowBox"}>
               <Statistic title="Views" value={link.views} />
               <Statistic title="Files" value={link.files.length} />
               <Statistic

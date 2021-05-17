@@ -1,21 +1,31 @@
 import React from "react";
 import { InputWithErrors, SelectInputWithErrors } from "./index";
 import { useDispatch } from "react-redux";
-import { getApiError } from "../../helpers";
 import { updateUserQuota } from "../../reducers/adminReducer";
 import { Field, Formik } from "formik";
 import { Alert, Button, Card, Select } from "antd";
+import { handleFormError } from "../../apis/ApiErrorHandler";
 const { Option } = Select;
 
 export default props => {
   const { username } = props;
   const dispatch = useDispatch();
 
-  const onSubmit = (formValues, { setStatus }) => {
+  const onSubmit = (formValues, { setStatus, setFieldError }) => {
     return dispatch(updateUserQuota(username, formValues)).catch(error =>
-      setStatus(getApiError(error))
+      handleFormError(error, setFieldError, setStatus)
     );
   };
+
+  const validate = formValues => {
+    const errors = {};
+
+    if (!formValues.max) {
+      errors.max = "You must enter a quota max amount";
+    }
+    return errors;
+  };
+
   return (
     <Card title="Quota Settings">
       <Formik
@@ -62,7 +72,7 @@ export default props => {
               <Button
                 type="primary"
                 htmlType="submit"
-                className="form-button"
+                className="centerContent formattedBackground"
                 disabled={!isValid || isSubmitting}
                 loading={isSubmitting}
               >
@@ -70,9 +80,8 @@ export default props => {
               </Button>
               {status && (
                 <Alert
-                  message="Update Error"
-                  description={status}
-                  type="error"
+                  message={status.msg}
+                  type={status.type}
                   closable
                   showIcon
                   onClose={() => setStatus("")}
@@ -84,12 +93,4 @@ export default props => {
       </Formik>
     </Card>
   );
-};
-const validate = formValues => {
-  const errors = {};
-
-  if (!formValues.max) {
-    errors.max = "You must enter a quota max amount";
-  }
-  return errors;
 };

@@ -6,6 +6,50 @@ import UserOutlined from "@ant-design/icons/lib/icons/UserOutlined";
 const { TreeNode } = Tree;
 
 export default ({ serviceList }) => {
+  const renderClients = clients => {
+    return clients.map(client => {
+      return (
+        <TreeNode
+          title={client.name}
+          key={client.uuid + client.name}
+          icon={<UserOutlined />}
+        />
+      );
+    });
+  };
+
+  const recursiveTraversal = childrenChannels => {
+    if (childrenChannels.length > 0) {
+      return childrenChannels.map(child => (
+        <TreeNode
+          title={child.title}
+          key={child.key}
+          isLeaf={true}
+          icon={child.title ? <CustomerServiceOutlined /> : ""}
+        >
+          {renderClients(child.usersInChannel)}
+          {recursiveTraversal(child.children)}
+        </TreeNode>
+      ));
+    }
+  };
+
+  const mapDataToTreeForm = channels => {
+    return channels.map(serviceChanel => {
+      return (
+        <TreeNode
+          title={serviceChanel.title}
+          key={serviceChanel.key}
+          isLeaf={true}
+          icon={serviceChanel.title ? <CustomerServiceOutlined /> : ""}
+        >
+          {renderClients(serviceChanel.usersInChannel)}
+          {recursiveTraversal(serviceChanel.children)}
+        </TreeNode>
+      );
+    });
+  };
+
   const treeNodes = mapDataToTreeForm(serviceList);
 
   const getAllKeys = data => {
@@ -30,44 +74,4 @@ export default ({ serviceList }) => {
       {treeNodes}
     </Tree>
   );
-};
-
-const mapDataToTreeForm = channels => {
-  return channels.map(serviceChanel => {
-    return (
-      <TreeNode
-        title={serviceChanel.title}
-        key={serviceChanel.key}
-        isLeaf={true}
-        icon={serviceChanel.title ? <CustomerServiceOutlined /> : ""}
-      >
-        {renderClients(serviceChanel.usersInChannel)}
-        {recursiveTraversal(serviceChanel.children)}
-      </TreeNode>
-    );
-  });
-};
-
-const recursiveTraversal = childrenChannels => {
-  if (childrenChannels.length > 0) {
-    return childrenChannels.map(child => (
-      <TreeNode
-        title={child.title}
-        key={child.key}
-        isLeaf={true}
-        icon={child.title ? <CustomerServiceOutlined /> : ""}
-      >
-        {renderClients(child.usersInChannel)}
-        {recursiveTraversal(child.children)}
-      </TreeNode>
-    ));
-  }
-};
-
-const renderClients = clients => {
-  return clients.map(client => {
-    return (
-      <TreeNode title={client.name} key={client.uuid + client.name} icon={<UserOutlined />} />
-    );
-  });
 };

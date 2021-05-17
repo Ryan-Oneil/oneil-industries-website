@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import Media from "../../components/Gallery/Media";
-import RenderMedias from "../../components/Gallery/RenderMedias";
-import { BASE_URL } from "../../apis/api";
 import { fetchAlbumWithImages } from "../../reducers/mediaReducer";
-import { Empty, Modal, Row } from "antd";
+import { Col, Empty, Row } from "antd";
+import MediaModal from "../../components/Gallery/MediaModal";
+import MediaCard from "../../components/Gallery/MediaCard";
 
 export default props => {
   const {
@@ -23,8 +22,24 @@ export default props => {
     setActiveMedia(media);
   };
 
+  const renderMedias = () => {
+    return album.medias.map(media => {
+      return (
+        <Col xs={24} sm={12} md={12} lg={8} xl={6} xxl={4} key={media.id}>
+          <MediaCard
+            mediaFileName={media.fileName}
+            mediaType={media.mediaType}
+            dateAdded={media.dateAdded}
+            handleShowDialog={handleShowDialog.bind(this, media)}
+          />
+        </Col>
+      );
+    });
+  };
+
   return (
-    <div style={{ marginTop: "20px" }}>
+    <div className={"topPadding"}>
+      <h1 className="centerText bigText whiteText">{album.name}</h1>
       {album.medias.length === 0 && (
         <Empty
           description={`${loading ? "Loading Album" : "No album found"}`}
@@ -32,29 +47,15 @@ export default props => {
         />
       )}
       <Row gutter={[32, 32]} justify="center">
-        {RenderMedias(album.medias, handleShowDialog, true)}
+        {renderMedias()}
       </Row>
       {activeMedia && (
-        <Modal
-          title={activeMedia.name}
-          visible={activeMedia}
-          onCancel={() => setActiveMedia("")}
-          footer={null}
-        >
-          <a
-            href={`${BASE_URL}/gallery/${activeMedia.mediaType}/${activeMedia.fileName}`}
-          >
-            <Media
-              media={activeMedia}
-              renderVideoControls={true}
-              fullSize={true}
-            />
-          </a>
-          <div className="centerText">
-            <p>Uploader: {activeMedia.uploader}</p>
-            <p>Uploaded: {activeMedia.dateAdded}</p>
-          </div>
-        </Modal>
+        <MediaModal
+          activeMedia={activeMedia}
+          extraMediaInfo={<h1>{activeMedia.uploader}</h1>}
+          closeModalAction={() => setActiveMedia("")}
+          showMediaPreview
+        />
       )}
     </div>
   );

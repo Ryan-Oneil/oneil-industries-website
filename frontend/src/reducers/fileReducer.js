@@ -7,102 +7,9 @@ import {
 } from "../apis/api";
 
 import { setError } from "./globalErrorReducer";
-import { getApiError, getFilterSort } from "../helpers";
+import { getFilterSort } from "../helpers";
 import { normalize, schema } from "normalizr";
-
-export const deleteLink = linkID => dispatch => {
-  apiDeleteCall(`/delete/${linkID}`)
-    .then(() => {
-      dispatch(removeLink({ linkID: linkID }));
-    })
-    .catch(error => dispatch(setError(getApiError(error))));
-};
-
-export const getLinkDetails = linkID => dispatch => {
-  return apiGetCall(`/info/${linkID}`)
-    .then(response => {
-      dispatch(addLinkInfo(response.data));
-    })
-    .catch(error => dispatch(setError(getApiError(error))));
-};
-
-export const deleteFile = (fileID, linkID) => dispatch => {
-  apiDeleteCall(`/file/delete/${fileID}`)
-    .then(() => {
-      dispatch(removeFile({ fileID, linkID }));
-    })
-    .catch(error => dispatch(setError(getApiError(error))));
-};
-
-export const addFilesToLink = (files, linkID) => dispatch => {
-  return uploadFiles(`/link/add/${linkID}`, files)
-    .then(response => {
-      dispatch(addFiles({ files: response.data, linkID: linkID }));
-    })
-    .catch(error => dispatch(setError(getApiError(error))));
-};
-
-export const uploadFiles = (endpoint, files, params = {}) => {
-  let postData = new FormData();
-
-  files.forEach(file => postData.append("file[]", file, file.name));
-
-  let options = {
-    params: params
-  };
-  return apiPostCall(endpoint, postData, options);
-};
-
-export const getUserLinkStats = user => dispatch => {
-  return apiGetCall(`/user/${user}/links/stats`)
-    .then(response => dispatch(getFileStats(response.data)))
-    .catch(error => dispatch(setError(getApiError(error))));
-};
-
-export const editLink = (linkID, link) => dispatch => {
-  return apiPutCall(`/link/edit/${linkID}`, link).then(() =>
-    dispatch(updateLinkDetails({ link: link, linkID: linkID }))
-  );
-};
-
-export const getAllLinksPageable = (
-  page,
-  size,
-  sorter = { order: "", field: "" }
-) => dispatch => {
-  return getLinksPageable("/admin/links", page, size, getFilterSort(sorter))
-    .then(response => dispatch(addLinks(response.data)))
-    .catch(error => dispatch(setError(getApiError(error))));
-};
-
-export const getLinksPageable = (endpoint, page, size, sortAttribute) => {
-  const params = new URLSearchParams();
-  params.append("page", page);
-  params.append("size", size);
-  if (sortAttribute) params.append("sort", sortAttribute);
-
-  return apiGetCall(endpoint, { params });
-};
-
-const baseGetUserLinks = (
-  username,
-  page,
-  size,
-  sorter = { order: "", field: "" }
-) => {
-  return getLinksPageable(
-    `/user/${username}/links`,
-    page,
-    size,
-    getFilterSort(sorter)
-  );
-};
-
-export const getUserLinks = (username, page, size, sorter) => dispatch => {
-  return baseGetUserLinks(username, page, size, sorter)
-    .then(response => dispatch(addLinks(response.data)))
-    .catch(error => dispatch(setError(getApiError(error))));
-};
+import { getApiError } from "../apis/ApiErrorHandler";
 
 const file = new schema.Entity("files");
 const link = new schema.Entity("links", { files: [file] });
@@ -115,6 +22,7 @@ export const slice = createSlice({
     stats: {
       totalViews: 0,
       totalLinks: 0,
+      totalFiles: 0,
       mostViewedLinks: [],
       recentLinks: []
     },
@@ -198,3 +106,102 @@ export const {
   updateLinkDetails,
   addLinks
 } = slice.actions;
+
+export const deleteLink = linkID => dispatch => {
+  apiDeleteCall(`/delete/${linkID}`)
+    .then(() => {
+      dispatch(removeLink({ linkID }));
+    })
+    .catch(error => dispatch(setError(getApiError(error))));
+};
+
+export const getLinkDetails = linkID => dispatch => {
+  return apiGetCall(`/info/${linkID}`)
+    .then(response => {
+      dispatch(addLinkInfo(response.data));
+    })
+    .catch(error => dispatch(setError(getApiError(error))));
+};
+
+export const deleteFile = (fileID, linkID) => dispatch => {
+  apiDeleteCall(`/file/delete/${fileID}`)
+    .then(() => {
+      dispatch(removeFile({ fileID, linkID }));
+    })
+    .catch(error => dispatch(setError(getApiError(error))));
+};
+
+export const uploadFiles = (endpoint, files, params = {}, uploadProgress) => {
+  let postData = new FormData();
+
+  files.forEach(file => postData.append("file[]", file, file.name));
+
+  let options = {
+    params
+  };
+  if (uploadProgress) {
+    options.onUploadProgress = progressEvent => uploadProgress(progressEvent);
+  }
+  return apiPostCall(endpoint, postData, options);
+};
+
+export const addFilesToLink = (files, linkID) => dispatch => {
+  return uploadFiles(`/link/add/${linkID}`, files)
+    .then(response => {
+      dispatch(addFiles({ files: response.data, linkID }));
+    })
+    .catch(error => dispatch(setError(getApiError(error))));
+};
+
+export const getUserLinkStats = user => dispatch => {
+  return apiGetCall(`/user/${user}/links/stats`)
+    .then(response => dispatch(getFileStats(response.data)))
+    .catch(error => dispatch(setError(getApiError(error))));
+};
+
+export const editLink = (linkID, link) => dispatch => {
+  return apiPutCall(`/link/edit/${linkID}`, link).then(() =>
+    dispatch(updateLinkDetails({ link, linkID }))
+  );
+};
+
+export const getLinksPageable = (endpoint, page, size, sortAttribute) => {
+  const params = new URLSearchParams();
+  params.append("page", page);
+  params.append("size", size);
+  if (sortAttribute) {
+    params.append("sort", sortAttribute);
+  }
+
+  return apiGetCall(endpoint, { params });
+};
+
+export const getAllLinksPageable = (
+  page,
+  size,
+  sorter = { order: "", field: "" }
+) => dispatch => {
+  return getLinksPageable("/admin/links", page, size, getFilterSort(sorter))
+    .then(response => dispatch(addLinks(response.data)))
+    .catch(error => dispatch(setError(getApiError(error))));
+};
+
+const baseGetUserLinks = (
+  username,
+  page,
+  size,
+  sorter = { order: "", field: "" }
+) => {
+  return getLinksPageable(
+    `/user/${username}/links`,
+    page,
+    size,
+    getFilterSort(sorter)
+  );
+};
+
+export const getUserLinks = (username, page, size, sorter) => dispatch => {
+  return baseGetUserLinks(username, page, size, sorter)
+    .then(response => dispatch(addLinks(response.data)))
+    .catch(error => dispatch(setError(getApiError(error))));
+};

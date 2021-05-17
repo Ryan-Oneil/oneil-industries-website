@@ -1,0 +1,12 @@
+DELETE FROM verificationtoken;
+DELETE FROM roles;
+DELETE FROM password_reset_token;
+DELETE FROM public_media_approval;
+DELETE FROM link_view;
+DELETE FROM file;
+DELETE FROM link;
+DELETE FROM media;
+DELETE FROM album;
+DELETE FROM users;
+DELETE FROM quota;
+DELETE FROM api_access_tokens;

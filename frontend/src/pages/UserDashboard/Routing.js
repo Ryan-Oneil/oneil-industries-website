@@ -1,5 +1,4 @@
 import React from "react";
-import ManageServices from "./ManageServices";
 import { Route, Switch } from "react-router-dom";
 import PrivateRoute from "../../components/PrivateRoute";
 import APIPage from "./APIPage";
@@ -8,27 +7,26 @@ import UserGalleryPage from "./Gallery/UserGalleryPage";
 import UserAlbumsPage from "./Gallery/UserAlbumsPage";
 import SideNav from "../../components/site layout/SideNav";
 import UserOutlined from "@ant-design/icons/lib/icons/UserOutlined";
-import DatabaseOutlined from "@ant-design/icons/lib/icons/DatabaseOutlined";
 import ApiOutlined from "@ant-design/icons/lib/icons/ApiOutlined";
 import UploadOutlined from "@ant-design/icons/lib/icons/UploadOutlined";
 import PictureOutlined from "@ant-design/icons/lib/icons/PictureOutlined";
 import FileImageOutlined from "@ant-design/icons/lib/icons/FileImageOutlined";
 import { Layout } from "antd";
-import UploadPage from "./Gallery/UploadPage";
+import UploadPage from "./Gallery/UploadMediaPage";
 import Profile from "../Profile";
 import CloudUploadOutlined from "@ant-design/icons/lib/icons/CloudUploadOutlined";
 import FolderOutlined from "@ant-design/icons/lib/icons/FolderOutlined";
-import ManageFilesPage from "./FileShare/ManageFilesPage";
+import ManageFilesPage from "./FileShare/ViewSharedFilesPage";
 import EditLinkPage from "./FileShare/EditLinkPage";
-import SharePage from "./FileShare/SharePage";
+import SharePage from "./FileShare/UploadFilesPage";
 import ShareAltOutlined from "@ant-design/icons/lib/icons/ShareAltOutlined";
+import { GALLERY_UPLOAD_URL } from "../../constants/constants";
 const { Content, Sider } = Layout;
 
 export default props => {
   const { match } = props;
   const links = [
     { path: "", icon: <UserOutlined />, name: "Dashboard" },
-    { path: "/services", icon: <DatabaseOutlined />, name: "Services" },
     { path: "/api", icon: <ApiOutlined />, name: "Api" }
   ];
   const subLinks = [
@@ -36,7 +34,7 @@ export default props => {
       title: "Gallery",
       icon: <PictureOutlined />,
       links: [
-        { path: "/gallery/upload", icon: <UploadOutlined />, name: "Upload" },
+        { path: GALLERY_UPLOAD_URL, icon: <UploadOutlined />, name: "Upload" },
         {
           path: "/gallery/medias",
           icon: <PictureOutlined />,
@@ -70,23 +68,13 @@ export default props => {
   return (
     <Layout>
       <Sider breakpoint="lg" collapsedWidth="0">
-        <SideNav
-          path={match.path}
-          links={links}
-          title={"Dashboard"}
-          subLinks={subLinks}
-        />
+        <SideNav path={match.path} links={links} subLinks={subLinks} />
       </Sider>
-      <Layout className={"blueBackgroundColor"}>
-        <Content className="extraPadding">
+      <Layout className={"mainBackgroundColor dashboard"}>
+        <Content className="extraPadding" style={{ overflow: "auto" }}>
           <Switch>
             <PrivateRoute>
               <Route exact path={match.path} component={ProfilePage} />
-              <Route
-                exact
-                path={`${match.path}/services`}
-                component={ManageServices}
-              />
               <Route exact path={`${match.path}/api`} component={APIPage} />
               <Route
                 exact

@@ -2,12 +2,12 @@ import React from "react";
 import { Field, Formik } from "formik";
 import { InputWithErrors } from "./index";
 import { Alert, Button } from "antd";
-import { getApiError } from "../../helpers";
 
 import MailOutlined from "@ant-design/icons/lib/icons/MailOutlined";
+import { handleFormError } from "../../apis/ApiErrorHandler";
 
 export default props => {
-  const onSubmit = (formValues, { setStatus }) => {
+  const onSubmit = (formValues, { setStatus, setFieldError }) => {
     return props
       .action(formValues)
       .then(response => {
@@ -15,9 +15,16 @@ export default props => {
           setStatus({ msg: response.data, type: "success" });
         }
       })
-      .catch(error => {
-        setStatus({ msg: getApiError(error), type: "error" });
-      });
+      .catch(error => handleFormError(error, setFieldError, setStatus));
+  };
+
+  const validate = values => {
+    const errors = {};
+
+    if (!values.email) {
+      errors.email = "Email is required";
+    }
+    return errors;
   };
 
   return (
@@ -51,7 +58,7 @@ export default props => {
             <Button
               type="primary"
               htmlType="submit"
-              className="form-button"
+              className="fullWidth formattedBackground"
               disabled={!isValid || isSubmitting}
               size="large"
               loading={isSubmitting}
@@ -72,13 +79,4 @@ export default props => {
       }}
     </Formik>
   );
-};
-
-const validate = values => {
-  const errors = {};
-
-  if (!values.email) {
-    errors.email = "Email is required";
-  }
-  return errors;
 };

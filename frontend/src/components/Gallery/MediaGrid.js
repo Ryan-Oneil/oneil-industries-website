@@ -1,84 +1,64 @@
 import React, { useEffect, useState } from "react";
-import { Card, Divider, List, Tabs } from "antd";
-import Media from "./Media";
+import { Card, ConfigProvider, Empty, List } from "antd";
 import InfiniteScroll from "react-infinite-scroller";
-import { fetchImages } from "../../reducers/mediaReducer";
+import { fetchMedia } from "../../reducers/mediaReducer";
 import { useDispatch, useSelector } from "react-redux";
-import VideoCameraOutlined from "@ant-design/icons/lib/icons/VideoCameraOutlined";
-import FileImageOutlined from "@ant-design/icons/lib/icons/FileImageOutlined";
-const { Meta } = Card;
-const { TabPane } = Tabs;
 
-export default ({
-  imageEndpoint,
-  videoEndpoint,
-  handleShowDialog,
-  showUploader
-}) => {
+export default ({ mediaEndpoint, mediaCardLayout, height, style }) => {
   const { medias } = useSelector(state => state.medias.entities);
-  const [imageIds, setImageIds] = useState([]);
-  const [imageList, setImageList] = useState([]);
-  const [videoIds, setVideoIds] = useState([]);
-  const [videoList, setVideoList] = useState([]);
+  const [mediaIds, setMediaIds] = useState([]);
+  const [mediaList, setMediaList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [imageTotal, setImageTotal] = useState(0);
-  const [videoTotal, setVideoTotal] = useState(0);
+  const [mediaTotal, setMediaTotal] = useState(0);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    setImageList(imageIds.flatMap(id => (medias[id] ? medias[id] : [])));
-  }, [imageIds, medias]);
+  const fetchNewImagesFromReduxStore = useEffect(() => {
+    setMediaList(mediaIds.flatMap(id => (medias[id] ? medias[id] : [])));
+  }, [mediaIds, medias]);
 
-  useEffect(() => {
-    setVideoList(videoIds.flatMap(id => (medias[id] ? medias[id] : [])));
-  }, [videoIds, medias]);
+  const handleMediaInfiniteOnLoad = page => {
+    setLoading(true);
+    dispatch(fetchMedia(mediaEndpoint, page, 30)).then(({ payload }) => {
+      if (!Array.isArray(payload.medias)) {
+        return;
+      }
+      const payloadMediaIds = payload.medias.map(media => media.id);
 
-  useEffect(() => {
-    handleImageInfiniteOnLoad(0);
-    handleVideoInfiniteOnLoad(0);
+      setMediaIds(prevState => [...prevState, ...payloadMediaIds]);
+      setMediaTotal(payload.total);
+      setLoading(false);
+    });
+  };
+
+  const loadMediasOnLoad = useEffect(() => {
+    handleMediaInfiniteOnLoad(0);
   }, []);
 
-  const handleImageInfiniteOnLoad = page => {
-    setLoading(true);
-    dispatch(fetchImages(imageEndpoint, page, 30)).then(({ payload }) => {
-      if (!Array.isArray(payload.medias)) {
-        return;
-      }
-      const payloadMediaIds = payload.medias.map(media => media.id);
-
-      setImageIds(prevState => [...prevState, ...payloadMediaIds]);
-      setImageTotal(payload.total);
-      setLoading(false);
-    });
-  };
-
-  const handleVideoInfiniteOnLoad = page => {
-    setLoading(true);
-    dispatch(fetchImages(videoEndpoint, page, 30)).then(({ payload }) => {
-      if (!Array.isArray(payload.medias)) {
-        return;
-      }
-      const payloadMediaIds = payload.medias.map(media => media.id);
-
-      setVideoIds(prevState => [...prevState, ...payloadMediaIds]);
-      setVideoTotal(payload.total);
-      setLoading(false);
-    });
-  };
-
-  const renderMediaList = (loadMore, hasMore, mediaList) => {
+  const renderEmpty = () => {
     return (
+      <div style={{ width: "20vw" }} className={"centerContent"}>
+        <Card className={"roundedBorder extraPadding"}>
+          {Empty.PRESENTED_IMAGE_DEFAULT}
+          <p className={"removeMargin midText"}>No Media Found</p>
+        </Card>
+      </div>
+    );
+  };
+
+  return (
+    <ConfigProvider renderEmpty={renderEmpty}>
       <div
         style={{
-          height: "85vh",
-          overflow: "auto"
+          height,
+          overflow: "auto",
+          ...style
         }}
       >
         <InfiniteScroll
           initialLoad={false}
           pageStart={0}
-          loadMore={loadMore}
-          hasMore={!loading && hasMore}
+          loadMore={handleMediaInfiniteOnLoad}
+          hasMore={!loading && mediaIds.length < mediaTotal}
           useWindow={false}
         >
           <List
@@ -86,76 +66,19 @@ export default ({
               gutter: 16,
               xs: 1,
               sm: 2,
-              md: 4,
-              lg: 4,
+              md: 3,
+              lg: 3,
               xl: 5,
-              xxl: 8
+              xxl: 6
             }}
             style={{ marginLeft: "-8px" }}
             dataSource={mediaList}
             renderItem={item => (
-              <List.Item key={item.id}>
-                <Card>
-                  <div className="pointerCursor">
-                    <Media
-                      media={item}
-                      onClick={handleShowDialog.bind(this, item)}
-                    />
-                  </div>
-                  <Divider />
-                  <Meta
-                    title={showUploader ? item.uploader : item.name}
-                    description={item.dateAdded}
-                    style={{ textAlign: "center" }}
-                  />
-                </Card>
-              </List.Item>
+              <List.Item key={item.id}>{mediaCardLayout(item)}</List.Item>
             )}
           />
         </InfiniteScroll>
       </div>
-    );
-  };
-
-  return (
-    <div
-      style={{
-        paddingLeft: "30px",
-        marginTop: "-10px"
-      }}
-    >
-      <Tabs defaultActiveKey="1" type="card">
-        <TabPane
-          tab={
-            <span>
-              <FileImageOutlined />
-              Images
-            </span>
-          }
-          key="1"
-        >
-          {renderMediaList(
-            handleImageInfiniteOnLoad,
-            imageIds.length < imageTotal,
-            imageList
-          )}
-        </TabPane>
-        <TabPane
-          tab={
-            <span>
-              <VideoCameraOutlined />
-              Videos
-            </span>
-          }
-          key="2"
-        >
-          {renderMediaList(
-            handleVideoInfiniteOnLoad,
-            videoIds.length < videoTotal,
-            videoList
-          )}
-        </TabPane>
-      </Tabs>
-    </div>
+    </ConfigProvider>
   );
 };

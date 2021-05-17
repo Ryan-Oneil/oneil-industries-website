@@ -1,0 +1,13 @@
+export const HOME_URL = "/";
+export const GALLERY_UPLOAD_URL = "/gallery/upload";
+export const DASHBOARD = "/dashboard";
+export const LOGIN_URL = "/login";
+export const REGISTER_URL = "/register";
+export const GALLERY_URL = "/images";
+export const GALLERY_ALBUM_URL = "/gallery/album/:albumName";
+export const RESET_PASSWORD_URL = "/resetPassword";
+export const CHANGE_PASSWORD_URL = "/changePassword/:token";
+export const VOICE_SERVICES_URL = "/services";
+export const ADMIN_BASE_URL = "/admin";
+export const CONFIRM_EMAIL_URL = "/confirmEmail/:token";
+export const SHARED_FILES_LINK_URL = "/shared/:id";
