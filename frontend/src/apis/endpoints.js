@@ -2,6 +2,7 @@ import { BASE_URL } from "./api";
 
 export const PUBLIC_MEDIAS_ENDPOINT = "/gallery/medias";
 export const USER_MEDIAS_ENDPOINT = "/gallery/user/medias/";
+export const ADMIN_MEDIAS_ENDPOINT = "/gallery/admin/medias";
 export const USER_ALBUMS_ENDPOINT = "/gallery/myalbums/";
 export const USER_DELETE_MEDIAS_ENDPOINTS = "/gallery/medias/delete";
 export const ALBUM_DELETE = "/gallery/myalbums/delete/";

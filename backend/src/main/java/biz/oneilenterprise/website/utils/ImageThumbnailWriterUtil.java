@@ -51,15 +51,16 @@ public class ImageThumbnailWriterUtil {
         try {
             frameGrabber.start();
             Java2DFrameConverter frameConverter = new Java2DFrameConverter();
-            Frame frame = frameGrabber.grabKeyFrame();
-            BufferedImage bufferedImage = frameConverter.convert(frame);
 
-            while (bufferedImage != null) {
-                write(getThumbnailImage(bufferedImage, "png"), "png", new File(dest+ "/" + video.getName() + ".png"));
-
-                frame = frameGrabber.grabKeyFrame();
-                bufferedImage = frameConverter.convert(frame);
+            Frame frame = frameGrabber.grabImage();
+            BufferedImage bufferedImage;
+            try {
+                 bufferedImage = frameConverter.convert(frame);
+            } catch (NullPointerException e) {
+                logger.error("Error creating video thumbnail", e);
+                return;
             }
+            write(getThumbnailImage(bufferedImage, "png"), "png", new File(dest+ "/" + video.getName() + ".png"));
         } catch (IOException e) {
             logger.error("Error creating video thumbnail", e);
         } finally {

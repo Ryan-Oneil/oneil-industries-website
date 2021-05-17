@@ -1,7 +1,7 @@
 import MediaGrid from "./MediaGrid";
 import React, { useState } from "react";
 import { USER_MEDIAS_ENDPOINT } from "../../apis/endpoints";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Dropdown, List, Menu, message } from "antd";
 import DeleteOutlined from "@ant-design/icons/lib/icons/DeleteOutlined";
 import FolderAddOutlined from "@ant-design/icons/lib/icons/FolderAddOutlined";
@@ -11,8 +11,13 @@ import SettingOutlined from "@ant-design/icons/lib/icons/SettingOutlined";
 
 const { SubMenu } = Menu;
 
-export default ({ handleShowDialog, albums = [], showUploader }) => {
-  const { name } = useSelector(state => state.auth.user);
+export default ({
+  handleShowDialog,
+  albums = [],
+  showUploader,
+  name,
+  endpoint
+}) => {
   const [enableManage, setEnableManage] = useState(false);
   const [selectedMedias, setSelectedMedias] = useState([]);
   const disableOptions = !enableManage || !selectedMedias.length > 0;
@@ -108,7 +113,7 @@ export default ({ handleShowDialog, albums = [], showUploader }) => {
       </Dropdown.Button>
       <MediaGrid
         height={"82vh"}
-        mediaEndpoint={`${USER_MEDIAS_ENDPOINT}${name}`}
+        mediaEndpoint={endpoint ? endpoint : `${USER_MEDIAS_ENDPOINT}${name}`}
         mediaCardLayout={cardRender}
         style={{ width: "100%" }}
       />

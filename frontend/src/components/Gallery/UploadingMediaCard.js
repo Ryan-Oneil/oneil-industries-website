@@ -13,7 +13,7 @@ export default ({
   handleShowDialog
 }) => {
   const mediaFileName = url.substring(url.lastIndexOf("/") + 1);
-  const mediaType = url.includes("image") ? "image" : "video";
+  const mediaType = url.includes("/image/") ? "image" : "video";
   const completedUpload = uploadStatus === "complete";
 
   return (

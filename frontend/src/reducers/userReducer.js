@@ -55,7 +55,7 @@ export const getQuotaStats = username => dispatch => {
 };
 
 export const getUserDetails = username => dispatch => {
-  apiGetCall(`/user/${username}/details`)
+  return apiGetCall(`/user/${username}/details`)
     .then(response => dispatch(getDetails(response.data)))
     .catch(error => dispatch(setError(getApiError(error))));
 };
@@ -67,7 +67,7 @@ export const updateEmail = (username, email) => dispatch => {
 };
 
 export const fetchAPIToken = endpoint => dispatch => {
-  apiGetCall(endpoint)
+  return apiGetCall(endpoint)
     .then(({ data }) => {
       dispatch(getToken(data));
     })
@@ -75,7 +75,7 @@ export const fetchAPIToken = endpoint => dispatch => {
 };
 
 export const generateShareXConfig = endpoint => dispatch => {
-  apiGetCall(endpoint)
+  return apiGetCall(endpoint)
     .then(({ data }) => {
       dispatch(getShareXConfig(data));
     })

@@ -33,6 +33,7 @@ export default () => {
       <ManageMediaGrid
         handleShowDialog={handleShowDialog}
         albums={Object.values(albums)}
+        name={name}
       />
       {activeMedia && (
         <MediaModal

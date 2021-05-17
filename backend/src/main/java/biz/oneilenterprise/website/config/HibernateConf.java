@@ -25,7 +25,7 @@ public class HibernateConf {
     @Value("${database.password}")
     private String databasePassword;
 
-    @Value("${database.driverClassName}")
+    @Value("${database.driverClassName:org.postgresql.Driver}")
     private String driverClassName;
 
     @Value("${database.auto}")

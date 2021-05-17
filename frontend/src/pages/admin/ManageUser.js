@@ -17,6 +17,7 @@ import MediaModal from "../../components/Gallery/MediaModal";
 import ManageMediaGrid from "../../components/Gallery/ManageMediaGrid";
 import { Link } from "react-router-dom";
 import { ADMIN_BASE_URL } from "../../constants/constants";
+import { ADMIN_MEDIAS_ENDPOINT } from "../../apis/endpoints";
 const { TabPane } = Tabs;
 
 export default props => {
@@ -110,7 +111,11 @@ export default props => {
           />
         </TabPane>
         <TabPane tab="Medias" key="3">
-          <ManageMediaGrid handleShowDialog={handleShowDialog} albums={[]} />
+          <ManageMediaGrid
+            handleShowDialog={handleShowDialog}
+            albums={[]}
+            name={user}
+          />
         </TabPane>
         <TabPane tab="Stats" key="4">
           <Row gutter={[32, 32]} type="flex" justify="center">
