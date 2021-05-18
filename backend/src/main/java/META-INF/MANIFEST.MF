@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
-Main-Class: biz.oneilindustries.AppConfig
+Main-Class: biz.oneilenterprise.AppConfig
 

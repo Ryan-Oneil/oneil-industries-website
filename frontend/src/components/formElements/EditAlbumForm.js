@@ -1,11 +1,10 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { InputWithErrors } from "./index";
-import { Field, Formik } from "formik";
-import { Alert, Button } from "antd";
+import { Field } from "formik";
 import { updateAlbum } from "../../reducers/mediaReducer";
-import SaveOutlined from "@ant-design/icons/lib/icons/SaveOutlined";
 import { handleFormError } from "../../apis/ApiErrorHandler";
+import BaseForm from "./BaseForm";
 
 export default props => {
   const dispatch = useDispatch();
@@ -25,57 +24,28 @@ export default props => {
     return errors;
   };
 
+  const fields = errors => {
+    return (
+      <Field
+        name="name"
+        as={InputWithErrors}
+        type="text"
+        placeholder="Album Name"
+        error={errors.name}
+      />
+    );
+  };
+
   return (
-    <Formik
-      initialValues={{
+    <BaseForm
+      onSubmit={onSubmit}
+      defaultValues={{
         name: props.album.name
       }}
-      onSubmit={onSubmit}
       validate={validate}
-    >
-      {props => {
-        const {
-          isSubmitting,
-          handleSubmit,
-          isValid,
-          errors,
-          status,
-          setStatus
-        } = props;
-
-        return (
-          <form onSubmit={handleSubmit} className="login-form">
-            <Field
-              name="name"
-              as={InputWithErrors}
-              type="text"
-              placeholder="Album Name"
-              error={errors.name}
-            />
-
-            <Button
-              type="primary"
-              htmlType="submit"
-              className="fullWidth formattedBackground"
-              disabled={!isValid || isSubmitting}
-              loading={isSubmitting}
-              size="large"
-              icon={<SaveOutlined />}
-            >
-              {isSubmitting ? "Updating" : "Update"}
-            </Button>
-            {status && (
-              <Alert
-                message={status.msg}
-                type={status.type}
-                closable
-                showIcon
-                onClose={() => setStatus("")}
-              />
-            )}
-          </form>
-        );
-      }}
-    </Formik>
+      renderFields={fields}
+      submitButtonText={"Update"}
+      submittingButtonText={"Updating"}
+    />
   );
 };

@@ -27,7 +27,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         String ip = getClientIP();
 
         if (loginAttemptService.isBlocked(ip)) {
-            throw new TooManyLoginAttempts("Too many login attempts");
+            throw new TooManyLoginAttempts("Too many login attempts. Try again in a few minutes");
         }
         User user = userService.getUserByEmail(email.toLowerCase());
 

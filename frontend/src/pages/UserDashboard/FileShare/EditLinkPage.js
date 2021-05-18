@@ -21,12 +21,16 @@ import {
   editLink,
   getLinkDetails
 } from "../../../reducers/fileReducer";
-import { displayBytesInReadableForm } from "../../../helpers";
+import {
+  displayBytesInReadableForm,
+  getDateWithAddedDays
+} from "../../../helpers";
 import { BASE_URL } from "../../../apis/api";
 import ListCard from "../../../components/Stats/ListCard";
 import ConfirmButton from "../../../components/ConfirmButton";
 import Uploader from "../../../components/Uploader";
-import { EditLinkForm } from "../../../components/formElements/EditLinkForm";
+import ShareFileForm from "../../../components/formElements/ShareFileForm";
+import moment from "moment";
 
 export default props => {
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -84,10 +88,12 @@ export default props => {
             </Card>
 
             <Card style={{ marginTop: "2%" }} title={"Edit Link"}>
-              <EditLinkForm
-                submitAction={(id, link) => dispatch(editLink(id, link))}
-                id={linkID}
-                link={link}
+              <ShareFileForm
+                submitAction={values => dispatch(editLink(linkID, values))}
+                title={link.title}
+                expires={moment(link.expiryDatetime)}
+                submittingButtonText={"Confirming..."}
+                submitButtonText={"Confirm"}
               />
             </Card>
           </Col>

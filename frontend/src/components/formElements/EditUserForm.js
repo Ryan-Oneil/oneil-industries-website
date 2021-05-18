@@ -1,25 +1,30 @@
 import React from "react";
-import { Field, withFormik } from "formik";
+import { Field } from "formik";
 import { InputWithErrors } from "./index";
-import { Alert, Button, Card } from "antd";
-import { connect } from "react-redux";
-import { updateUser } from "../../reducers/adminReducer";
+import { Card } from "antd";
+import { useDispatch } from "react-redux";
 import { handleFormError } from "../../apis/ApiErrorHandler";
+import BaseForm from "./BaseForm";
+import { updateUser } from "../../reducers/adminReducer";
 
-const LinkForm = props => {
-  const {
-    isValid,
-    isSubmitting,
-    handleSubmit,
-    status,
-    setStatus,
-    loading
-  } = props;
-  const { name } = props.user;
+export default ({ user, loading }) => {
+  const dispatch = useDispatch();
+  const { name, email } = user;
 
-  return (
-    <Card title={loading ? "Loading User..." : `${name} Settings`}>
-      <form onSubmit={handleSubmit}>
+  const validate = values => {
+    const errors = {};
+    if (values.userEmail && values.userEmail.length > 255) {
+      errors.userEmail = "Max length is 255 characters";
+    }
+    if (!values.userEmail) {
+      errors.userEmail = "Email is required";
+    }
+    return errors;
+  };
+
+  const fields = () => {
+    return (
+      <>
         <Field
           name="Username"
           as={InputWithErrors}
@@ -42,51 +47,28 @@ const LinkForm = props => {
           placeholder="password"
           disabled={loading}
         />
-        <Button
-          type="primary"
-          htmlType="submit"
-          className="centerContent formattedBackground"
-          disabled={!isValid || isSubmitting || loading}
-          loading={isSubmitting}
-        >
-          {isSubmitting ? "Saving..." : "Save"}
-        </Button>
-        {status && (
-          <Alert
-            message={status.msg}
-            type={status.type}
-            closable
-            showIcon
-            onClose={() => setStatus("")}
-          />
-        )}
-      </form>
+      </>
+    );
+  };
+
+  return (
+    <Card title={loading ? "Loading User..." : `${name} Settings`}>
+      <BaseForm
+        submittingButtonText={"Saving..."}
+        submitButtonText={"Save"}
+        validate={validate}
+        defaultValues={{
+          username: name,
+          userEmail: email
+        }}
+        onSubmit={(values, { setStatus, setFieldError }) => {
+          return dispatch(updateUser(values)).catch(error =>
+            handleFormError(error, setFieldError, setStatus)
+          );
+        }}
+        enableReinitialize
+        renderFields={fields}
+      />
     </Card>
   );
 };
-
-const EditUserForm = withFormik({
-  enableReinitialize: true,
-  mapPropsToValues: props => ({
-    username: props.user.name,
-    userEmail: props.user.email
-  }),
-  validate: values => {
-    const errors = {};
-    if (values.userEmail && values.userEmail.length > 255) {
-      errors.userEmail = "Max length is 255 characters";
-    }
-    if (!values.userEmail) {
-      errors.userEmail = "Email is required";
-    }
-    return errors;
-  },
-  handleSubmit: (values, { props, setStatus, setFieldError }) => {
-    return props
-      .updateUser(values)
-      .catch(error => handleFormError(error, setFieldError, setStatus));
-  },
-  validateOnMount: true
-})(LinkForm);
-
-export default connect(null, { updateUser })(EditUserForm);

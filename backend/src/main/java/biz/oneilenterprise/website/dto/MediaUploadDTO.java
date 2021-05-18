@@ -1,16 +1,13 @@
 package biz.oneilenterprise.website.dto;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
 
 public class MediaUploadDTO {
 
-    @NotNull
+    @NotEmpty
     private String name;
 
     private String albumId;
-
-    public MediaUploadDTO() {
-    }
 
     public String getName() {
         return name;

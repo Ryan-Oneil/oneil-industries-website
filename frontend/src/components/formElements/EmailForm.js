@@ -1,10 +1,9 @@
 import React from "react";
-import { Field, Formik } from "formik";
+import { Field } from "formik";
 import { InputWithErrors } from "./index";
-import { Alert, Button } from "antd";
-
 import MailOutlined from "@ant-design/icons/lib/icons/MailOutlined";
 import { handleFormError } from "../../apis/ApiErrorHandler";
+import BaseForm from "./BaseForm";
 
 export default props => {
   const onSubmit = (formValues, { setStatus, setFieldError }) => {
@@ -27,56 +26,29 @@ export default props => {
     return errors;
   };
 
+  const fields = errors => {
+    return (
+      <Field
+        name="email"
+        as={InputWithErrors}
+        type="email"
+        placeholder="Email"
+        prefix={<MailOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
+        error={errors.email}
+      />
+    );
+  };
+
   return (
-    <Formik
-      initialValues={{
+    <BaseForm
+      renderFields={fields}
+      onSubmit={onSubmit}
+      defaultValues={{
         email: ""
       }}
-      onSubmit={onSubmit}
+      submittingButtonText={"Confirming..."}
+      submitButtonText={"Confirm"}
       validate={validate}
-    >
-      {props => {
-        const {
-          isSubmitting,
-          handleSubmit,
-          isValid,
-          errors,
-          status,
-          setStatus
-        } = props;
-
-        return (
-          <form onSubmit={handleSubmit}>
-            <Field
-              name="email"
-              as={InputWithErrors}
-              type="email"
-              placeholder="Email"
-              prefix={<MailOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
-              error={errors.email}
-            />
-            <Button
-              type="primary"
-              htmlType="submit"
-              className="fullWidth formattedBackground"
-              disabled={!isValid || isSubmitting}
-              size="large"
-              loading={isSubmitting}
-            >
-              Confirm
-            </Button>
-            {status && (
-              <Alert
-                message={status.msg}
-                type={status.type}
-                closable
-                showIcon
-                onClose={() => setStatus("")}
-              />
-            )}
-          </form>
-        );
-      }}
-    </Formik>
+    />
   );
 };

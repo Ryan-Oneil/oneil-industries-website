@@ -29,9 +29,7 @@ public class AuthController {
 
     @PostMapping("/registrationConfirm/{token}")
     public ResponseEntity<String> confirmRegistration(@PathVariable String token) {
-        userService.confirmUserRegistration(token);
-
-        return ResponseEntity.ok("Account has been successfully verified!");
+        return ResponseEntity.ok(userService.confirmUserRegistration(token));
     }
 
     @PostMapping("/forgotPassword/{email}")

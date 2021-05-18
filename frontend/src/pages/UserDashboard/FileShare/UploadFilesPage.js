@@ -4,14 +4,16 @@ import DeleteOutlined from "@ant-design/icons/lib/icons/DeleteOutlined";
 import Uploader from "../../../components/Uploader";
 import {
   displayBytesInReadableForm,
+  getDateWithAddedDays,
   getUploadProgress
 } from "../../../helpers";
-import ShareLinkForm from "../../../components/formElements/ShareLinkForm";
 import { uploadFiles } from "../../../reducers/fileReducer";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import EditOutlined from "@ant-design/icons/lib/icons/EditOutlined";
 import ShareAltOutlined from "@ant-design/icons/lib/icons/ShareAltOutlined";
 import FileAddOutlined from "@ant-design/icons/lib/icons/FileAddOutlined";
+import ShareFileForm from "../../../components/formElements/ShareFileForm";
+import moment from "moment";
 
 export default props => {
   const [files, setFiles] = useState([]);
@@ -51,7 +53,12 @@ export default props => {
         <>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <div style={{ width: "35%" }}>
-              <ShareLinkForm uploadAction={uploadAction} />
+              <ShareFileForm
+                submitAction={uploadAction}
+                submitButtonText={"Upload"}
+                submittingButtonText={"Uploading..."}
+                expires={moment(getDateWithAddedDays(14))}
+              />
             </div>
             <div style={{ width: "60%" }}>
               <Uploader

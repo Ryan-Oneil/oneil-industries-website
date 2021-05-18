@@ -9,7 +9,6 @@ import {
   updateUserAccountStatus
 } from "../../reducers/adminReducer";
 import { getUserLinks } from "../../reducers/fileReducer";
-import EditUserForm from "../../components/formElements/EditUserForm";
 import SharedLinkTable from "../../components/Table/SharedLinkTable";
 import EditUserQuotaForm from "../../components/formElements/EditUserQuotaForm";
 import EditUserRole from "../../components/formElements/EditUserRole";
@@ -17,7 +16,8 @@ import MediaModal from "../../components/Gallery/MediaModal";
 import ManageMediaGrid from "../../components/Gallery/ManageMediaGrid";
 import { Link } from "react-router-dom";
 import { ADMIN_BASE_URL } from "../../constants/constants";
-import { ADMIN_MEDIAS_ENDPOINT } from "../../apis/endpoints";
+import EditUserForm from "../../components/formElements/EditUserForm";
+
 const { TabPane } = Tabs;
 
 export default props => {

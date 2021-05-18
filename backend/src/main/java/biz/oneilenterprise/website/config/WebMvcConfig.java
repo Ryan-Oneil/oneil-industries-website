@@ -27,7 +27,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         configurer.setTaskExecutor(getTaskExecutor());
     }
 
-    @Bean
+    @Bean(name="processExecutor")
     protected ConcurrentTaskExecutor getTaskExecutor() {
         return new ConcurrentTaskExecutor(Executors.newFixedThreadPool(25));
     }

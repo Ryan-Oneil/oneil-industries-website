@@ -1,9 +1,9 @@
 import React from "react";
-import { Field, Formik } from "formik";
+import { Field } from "formik";
 import { InputWithErrors } from "./index";
-import { Alert, Button } from "antd";
 import LockOutlined from "@ant-design/icons/lib/icons/LockOutlined";
 import { handleFormError } from "../../apis/ApiErrorHandler";
+import BaseForm from "./BaseForm";
 
 export default props => {
   const onSubmit = (formValues, { setStatus, setFieldError }) => {
@@ -21,56 +21,27 @@ export default props => {
     return errors;
   };
 
-  return (
-    <Formik
-      initialValues={{
-        password: ""
-      }}
-      onSubmit={onSubmit}
-      validate={validate}
-    >
-      {props => {
-        const {
-          isSubmitting,
-          handleSubmit,
-          isValid,
-          errors,
-          status,
-          setStatus
-        } = props;
+  const fields = errors => {
+    return (
+      <Field
+        name="password"
+        as={InputWithErrors}
+        type="password"
+        placeholder="Password"
+        prefix={<LockOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
+        error={errors.password}
+      />
+    );
+  };
 
-        return (
-          <form onSubmit={handleSubmit}>
-            <Field
-              name="password"
-              as={InputWithErrors}
-              type="password"
-              placeholder="Password"
-              prefix={<LockOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
-              error={errors.password}
-            />
-            <Button
-              type="primary"
-              htmlType="submit"
-              className="fullWidth formattedBackground"
-              disabled={!isValid || isSubmitting}
-              size="large"
-              loading={isSubmitting}
-            >
-              Change Password
-            </Button>
-            {status && (
-              <Alert
-                message={status.msg}
-                type={status.type}
-                closable
-                showIcon
-                onClose={() => setStatus("")}
-              />
-            )}
-          </form>
-        );
-      }}
-    </Formik>
+  return (
+    <BaseForm
+      submittingButtonText={"Submitting..."}
+      submitButtonText={"Change Password"}
+      defaultValues={{ password: "" }}
+      validate={validate}
+      onSubmit={onSubmit}
+      renderFields={fields}
+    />
   );
 };

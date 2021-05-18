@@ -7,6 +7,7 @@ import biz.oneilenterprise.website.security.JWTAuthorizationFilter;
 import biz.oneilenterprise.website.security.RestAccessDeniedHandler;
 import biz.oneilenterprise.website.security.RestAuthenticationEntryPoint;
 import biz.oneilenterprise.website.service.CustomUserDetailsService;
+import biz.oneilenterprise.website.service.LoginAttemptService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,6 +39,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private RestAccessDeniedHandler restAccessDeniedHandler;
+
+    @Autowired
+    private LoginAttemptService loginAttemptService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -81,7 +85,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/admin/**", "/services/admin/**", "/gallery/admin/**", "/user/admin/**", "/**/admin/**", "/actuator/**").access("hasRole('ROLE_ADMIN')")
             .anyRequest().hasAnyRole("ADMIN","USER", "UNREGISTERED")
             .and()
-            .addFilter(new JWTAuthenticationFilter(authenticationManager()))
+            .addFilter(new JWTAuthenticationFilter(authenticationManager(), customUserDetailsService, loginAttemptService))
             .addFilter(jwtAuthorizationFilter())
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
