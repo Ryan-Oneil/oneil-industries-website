@@ -2,7 +2,7 @@ package biz.oneilenterprise.website.controller;
 
 import biz.oneilenterprise.website.config.ResourceHandler;
 import biz.oneilenterprise.website.dto.AlbumDTO;
-import biz.oneilenterprise.website.dto.GalleryUploadDTO;
+import biz.oneilenterprise.website.dto.MediaUploadDTO;
 import biz.oneilenterprise.website.dto.MediaDTO;
 import biz.oneilenterprise.website.dto.MediasDTO;
 import biz.oneilenterprise.website.entity.Album;
@@ -110,7 +110,7 @@ public class MediaGalleryController {
     }
 
     @PostMapping("/upload")
-    public List<MediaDTO> uploadMediaAPI(GalleryUploadDTO galleryUploadDTO, Authentication user, HttpServletRequest request) throws IOException, FileUploadException {
+    public List<MediaDTO> uploadMediaAPI(MediaUploadDTO mediaUploadDTO, Authentication user, HttpServletRequest request) throws IOException, FileUploadException {
         User userAuth = (User) user.getPrincipal();
         long remainingQuota = userService.getRemainingQuota(userAuth.getUsername());
 
@@ -120,7 +120,7 @@ public class MediaGalleryController {
         long sizeOfFiles = uploadedFiles.stream().mapToLong(File::length).sum();
         userService.changeQuotaUsedAmount(userAuth.getUsername(), sizeOfFiles);
 
-        return mediaService.registerMedias(uploadedFiles, galleryUploadDTO, userAuth);
+        return mediaService.registerMedias(uploadedFiles, mediaUploadDTO, userAuth);
     }
 
     @DeleteMapping("/medias/delete")
@@ -151,21 +151,21 @@ public class MediaGalleryController {
 
     @PutMapping("/media/update/{mediaID}")
     public ResponseEntity<HttpStatus> updateMedia(@PathVariable int mediaID, Authentication user, HttpServletRequest request,
-        @RequestBody @Valid GalleryUploadDTO galleryUploadDTO) {
+        @RequestBody @Valid MediaUploadDTO mediaUploadDTO) {
         User userAuth = (User) user.getPrincipal();
 
-        mediaService.updateMedia(galleryUploadDTO, mediaID, userAuth);
+        mediaService.updateMedia(mediaUploadDTO, mediaID);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
     @PutMapping("/medias/linkstatus/update")
-    public ResponseEntity<HttpStatus> massUpdateMediaLinkStatus(@RequestBody @Valid MediasDTO mediasDTO, Authentication user, HttpServletRequest request) {
+    public ResponseEntity<String> massUpdateMediaLinkStatus(@RequestBody @Valid MediasDTO mediasDTO, Authentication user, HttpServletRequest request) {
         User userAuth = (User) user.getPrincipal();
 
-        mediaService.updateMediasLinkStatus(mediasDTO.getMediaIds(), mediasDTO.getLinkStatus(), userAuth);
+        String updateStatus = mediaService.updateMediasLinkStatus(mediasDTO.getMediaIds(), mediasDTO.getLinkStatus(), userAuth);
 
-        return ResponseEntity.ok(HttpStatus.OK);
+        return ResponseEntity.ok(updateStatus);
     }
 
     @GetMapping("/album/{albumID}")

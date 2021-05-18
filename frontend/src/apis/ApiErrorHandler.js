@@ -19,7 +19,11 @@ export const getApiFormError = error => {
 };
 
 export const handleFormError = (error, setFieldError, setStatus) => {
-  const apiError = getApiFormError(error);
+  let apiError = getApiFormError(error);
+
+  if (!apiError) {
+    apiError = getApiError(error);
+  }
 
   if (Array.isArray(apiError)) {
     apiError.forEach(fieldError =>

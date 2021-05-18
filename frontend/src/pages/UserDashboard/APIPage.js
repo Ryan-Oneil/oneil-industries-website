@@ -28,7 +28,7 @@ export default () => {
 
   return (
     <Row gutter={[32, 32]} justify="center">
-      <Col xs={24} sm={24} md={6} lg={6} xl={10}>
+      <Col xs={24} sm={24} md={12} lg={12} xl={10}>
         <Card title="ShareX Config" className={"roundedShadowBox"}>
           <TextArea readOnly value={JSON.stringify(shareXConfig, null, 2)} />
           <div className={"centerFlexContent topPadding"}>
@@ -60,7 +60,7 @@ export default () => {
           </div>
         </Card>
       </Col>
-      <Col xs={24} sm={24} md={6} lg={6} xl={10}>
+      <Col xs={24} sm={24} md={12} lg={12} xl={10}>
         <Card title="Api Token" className={"roundedShadowBox"}>
           <TextArea readOnly value={apiToken} />
           <Button

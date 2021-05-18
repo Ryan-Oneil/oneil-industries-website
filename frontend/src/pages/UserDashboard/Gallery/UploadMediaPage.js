@@ -16,6 +16,7 @@ import MediaModal from "../../../components/Gallery/MediaModal";
 import Uploader from "../../../components/Uploader";
 import PictureOutlined from "@ant-design/icons/lib/icons/PictureOutlined";
 import { getApiError } from "../../../apis/ApiErrorHandler";
+import { setError } from "../../../reducers/globalErrorReducer";
 const { Option } = Select;
 
 export default () => {
@@ -130,9 +131,15 @@ export default () => {
       .filter(file => file.uploadStatus === "complete")
       .map(media => media.id);
 
-    dispatch(updateMediasLinkStatus(mediaIds, linkStatus)).then(() =>
-      message.success(`Links status changed to ${linkStatus}`)
-    );
+    dispatch(updateMediasLinkStatus(mediaIds, linkStatus))
+      .then(status => {
+        if (status) {
+          message.info(status);
+        } else {
+          message.success(`Links status changed to ${linkStatus}`);
+        }
+      })
+      .catch(error => message.error(getApiError(error)));
   };
 
   const changeUploadedAlbum = album => {

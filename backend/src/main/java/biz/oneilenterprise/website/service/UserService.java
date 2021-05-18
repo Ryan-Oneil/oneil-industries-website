@@ -71,7 +71,7 @@ public class UserService {
     }
 
     public List<UserDTO> getUsers() {
-        return usersToDTOs(userRepository.getAllUsers());
+        return usersToDTOs(userRepository.findAllByOrderByIdDesc());
     }
 
     public List<UserDTO> getRecentUsers() {
@@ -88,7 +88,7 @@ public class UserService {
 
     public void registerUser(RegisterUserDTO registerUserDTO) {
         String username = registerUserDTO.getUsername();
-        String email = registerUserDTO.getEmail();
+        String email = registerUserDTO.getEmail().toLowerCase();
 
         validateUsername(username);
         validateEmail(email);
@@ -267,6 +267,7 @@ public class UserService {
         deleteVerificationToken(verificationToken);
 
         user.setEnabled(true);
+        user.setRole("ROLE_USER");
         userRepository.save(user);
     }
 

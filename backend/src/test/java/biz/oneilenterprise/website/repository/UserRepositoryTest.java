@@ -33,7 +33,7 @@ public class UserRepositoryTest extends BaseRepository {
 
     @Test
     public void getAllUsersTest() {
-        List<User> users = repository.getAllUsers();
+        List<User> users = repository.findAllByOrderByIdDesc();
 
         assertThat(users.size()).isEqualTo(15);
     }

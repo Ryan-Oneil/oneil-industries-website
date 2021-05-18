@@ -27,16 +27,7 @@ export const slice = createSlice({
     entities: {
       medias: {},
       albums: {},
-      comments: {
-        1: {
-          id: "dawd",
-          username: "AnEmma",
-          avatarLink:
-            "https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/avatars/ef/eff03c11994f816ffb2c8e29665851c124420187_full.jpg",
-          commentContent: "Loot Loot Loot",
-          date: "12/03/2021"
-        }
-      }
+      comments: {}
     },
     stats: {
       totalMedias: 0,
@@ -232,9 +223,9 @@ export const updateMediasLinkStatus = (mediaIds, status) => dispatch => {
   return apiPutCall("/gallery/medias/linkstatus/update", {
     mediaIds,
     linkStatus: status
-  })
-    .then(() =>
-      dispatch(updatedMediaLinkStatus({ linkStatus: status, mediaIds }))
-    )
-    .catch(error => dispatch(setError(getApiError(error))));
+  }).then(({ data }) => {
+    dispatch(updatedMediaLinkStatus({ linkStatus: status, mediaIds }));
+
+    return data;
+  });
 };

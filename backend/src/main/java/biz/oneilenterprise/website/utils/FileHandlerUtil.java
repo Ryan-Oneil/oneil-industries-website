@@ -140,14 +140,18 @@ public class FileHandlerUtil {
         return supportImageFormats.contains(fileExtension);
     }
 
-    public static boolean isVideoFile(File file) throws IOException {
+    public static boolean isVideoFile(File file) {
         Tika tika = new Tika();
-        String contentType = tika.detect(file);
-
+        String contentType = "";
+        try {
+            contentType = tika.detect(file);
+        } catch (IOException e) {
+            logger.error("Error trying to detect file", e);
+        }
         return contentType.startsWith("video");
     }
 
-    public static String getFileMediaType(File file) throws IOException {
+    public static String getFileMediaType(File file) {
         if (isImageFile(file.getName())) {
             return MediaType.IMAGE.toString();
         } else if (isVideoFile(file)) {

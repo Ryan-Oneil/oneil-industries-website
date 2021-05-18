@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import biz.oneilenterprise.website.dto.AlbumDTO;
-import biz.oneilenterprise.website.dto.GalleryUploadDTO;
+import biz.oneilenterprise.website.dto.MediaUploadDTO;
 import biz.oneilenterprise.website.dto.MediaDTO;
 import biz.oneilenterprise.website.entity.Album;
 import biz.oneilenterprise.website.entity.Media;
@@ -60,24 +60,9 @@ public class MediaServiceTest extends BaseIntegrationTest {
 
     @Test
     public void registerPublicMediasTest() throws IOException {
-        GalleryUploadDTO galleryUploadDTO = new GalleryUploadDTO();
-        galleryUploadDTO.setPrivacy(UNLISTED);
+        MediaUploadDTO mediaUploadDTO = new MediaUploadDTO();
 
-        List<MediaDTO> mediaDTOS = mediaService.registerMedias(Collections.singletonList(imageFile), galleryUploadDTO, testUser);
-
-        assertThat(mediaDTOS).isNotEmpty();
-        assertThat(mediaDTOS).size().isEqualTo(1);
-        assertThat(mediaDTOS.get(0).getLinkStatus()).isEqualTo(UNLISTED);
-        assertThat(mediaDTOS.get(0).getUploader()).isEqualTo(testUser.getUsername());
-        assertThat(mediaDTOS.get(0).getMediaType()).isEqualTo(MediaType.IMAGE.toString());
-    }
-
-    @Test
-    public void registerUnlistedMediasTest() throws IOException {
-        GalleryUploadDTO galleryUploadDTO = new GalleryUploadDTO();
-        galleryUploadDTO.setPrivacy(PUBLIC);
-
-        List<MediaDTO> mediaDTOS = mediaService.registerMedias(Collections.singletonList(imageFile), galleryUploadDTO, testUser);
+        List<MediaDTO> mediaDTOS = mediaService.registerMedias(Collections.singletonList(imageFile), mediaUploadDTO, testUser);
 
         assertThat(mediaDTOS).isNotEmpty();
         assertThat(mediaDTOS).size().isEqualTo(1);
@@ -103,30 +88,11 @@ public class MediaServiceTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void checkPublicMediaPrivacyTest() {
-        Media media = new Media("test.png", "test.png", PUBLIC, testUser, "05/05/2000", 5000L);
-
-        mediaService.checkMediaPrivacy(media, testUser);
-
-        assertThat(media.getPublicMediaApproval()).isNotNull();
-        assertThat(media.getPublicMediaApproval().getStatus()).isEqualTo(PENDING);
-        assertThat(media.getLinkStatus()).isEqualTo(UNLISTED);
-    }
-
-    @Test
-    public void checkUnlistedMediaPrivacyTest() {
-        Media media = new Media("test.png", "test.png", UNLISTED, testUser, "05/05/2000", 5000L);
-
-        mediaService.checkMediaPrivacy(media, testUser);
-        assertThat(media.getPublicMediaApproval()).isNull();
-    }
-
-    @Test
     public void updateMediaNameTest() {
-        GalleryUploadDTO galleryUploadDTO = new GalleryUploadDTO();
-        galleryUploadDTO.setName("Test");
+        MediaUploadDTO mediaUploadDTO = new MediaUploadDTO();
+        mediaUploadDTO.setName("Test");
 
-        mediaService.updateMedia(galleryUploadDTO, 3, testUser);
+        mediaService.updateMedia(mediaUploadDTO, 3);
 
         Media media = mediaService.getMedia(3);
 
@@ -135,29 +101,15 @@ public class MediaServiceTest extends BaseIntegrationTest {
 
     @Test
     public void updateMediaAlbumTest() {
-        GalleryUploadDTO galleryUploadDTO = new GalleryUploadDTO();
-        galleryUploadDTO.setAlbumId("test");
+        MediaUploadDTO mediaUploadDTO = new MediaUploadDTO();
+        mediaUploadDTO.setAlbumId("test");
 
-        mediaService.updateMedia(galleryUploadDTO, 3, testUser);
+        mediaService.updateMedia(mediaUploadDTO, 3);
 
         Media media = mediaService.getMedia(3);
 
         assertThat(media.getAlbum()).isNotNull();
         assertThat(media.getAlbum().getName()).isEqualTo("test");
-    }
-
-    @Test
-    public void updateMediaStatusTest() {
-        GalleryUploadDTO galleryUploadDTO = new GalleryUploadDTO();
-        galleryUploadDTO.setPrivacy(PUBLIC);
-
-        mediaService.updateMedia(galleryUploadDTO, 3, testUser);
-
-        Media media = mediaService.getMediaApprovalByMediaID(3);
-
-        assertThat(media).isNotNull();
-        assertThat(media.getPublicMediaApproval()).isNotNull();
-        assertThat(media.getLinkStatus()).isEqualTo(UNLISTED);
     }
 
     @Test

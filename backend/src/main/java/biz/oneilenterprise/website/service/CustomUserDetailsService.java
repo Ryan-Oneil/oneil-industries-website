@@ -11,7 +11,7 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-@Service("userDetailsService")
+@Service
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserService userService;
@@ -23,18 +23,16 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         String ip = getClientIP();
 
         if (loginAttemptService.isBlocked(ip)) {
             throw new TooManyLoginAttempts("Too many login attempts");
         }
-
-        User user = userService.getUser(username);
+        User user = userService.getUserByEmail(email.toLowerCase());
 
         if(user == null) {
-            throw new UsernameNotFoundException("Invalid username/password");
+            throw new UsernameNotFoundException("Invalid email/password");
         }
         return user;
     }

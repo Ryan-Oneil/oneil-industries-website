@@ -35,7 +35,7 @@ export const slice = createSlice({
   },
   reducers: {
     loginSuccess(state, action) {
-      state.user = { name: action.payload.username };
+      state.user = { name: action.payload };
       state.isAuthenticated = true;
     },
     logout(state) {
@@ -65,8 +65,9 @@ export const loginUser = creds => dispatch => {
   return apiPostCall(BASE_URL + "/login", creds).then(response => {
     const token = response.headers["authorization"];
     localStorage.setItem("refreshToken", token);
+
     return dispatch(getRefreshTokenWithRole()).then(() =>
-      dispatch(loginSuccess(creds))
+      dispatch(loginSuccess(decodeJWT("refreshToken").user))
     );
   });
 };

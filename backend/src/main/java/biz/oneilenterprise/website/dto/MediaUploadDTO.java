@@ -2,16 +2,14 @@ package biz.oneilenterprise.website.dto;
 
 import javax.validation.constraints.NotNull;
 
-public class GalleryUploadDTO {
+public class MediaUploadDTO {
 
     @NotNull
     private String name;
 
-    private String privacy = "unlisted";
-
     private String albumId;
 
-    public GalleryUploadDTO() {
+    public MediaUploadDTO() {
     }
 
     public String getName() {
@@ -20,14 +18,6 @@ public class GalleryUploadDTO {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getPrivacy() {
-        return privacy;
-    }
-
-    public void setPrivacy(String privacy) {
-        this.privacy = privacy;
     }
 
     public String getAlbumId() {

@@ -69,7 +69,7 @@ export default ({ mediaEndpoint, mediaCardLayout, height, style }) => {
               md: 3,
               lg: 3,
               xl: 5,
-              xxl: 6
+              xxl: 7
             }}
             style={{ marginLeft: "-8px" }}
             dataSource={mediaList}
