@@ -97,9 +97,9 @@ INSERT INTO public_media_approval (media_id, status) VALUES (13, 'pending');
 INSERT INTO public_media_approval (media_id, status) VALUES (14, 'pending');
 INSERT INTO public_media_approval (media_id, status) VALUES (15, 'pending');
 
-INSERT INTO password_reset_token (id, token, username, expiry_date) VALUES (4, '19fcfd72-5532-44bb-9b06-90351cc6ec6d', 70, '2021-05-09 00:19:54');
+INSERT INTO password_reset_token (id, token, user_id, expiry_date) VALUES (4, '19fcfd72-5532-44bb-9b06-90351cc6ec6d', 70, '2021-05-09 00:19:54');
 
 INSERT INTO roles (id, role) VALUES (1, 'ROLE_USER');
 
-INSERT INTO verificationtoken (id, token, username, expiry_date) VALUES (1, 'e1d59296-5167-4986-897a-324c170f6e0f', '70', '3020-09-16 16:01:08');
-INSERT INTO verificationtoken (id, token, username, expiry_date) VALUES (2, '4f8fe42f-255f-471d-9e93-b8a06d1b0c2f', '69', '2001-05-08 19:23:13');
+INSERT INTO verificationtoken (id, token, user_id, expiry_date) VALUES (1, 'e1d59296-5167-4986-897a-324c170f6e0f', '70', '3020-09-16 16:01:08');
+INSERT INTO verificationtoken (id, token, user_id, expiry_date) VALUES (2, '4f8fe42f-255f-471d-9e93-b8a06d1b0c2f', '69', '2001-05-08 19:23:13');

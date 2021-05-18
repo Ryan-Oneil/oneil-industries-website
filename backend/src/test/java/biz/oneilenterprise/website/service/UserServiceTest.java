@@ -302,9 +302,9 @@ public class UserServiceTest extends BaseIntegrationTest {
 
     @Test
     public void confirmUserRegistrationExpiredTest() {
-        assertThatThrownBy(() -> userService.confirmUserRegistration("4f8fe42f-255f-471d-9e93-b8a06d1b0c2f"))
-            .isExactlyInstanceOf(TokenException.class)
-            .hasMessage("Token has expired");
+        String message = userService.confirmUserRegistration("4f8fe42f-255f-471d-9e93-b8a06d1b0c2f");
+
+        assertThat(message).isEqualTo("This link has expired, a new one has been emailed");
     }
 
     @Test
