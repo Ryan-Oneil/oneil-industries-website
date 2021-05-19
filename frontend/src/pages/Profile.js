@@ -11,9 +11,9 @@ export default () => {
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [showEmailForm, setShowEmailForm] = useState(false);
   const { name, email, role, enabled } = useSelector(
-    state => state.user.details
+    (state) => state.user.details
   );
-  const userName = useSelector(state => state.auth.user.name);
+  const userName = useSelector((state) => state.auth.user.name);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -44,7 +44,7 @@ export default () => {
         footer={null}
       >
         <ChangePasswordForm
-          action={password =>
+          action={(password) =>
             changeUserPassword(userName, password).then(() =>
               setShowPasswordForm(false)
             )
@@ -63,7 +63,7 @@ export default () => {
         footer={null}
       >
         <EmailForm
-          action={email =>
+          action={(email) =>
             dispatch(updateEmail(userName, email)).then(() =>
               setShowEmailForm(false)
             )

@@ -23,11 +23,11 @@ import ShareAltOutlined from "@ant-design/icons/lib/icons/ShareAltOutlined";
 import { GALLERY_UPLOAD_URL } from "../../constants/constants";
 const { Content, Sider } = Layout;
 
-export default props => {
+export default (props) => {
   const { match } = props;
   const links = [
     { path: "", icon: <UserOutlined />, name: "Dashboard" },
-    { path: "/api", icon: <ApiOutlined />, name: "Api" }
+    { path: "/api", icon: <ApiOutlined />, name: "Api" },
   ];
   const subLinks = [
     {
@@ -38,14 +38,14 @@ export default props => {
         {
           path: "/gallery/medias",
           icon: <PictureOutlined />,
-          name: "Medias"
+          name: "Medias",
         },
         {
           path: "/gallery/albums",
           icon: <FileImageOutlined />,
-          name: "Albums"
-        }
-      ]
+          name: "Albums",
+        },
+      ],
     },
     {
       title: "File Share",
@@ -54,15 +54,15 @@ export default props => {
         {
           path: "/fileshare/share",
           icon: <ShareAltOutlined />,
-          name: "Share files"
+          name: "Share files",
         },
         {
           path: "/fileshare/files",
           icon: <FolderOutlined />,
-          name: "Files"
-        }
-      ]
-    }
+          name: "Files",
+        },
+      ],
+    },
   ];
 
   return (

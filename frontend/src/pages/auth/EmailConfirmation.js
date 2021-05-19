@@ -4,7 +4,7 @@ import { apiPostCall } from "../../apis/api";
 import { Link } from "react-router-dom";
 import { getApiError } from "../../apis/ApiErrorHandler";
 
-export default props => {
+export default (props) => {
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -15,14 +15,14 @@ export default props => {
       props.history.push("/");
     }
     apiPostCall(`/auth/registrationConfirm/${token}`)
-      .then(response => {
+      .then((response) => {
         if (response.data) {
           setErrorMessage(response.data);
         } else {
           setSuccessMessage("Your account has been verified");
         }
       })
-      .catch(error => setErrorMessage(getApiError(error)));
+      .catch((error) => setErrorMessage(getApiError(error)));
   }, []);
 
   return (
@@ -38,7 +38,7 @@ export default props => {
                 <Button type="primary" className={""}>
                   Return Home
                 </Button>
-              </Link>
+              </Link>,
             ]}
           />
         )}
@@ -51,7 +51,7 @@ export default props => {
             extra={[
               <Link to="/login">
                 <Button type="primary">Login</Button>
-              </Link>
+              </Link>,
             ]}
           />
         )}

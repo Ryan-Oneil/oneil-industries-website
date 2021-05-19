@@ -3,7 +3,7 @@ import {
   apiDeleteCall,
   apiGetCall,
   apiPostCall,
-  apiPutCall
+  apiPutCall,
 } from "../apis/api";
 
 import { setError } from "./globalErrorReducer";
@@ -24,13 +24,13 @@ export const slice = createSlice({
       totalLinks: 0,
       totalFiles: 0,
       mostViewedLinks: [],
-      recentLinks: []
+      recentLinks: [],
     },
     linkUpload: {
       files: [],
       size: 0,
-      reachedLimit: false
-    }
+      reachedLimit: false,
+    },
   },
   reducers: {
     removeLink(state, action) {
@@ -54,7 +54,7 @@ export const slice = createSlice({
     removeFile(state, action) {
       const { files } = state.entities.links[action.payload.linkID];
       state.entities.links[action.payload.linkID].files = files.filter(
-        fileID => fileID !== action.payload.fileID
+        (fileID) => fileID !== action.payload.fileID
       );
       delete state.entities.files[action.payload.fileID];
     },
@@ -62,7 +62,7 @@ export const slice = createSlice({
       let files = {};
       let fileIds = [];
 
-      action.payload.files.forEach(file => {
+      action.payload.files.forEach((file) => {
         files[file.id] = file;
         fileIds.push(file.id);
       });
@@ -70,7 +70,7 @@ export const slice = createSlice({
       state.entities.files = Object.assign({}, state.entities.files, files);
       state.entities.links[action.payload.linkID].files = [
         ...state.entities.links[action.payload.linkID].files,
-        ...fileIds
+        ...fileIds,
       ];
     },
     getFileStats(state, action) {
@@ -81,7 +81,7 @@ export const slice = createSlice({
     updateLinkDetails(state, action) {
       state.entities.links[action.payload.linkID] = {
         ...state.entities.links[action.payload.linkID],
-        ...action.payload.link
+        ...action.payload.link,
       };
     },
     addLinks(state, action) {
@@ -93,8 +93,8 @@ export const slice = createSlice({
         state.entities.links,
         data.entities.links
       );
-    }
-  }
+    },
+  },
 });
 export default slice.reducer;
 export const {
@@ -104,62 +104,62 @@ export const {
   addFiles,
   getFileStats,
   updateLinkDetails,
-  addLinks
+  addLinks,
 } = slice.actions;
 
-export const deleteLink = linkID => dispatch => {
+export const deleteLink = (linkID) => (dispatch) => {
   apiDeleteCall(`/delete/${linkID}`)
     .then(() => {
       dispatch(removeLink({ linkID }));
     })
-    .catch(error => dispatch(setError(getApiError(error))));
+    .catch((error) => dispatch(setError(getApiError(error))));
 };
 
-export const getLinkDetails = linkID => dispatch => {
+export const getLinkDetails = (linkID) => (dispatch) => {
   return apiGetCall(`/info/${linkID}`)
-    .then(response => {
+    .then((response) => {
       dispatch(addLinkInfo(response.data));
     })
-    .catch(error => dispatch(setError(getApiError(error))));
+    .catch((error) => dispatch(setError(getApiError(error))));
 };
 
-export const deleteFile = (fileID, linkID) => dispatch => {
+export const deleteFile = (fileID, linkID) => (dispatch) => {
   apiDeleteCall(`/file/delete/${fileID}`)
     .then(() => {
       dispatch(removeFile({ fileID, linkID }));
     })
-    .catch(error => dispatch(setError(getApiError(error))));
+    .catch((error) => dispatch(setError(getApiError(error))));
 };
 
 export const uploadFiles = (endpoint, files, params = {}, uploadProgress) => {
   let postData = new FormData();
 
-  files.forEach(file => postData.append("file[]", file, file.name));
+  files.forEach((file) => postData.append("file[]", file, file.name));
 
   let options = {
-    params
+    params,
   };
   if (uploadProgress) {
-    options.onUploadProgress = progressEvent => uploadProgress(progressEvent);
+    options.onUploadProgress = (progressEvent) => uploadProgress(progressEvent);
   }
   return apiPostCall(endpoint, postData, options);
 };
 
-export const addFilesToLink = (files, linkID) => dispatch => {
+export const addFilesToLink = (files, linkID) => (dispatch) => {
   return uploadFiles(`/link/add/${linkID}`, files)
-    .then(response => {
+    .then((response) => {
       dispatch(addFiles({ files: response.data, linkID }));
     })
-    .catch(error => dispatch(setError(getApiError(error))));
+    .catch((error) => dispatch(setError(getApiError(error))));
 };
 
-export const getUserLinkStats = user => dispatch => {
+export const getUserLinkStats = (user) => (dispatch) => {
   return apiGetCall(`/user/${user}/links/stats`)
-    .then(response => dispatch(getFileStats(response.data)))
-    .catch(error => dispatch(setError(getApiError(error))));
+    .then((response) => dispatch(getFileStats(response.data)))
+    .catch((error) => dispatch(setError(getApiError(error))));
 };
 
-export const editLink = (linkID, link) => dispatch => {
+export const editLink = (linkID, link) => (dispatch) => {
   return apiPutCall(`/link/edit/${linkID}`, link).then(() =>
     dispatch(updateLinkDetails({ link, linkID }))
   );
@@ -180,10 +180,10 @@ export const getAllLinksPageable = (
   page,
   size,
   sorter = { order: "", field: "" }
-) => dispatch => {
+) => (dispatch) => {
   return getLinksPageable("/admin/links", page, size, getFilterSort(sorter))
-    .then(response => dispatch(addLinks(response.data)))
-    .catch(error => dispatch(setError(getApiError(error))));
+    .then((response) => dispatch(addLinks(response.data)))
+    .catch((error) => dispatch(setError(getApiError(error))));
 };
 
 const baseGetUserLinks = (
@@ -200,8 +200,8 @@ const baseGetUserLinks = (
   );
 };
 
-export const getUserLinks = (username, page, size, sorter) => dispatch => {
+export const getUserLinks = (username, page, size, sorter) => (dispatch) => {
   return baseGetUserLinks(username, page, size, sorter)
-    .then(response => dispatch(addLinks(response.data)))
-    .catch(error => dispatch(setError(getApiError(error))));
+    .then((response) => dispatch(addLinks(response.data)))
+    .catch((error) => dispatch(setError(getApiError(error))));
 };

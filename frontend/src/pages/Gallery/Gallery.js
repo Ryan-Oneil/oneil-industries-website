@@ -16,7 +16,7 @@ export default () => {
     history.push(DASHBOARD + GALLERY_UPLOAD_URL);
   };
 
-  const handleShowDialog = media => {
+  const handleShowDialog = (media) => {
     setActiveMedia(media);
   };
 
@@ -39,7 +39,7 @@ export default () => {
       <MediaGrid
         height={"80vh"}
         mediaEndpoint={PUBLIC_MEDIAS_ENDPOINT}
-        mediaCardLayout={item => (
+        mediaCardLayout={(item) => (
           <MediaCard
             mediaFileName={item.fileName}
             title={item.name}

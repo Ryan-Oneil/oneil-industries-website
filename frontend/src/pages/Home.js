@@ -3,6 +3,7 @@ import { Col, Divider, Row, Space } from "antd";
 import AudioOutlined from "@ant-design/icons/lib/icons/AudioOutlined";
 import ToolOutlined from "@ant-design/icons/lib/icons/ToolOutlined";
 import DatabaseOutlined from "@ant-design/icons/lib/icons/DatabaseOutlined";
+import homeImage from "../assets/images/oneilFactory.png";
 
 const Home = () => {
   return (
@@ -15,7 +16,7 @@ const Home = () => {
         A gaming community dedicated to banter
       </h2>
       <img
-        src={require("../assets/images/oneilFactory.png")}
+        src={homeImage}
         className="centerContent imageResponse"
         alt="Factory"
       />

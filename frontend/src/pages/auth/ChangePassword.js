@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { changePassword } from "../../reducers/authReducer";
 import ChangePasswordForm from "../../components/formElements/ChangePasswordForm";
 
-const ResetPassword = props => {
+const ResetPassword = (props) => {
   let token = props.match.params.token;
   const { isAuthenticated } = props.auth;
   const { history } = props;
@@ -17,7 +17,7 @@ const ResetPassword = props => {
     <div className="login">
       <Card>
         <ChangePasswordForm
-          action={password =>
+          action={(password) =>
             changePassword(token, password).then(() => history.push("/login"))
           }
         />
@@ -25,7 +25,7 @@ const ResetPassword = props => {
     </div>
   );
 };
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return { auth: state.auth };
 };
 export default connect(mapStateToProps)(ResetPassword);

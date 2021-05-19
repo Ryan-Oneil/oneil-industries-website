@@ -20,13 +20,13 @@ import EditLinkPage from "../UserDashboard/FileShare/EditLinkPage";
 import { HOME_URL } from "../../constants/constants";
 const { Content, Sider } = Layout;
 
-export default props => {
-  const { isAuthenticated, role } = useSelector(state => state.auth);
+export default (props) => {
+  const { isAuthenticated, role } = useSelector((state) => state.auth);
   const { match } = props;
 
   const links = [
     { path: "", icon: <DatabaseOutlined />, name: "Stats" },
-    { path: "/users", icon: <UserOutlined />, name: "Users" }
+    { path: "/users", icon: <UserOutlined />, name: "Users" },
   ];
   const subLinks = [
     {
@@ -37,9 +37,9 @@ export default props => {
         {
           path: "/gallery/approval",
           icon: <FileImageOutlined />,
-          name: "Approvals"
-        }
-      ]
+          name: "Approvals",
+        },
+      ],
     },
     {
       title: "File Share",
@@ -48,10 +48,10 @@ export default props => {
         {
           path: "/fileshare/files",
           icon: <FolderOutlined />,
-          name: "Files"
-        }
-      ]
-    }
+          name: "Files",
+        },
+      ],
+    },
   ];
 
   useEffect(() => {

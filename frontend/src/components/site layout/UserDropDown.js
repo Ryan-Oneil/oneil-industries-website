@@ -6,7 +6,7 @@ import LogoutOutlined from "@ant-design/icons/lib/icons/LogoutOutlined";
 import { Link } from "react-router-dom";
 import { logoutUser } from "../../reducers/authReducer";
 
-const UserDropdown = props => {
+const UserDropdown = (props) => {
   const dispatch = useDispatch();
   const { name, avatar } = props.auth.user;
 
@@ -36,9 +36,9 @@ const UserDropdown = props => {
   );
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
-    auth: state.auth
+    auth: state.auth,
   };
 };
 export default connect(mapStateToProps)(UserDropdown);

@@ -9,7 +9,7 @@ import {
   Tooltip,
   Modal,
   message,
-  Space
+  Space,
 } from "antd";
 import Media from "./Media";
 import CloseOutlined from "@ant-design/icons/lib/icons/CloseOutlined";
@@ -29,14 +29,14 @@ export default ({
   closeModalAction,
   showMediaPreview,
   enableManagement,
-  extraMediaInfo
+  extraMediaInfo,
 }) => {
-  const { isAuthenticated } = useSelector(state => state.auth);
-  const { comments } = useSelector(state => state.medias.entities);
+  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { comments } = useSelector((state) => state.medias.entities);
   const dispatch = useDispatch();
 
   const renderComments = () => {
-    return Object.values(comments).map(comment => (
+    return Object.values(comments).map((comment) => (
       <MediaComment {...comment} key={comment.id} />
     ));
   };
@@ -99,7 +99,7 @@ export default ({
                     style={{
                       paddingTop: 0,
                       borderBottomLeftRadius: 10,
-                      borderBottomRightRadius: 10
+                      borderBottomRightRadius: 10,
                     }}
                     content={
                       <>

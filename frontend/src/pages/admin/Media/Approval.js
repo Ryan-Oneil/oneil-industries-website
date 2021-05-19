@@ -7,7 +7,7 @@ import MediaModal from "../../../components/Gallery/MediaModal";
 
 export default () => {
   const dispatch = useDispatch();
-  const { mediaApprovals } = useSelector(state => state.admin);
+  const { mediaApprovals } = useSelector((state) => state.admin);
   const [media, setMedia] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -15,12 +15,12 @@ export default () => {
     dispatch(getMediaApprovals()).then(() => setLoading(false));
   }, []);
 
-  const handleShowDialog = media => {
+  const handleShowDialog = (media) => {
     setMedia(media);
   };
 
   const renderApprovalList = () => {
-    return mediaApprovals.map(media => {
+    return mediaApprovals.map((media) => {
       return (
         <Col xs={24} sm={24} md={12} lg={8} xl={6} xxl={4}>
           <ApprovalCard
@@ -42,7 +42,7 @@ export default () => {
           className={"extraPadding"}
           style={{
             height: "90vh",
-            overflow: "auto"
+            overflow: "auto",
           }}
         >
           {renderApprovalList()}

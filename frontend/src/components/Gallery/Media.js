@@ -1,25 +1,27 @@
 import React from "react";
 import { Image } from "antd";
 import { MEDIA_IMAGE_URL, MEDIA_VIDEO_URL } from "../../apis/endpoints";
+import noImage from "../../assets/images/noimage.png";
+import playIcon from "../../assets/images/play-icon.jpg";
 
 export default ({
   fullSize,
   showVideoPlayButton,
   showPreview,
   fileName,
-  mediaType
+  mediaType,
 }) => {
   const renderImage = () => {
     const endpoint = `${fullSize ? "" : "thumbnail/"}${fileName}`;
     const previewConfig = {
-      src: `${MEDIA_IMAGE_URL}${fileName}`
+      src: `${MEDIA_IMAGE_URL}${fileName}`,
     };
     return (
       <Image
         alt={"User uploaded image"}
         src={MEDIA_IMAGE_URL + endpoint}
         preview={showPreview ? previewConfig : false}
-        fallback={require("../../assets/images/noimage.png")}
+        fallback={noImage}
       />
     );
   };
@@ -32,10 +34,7 @@ export default ({
         <div className={"videoMedia"}>
           {renderImage()}
           <div className={"playButton"}>
-            <img
-              src={require("../../assets/images/play-icon.jpg")}
-              alt={"Play video icon"}
-            />
+            <img src={playIcon} alt={"Play video icon"} />
           </div>
         </div>
       );

@@ -12,13 +12,13 @@ import FileZipOutlined from "@ant-design/icons/lib/icons/FileZipOutlined";
 
 export default () => {
   const dispatch = useDispatch();
-  const { name } = useSelector(state => state.auth.user);
-  const { used, max } = useSelector(state => state.user.storageQuota);
+  const { name } = useSelector((state) => state.auth.user);
+  const { used, max } = useSelector((state) => state.user.storageQuota);
   const { totalViews, recentLinks, totalFiles } = useSelector(
-    state => state.fileSharer.stats
+    (state) => state.fileSharer.stats
   );
   const { totalMedias, recentMedias } = useSelector(
-    state => state.medias.stats
+    (state) => state.medias.stats
   );
   const [loadingData, setLoadingData] = useState(true);
   const [loadingMediaData, setLoadingMediaData] = useState(true);
@@ -55,7 +55,7 @@ export default () => {
             itemLayout="horizontal"
             loading={loadingData}
             dataSource={recentLinks}
-            renderItem={item => (
+            renderItem={(item) => (
               <List.Item>
                 <List.Item.Meta
                   avatar={<Avatar icon={<FileZipOutlined />} size="large" />}
@@ -80,7 +80,7 @@ export default () => {
             itemLayout="horizontal"
             loading={loadingMediaData}
             dataSource={recentMedias}
-            renderItem={item => (
+            renderItem={(item) => (
               <List.Item>
                 <List.Item.Meta
                   avatar={

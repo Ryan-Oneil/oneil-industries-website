@@ -7,7 +7,7 @@ import CheckOutlined from "@ant-design/icons/lib/icons/CheckOutlined";
 import CloseOutlined from "@ant-design/icons/lib/icons/CloseOutlined";
 const { Meta } = Card;
 
-export default props => {
+export default (props) => {
   const { fileName, dateAdded, media } = props;
   const dispatch = useDispatch();
 
@@ -55,7 +55,7 @@ export default props => {
               );
             }}
           />
-        </Tooltip>
+        </Tooltip>,
       ]}
     >
       <Meta title={fileName} description={dateAdded} />

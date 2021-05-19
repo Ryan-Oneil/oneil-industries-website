@@ -15,14 +15,14 @@ export default () => {
   const onSubmit = (formValues, { setStatus, setFieldError }) => {
     const creds = {
       email: formValues.email.trim(),
-      password: formValues.password.trim()
+      password: formValues.password.trim(),
     };
-    return dispatch(loginUser(creds)).catch(error =>
+    return dispatch(loginUser(creds)).catch((error) =>
       handleFormError(error, setFieldError, setStatus)
     );
   };
 
-  const validate = values => {
+  const validate = (values) => {
     const errors = {};
 
     if (!values.email) {
@@ -34,7 +34,7 @@ export default () => {
     return errors;
   };
 
-  const fields = errors => {
+  const fields = (errors) => {
     return (
       <>
         <Field
@@ -67,7 +67,7 @@ export default () => {
       submittingButtonText={"Logging In"}
       defaultValues={{
         email: "",
-        password: ""
+        password: "",
       }}
       onSubmit={onSubmit}
       renderFields={fields}

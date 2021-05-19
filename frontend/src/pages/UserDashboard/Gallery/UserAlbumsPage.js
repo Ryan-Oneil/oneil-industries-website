@@ -11,21 +11,22 @@ import {
   message,
   Modal,
   Row,
-  Space
+  Space,
 } from "antd";
 import EditAlbumForm from "../../../components/formElements/EditAlbumForm";
 import MediaCard from "../../../components/Gallery/MediaCard";
 import DeleteOutlined from "@ant-design/icons/lib/icons/DeleteOutlined";
 import EyeOutlined from "@ant-design/icons/lib/icons/EyeOutlined";
+import noImage from "../../../assets/images/noimage.png";
 
 export default () => {
   const [activeAlbum, setActiveAlbum] = useState("");
   const [loading, setLoading] = useState(true);
-  const { name } = useSelector(state => state.auth.user);
-  const { albums, medias } = useSelector(state => state.medias.entities);
+  const { name } = useSelector((state) => state.auth.user);
+  const { albums, medias } = useSelector((state) => state.medias.entities);
   const dispatch = useDispatch();
 
-  const handleShowDialog = album => {
+  const handleShowDialog = (album) => {
     setActiveAlbum(album);
   };
 
@@ -36,10 +37,10 @@ export default () => {
   }, []);
 
   const renderList = () => {
-    return Object.values(albums).map(album => {
+    return Object.values(albums).map((album) => {
       const { fileName = "", mediaType = "" } = medias[album.medias[0]] || {
         fileName: "",
-        mediaType: ""
+        mediaType: "",
       };
       return (
         <Col key={album.id} xs={18} sm={6} md={6} lg={7} xl={4}>
@@ -71,7 +72,7 @@ export default () => {
         gutter={[32, 32]}
         style={{
           height: "84vh",
-          overflow: "auto"
+          overflow: "auto",
         }}
       >
         {renderList()}
@@ -92,7 +93,7 @@ export default () => {
           {activeAlbum.medias.length === 0 && (
             <Image
               alt={"No media"}
-              src={require("../../../assets/images/noimage.png")}
+              src={noImage}
               preview={false}
               style={{ margin: "auto" }}
               width={"100%"}

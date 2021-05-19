@@ -4,9 +4,9 @@ import { Col, Empty, Row } from "antd";
 import MediaModal from "../../components/Gallery/MediaModal";
 import MediaCard from "../../components/Gallery/MediaCard";
 
-export default props => {
+export default (props) => {
   const {
-    match: { params }
+    match: { params },
   } = props;
   const [album, setAlbum] = useState({ medias: [] });
   const [loading, setLoading] = useState(true);
@@ -14,16 +14,16 @@ export default props => {
 
   useEffect(() => {
     fetchAlbumWithImages(`/gallery/album/${params.albumName}`)
-      .then(album => setAlbum(album))
+      .then((album) => setAlbum(album))
       .finally(() => setLoading(false));
   }, []);
 
-  const handleShowDialog = media => {
+  const handleShowDialog = (media) => {
     setActiveMedia(media);
   };
 
   const renderMedias = () => {
-    return album.medias.map(media => {
+    return album.medias.map((media) => {
       return (
         <Col xs={24} sm={12} md={12} lg={8} xl={6} xxl={4} key={media.id}>
           <MediaCard

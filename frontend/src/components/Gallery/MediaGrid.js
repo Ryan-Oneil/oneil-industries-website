@@ -5,7 +5,7 @@ import { fetchMedia } from "../../reducers/mediaReducer";
 import { useDispatch, useSelector } from "react-redux";
 
 export default ({ mediaEndpoint, mediaCardLayout, height, style }) => {
-  const { medias } = useSelector(state => state.medias.entities);
+  const { medias } = useSelector((state) => state.medias.entities);
   const [mediaIds, setMediaIds] = useState([]);
   const [mediaList, setMediaList] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -13,18 +13,18 @@ export default ({ mediaEndpoint, mediaCardLayout, height, style }) => {
   const dispatch = useDispatch();
 
   const fetchNewImagesFromReduxStore = useEffect(() => {
-    setMediaList(mediaIds.flatMap(id => (medias[id] ? medias[id] : [])));
+    setMediaList(mediaIds.flatMap((id) => (medias[id] ? medias[id] : [])));
   }, [mediaIds, medias]);
 
-  const handleMediaInfiniteOnLoad = page => {
+  const handleMediaInfiniteOnLoad = (page) => {
     setLoading(true);
     dispatch(fetchMedia(mediaEndpoint, page, 30)).then(({ payload }) => {
       if (!Array.isArray(payload.medias)) {
         return;
       }
-      const payloadMediaIds = payload.medias.map(media => media.id);
+      const payloadMediaIds = payload.medias.map((media) => media.id);
 
-      setMediaIds(prevState => [...prevState, ...payloadMediaIds]);
+      setMediaIds((prevState) => [...prevState, ...payloadMediaIds]);
       setMediaTotal(payload.total);
       setLoading(false);
     });
@@ -51,7 +51,7 @@ export default ({ mediaEndpoint, mediaCardLayout, height, style }) => {
         style={{
           height,
           overflow: "auto",
-          ...style
+          ...style,
         }}
       >
         <InfiniteScroll
@@ -69,11 +69,11 @@ export default ({ mediaEndpoint, mediaCardLayout, height, style }) => {
               md: 3,
               lg: 3,
               xl: 5,
-              xxl: 7
+              xxl: 7,
             }}
             style={{ marginLeft: "-8px" }}
             dataSource={mediaList}
-            renderItem={item => (
+            renderItem={(item) => (
               <List.Item key={item.id}>{mediaCardLayout(item)}</List.Item>
             )}
           />

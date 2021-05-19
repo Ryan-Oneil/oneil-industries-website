@@ -15,12 +15,12 @@ export default ({ editPath, fetchData, extraColumns = [] }) => {
   const [linkIds, setLinkIds] = useState([]);
   const [totalLinks, setTotalLinks] = useState(0);
   const [linkData, setLinkData] = useState([]);
-  const { links } = useSelector(state => state.fileSharer.entities);
+  const { links } = useSelector((state) => state.fileSharer.entities);
 
   useEffect(() => {
     let data = [];
 
-    linkIds.forEach(id => {
+    linkIds.forEach((id) => {
       if (links[id]) {
         data.push(links[id]);
       }
@@ -33,28 +33,28 @@ export default ({ editPath, fetchData, extraColumns = [] }) => {
       title: "Created",
       dataIndex: "creationDate",
       sorter: true,
-      defaultSortOrder: "descend"
+      defaultSortOrder: "descend",
     },
     {
       title: "Title",
       dataIndex: "title",
-      render: name => (name ? name : "N/A")
+      render: (name) => (name ? name : "N/A"),
     },
     {
       title: "Expires",
       dataIndex: "expiryDatetime",
-      sorter: true
+      sorter: true,
     },
     {
       title: "Views",
       dataIndex: "views",
-      sorter: true
+      sorter: true,
     },
     {
       title: "Size",
       dataIndex: "size",
-      render: size => displayBytesInReadableForm(size),
-      sorter: true
+      render: (size) => displayBytesInReadableForm(size),
+      sorter: true,
     },
     ...extraColumns,
     {
@@ -85,8 +85,8 @@ export default ({ editPath, fetchData, extraColumns = [] }) => {
             modalDescription="All files will also be deleted"
           />
         </Space>
-      )
-    }
+      ),
+    },
   ];
 
   return (
@@ -96,7 +96,7 @@ export default ({ editPath, fetchData, extraColumns = [] }) => {
       columns={columns}
       fetchData={(page, size, sorter) =>
         dispatch(fetchData(page, size, sorter)).then(({ payload }) => {
-          setLinkIds(payload.links.map(link => link.id));
+          setLinkIds(payload.links.map((link) => link.id));
           setTotalLinks(payload.total);
         })
       }

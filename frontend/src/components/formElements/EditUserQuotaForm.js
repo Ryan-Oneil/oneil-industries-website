@@ -8,17 +8,17 @@ import { handleFormError } from "../../apis/ApiErrorHandler";
 import BaseForm from "./BaseForm";
 const { Option } = Select;
 
-export default props => {
+export default (props) => {
   const { username } = props;
   const dispatch = useDispatch();
 
   const onSubmit = (formValues, { setStatus, setFieldError }) => {
-    return dispatch(updateUserQuota(username, formValues)).catch(error =>
+    return dispatch(updateUserQuota(username, formValues)).catch((error) =>
       handleFormError(error, setFieldError, setStatus)
     );
   };
 
-  const validate = formValues => {
+  const validate = (formValues) => {
     const errors = {};
 
     if (!formValues.max) {
@@ -43,7 +43,7 @@ export default props => {
           name="ignoreQuota"
           as={SelectInputWithErrors}
           error={errors.ignoreQuota}
-          onChange={data => setFieldValue("ignoreQuota", data)}
+          onChange={(data) => setFieldValue("ignoreQuota", data)}
         >
           <Option value={"true"}>True</Option>
           <Option value={"false"}>False</Option>
@@ -60,7 +60,7 @@ export default props => {
         defaultValues={{
           max: props.quota.max,
           ignoreQuota: props.quota.ignoreQuota.toString(),
-          used: props.quota.used
+          used: props.quota.used,
         }}
         enableReinitialize
         validate={validate}

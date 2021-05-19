@@ -8,7 +8,7 @@ import {
   Result,
   Row,
   Statistic,
-  Tooltip
+  Tooltip,
 } from "antd";
 import DownloadOutlined from "@ant-design/icons/lib/icons/DownloadOutlined";
 
@@ -18,15 +18,16 @@ import { apiGetCall, BASE_URL } from "../../../apis/api";
 import { displayBytesInReadableForm } from "../../../helpers";
 import ListCard from "../../../components/Stats/ListCard";
 import { getApiError } from "../../../apis/ApiErrorHandler";
+import fileImage from "../../../assets/images/file.png";
 
-export default props => {
+export default (props) => {
   const [link, setLink] = useState({
     title: "",
     id: "",
     views: 0,
     expiryDatetime: "",
     size: 0,
-    files: []
+    files: [],
   });
   const dispatch = useDispatch();
   const { id } = props.match.params;
@@ -35,12 +36,12 @@ export default props => {
 
   const getLinkDetails = () => {
     apiGetCall(`/info/${id}`)
-      .then(response => {
+      .then((response) => {
         setLink(response.data);
         dispatch(clearError());
         setLoadingData(false);
       })
-      .catch(error => {
+      .catch((error) => {
         if (error.response && error.response.status === 404) {
           setInvalidLink(true);
         } else {
@@ -73,7 +74,7 @@ export default props => {
               pagination
               dataSource={link.files}
               loading={loadingData}
-              renderItem={item => (
+              renderItem={(item) => (
                 <List.Item
                   actions={[
                     <Tooltip title="Download">
@@ -88,15 +89,11 @@ export default props => {
                           );
                         }}
                       />
-                    </Tooltip>
+                    </Tooltip>,
                   ]}
                 >
                   <List.Item.Meta
-                    avatar={
-                      <Avatar
-                        src={require("../../../assets/images/file.png")}
-                      />
-                    }
+                    avatar={<Avatar src={fileImage} />}
                     title={item.name}
                     description={`Size ${displayBytesInReadableForm(
                       item.size

@@ -5,7 +5,7 @@ import {
   ADMIN_GET_PENDING_APPROVALS_ENDPOINT,
   ADMIN_GET_ROLES,
   ADMIN_GET_STATS_ENDPOINT,
-  ADMIN_GET_USERS_ENDPOINT
+  ADMIN_GET_USERS_ENDPOINT,
 } from "../apis/endpoints";
 import { normalize, schema } from "normalizr";
 import { getApiError } from "../apis/ApiErrorHandler";
@@ -19,13 +19,13 @@ export const slice = createSlice({
     roles: [],
     mediaApprovals: [],
     entities: {
-      users: {}
+      users: {},
     },
     fileShare: {
       totalViews: 0,
       totalLinks: 0,
       mostViewed: [],
-      recentShared: []
+      recentShared: [],
     },
     stats: {
       remainingStorage: 0,
@@ -34,12 +34,12 @@ export const slice = createSlice({
       totalUsers: 0,
       usedStorage: 0,
       recentUsers: [],
-      recentMedia: []
+      recentMedia: [],
     },
     userStats: {
       totalViews: 0,
-      totalLinks: 0
-    }
+      totalLinks: 0,
+    },
   },
   reducers: {
     fetchedStats(state, action) {
@@ -55,7 +55,7 @@ export const slice = createSlice({
     },
     removedMediaApproval(state, action) {
       state.mediaApprovals = state.mediaApprovals.filter(
-        media => media.id !== action.payload
+        (media) => media.id !== action.payload
       );
     },
     fetchedRoles(state, action) {
@@ -64,14 +64,14 @@ export const slice = createSlice({
     getUserDetails(state, action) {
       state.entities.users[action.payload.name] = {
         ...state.entities.users[action.payload.name],
-        ...action.payload
+        ...action.payload,
       };
     },
     updateUserDetails(state, action) {
       const user = state.entities.users[action.payload.name];
       state.entities.users[action.payload.name] = {
         ...user,
-        ...action.payload
+        ...action.payload,
       };
     },
     getFileShareStats(state, action) {
@@ -79,8 +79,8 @@ export const slice = createSlice({
     },
     getUserFileShareStats(state, action) {
       state.userStats = action.payload;
-    }
-  }
+    },
+  },
 });
 export default slice.reducer;
 export const {
@@ -92,24 +92,24 @@ export const {
   getUserDetails,
   updateUserDetails,
   getFileShareStats,
-  getUserFileShareStats
+  getUserFileShareStats,
 } = slice.actions;
 
-export const getAllUsers = () => dispatch => {
+export const getAllUsers = () => (dispatch) => {
   return apiGetCall(ADMIN_GET_USERS_ENDPOINT)
     .then(({ data }) => {
       dispatch(fetchedUsers(data));
     })
-    .catch(error => dispatch(setError(getApiError(error))));
+    .catch((error) => dispatch(setError(getApiError(error))));
 };
 
-export const getRoles = () => dispatch => {
+export const getRoles = () => (dispatch) => {
   apiGetCall(ADMIN_GET_ROLES)
     .then(({ data }) => dispatch(fetchedRoles(data)))
-    .catch(error => dispatch(setError(getApiError(error))));
+    .catch((error) => dispatch(setError(getApiError(error))));
 };
 
-export const updateUser = user => dispatch => {
+export const updateUser = (user) => (dispatch) => {
   const userDetails = { email: user.userEmail, password: user.userPass };
 
   return apiPutCall(
@@ -122,75 +122,74 @@ export const updateUser = user => dispatch => {
   );
 };
 
-export const updateUserRole = (username, role) => dispatch => {
+export const updateUserRole = (username, role) => (dispatch) => {
   return apiPutCall(`/user/${username}/details/update`, { role }).then(() =>
     dispatch(updateUserDetails({ name: username, role }))
   );
 };
 
-export const getMediaApprovals = () => dispatch => {
+export const getMediaApprovals = () => (dispatch) => {
   return apiGetCall(ADMIN_GET_PENDING_APPROVALS_ENDPOINT)
     .then(({ data }) => {
       dispatch(fetchedMediaApprovals(data));
     })
-    .catch(error => dispatch(setError(getApiError(error))));
+    .catch((error) => dispatch(setError(getApiError(error))));
 };
 
-export const changePublicMediaStatus = (
-  endpoint,
-  mediaApprovalID
-) => dispatch => {
+export const changePublicMediaStatus = (endpoint, mediaApprovalID) => (
+  dispatch
+) => {
   return apiPutCall(endpoint)
     .then(() => dispatch(removedMediaApproval(mediaApprovalID)))
-    .catch(error => dispatch(setError(getApiError(error))));
+    .catch((error) => dispatch(setError(getApiError(error))));
 };
 
-export const getAdminStats = () => dispatch => {
+export const getAdminStats = () => (dispatch) => {
   return apiGetCall(ADMIN_GET_STATS_ENDPOINT)
     .then(({ data }) => {
       dispatch(fetchedStats(data));
     })
-    .catch(error => dispatch(setError(getApiError(error))));
+    .catch((error) => dispatch(setError(getApiError(error))));
 };
 export const changeUserPassword = (username, password) => {
   return apiPutCall(`/user/${username}/details/update`, password);
 };
 
-const getUserDetailsBase = username => {
+const getUserDetailsBase = (username) => {
   return apiGetCall(`/user/${username}/details`);
 };
 
-export const adminGetUserDetails = username => dispatch => {
+export const adminGetUserDetails = (username) => (dispatch) => {
   return getUserDetailsBase(username)
-    .then(response => dispatch(getUserDetails(response.data)))
-    .catch(error => dispatch(setError(getApiError(error))));
+    .then((response) => dispatch(getUserDetails(response.data)))
+    .catch((error) => dispatch(setError(getApiError(error))));
 };
 
-export const getUserFileStats = username => dispatch => {
+export const getUserFileStats = (username) => (dispatch) => {
   return apiGetCall(`/user/${username}/links/stats`)
     .then(({ data }) => dispatch(getUserFileShareStats(data)))
-    .catch(error => dispatch(setError(getApiError(error))));
+    .catch((error) => dispatch(setError(getApiError(error))));
 };
 
-export const getAdminLinkStats = () => dispatch => {
+export const getAdminLinkStats = () => (dispatch) => {
   return apiGetCall("/admin/link/stats")
-    .then(response => dispatch(getFileShareStats(response.data)))
-    .catch(error => dispatch(setError(getApiError(error))));
+    .then((response) => dispatch(getFileShareStats(response.data)))
+    .catch((error) => dispatch(setError(getApiError(error))));
 };
 
-export const updateUserQuota = (username, values) => dispatch => {
+export const updateUserQuota = (username, values) => (dispatch) => {
   return apiPutCall(
     `/user/admin/user/${username}/update/quota`,
     values
   ).then(() => dispatch(updateUserDetails({ name: username, quota: values })));
 };
 
-export const updateUserAccountStatus = (username, status) => dispatch => {
+export const updateUserAccountStatus = (username, status) => (dispatch) => {
   let endpoint = status ? "enable" : "disable";
 
   return apiPutCall(`/user/admin/user/${username}/${endpoint}`)
     .then(() =>
       dispatch(updateUserDetails({ name: username, enabled: status }))
     )
-    .catch(error => dispatch(setError(getApiError(error))));
+    .catch((error) => dispatch(setError(getApiError(error))));
 };

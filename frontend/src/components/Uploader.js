@@ -10,10 +10,10 @@ export default ({
   fileList,
   showUploadList = false,
   icon,
-  style
+  style,
 }) => {
-  const { used, max } = useSelector(state => state.user.storageQuota);
-  const { name } = useSelector(state => state.auth.user);
+  const { used, max } = useSelector((state) => state.user.storageQuota);
+  const { name } = useSelector((state) => state.auth.user);
   const maxInBytes = max * 1000000000;
   const dispatch = useDispatch();
   const [uploadSize, setUploadSize] = useState(0);
@@ -33,7 +33,7 @@ export default ({
   const config = {
     name: "file",
     multiple: true,
-    beforeUpload: file => {
+    beforeUpload: (file) => {
       if (file.size + uploadSize + used > maxInBytes) {
         message.error("This file would exceed your quota of " + max + " GB");
       } else {
@@ -41,9 +41,9 @@ export default ({
       }
       return false;
     },
-    onRemove: file => {
+    onRemove: (file) => {
       removeFile(file);
-    }
+    },
   };
   return (
     <div className="uploaderBox roundedShadowBox centerContent" style={style}>

@@ -5,23 +5,23 @@ import { Field } from "formik";
 import { Select } from "antd";
 import {
   updateMedia,
-  updateMediasLinkStatus
+  updateMediasLinkStatus,
 } from "../../reducers/mediaReducer";
 import { handleFormError } from "../../apis/ApiErrorHandler";
 import BaseForm from "./BaseForm";
 const { Option } = Select;
 
-export default props => {
+export default (props) => {
   const dispatch = useDispatch();
   const { id, name, linkStatus, publicMediaApproval } = props.media;
 
   const onSubmit = (formValues, { setStatus, setFieldError }) => {
-    return dispatch(updateMedia(formValues, id)).catch(error =>
+    return dispatch(updateMedia(formValues, id)).catch((error) =>
       handleFormError(error, setFieldError, setStatus)
     );
   };
 
-  const validate = values => {
+  const validate = (values) => {
     const errors = {};
 
     if (!values.name) {
@@ -44,9 +44,9 @@ export default props => {
           name="privacy"
           as={SelectInputWithErrors}
           type="privacy"
-          onChange={data =>
+          onChange={(data) =>
             dispatch(updateMediasLinkStatus([id], data))
-              .then(status => {
+              .then((status) => {
                 if (status) {
                   setStatus({ type: "info", msg: status });
                 } else {
@@ -54,7 +54,9 @@ export default props => {
                 }
                 setFieldValue("privacy", data);
               })
-              .catch(error => handleFormError(error, setFieldError, setStatus))
+              .catch((error) =>
+                handleFormError(error, setFieldError, setStatus)
+              )
           }
         >
           <Option value="unlisted">Unlisted</Option>
@@ -69,7 +71,7 @@ export default props => {
       onSubmit={onSubmit}
       defaultValues={{
         name,
-        privacy: publicMediaApproval ? "Pending public approval" : linkStatus
+        privacy: publicMediaApproval ? "Pending public approval" : linkStatus,
       }}
       validate={validate}
       renderFields={fields}

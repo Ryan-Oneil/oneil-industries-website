@@ -8,17 +8,17 @@ import { handleFormError } from "../../apis/ApiErrorHandler";
 import BaseForm from "./BaseForm";
 const { Option } = Select;
 
-export default props => {
+export default (props) => {
   const { username } = props;
   const dispatch = useDispatch();
-  const { roles } = useSelector(state => state.admin);
+  const { roles } = useSelector((state) => state.admin);
 
   useEffect(() => {
     dispatch(getRoles());
   }, []);
 
   const onSubmit = (formValues, { setStatus, setFieldError }) => {
-    return dispatch(updateUserRole(username, formValues.role)).catch(error =>
+    return dispatch(updateUserRole(username, formValues.role)).catch((error) =>
       handleFormError(error, setFieldError, setStatus)
     );
   };
@@ -29,9 +29,9 @@ export default props => {
         name="role"
         as={SelectInputWithErrors}
         error={errors.role}
-        onChange={data => setFieldValue("role", data)}
+        onChange={(data) => setFieldValue("role", data)}
       >
-        {roles.map(role => (
+        {roles.map((role) => (
           <Option key={role.id} value={role.role}>
             {role.role.replace("ROLE_", "")}
           </Option>
@@ -44,7 +44,7 @@ export default props => {
     <Card title="Role Settings">
       <BaseForm
         defaultValues={{
-          role: props.role
+          role: props.role,
         }}
         enableReinitialize
         onSubmit={onSubmit}

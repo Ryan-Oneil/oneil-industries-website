@@ -11,7 +11,7 @@ export default ({ user, loading }) => {
   const dispatch = useDispatch();
   const { name, email } = user;
 
-  const validate = values => {
+  const validate = (values) => {
     const errors = {};
     if (values.userEmail && values.userEmail.length > 255) {
       errors.userEmail = "Max length is 255 characters";
@@ -59,10 +59,10 @@ export default ({ user, loading }) => {
         validate={validate}
         defaultValues={{
           username: name,
-          userEmail: email
+          userEmail: email,
         }}
         onSubmit={(values, { setStatus, setFieldError }) => {
-          return dispatch(updateUser(values)).catch(error =>
+          return dispatch(updateUser(values)).catch((error) =>
             handleFormError(error, setFieldError, setStatus)
           );
         }}

@@ -6,7 +6,7 @@ import StatisticCard from "../../components/Stats/StatisticCard";
 import {
   adminGetUserDetails,
   getUserFileStats,
-  updateUserAccountStatus
+  updateUserAccountStatus,
 } from "../../reducers/adminReducer";
 import { getUserLinks } from "../../reducers/fileReducer";
 import SharedLinkTable from "../../components/Table/SharedLinkTable";
@@ -20,20 +20,20 @@ import EditUserForm from "../../components/formElements/EditUserForm";
 
 const { TabPane } = Tabs;
 
-export default props => {
+export default (props) => {
   const dispatch = useDispatch();
   const { match } = props;
   const { user } = props.match.params;
-  const { users } = useSelector(state => state.admin.entities);
+  const { users } = useSelector((state) => state.admin.entities);
   const account = users[user] || {
     name: "",
     email: "",
     role: "",
     enabled: "",
-    quota: { used: 0, max: 25, ignoreQuota: false }
+    quota: { used: 0, max: 25, ignoreQuota: false },
   };
   const { totalLinks, totalViews } = useSelector(
-    state => state.admin.userStats
+    (state) => state.admin.userStats
   );
   const [loadingFileStats, setLoadingFileStats] = useState(false);
   const [loadingUserDetails, setLoadingUserDetails] = useState(true);
@@ -46,7 +46,7 @@ export default props => {
     );
   };
 
-  const handleShowDialog = media => {
+  const handleShowDialog = (media) => {
     setActiveMedia(media);
   };
 

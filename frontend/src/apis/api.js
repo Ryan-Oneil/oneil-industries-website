@@ -9,20 +9,20 @@ const baseApi = axios.create({
   headers: {
     Authorization: localStorage.getItem("authToken")
       ? localStorage.getItem("authToken")
-      : "none"
-  }
+      : "none",
+  },
 });
 
 // baseApi.interceptors.request.use(
 //   config => new Promise(resolve => setTimeout(() => resolve(config), 10000))
 // );
 
-export const getRefreshToken = refreshToken => {
+export const getRefreshToken = (refreshToken) => {
   return baseApi
     .post("/token/refresh", refreshToken, {
       headers: {
-        "Content-Type": "application/json"
-      }
+        "Content-Type": "application/json",
+      },
     })
     .then(({ data }) => {
       localStorage.setItem("authToken", data);
@@ -30,14 +30,14 @@ export const getRefreshToken = refreshToken => {
 
       return data;
     })
-    .catch(error => {
+    .catch((error) => {
       return Promise.reject(error);
     });
 };
 
 baseApi.interceptors.response.use(
-  response => response,
-  error => {
+  (response) => response,
+  (error) => {
     const originalRequest = error.config;
 
     if (!error.response) {
@@ -65,7 +65,7 @@ baseApi.interceptors.response.use(
         return Promise.reject(new Error("Your session has expired"));
       }
 
-      return getRefreshToken(refreshToken).then(data => {
+      return getRefreshToken(refreshToken).then((data) => {
         originalRequest.headers["Authorization"] = data;
 
         return axios(originalRequest);

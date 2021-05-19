@@ -6,7 +6,7 @@ import UserDropDown from "./UserDropDown";
 import { useSelector } from "react-redux";
 
 export default ({ menuDirection }) => {
-  const { isAuthenticated } = useSelector(state => state.auth);
+  const { isAuthenticated } = useSelector((state) => state.auth);
 
   return (
     <Menu mode={menuDirection}>

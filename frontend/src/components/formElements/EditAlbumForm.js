@@ -6,16 +6,16 @@ import { updateAlbum } from "../../reducers/mediaReducer";
 import { handleFormError } from "../../apis/ApiErrorHandler";
 import BaseForm from "./BaseForm";
 
-export default props => {
+export default (props) => {
   const dispatch = useDispatch();
 
   const onSubmit = (formValues, { setStatus, setFieldError }) => {
-    return dispatch(updateAlbum(formValues, props.album.id)).catch(error =>
+    return dispatch(updateAlbum(formValues, props.album.id)).catch((error) =>
       handleFormError(error, setFieldError, setStatus)
     );
   };
 
-  const validate = values => {
+  const validate = (values) => {
     const errors = {};
 
     if (!values.name) {
@@ -24,7 +24,7 @@ export default props => {
     return errors;
   };
 
-  const fields = errors => {
+  const fields = (errors) => {
     return (
       <Field
         name="name"
@@ -40,7 +40,7 @@ export default props => {
     <BaseForm
       onSubmit={onSubmit}
       defaultValues={{
-        name: props.album.name
+        name: props.album.name,
       }}
       validate={validate}
       renderFields={fields}

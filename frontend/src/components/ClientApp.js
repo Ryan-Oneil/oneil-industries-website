@@ -29,7 +29,7 @@ import {
   REGISTER_URL,
   RESET_PASSWORD_URL,
   SHARED_FILES_LINK_URL,
-  VOICE_SERVICES_URL
+  VOICE_SERVICES_URL,
 } from "../constants/constants";
 
 class ClientApp extends React.Component {

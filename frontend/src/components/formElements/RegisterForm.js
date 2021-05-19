@@ -13,14 +13,14 @@ export default () => {
     const creds = {
       username: formValues.username.trim(),
       password: formValues.password.trim(),
-      email: formValues.email.trim()
+      email: formValues.email.trim(),
     };
     return registerUser(creds)
-      .then(response => setStatus({ msg: response.data, type: "success" }))
-      .catch(error => handleFormError(error, setFieldError, setStatus));
+      .then((response) => setStatus({ msg: response.data, type: "success" }))
+      .catch((error) => handleFormError(error, setFieldError, setStatus));
   };
 
-  const validate = values => {
+  const validate = (values) => {
     const errors = {};
 
     if (!values.username) {
@@ -38,7 +38,7 @@ export default () => {
     return errors;
   };
 
-  const fields = errors => {
+  const fields = (errors) => {
     return (
       <>
         <Field
@@ -85,7 +85,7 @@ export default () => {
         username: "",
         password: "",
         confirmPassword: "",
-        email: ""
+        email: "",
       }}
       submittingButtonText={"Registering"}
       submitButtonText={"Register"}

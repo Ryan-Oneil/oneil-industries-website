@@ -7,7 +7,7 @@ export default () => {
   return (
     <div className="login">
       <Card>
-        <ForgotPassword action={email => resetPassword(email)} />
+        <ForgotPassword action={(email) => resetPassword(email)} />
       </Card>
     </div>
   );

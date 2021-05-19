@@ -3,14 +3,14 @@ import { Card } from "antd";
 import { getAllLinksPageable } from "../../../reducers/fileReducer";
 import SharedLinkTable from "../../../components/Table/SharedLinkTable";
 
-export default props => {
+export default (props) => {
   const { match } = props;
   const adminColumns = [
     {
       title: "Creator",
       dataIndex: "creator",
-      sorter: true
-    }
+      sorter: true,
+    },
   ];
 
   return (

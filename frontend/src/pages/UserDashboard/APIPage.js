@@ -4,7 +4,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Button, Card, Col, Input, Row, Space } from "antd";
 import {
   generateShareXConfig,
-  fetchAPIToken
+  fetchAPIToken,
 } from "../../reducers/userReducer";
 import CopyOutlined from "@ant-design/icons/lib/icons/CopyOutlined";
 import DownloadOutlined from "@ant-design/icons/lib/icons/DownloadOutlined";
@@ -14,8 +14,8 @@ const { TextArea } = Input;
 export default () => {
   const dispatch = useDispatch();
   const [sharexText, setSharexText] = useState("Copy");
-  const { apiToken, shareXConfig } = useSelector(state => state.user);
-  const { name } = useSelector(state => state.auth.user);
+  const { apiToken, shareXConfig } = useSelector((state) => state.user);
+  const { name } = useSelector((state) => state.auth.user);
 
   useEffect(() => {
     if (!apiToken) {
