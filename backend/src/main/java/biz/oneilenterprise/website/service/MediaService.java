@@ -5,14 +5,15 @@ import static biz.oneilenterprise.website.utils.FileHandlerUtil.writeImageThumbn
 import static biz.oneilenterprise.website.utils.FileHandlerUtil.writeVideoThumbnail;
 
 import biz.oneilenterprise.website.dto.AlbumDTO;
-import biz.oneilenterprise.website.dto.MediaUploadDTO;
 import biz.oneilenterprise.website.dto.MediaDTO;
+import biz.oneilenterprise.website.dto.MediaUploadDTO;
 import biz.oneilenterprise.website.dto.PublicMediaApprovalDTO;
 import biz.oneilenterprise.website.entity.Album;
 import biz.oneilenterprise.website.entity.Media;
 import biz.oneilenterprise.website.entity.PublicMediaApproval;
 import biz.oneilenterprise.website.entity.User;
 import biz.oneilenterprise.website.enums.MediaType;
+import biz.oneilenterprise.website.enums.PrivacyStatus;
 import biz.oneilenterprise.website.exception.AlbumMissingException;
 import biz.oneilenterprise.website.exception.MediaApprovalException;
 import biz.oneilenterprise.website.exception.MediaException;
@@ -44,8 +45,6 @@ public class MediaService {
     private static final Logger logger = LogManager.getLogger(MediaService.class);
 
     private static final String FILE_NOT_EXISTS_ERROR_MESSAGE = "Media does not exist on this server";
-    private static final String PUBLIC = "public";
-    private static final String UNLISTED = "unlisted";
 
     private final MediaRepository mediaRepository;
     private final AlbumRepository albumRepository;
@@ -73,7 +72,7 @@ public class MediaService {
         }
         Album finalAlbum = album;
         List<Media> mediaList = mediaFiles.stream()
-            .map(file -> registerMedia(file.getName(), UNLISTED, file, user, finalAlbum, file.length()))
+            .map(file -> registerMedia(file.getName(), PrivacyStatus.UNLISTED.toString().toLowerCase(), file, user, finalAlbum, file.length()))
             .collect(Collectors.toList());
 
         mediaRepository.saveAll(mediaList);
@@ -110,8 +109,8 @@ public class MediaService {
 
     public HashMap<String, Object> getPublicMedias(Pageable pageable) {
         HashMap<String, Object> publicMedias = new HashMap<>();
-        publicMedias.put("medias", mediaToDTOs(mediaRepository.getAllByLinkStatusOrderByIdDesc(PUBLIC, pageable)));
-        publicMedias.put("total", mediaRepository.getTotalMediaByStatus(PUBLIC));
+        publicMedias.put("medias", mediaToDTOs(mediaRepository.getAllByLinkStatusOrderByIdDesc(PrivacyStatus.PUBLIC.toString().toLowerCase(), pageable)));
+        publicMedias.put("total", mediaRepository.getTotalMediaByStatus(PrivacyStatus.PUBLIC.toString().toLowerCase()));
 
         return publicMedias;
     }
@@ -199,7 +198,7 @@ public class MediaService {
 
     public void approvePublicMedia(int mediaID) {
         Media media = getMediaApprovalByMediaID(mediaID);
-        media.setLinkStatus(PUBLIC);
+        media.setLinkStatus(PrivacyStatus.PUBLIC.toString().toLowerCase());
         media.setPublicMediaApproval(null);
 
         mediaRepository.save(media);
@@ -232,10 +231,12 @@ public class MediaService {
         return totalSize;
     }
 
-    public String updateMediasLinkStatus(Integer[] mediaIds, String linkStatus, User uploader) {
-        if (linkStatus.equalsIgnoreCase(PUBLIC) && !CollectionUtils.containsAny(uploader.getAuthorities(), TRUSTED_ROLES)) {
+    public String updateMediasLinkStatus(Integer[] mediaIds, String status, User uploader) {
+        String linkStatus = PrivacyStatus.valueOf(status.toUpperCase()).toString();
+
+        if (linkStatus.equalsIgnoreCase(PrivacyStatus.PUBLIC.toString()) && !CollectionUtils.containsAny(uploader.getAuthorities(), TRUSTED_ROLES)) {
             massRequestPublicApproval(mediaIds);
-            return "Requested approval to make media " + PUBLIC;
+            return "Requested approval to make media " + PrivacyStatus.PUBLIC.toString().toLowerCase();
         }
         mediaRepository.updateMediaPrivacy(linkStatus, mediaIds, uploader.getUsername());
 
