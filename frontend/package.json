@@ -8,7 +8,7 @@
     "antd": "4.15.5",
     "axios": "0.21.1",
     "customize-cra": "1.0.0",
-    "formik": "2.2.6",
+    "formik": "2.2.8",
     "lodash": "4.17.21",
     "moment": "2.29.1",
     "normalizr": "3.6.1",
