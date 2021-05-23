@@ -23,7 +23,7 @@ import {
 } from "../../../reducers/fileReducer";
 import { displayBytesInReadableForm } from "../../../helpers";
 import { BASE_URL } from "../../../apis/api";
-import ListCard from "../../../components/Stats/ListCard";
+import ListCard from "../../../components/DataDisplay/ListCard";
 import ConfirmButton from "../../../components/ConfirmButton";
 import Uploader from "../../../components/Uploader";
 import ShareFileForm from "../../../components/formElements/ShareFileForm";

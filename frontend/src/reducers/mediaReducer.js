@@ -135,7 +135,7 @@ export const uploadMedia = (endpoint, data, file, uploadProgress) => (
   postData.append("file[]", file, file.name);
 
   let options = {
-    params: { privacy: data.linkStatus, albumId: data.albumId },
+    params: { albumId: data.albumId },
     onUploadProgress: (progressEvent) => uploadProgress(progressEvent),
   };
 

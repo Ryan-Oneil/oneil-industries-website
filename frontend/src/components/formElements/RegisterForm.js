@@ -45,32 +45,29 @@ export default () => {
           name="username"
           as={InputWithErrors}
           type="text"
-          placeholder="Username"
-          prefix={<UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
+          suffix={<UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
           error={errors.username}
         />
         <Field
           name="password"
           as={InputWithErrors}
           type="password"
-          placeholder="Password"
-          prefix={<LockOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
+          suffix={<LockOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
           error={errors.password}
         />
         <Field
           name="confirmPassword"
           as={InputWithErrors}
           type="password"
-          placeholder="Confirm Password"
-          prefix={<LockOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
+          label="Confirm Password"
+          suffix={<LockOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
           error={errors.confirmPassword}
         />
         <Field
           name="email"
           as={InputWithErrors}
           type="email"
-          placeholder="Email"
-          prefix={<MailOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
+          suffix={<MailOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
           error={errors.email}
         />
       </>

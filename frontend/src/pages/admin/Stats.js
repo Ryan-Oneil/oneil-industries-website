@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { displayBytesInReadableForm } from "../../helpers";
 import { Col, Row, List, Avatar } from "antd";
-import StatisticCard from "../../components/Stats/StatisticCard";
-import ListCard from "../../components/Stats/ListCard";
+import StatisticCard from "../../components/DataDisplay/StatisticCard";
+import ListCard from "../../components/DataDisplay/ListCard";
 import { useDispatch, useSelector } from "react-redux";
 import { getAdminLinkStats, getAdminStats } from "../../reducers/adminReducer";
 import { BASE_URL } from "../../apis/api";

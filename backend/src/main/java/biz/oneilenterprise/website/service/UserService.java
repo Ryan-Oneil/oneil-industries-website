@@ -254,7 +254,7 @@ public class UserService {
         ApiToken apiToken = getApiTokenByUser(user);
 
         if (apiToken == null) {
-            return null;
+            apiToken = generateApiToken(user);
         }
         //Returns a shareX custom uploader config template
         return new ShareXConfigDTO(apiToken.getToken(), backendUrl);

@@ -11,7 +11,8 @@ export default ({
   submitButtonText = "Update",
   submittingButtonText = "Updating",
   enableReinitialize,
-  submitButtonStyle
+  submitButtonStyle,
+  style,
 }) => {
   return (
     <Formik
@@ -21,7 +22,7 @@ export default ({
       enableReinitialize={enableReinitialize}
       validateOnMount
     >
-      {props => {
+      {(props) => {
         const {
           isSubmitting,
           handleSubmit,
@@ -31,11 +32,11 @@ export default ({
           setFieldError,
           status,
           setStatus,
-          values
+          values,
         } = props;
 
         return (
-          <form onSubmit={handleSubmit} className="login-form">
+          <form onSubmit={handleSubmit} style={style}>
             {renderFields(
               errors,
               setFieldValue,
@@ -46,12 +47,16 @@ export default ({
             <Button
               type="primary"
               htmlType="submit"
-              className="formattedBackground centerContent fullWidth"
+              className="formattedBackground centerContent"
               disabled={!isValid || isSubmitting}
               loading={isSubmitting}
               icon={<SaveOutlined />}
               size="large"
-              style={submitButtonStyle}
+              style={{
+                width: "50%",
+                borderRadius: ".375rem",
+                ...submitButtonStyle,
+              }}
             >
               {isSubmitting ? submittingButtonText : submitButtonText}
             </Button>

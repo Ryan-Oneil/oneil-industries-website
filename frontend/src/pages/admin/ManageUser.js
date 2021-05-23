@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Breadcrumb, Button, Col, message, Row, Tabs } from "antd";
 import { displayBytesInReadableForm } from "../../helpers";
-import StatisticCard from "../../components/Stats/StatisticCard";
+import StatisticCard from "../../components/DataDisplay/StatisticCard";
 import {
   adminGetUserDetails,
   getUserFileStats,

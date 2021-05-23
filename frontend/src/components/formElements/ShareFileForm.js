@@ -1,6 +1,6 @@
 import React from "react";
 import { Field } from "formik";
-import { ErrorDisplay, InputWithErrors } from "./index";
+import { ErrorDisplay, InputLabel, InputWithErrors } from "./index";
 import { Card, DatePicker } from "antd";
 import moment from "moment";
 import BaseForm from "./BaseForm";
@@ -10,26 +10,23 @@ export default ({
   title = "",
   expires,
   submitButtonText,
-  submittingButtonText
+  submittingButtonText,
 }) => {
   const fields = (errors, setFieldValue, setFieldError, setStatus, values) => {
     return (
       <>
-        <Field
-          name="title"
-          as={InputWithErrors}
-          type="text"
-          placeholder="Link Title"
-        />
+        <Field name="title" as={InputWithErrors} type="text" />
+        <InputLabel label={"Link expiry date/time"} name={"expires"} />
         <DatePicker
           showTime={{ format: "HH:mm" }}
-          onChange={date => {
+          onChange={(date) => {
             setFieldValue("expires", date);
           }}
+          className={"roundedShadowBox"}
           style={{ width: "100%", marginBottom: 24 }}
-          placeholder="Link expiry date/time"
+          label="Link expiry date/time"
           size="large"
-          disabledDate={current => {
+          disabledDate={(current) => {
             return current && current.valueOf() < Date.now();
           }}
           showToday={false}
@@ -47,7 +44,7 @@ export default ({
         renderFields={fields}
         submitButtonText={submitButtonText}
         submittingButtonText={submittingButtonText}
-        validate={values => {
+        validate={(values) => {
           const errors = {};
           if (values.title && values.title.length > 255) {
             errors.title = "Max length is 255 characters";
@@ -62,12 +59,12 @@ export default ({
         }}
         defaultValues={{
           title,
-          expires
+          expires,
         }}
-        onSubmit={values => {
+        onSubmit={(values) => {
           let params = {
             title: values.title,
-            expires: values.expires.toISOString().replace(/\.[0-9]{3}/, "")
+            expires: values.expires.toISOString().replace(/\.[0-9]{3}/, ""),
           };
           return submitAction(params);
         }}

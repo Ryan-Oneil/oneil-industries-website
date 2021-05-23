@@ -26,13 +26,7 @@ export default (props) => {
 
   const fields = (errors) => {
     return (
-      <Field
-        name="name"
-        as={InputWithErrors}
-        type="text"
-        placeholder="Album Name"
-        error={errors.name}
-      />
+      <Field name="name" as={InputWithErrors} type="text" error={errors.name} />
     );
   };
 

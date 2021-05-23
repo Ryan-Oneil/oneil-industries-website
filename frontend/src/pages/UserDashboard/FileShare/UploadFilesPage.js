@@ -43,7 +43,7 @@ export default (props) => {
 
         setUploadedFilesUrlId(data.id);
       })
-      .catch((error) => {
+      .catch(() => {
         updateFileUploadProgress(100, "exception");
       });
   };
@@ -64,6 +64,7 @@ export default (props) => {
             <div style={{ width: "60%" }}>
               <Uploader
                 style={{ height: "100%" }}
+                uploadBoxStyle={{ height: "100%" }}
                 removeFile={removeFile}
                 addedFileAction={(file) =>
                   setFiles((prevState) => [...prevState, file])

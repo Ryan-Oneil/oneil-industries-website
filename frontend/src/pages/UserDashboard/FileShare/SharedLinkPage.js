@@ -16,7 +16,7 @@ import { useDispatch } from "react-redux";
 import { clearError, setError } from "../../../reducers/globalErrorReducer";
 import { apiGetCall, BASE_URL } from "../../../apis/api";
 import { displayBytesInReadableForm } from "../../../helpers";
-import ListCard from "../../../components/Stats/ListCard";
+import ListCard from "../../../components/DataDisplay/ListCard";
 import { getApiError } from "../../../apis/ApiErrorHandler";
 import fileImage from "../../../assets/images/file.png";
 

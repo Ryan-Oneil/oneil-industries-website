@@ -30,19 +30,18 @@ export default (props) => {
   const fields = (errors, setFieldValue) => {
     return (
       <>
-        Max Storage:
         <Field
           name="max"
           as={InputWithErrors}
           type="text"
-          placeholder="Max Quota"
+          label="Max Quota"
           error={errors.max}
         />
-        Ignore Quota:
         <Field
           name="ignoreQuota"
           as={SelectInputWithErrors}
           error={errors.ignoreQuota}
+          label={"Ignore Quota"}
           onChange={(data) => setFieldValue("ignoreQuota", data)}
         >
           <Option value={"true"}>True</Option>

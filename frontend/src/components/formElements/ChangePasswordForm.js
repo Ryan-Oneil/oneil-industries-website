@@ -5,14 +5,14 @@ import LockOutlined from "@ant-design/icons/lib/icons/LockOutlined";
 import { handleFormError } from "../../apis/ApiErrorHandler";
 import BaseForm from "./BaseForm";
 
-export default props => {
+export default (props) => {
   const onSubmit = (formValues, { setStatus, setFieldError }) => {
     return props
       .action(formValues)
-      .catch(error => handleFormError(error, setFieldError, setStatus));
+      .catch((error) => handleFormError(error, setFieldError, setStatus));
   };
 
-  const validate = values => {
+  const validate = (values) => {
     const errors = {};
 
     if (!values.password) {
@@ -21,14 +21,14 @@ export default props => {
     return errors;
   };
 
-  const fields = errors => {
+  const fields = (errors) => {
     return (
       <Field
         name="password"
         as={InputWithErrors}
         type="password"
-        placeholder="Password"
-        prefix={<LockOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
+        label="Password"
+        suffix={<LockOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
         error={errors.password}
       />
     );

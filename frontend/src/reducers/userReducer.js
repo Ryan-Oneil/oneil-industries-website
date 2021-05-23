@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { apiGetCall, apiPutCall } from "../apis/api";
+import { apiGetCall } from "../apis/api";
 import { setError } from "./globalErrorReducer";
 import { getApiError } from "../apis/ApiErrorHandler";
 
@@ -8,14 +8,11 @@ export const slice = createSlice({
   initialState: {
     details: { name: "", email: "", role: "" },
     //Default quota given is 25gb
-    storageQuota: { used: 0, max: 25 },
+    storageQuota: { used: 0, max: 25, ignoreQuota: false },
     apiToken: "",
     shareXConfig: "",
   },
   reducers: {
-    updateMyEmail(state, action) {
-      state.details.email = action.payload.email;
-    },
     getDetails(state, action) {
       state.details = action.payload;
       state.storageQuota = action.payload.quota;
@@ -39,7 +36,6 @@ export const slice = createSlice({
 });
 export default slice.reducer;
 export const {
-  updateMyEmail,
   getDetails,
   getQuota,
   getToken,
@@ -59,13 +55,6 @@ export const getUserDetails = (username) => (dispatch) => {
     .then((response) => dispatch(getDetails(response.data)))
     .catch((error) => dispatch(setError(getApiError(error))));
 };
-
-export const updateEmail = (username, email) => (dispatch) => {
-  return apiPutCall(`/user/${username}/details/update`, email).then(() =>
-    dispatch(updateMyEmail(email))
-  );
-};
-
 export const fetchAPIToken = (endpoint) => (dispatch) => {
   return apiGetCall(endpoint)
     .then(({ data }) => {

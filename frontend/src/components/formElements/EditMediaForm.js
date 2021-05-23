@@ -37,7 +37,6 @@ export default (props) => {
           name="name"
           as={InputWithErrors}
           type="text"
-          placeholder="Media Name"
           error={errors.name}
         />
         <Field

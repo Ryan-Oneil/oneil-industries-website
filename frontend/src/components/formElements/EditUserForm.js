@@ -1,13 +1,12 @@
 import React from "react";
 import { Field } from "formik";
 import { InputWithErrors } from "./index";
-import { Card } from "antd";
 import { useDispatch } from "react-redux";
 import { handleFormError } from "../../apis/ApiErrorHandler";
 import BaseForm from "./BaseForm";
 import { updateUser } from "../../reducers/adminReducer";
 
-export default ({ user, loading }) => {
+export default ({ user, loading, style }) => {
   const dispatch = useDispatch();
   const { name, email } = user;
 
@@ -30,45 +29,47 @@ export default ({ user, loading }) => {
           as={InputWithErrors}
           value={name}
           type="text"
-          placeholder="username"
           disabled
         />
         <Field
           name="userEmail"
           as={InputWithErrors}
           type="email"
-          placeholder="Email"
+          label="Email"
           disabled={loading}
+          data-lpignore="true"
         />
         <Field
           name="userPass"
           as={InputWithErrors}
           type="password"
-          placeholder="password"
+          label="Password"
           disabled={loading}
+          data-lpignore="true"
         />
       </>
     );
   };
 
   return (
-    <Card title={loading ? "Loading User..." : `${name} Settings`}>
-      <BaseForm
-        submittingButtonText={"Saving..."}
-        submitButtonText={"Save"}
-        validate={validate}
-        defaultValues={{
-          username: name,
-          userEmail: email,
-        }}
-        onSubmit={(values, { setStatus, setFieldError }) => {
-          return dispatch(updateUser(values)).catch((error) =>
-            handleFormError(error, setFieldError, setStatus)
-          );
-        }}
-        enableReinitialize
-        renderFields={fields}
-      />
-    </Card>
+    // <Card title={loading ? "Loading User..." : `${name} Settings`}>
+    <BaseForm
+      submittingButtonText={"Saving..."}
+      submitButtonText={"Save"}
+      validate={validate}
+      defaultValues={{
+        username: name,
+        userEmail: email,
+      }}
+      onSubmit={(values, { setStatus, setFieldError }) => {
+        return dispatch(updateUser(values)).catch((error) =>
+          handleFormError(error, setFieldError, setStatus)
+        );
+      }}
+      enableReinitialize
+      renderFields={fields}
+      style={style}
+    />
+    // </Card>
   );
 };
