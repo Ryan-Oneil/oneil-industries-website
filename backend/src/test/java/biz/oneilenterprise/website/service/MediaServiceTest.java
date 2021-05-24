@@ -264,20 +264,6 @@ public class MediaServiceTest extends BaseIntegrationTest {
         assertThat(userMediaDirectory).isEqualTo(mediaDirectory + testUser.getUsername() + "/");
     }
 
-    @Test
-    public void deleteMediaTest() throws IOException {
-        File file = writeMediaFileForTests();
-
-        Media media = mediaService.getMedia(4);
-        long deletedMediaSize = mediaService.deleteMedia(4);
-
-        assertThat(file).doesNotExist();
-        assertThat(deletedMediaSize).isEqualTo(media.getSize());
-        assertThatThrownBy(() -> mediaService.getMedia(4))
-            .isExactlyInstanceOf(MediaException.class)
-            .hasMessage("Media does not exist on this server");
-    }
-
     @NotNull
     private File writeMediaFileForTests() throws IOException {
         FileHandlerUtil.writeImageThumbnail(imageFile, mediaService.getUserMediaDirectory(testUser.getUsername()));

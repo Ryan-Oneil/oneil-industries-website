@@ -131,14 +131,6 @@ public class MediaGalleryController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    @DeleteMapping("/media/delete/{mediaId}")
-    public ResponseEntity<HttpStatus> deleteMedia(@PathVariable int mediaId, Authentication user, HttpServletRequest request) throws IOException {
-        long mediaSize = mediaService.deleteMedia(mediaId);
-        userService.changeQuotaUsedAmount(user.getName(), -mediaSize);
-
-        return ResponseEntity.ok(HttpStatus.OK);
-    }
-
     @GetMapping("/user/medias/{username}")
     public HashMap<String, Object> showUserMedias(Authentication user, @PathVariable String username, HttpServletRequest request, Pageable pageable) {
         return mediaService.getMediasByUser(username, pageable);
@@ -152,7 +144,6 @@ public class MediaGalleryController {
     @PutMapping("/media/update/{mediaID}")
     public ResponseEntity<HttpStatus> updateMedia(@PathVariable int mediaID, Authentication user, HttpServletRequest request,
         @RequestBody @Valid MediaUploadDTO mediaUploadDTO) {
-        User userAuth = (User) user.getPrincipal();
 
         mediaService.updateMedia(mediaUploadDTO, mediaID);
 

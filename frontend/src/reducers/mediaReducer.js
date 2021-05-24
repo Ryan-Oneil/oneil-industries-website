@@ -13,7 +13,7 @@ import {
   ALBUM_UPDATE,
   USER_DELETE_MEDIAS_ENDPOINTS,
 } from "../apis/endpoints";
-import { decreaseQuotaUsed, increasedQuotaUsed } from "./userReducer";
+import { increasedQuotaUsed } from "./userReducer";
 import { getApiError } from "../apis/ApiErrorHandler";
 
 const media = new schema.Entity("medias");
@@ -58,9 +58,6 @@ export const slice = createSlice({
       );
       state.entities.albums = data.entities.albums;
     },
-    deletedMedia(state, action) {
-      delete state.entities.medias[action.payload];
-    },
     deletedMedias(state, action) {
       action.payload.forEach(
         (mediaId) => delete state.entities.medias[mediaId]
@@ -102,7 +99,6 @@ export default slice.reducer;
 export const {
   fetchedMedia,
   fetchedAlbums,
-  deletedMedia,
   updatedMedia,
   fetchedUserMediaStats,
   createdAlbum,
@@ -151,16 +147,6 @@ export const uploadMedia = (endpoint, data, file, uploadProgress) => (
     return dispatch(fetchedMedia({ medias: response.data }));
   });
 };
-
-export const deleteMedia = (endpoint, mediaID, mediaSize) => (dispatch) => {
-  return apiDeleteCall(endpoint)
-    .then(() => {
-      dispatch(deletedMedia(mediaID));
-      dispatch(decreaseQuotaUsed(mediaSize));
-    })
-    .catch((error) => dispatch(setError(getApiError(error))));
-};
-
 export const deleteMedias = (mediaIDs) => (dispatch) => {
   return apiDeleteCall(USER_DELETE_MEDIAS_ENDPOINTS, {
     data: mediaIDs,

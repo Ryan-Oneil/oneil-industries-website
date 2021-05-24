@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Breadcrumb, Button, Col, message, Row, Tabs } from "antd";
+import { Breadcrumb, Button, Card, Col, message, Row, Tabs } from "antd";
 import { displayBytesInReadableForm } from "../../helpers";
 import StatisticCard from "../../components/DataDisplay/StatisticCard";
 import {
@@ -92,7 +92,13 @@ export default (props) => {
         <TabPane tab="Account Settings" key="1">
           <Row gutter={[32, 32]} type="flex">
             <Col xs={24} sm={12} md={12} lg={12} xl={8}>
-              <EditUserForm user={account} loading={loadingUserDetails} />
+              <Card
+                title={
+                  loadingUserDetails ? "Loading User..." : `${user} Settings`
+                }
+              >
+                <EditUserForm user={account} />
+              </Card>
             </Col>
             <Col xs={24} sm={12} md={12} lg={12} xl={8}>
               <EditUserQuotaForm username={user} quota={account.quota} />

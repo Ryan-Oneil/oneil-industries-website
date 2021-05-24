@@ -1,7 +1,7 @@
 import SelectWithDropDown from "../formElements/SelectWithDropDown";
 import {
   addMediasToAlbum,
-  deleteMedia,
+  deleteMedias,
   fetchAlbums,
   postNewAlbum,
   updateMediasLinkStatus,
@@ -68,13 +68,7 @@ const MediaUploadedGrid = ({ files, onSelectAlbum, onDeleteMedia }) => {
                 onDeleteMedia(file.uid);
                 return;
               }
-              dispatch(
-                deleteMedia(
-                  `/gallery/media/delete/${file.id}`,
-                  file.id,
-                  file.size
-                )
-              ).then(() => {
+              dispatch(deleteMedias([file.id])).then(() => {
                 onDeleteMedia(file.uid);
                 message.success("Successfully deleted Media");
               });

@@ -21,7 +21,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import { MEDIA_IMAGE_URL } from "../../apis/endpoints";
 import EditMediaForm from "../formElements/EditMediaForm";
 import DeleteOutlined from "@ant-design/icons/lib/icons/DeleteOutlined";
-import { deleteMedia } from "../../reducers/mediaReducer";
+import { deleteMedias } from "../../reducers/mediaReducer";
 const { TextArea } = Input;
 
 export default ({
@@ -130,11 +130,7 @@ export default ({
                                   type="danger"
                                   onClick={() => {
                                     dispatch(
-                                      deleteMedia(
-                                        `/gallery/media/delete/${activeMedia.id}`,
-                                        activeMedia.id,
-                                        activeMedia.size
-                                      )
+                                      deleteMedias([activeMedia.id])
                                     ).then(() => {
                                       message.success(
                                         "Successfully delete Media"

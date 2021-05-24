@@ -7,7 +7,6 @@ import static biz.oneilenterprise.website.utils.FileHandlerUtil.writeVideoThumbn
 import biz.oneilenterprise.website.dto.AlbumDTO;
 import biz.oneilenterprise.website.dto.MediaDTO;
 import biz.oneilenterprise.website.dto.MediaUploadDTO;
-import biz.oneilenterprise.website.dto.PublicMediaApprovalDTO;
 import biz.oneilenterprise.website.entity.Album;
 import biz.oneilenterprise.website.entity.Media;
 import biz.oneilenterprise.website.entity.PublicMediaApproval;
@@ -212,15 +211,6 @@ public class MediaService {
         return String.format("%s%s/", mediaDirectory, username);
     }
 
-    public long deleteMedia(int mediaID) {
-        Media media = getMedia(mediaID);
-        FileHandlerUtil.deleteFile(getUserMediaDirectory(media.getUploader().getUsername()) + media.getFileName());
-
-        mediaRepository.delete(media);
-
-        return media.getSize();
-    }
-
     public Long deleteMedias(Integer[] mediaIds) {
         Long totalSize = mediaRepository.getTotalMediasSize(mediaIds);
         List<Media> mediaList = mediaRepository.getAllByIds(mediaIds);
@@ -381,13 +371,4 @@ public class MediaService {
         return modelMapper.map(media, MediaDTO.class);
     }
 
-    public List<PublicMediaApprovalDTO> publicMediaApprovalToDTOS(List<PublicMediaApproval> approvals) {
-        return approvals.stream()
-            .map(this::publicMediaApprovalToDTO)
-            .collect(Collectors.toList());
-    }
-
-    public PublicMediaApprovalDTO publicMediaApprovalToDTO(PublicMediaApproval mediaApproval) {
-        return modelMapper.map(mediaApproval, PublicMediaApprovalDTO.class);
-    }
 }
