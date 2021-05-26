@@ -52,7 +52,6 @@ export default ({ user, loading, style }) => {
   };
 
   return (
-    // <Card title={loading ? "Loading User..." : `${name} Settings`}>
     <BaseForm
       submittingButtonText={"Saving..."}
       submitButtonText={"Save"}
@@ -70,6 +69,5 @@ export default ({ user, loading, style }) => {
       renderFields={fields}
       style={style}
     />
-    // </Card>
   );
 };

@@ -15,6 +15,7 @@ import biz.oneilenterprise.website.exception.AlbumMissingException;
 import biz.oneilenterprise.website.exception.MediaApprovalException;
 import biz.oneilenterprise.website.exception.MediaException;
 import biz.oneilenterprise.website.utils.FileHandlerUtil;
+import biz.oneilenterprise.website.utils.ImageThumbnailWriterUtil;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class MediaServiceTest extends BaseIntegrationTest {
     public static final String PENDING = "pending";
 
     private final String mediaDirectory = "images/";
-    private final String thumbnailDirectoryPath = mediaDirectory + "/thumbnail";
+    private final String thumbnailDirectoryPath = mediaDirectory + "thumbnail";
 
     private final File videoFile = new File("src/test/resources/video.mp4");
     private final File imageFile = new File("src/test/resources/image.png");
@@ -43,6 +44,9 @@ public class MediaServiceTest extends BaseIntegrationTest {
 
     @Autowired
     private MediaService mediaService;
+
+    @Autowired
+    private ImageThumbnailWriterUtil imageThumbnailWriterUtil;
 
     @BeforeEach
     public void setup() {
@@ -266,7 +270,7 @@ public class MediaServiceTest extends BaseIntegrationTest {
 
     @NotNull
     private File writeMediaFileForTests() throws IOException {
-        FileHandlerUtil.writeImageThumbnail(imageFile, mediaService.getUserMediaDirectory(testUser.getUsername()));
+        imageThumbnailWriterUtil.writeThumbnailFromMedia(imageFile, mediaService.getUserMediaDirectory(testUser.getUsername()));
         File file = new File(mediaService.getUserMediaDirectory(testUser.getUsername()) + imageFile.getName());
 
         assertThat(file).exists();

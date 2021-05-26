@@ -51,7 +51,7 @@ const Home = () => {
                 Tools
               </Space>
             </h3>
-            Oneil Industries provides a wide variety of tools to its Members
+            Oneil Enterprise provides a wide variety of tools to its Members
             such as image gallery, game calculators, and more. All found under
             the dashboard section for registered users.
           </div>

@@ -93,27 +93,6 @@ public class FileHandlerUtilTest {
     }
 
     @Test
-    public void writeImageThumbnailTest() throws IOException {
-        FileHandlerUtil.writeImageThumbnail(imageFile, testDirectory.getAbsolutePath() + "/thumbnails");
-
-        File thumbnail = new File(testDirectory.getAbsolutePath() + "/thumbnails/" + imageFile.getName());
-
-        assertThat(thumbnail).exists();
-    }
-
-    @Test
-    public void writeVideoThumbnailTest() throws IOException {
-        File thumbnailDirectory = new File(testDirectory.getAbsolutePath() + "/thumbnails");
-        thumbnailDirectory.mkdir();
-
-        FileHandlerUtil.writeVideoThumbnail(videoFile, thumbnailDirectory.getAbsolutePath());
-
-        File thumbnail = new File(testDirectory.getAbsolutePath() + "/thumbnails/" + videoFile.getName() + ".png");
-
-        assertThat(thumbnail).exists();
-    }
-
-    @Test
     public void getExtensionTypeTest() {
         String extension = FileHandlerUtil.getExtensionType(file.getName());
 

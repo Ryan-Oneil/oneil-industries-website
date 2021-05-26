@@ -1,8 +1,6 @@
 package biz.oneilenterprise.website.service;
 
 import static biz.oneilenterprise.website.security.SecurityConstants.TRUSTED_ROLES;
-import static biz.oneilenterprise.website.utils.FileHandlerUtil.writeImageThumbnail;
-import static biz.oneilenterprise.website.utils.FileHandlerUtil.writeVideoThumbnail;
 
 import biz.oneilenterprise.website.dto.AlbumDTO;
 import biz.oneilenterprise.website.dto.MediaDTO;
@@ -19,6 +17,7 @@ import biz.oneilenterprise.website.exception.MediaException;
 import biz.oneilenterprise.website.repository.AlbumRepository;
 import biz.oneilenterprise.website.repository.MediaRepository;
 import biz.oneilenterprise.website.utils.FileHandlerUtil;
+import biz.oneilenterprise.website.utils.ImageThumbnailWriterUtil;
 import biz.oneilenterprise.website.utils.RandomIDGenUtil;
 import java.io.File;
 import java.io.IOException;
@@ -48,6 +47,7 @@ public class MediaService {
     private final MediaRepository mediaRepository;
     private final AlbumRepository albumRepository;
     private final ModelMapper modelMapper;
+    private final ImageThumbnailWriterUtil imageThumbnailWriterUtil;
 
     @Value("${service.media.location}")
     private String mediaDirectory;
@@ -55,10 +55,12 @@ public class MediaService {
     @Value("${service.backendUrl}")
     private String backendUrl;
 
-    public MediaService(MediaRepository mediaRepository, AlbumRepository albumRepository, ModelMapper modelMapper) {
+    public MediaService(MediaRepository mediaRepository, AlbumRepository albumRepository, ModelMapper modelMapper,
+        ImageThumbnailWriterUtil imageThumbnailWriterUtil) {
         this.mediaRepository = mediaRepository;
         this.albumRepository = albumRepository;
         this.modelMapper = modelMapper;
+        this.imageThumbnailWriterUtil = imageThumbnailWriterUtil;
         this.modelMapper.typeMap(Media.class, MediaDTO.class)
             .addMappings(m -> m.map(src -> src.getUploader().getUsername(), MediaDTO::setUploader));
     }
@@ -87,11 +89,7 @@ public class MediaService {
         medias
             .forEach(media -> {
                 try {
-                    if (FileHandlerUtil.isImageFile(media.getName())) {
-                        writeImageThumbnail(media, String.format("%s/thumbnail/%s/", mediaDirectory, user));
-                    } else {
-                        writeVideoThumbnail(media, String.format("%s/thumbnail/%s/", mediaDirectory, user));
-                    }
+                    imageThumbnailWriterUtil.writeThumbnailFromMedia(media, String.format("%s/thumbnail/%s/", mediaDirectory, user));
                 } catch (IOException e) {
                     logger.error("Error writing thumbnails for image {}", e.getMessage());
                 }
@@ -215,8 +213,11 @@ public class MediaService {
         Long totalSize = mediaRepository.getTotalMediasSize(mediaIds);
         List<Media> mediaList = mediaRepository.getAllByIds(mediaIds);
 
+        mediaList.forEach(media -> {
+            FileHandlerUtil.deleteFile(getMediaFile(media.getFileName()).getAbsolutePath());
+            FileHandlerUtil.deleteFile(getMediaThumbnailFile(media.getFileName()).getAbsolutePath());
+        });
         mediaRepository.deleteMediasByIds(mediaIds);
-        mediaList.forEach(media -> FileHandlerUtil.deleteFile(getUserMediaDirectory(media.getUploader().getUsername()) + media.getFileName()));
 
         return totalSize;
     }
@@ -228,7 +229,7 @@ public class MediaService {
             massRequestPublicApproval(mediaIds);
             return "Requested approval to make media " + PrivacyStatus.PUBLIC.toString().toLowerCase();
         }
-        mediaRepository.updateMediaPrivacy(linkStatus, mediaIds, uploader.getUsername());
+        mediaRepository.updateMediaPrivacy(linkStatus.toLowerCase(), mediaIds, uploader.getUsername());
 
         return "";
     }

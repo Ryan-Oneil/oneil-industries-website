@@ -96,16 +96,6 @@ public class FileHandlerUtil {
         deleteFile(directory.getPath());
     }
 
-    public static void writeImageThumbnail(File file, String dest) throws IOException {
-        String extension = getExtensionType(file.getName());
-
-        ImageThumbnailWriterUtil.writeImage(file, dest, extension);
-    }
-
-    public static void writeVideoThumbnail(File video, String dest) throws IOException {
-        ImageThumbnailWriterUtil.writeThumbnailFromVideo(video, dest);
-    }
-
     public static String getExtensionType(String originalFileName) {
         return originalFileName.substring(originalFileName.lastIndexOf('.')+1).toLowerCase();
     }
