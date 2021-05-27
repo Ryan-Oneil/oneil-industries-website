@@ -2,7 +2,6 @@
 
 [Live Website](https://www.oneilindustries.biz/)
 
-The website is still a work in progress.
 
 React based front end purely based on API rest calls to the Spring boot backend
 
