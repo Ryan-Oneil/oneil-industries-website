@@ -10,10 +10,13 @@ export default ({
   fileList,
   showUploadList = false,
   icon,
-  style
+  style,
+  header,
+  footer,
+  uploadBoxStyle,
 }) => {
-  const { used, max } = useSelector(state => state.user.storageQuota);
-  const { name } = useSelector(state => state.auth.user);
+  const { used, max } = useSelector((state) => state.user.storageQuota);
+  const { name } = useSelector((state) => state.auth.user);
   const maxInBytes = max * 1000000000;
   const dispatch = useDispatch();
   const [uploadSize, setUploadSize] = useState(0);
@@ -33,7 +36,7 @@ export default ({
   const config = {
     name: "file",
     multiple: true,
-    beforeUpload: file => {
+    beforeUpload: (file) => {
       if (file.size + uploadSize + used > maxInBytes) {
         message.error("This file would exceed your quota of " + max + " GB");
       } else {
@@ -41,18 +44,26 @@ export default ({
       }
       return false;
     },
-    onRemove: file => {
+    onRemove: (file) => {
       removeFile(file);
-    }
+    },
   };
   return (
-    <div className="uploaderBox roundedShadowBox centerContent" style={style}>
-      <Dragger {...config} showUploadList={showUploadList}>
-        <p className="ant-upload-drag-icon">{icon}</p>
-        <p style={{ fontWeight: 600, fontSize: "16px" }}>
-          Click or drag file to this area to upload
-        </p>
-      </Dragger>
+    <div
+      className="uploaderBox roundedShadowBox centerContent"
+      style={{ overflow: "auto", ...style }}
+    >
+      {header}
+      <div style={uploadBoxStyle}>
+        <Dragger {...config} showUploadList={showUploadList}>
+          <p className="ant-upload-drag-icon">{icon}</p>
+          <p style={{ fontWeight: 600, fontSize: "16px" }}>
+            Drag and drop to upload
+          </p>
+          <p>or click to browse</p>
+        </Dragger>
+      </div>
+      {footer}
     </div>
   );
 };

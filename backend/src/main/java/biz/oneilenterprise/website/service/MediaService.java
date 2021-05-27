@@ -1,30 +1,28 @@
 package biz.oneilenterprise.website.service;
 
 import static biz.oneilenterprise.website.security.SecurityConstants.TRUSTED_ROLES;
-import static biz.oneilenterprise.website.utils.FileHandlerUtil.writeImageThumbnail;
-import static biz.oneilenterprise.website.utils.FileHandlerUtil.writeVideoThumbnail;
 
 import biz.oneilenterprise.website.dto.AlbumDTO;
-import biz.oneilenterprise.website.dto.GalleryUploadDTO;
 import biz.oneilenterprise.website.dto.MediaDTO;
-import biz.oneilenterprise.website.dto.PublicMediaApprovalDTO;
+import biz.oneilenterprise.website.dto.MediaUploadDTO;
 import biz.oneilenterprise.website.entity.Album;
 import biz.oneilenterprise.website.entity.Media;
 import biz.oneilenterprise.website.entity.PublicMediaApproval;
 import biz.oneilenterprise.website.entity.User;
 import biz.oneilenterprise.website.enums.MediaType;
+import biz.oneilenterprise.website.enums.PrivacyStatus;
 import biz.oneilenterprise.website.exception.AlbumMissingException;
 import biz.oneilenterprise.website.exception.MediaApprovalException;
 import biz.oneilenterprise.website.exception.MediaException;
 import biz.oneilenterprise.website.repository.AlbumRepository;
 import biz.oneilenterprise.website.repository.MediaRepository;
 import biz.oneilenterprise.website.utils.FileHandlerUtil;
+import biz.oneilenterprise.website.utils.ImageThumbnailWriterUtil;
 import biz.oneilenterprise.website.utils.RandomIDGenUtil;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -37,7 +35,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 
 @Service
 public class MediaService {
@@ -45,12 +43,11 @@ public class MediaService {
     private static final Logger logger = LogManager.getLogger(MediaService.class);
 
     private static final String FILE_NOT_EXISTS_ERROR_MESSAGE = "Media does not exist on this server";
-    private static final String PUBLIC = "public";
-    private static final String UNLISTED = "unlisted";
 
     private final MediaRepository mediaRepository;
     private final AlbumRepository albumRepository;
     private final ModelMapper modelMapper;
+    private final ImageThumbnailWriterUtil imageThumbnailWriterUtil;
 
     @Value("${service.media.location}")
     private String mediaDirectory;
@@ -58,27 +55,27 @@ public class MediaService {
     @Value("${service.backendUrl}")
     private String backendUrl;
 
-    public MediaService(MediaRepository mediaRepository, AlbumRepository albumRepository, ModelMapper modelMapper) {
+    public MediaService(MediaRepository mediaRepository, AlbumRepository albumRepository, ModelMapper modelMapper,
+        ImageThumbnailWriterUtil imageThumbnailWriterUtil) {
         this.mediaRepository = mediaRepository;
         this.albumRepository = albumRepository;
         this.modelMapper = modelMapper;
+        this.imageThumbnailWriterUtil = imageThumbnailWriterUtil;
         this.modelMapper.typeMap(Media.class, MediaDTO.class)
             .addMappings(m -> m.map(src -> src.getUploader().getUsername(), MediaDTO::setUploader));
     }
 
-    public List<MediaDTO> registerMedias(List<File> mediaFiles, GalleryUploadDTO galleryUploadDTO, User user) throws IOException {
+    public List<MediaDTO> registerMedias(List<File> mediaFiles, MediaUploadDTO mediaUploadDTO, User user) {
         Album album = null;
-        List<Media> mediaList = new ArrayList<>();
 
-        if (!StringUtils.isEmpty(galleryUploadDTO.getAlbumId())) {
-            album = getOrRegisterAlbum(user.getUsername(), galleryUploadDTO.getAlbumId());
+        if (!ObjectUtils.isEmpty(mediaUploadDTO.getAlbumId())) {
+            album = getOrRegisterAlbum(user.getUsername(), mediaUploadDTO.getAlbumId());
         }
-        for (File mediaFile : mediaFiles) {
-            Media media = registerMedia(mediaFile.getName(), galleryUploadDTO.getPrivacy(), mediaFile, user, album, mediaFile.length());
-            checkMediaPrivacy(media, user);
+        Album finalAlbum = album;
+        List<Media> mediaList = mediaFiles.stream()
+            .map(file -> registerMedia(file.getName(), PrivacyStatus.UNLISTED.toString().toLowerCase(), file, user, finalAlbum, file.length()))
+            .collect(Collectors.toList());
 
-            mediaList.add(media);
-        }
         mediaRepository.saveAll(mediaList);
         writeMediaThumbnails(mediaFiles, user.getUsername());
 
@@ -92,22 +89,11 @@ public class MediaService {
         medias
             .forEach(media -> {
                 try {
-                    if (FileHandlerUtil.isImageFile(media.getName())) {
-                        writeImageThumbnail(media, String.format("%s/thumbnail/%s/", mediaDirectory, user));
-                    } else {
-                        writeVideoThumbnail(media, String.format("%s/thumbnail/%s/", mediaDirectory, user));
-                    }
+                    imageThumbnailWriterUtil.writeThumbnailFromMedia(media, String.format("%s/thumbnail/%s/", mediaDirectory, user));
                 } catch (IOException e) {
                     logger.error("Error writing thumbnails for image {}", e.getMessage());
                 }
             });
-    }
-
-    public void checkMediaPrivacy(Media media, User user) {
-        if (media.getLinkStatus().equalsIgnoreCase(PUBLIC) && !CollectionUtils.containsAny(user.getAuthorities(), TRUSTED_ROLES)) {
-            media.setLinkStatus(UNLISTED);
-            media.setPublicMediaApproval(requestPublicApproval(media));
-        }
     }
 
     public HashMap<String, Object> getMedias(Pageable pageable) {
@@ -120,8 +106,8 @@ public class MediaService {
 
     public HashMap<String, Object> getPublicMedias(Pageable pageable) {
         HashMap<String, Object> publicMedias = new HashMap<>();
-        publicMedias.put("medias", mediaToDTOs(mediaRepository.getAllByLinkStatusOrderByIdDesc(PUBLIC, pageable)));
-        publicMedias.put("total", mediaRepository.getTotalMediaByStatus(PUBLIC));
+        publicMedias.put("medias", mediaToDTOs(mediaRepository.getAllByLinkStatusOrderByIdDesc(PrivacyStatus.PUBLIC.toString().toLowerCase(), pageable)));
+        publicMedias.put("total", mediaRepository.getTotalMediaByStatus(PrivacyStatus.PUBLIC.toString().toLowerCase()));
 
         return publicMedias;
     }
@@ -142,7 +128,7 @@ public class MediaService {
         return mediaRepository.getFirstByFileName(fileName).orElseThrow(() -> new MediaException(FILE_NOT_EXISTS_ERROR_MESSAGE));
     }
 
-    public Media registerMedia(String mediaName, String privacy, File file, User user, Album album, Long size) throws IOException {
+    public Media registerMedia(String mediaName, String privacy, File file, User user, Album album, Long size) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         LocalDate localDate = LocalDate.now();
 
@@ -155,18 +141,14 @@ public class MediaService {
         return media;
     }
 
-    public void updateMedia(GalleryUploadDTO galleryUploadDTO, int mediaID, User user) {
+    public void updateMedia(MediaUploadDTO mediaUploadDTO, int mediaID) {
         Media media = getMedia(mediaID);
 
-        if (galleryUploadDTO.getAlbumId() != null) {
-            Album album = getAlbum(galleryUploadDTO.getAlbumId());
+        if (mediaUploadDTO.getAlbumId() != null) {
+            Album album = getAlbum(mediaUploadDTO.getAlbumId());
             media.setAlbum(album);
         }
-        media.setName(galleryUploadDTO.getName());
-        media.setLinkStatus(galleryUploadDTO.getPrivacy());
-
-        checkMediaPrivacy(media, user);
-
+        media.setName(mediaUploadDTO.getName());
         mediaRepository.save(media);
     }
 
@@ -213,7 +195,7 @@ public class MediaService {
 
     public void approvePublicMedia(int mediaID) {
         Media media = getMediaApprovalByMediaID(mediaID);
-        media.setLinkStatus(PUBLIC);
+        media.setLinkStatus(PrivacyStatus.PUBLIC.toString().toLowerCase());
         media.setPublicMediaApproval(null);
 
         mediaRepository.save(media);
@@ -227,31 +209,29 @@ public class MediaService {
         return String.format("%s%s/", mediaDirectory, username);
     }
 
-    public long deleteMedia(int mediaID) {
-        Media media = getMedia(mediaID);
-        FileHandlerUtil.deleteFile(getUserMediaDirectory(media.getUploader().getUsername()) + media.getFileName());
-
-        mediaRepository.delete(media);
-
-        return media.getSize();
-    }
-
     public Long deleteMedias(Integer[] mediaIds) {
         Long totalSize = mediaRepository.getTotalMediasSize(mediaIds);
         List<Media> mediaList = mediaRepository.getAllByIds(mediaIds);
 
+        mediaList.forEach(media -> {
+            FileHandlerUtil.deleteFile(getMediaFile(media.getFileName()).getAbsolutePath());
+            FileHandlerUtil.deleteFile(getMediaThumbnailFile(media.getFileName()).getAbsolutePath());
+        });
         mediaRepository.deleteMediasByIds(mediaIds);
-        mediaList.forEach(media -> FileHandlerUtil.deleteFile(getUserMediaDirectory(media.getUploader().getUsername()) + media.getFileName()));
 
         return totalSize;
     }
 
-    public void updateMediasLinkStatus(Integer[] mediaIds, String linkStatus, User uploader) {
-        if (!CollectionUtils.containsAny(uploader.getAuthorities(), TRUSTED_ROLES)) {
+    public String updateMediasLinkStatus(Integer[] mediaIds, String status, User uploader) {
+        String linkStatus = PrivacyStatus.valueOf(status.toUpperCase()).toString();
+
+        if (linkStatus.equalsIgnoreCase(PrivacyStatus.PUBLIC.toString()) && !CollectionUtils.containsAny(uploader.getAuthorities(), TRUSTED_ROLES)) {
             massRequestPublicApproval(mediaIds);
-            return;
+            return "Requested approval to make media " + PrivacyStatus.PUBLIC.toString().toLowerCase();
         }
-        mediaRepository.updateMediaPrivacy(linkStatus, mediaIds, uploader.getUsername());
+        mediaRepository.updateMediaPrivacy(linkStatus.toLowerCase(), mediaIds, uploader.getUsername());
+
+        return "";
     }
 
     public File getMediaFile(String mediaFileName) {
@@ -392,13 +372,4 @@ public class MediaService {
         return modelMapper.map(media, MediaDTO.class);
     }
 
-    public List<PublicMediaApprovalDTO> publicMediaApprovalToDTOS(List<PublicMediaApproval> approvals) {
-        return approvals.stream()
-            .map(this::publicMediaApprovalToDTO)
-            .collect(Collectors.toList());
-    }
-
-    public PublicMediaApprovalDTO publicMediaApprovalToDTO(PublicMediaApproval mediaApproval) {
-        return modelMapper.map(mediaApproval, PublicMediaApprovalDTO.class);
-    }
 }

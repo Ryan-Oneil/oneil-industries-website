@@ -8,6 +8,8 @@ import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
 
 import biz.oneilenterprise.website.entity.User;
 import biz.oneilenterprise.website.exception.LoginException;
+import biz.oneilenterprise.website.service.CustomUserDetailsService;
+import biz.oneilenterprise.website.service.LoginAttemptService;
 import com.auth0.jwt.JWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -18,16 +20,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
+    private final CustomUserDetailsService customUserDetailsService;
+    private final LoginAttemptService loginAttemptService;
 
-    public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
+    public JWTAuthenticationFilter(AuthenticationManager authenticationManager,
+        CustomUserDetailsService customUserDetailsService, LoginAttemptService loginAttemptService) {
         this.authenticationManager = authenticationManager;
+        this.customUserDetailsService = customUserDetailsService;
+        this.loginAttemptService = loginAttemptService;
     }
 
     @Override
@@ -42,17 +50,24 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
             return authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                    creds.getUsername(),
+                    creds.getEmail(),
                     creds.getPassword(),
                     new ArrayList<>())
             );
-        } catch (IOException e) {
-            throw new LoginException(e.getMessage());
+        } catch (IOException | InternalAuthenticationServiceException e) {
+            try {
+                unsuccessfulAuthentication(req, res, new LoginException(e.getMessage()));
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+            return null;
         }
     }
 
     @Override
     protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain, Authentication auth) {
+        loginAttemptService.loginSucceeded(customUserDetailsService.getClientIP());
+
         String token = JWT.create()
             .withSubject("refreshToken")
             .withClaim("user", ((User) auth.getPrincipal()).getUsername())
@@ -64,6 +79,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed)
         throws IOException {
+        loginAttemptService.loginFailed(customUserDetailsService.getClientIP());
 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.TEXT_PLAIN_VALUE);

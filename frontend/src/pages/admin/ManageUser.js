@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Breadcrumb, Button, Col, message, Row, Tabs } from "antd";
+import { Breadcrumb, Button, Card, Col, message, Row, Tabs } from "antd";
 import { displayBytesInReadableForm } from "../../helpers";
-import StatisticCard from "../../components/Stats/StatisticCard";
+import StatisticCard from "../../components/DataDisplay/StatisticCard";
 import {
   adminGetUserDetails,
   getUserFileStats,
-  updateUserAccountStatus
+  updateUserAccountStatus,
 } from "../../reducers/adminReducer";
 import { getUserLinks } from "../../reducers/fileReducer";
-import EditUserForm from "../../components/formElements/EditUserForm";
 import SharedLinkTable from "../../components/Table/SharedLinkTable";
 import EditUserQuotaForm from "../../components/formElements/EditUserQuotaForm";
 import EditUserRole from "../../components/formElements/EditUserRole";
@@ -17,23 +16,24 @@ import MediaModal from "../../components/Gallery/MediaModal";
 import ManageMediaGrid from "../../components/Gallery/ManageMediaGrid";
 import { Link } from "react-router-dom";
 import { ADMIN_BASE_URL } from "../../constants/constants";
-import { ADMIN_MEDIAS_ENDPOINT } from "../../apis/endpoints";
+import EditUserForm from "../../components/formElements/EditUserForm";
+
 const { TabPane } = Tabs;
 
-export default props => {
+export default (props) => {
   const dispatch = useDispatch();
   const { match } = props;
   const { user } = props.match.params;
-  const { users } = useSelector(state => state.admin.entities);
+  const { users } = useSelector((state) => state.admin.entities);
   const account = users[user] || {
     name: "",
     email: "",
     role: "",
     enabled: "",
-    quota: { used: 0, max: 25, ignoreQuota: false }
+    quota: { used: 0, max: 25, ignoreQuota: false },
   };
   const { totalLinks, totalViews } = useSelector(
-    state => state.admin.userStats
+    (state) => state.admin.userStats
   );
   const [loadingFileStats, setLoadingFileStats] = useState(false);
   const [loadingUserDetails, setLoadingUserDetails] = useState(true);
@@ -46,7 +46,7 @@ export default props => {
     );
   };
 
-  const handleShowDialog = media => {
+  const handleShowDialog = (media) => {
     setActiveMedia(media);
   };
 
@@ -92,7 +92,13 @@ export default props => {
         <TabPane tab="Account Settings" key="1">
           <Row gutter={[32, 32]} type="flex">
             <Col xs={24} sm={12} md={12} lg={12} xl={8}>
-              <EditUserForm user={account} loading={loadingUserDetails} />
+              <Card
+                title={
+                  loadingUserDetails ? "Loading User..." : `${user} Settings`
+                }
+              >
+                <EditUserForm user={account} />
+              </Card>
             </Col>
             <Col xs={24} sm={12} md={12} lg={12} xl={8}>
               <EditUserQuotaForm username={user} quota={account.quota} />

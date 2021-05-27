@@ -34,13 +34,10 @@ public class ImageGalleryAspect {
     @Pointcut("execution(* biz.oneilenterprise.website.controller.MediaGalleryController.updateMedia(..))")
     private void updateMedia() {}
 
-    @Pointcut("execution(* biz.oneilenterprise.website.controller.MediaGalleryController.deleteMedia(..))")
-    private void deleteMedia() {}
-
     @Pointcut("execution(* biz.oneilenterprise.website.controller.MediaGalleryController.massDeleteMedias(..))")
     private void massDeleteMedias() {}
 
-    @Pointcut("deleteMedia() || updateMedia()")
+    @Pointcut("updateMedia()")
     private void combinedMediaManagement() {}
 
     // Album aspects

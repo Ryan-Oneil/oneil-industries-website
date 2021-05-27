@@ -9,7 +9,7 @@ import {
   Tooltip,
   Modal,
   message,
-  Space
+  Space,
 } from "antd";
 import Media from "./Media";
 import CloseOutlined from "@ant-design/icons/lib/icons/CloseOutlined";
@@ -21,7 +21,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import { MEDIA_IMAGE_URL } from "../../apis/endpoints";
 import EditMediaForm from "../formElements/EditMediaForm";
 import DeleteOutlined from "@ant-design/icons/lib/icons/DeleteOutlined";
-import { deleteMedia } from "../../reducers/mediaReducer";
+import { deleteMedias } from "../../reducers/mediaReducer";
 const { TextArea } = Input;
 
 export default ({
@@ -29,14 +29,14 @@ export default ({
   closeModalAction,
   showMediaPreview,
   enableManagement,
-  extraMediaInfo
+  extraMediaInfo,
 }) => {
-  const { isAuthenticated } = useSelector(state => state.auth);
-  const { comments } = useSelector(state => state.medias.entities);
+  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { comments } = useSelector((state) => state.medias.entities);
   const dispatch = useDispatch();
 
   const renderComments = () => {
-    return Object.values(comments).map(comment => (
+    return Object.values(comments).map((comment) => (
       <MediaComment {...comment} key={comment.id} />
     ));
   };
@@ -99,7 +99,7 @@ export default ({
                     style={{
                       paddingTop: 0,
                       borderBottomLeftRadius: 10,
-                      borderBottomRightRadius: 10
+                      borderBottomRightRadius: 10,
                     }}
                     content={
                       <>
@@ -130,11 +130,7 @@ export default ({
                                   type="danger"
                                   onClick={() => {
                                     dispatch(
-                                      deleteMedia(
-                                        `/gallery/media/delete/${activeMedia.id}`,
-                                        activeMedia.id,
-                                        activeMedia.size
-                                      )
+                                      deleteMedias([activeMedia.id])
                                     ).then(() => {
                                       message.success(
                                         "Successfully delete Media"

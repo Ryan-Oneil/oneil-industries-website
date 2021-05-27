@@ -8,7 +8,7 @@ import {
   Modal,
   Row,
   Statistic,
-  Tooltip
+  Tooltip,
 } from "antd";
 import DownloadOutlined from "@ant-design/icons/lib/icons/DownloadOutlined";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,21 +19,23 @@ import {
   deleteFile,
   deleteLink,
   editLink,
-  getLinkDetails
+  getLinkDetails,
 } from "../../../reducers/fileReducer";
 import { displayBytesInReadableForm } from "../../../helpers";
 import { BASE_URL } from "../../../apis/api";
-import ListCard from "../../../components/Stats/ListCard";
+import ListCard from "../../../components/DataDisplay/ListCard";
 import ConfirmButton from "../../../components/ConfirmButton";
 import Uploader from "../../../components/Uploader";
-import { EditLinkForm } from "../../../components/formElements/EditLinkForm";
+import ShareFileForm from "../../../components/formElements/ShareFileForm";
+import moment from "moment";
+import fileImage from "../../../assets/images/file.png";
 
-export default props => {
+export default (props) => {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
   const [newFiles, setNewFiles] = useState([]);
-  const { files, links } = useSelector(state => state.fileSharer.entities);
+  const { files, links } = useSelector((state) => state.fileSharer.entities);
   const { linkID } = props.match.params;
   const dispatch = useDispatch();
 
@@ -44,7 +46,7 @@ export default props => {
     title: "",
     files: [],
     size: 0,
-    views: 0
+    views: 0,
   };
 
   const deleteLinkAction = () => {
@@ -52,7 +54,7 @@ export default props => {
     props.history.goBack();
   };
 
-  const deleteFileAction = fileID => {
+  const deleteFileAction = (fileID) => {
     dispatch(deleteFile(fileID, linkID));
   };
 
@@ -84,10 +86,12 @@ export default props => {
             </Card>
 
             <Card style={{ marginTop: "2%" }} title={"Edit Link"}>
-              <EditLinkForm
-                submitAction={(id, link) => dispatch(editLink(id, link))}
-                id={linkID}
-                link={link}
+              <ShareFileForm
+                submitAction={(values) => dispatch(editLink(linkID, values))}
+                title={link.title}
+                expires={moment(link.expiryDatetime)}
+                submittingButtonText={"Confirming..."}
+                submitButtonText={"Confirm"}
               />
             </Card>
           </Col>
@@ -96,9 +100,9 @@ export default props => {
               title="Files"
               pagination
               size="small"
-              dataSource={link.files.map(id => files[id])}
+              dataSource={link.files.map((id) => files[id])}
               loading={loadingData}
-              renderItem={item => (
+              renderItem={(item) => (
                 <List.Item
                   actions={[
                     <Tooltip title="Download">
@@ -121,15 +125,11 @@ export default props => {
                       modalTitle="Do you want to delete this file?"
                       confirmAction={() => deleteFileAction(item.id)}
                       toolTip="Delete File"
-                    />
+                    />,
                   ]}
                 >
                   <List.Item.Meta
-                    avatar={
-                      <Avatar
-                        src={require("../../../assets/images/file.png")}
-                      />
-                    }
+                    avatar={<Avatar src={fileImage} />}
                     title={item.name}
                     description={`Size ${displayBytesInReadableForm(
                       item.size
@@ -158,7 +158,7 @@ export default props => {
                   buttonText="Delete"
                   confirmAction={deleteLinkAction}
                   toolTip="Delete Link"
-                />
+                />,
               ]}
             />
           </Col>
@@ -176,12 +176,12 @@ export default props => {
           }}
         >
           <Uploader
-            addedFileAction={file =>
-              setNewFiles(prevState => [...prevState, file])
+            addedFileAction={(file) =>
+              setNewFiles((prevState) => [...prevState, file])
             }
-            removeFile={file =>
-              setNewFiles(prevState =>
-                prevState.filter(prevFile => prevFile.uid !== file.uid)
+            removeFile={(file) =>
+              setNewFiles((prevState) =>
+                prevState.filter((prevFile) => prevFile.uid !== file.uid)
               )
             }
             fileList={newFiles}

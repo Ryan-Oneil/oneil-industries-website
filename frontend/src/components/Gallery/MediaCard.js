@@ -1,6 +1,7 @@
 import React from "react";
 import Media from "./Media";
 import { Card, Image } from "antd";
+import noImage from "../../assets/images/noimage.png";
 const { Meta } = Card;
 
 export default ({
@@ -11,13 +12,13 @@ export default ({
   mediaType = "",
   dateAdded = "",
   children,
-  extraClasses
+  extraClasses,
 }) => {
   const renderMissingMedia = () => {
     return (
       <Image
         alt={"No media"}
-        src={require("../../assets/images/noimage.png")}
+        src={noImage}
         preview={false}
         style={{ margin: "auto" }}
         width={"100%"}

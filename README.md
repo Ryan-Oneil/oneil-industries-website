@@ -2,11 +2,12 @@
 
 [Live Website](https://www.oneilindustries.biz/)
 
+
 React based front end purely based on API rest calls to the Spring boot backend
 
 The website allows the ability to upload images/videos and displays them in a gallery. Users are able to register on the website and can from there upload images/videos. Non registered users can see the live status of who is on Teamspeak/Discord and can view all public images including direct links to unlisted images.
 
-# Current Features
+## Current Features
 - Image/Video gallery hosting
 - Admin Dashboard
 - User Dashboard
@@ -14,7 +15,7 @@ The website allows the ability to upload images/videos and displays them in a ga
 - ShareX custom uploader API
 - File Sharing service
 
-# Frameworks/Libraries used:
+## Frameworks/Libraries used
 
 - React.js
 - Spring Boot Framework

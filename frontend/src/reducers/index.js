@@ -14,5 +14,5 @@ export default combineReducers({
   admin: adminReducer,
   user: userReducer,
   globalErrors: globalErrorReducer,
-  fileSharer: fileReducer
+  fileSharer: fileReducer,
 });

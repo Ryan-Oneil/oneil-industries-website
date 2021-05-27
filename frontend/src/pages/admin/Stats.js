@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { displayBytesInReadableForm } from "../../helpers";
 import { Col, Row, List, Avatar } from "antd";
-import StatisticCard from "../../components/Stats/StatisticCard";
-import ListCard from "../../components/Stats/ListCard";
+import StatisticCard from "../../components/DataDisplay/StatisticCard";
+import ListCard from "../../components/DataDisplay/ListCard";
 import { useDispatch, useSelector } from "react-redux";
 import { getAdminLinkStats, getAdminStats } from "../../reducers/adminReducer";
 import { BASE_URL } from "../../apis/api";
@@ -14,7 +14,7 @@ export default () => {
   const [loading, setLoading] = useState(true);
   const [loadingFileShareData, setLoadingFileShareData] = useState(true);
   const dispatch = useDispatch();
-  const { admin } = useSelector(state => state);
+  const { admin } = useSelector((state) => state);
   const { totalViews, totalLinks, mostViewed, recentShared } = admin.fileShare;
 
   const {
@@ -24,8 +24,8 @@ export default () => {
     recentUsers,
     remainingStorage,
     usedStorage,
-    recentMedia
-  } = useSelector(state => state.admin.stats);
+    recentMedia,
+  } = useSelector((state) => state.admin.stats);
 
   useEffect(() => {
     dispatch(getAdminStats()).then(() => setLoading(false));
@@ -63,7 +63,7 @@ export default () => {
             itemLayout="horizontal"
             dataSource={recentUsers}
             loading={loading}
-            renderItem={item => (
+            renderItem={(item) => (
               <List.Item>
                 <Link to={`/admin/users/${item.name}`}>
                   <List.Item.Meta
@@ -82,7 +82,7 @@ export default () => {
             itemLayout="horizontal"
             dataSource={recentMedia}
             loading={loading}
-            renderItem={item => (
+            renderItem={(item) => (
               <List.Item>
                 <List.Item.Meta
                   avatar={
@@ -114,7 +114,7 @@ export default () => {
             itemLayout="horizontal"
             dataSource={recentShared}
             loading={loadingFileShareData}
-            renderItem={item => (
+            renderItem={(item) => (
               <List.Item>
                 <List.Item.Meta
                   avatar={<Avatar icon={<FileZipOutlined />} size="large" />}

@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import biz.oneilenterprise.website.dto.AlbumDTO;
-import biz.oneilenterprise.website.dto.GalleryUploadDTO;
+import biz.oneilenterprise.website.dto.MediaUploadDTO;
 import biz.oneilenterprise.website.dto.MediaDTO;
 import biz.oneilenterprise.website.entity.Album;
 import biz.oneilenterprise.website.entity.Media;
@@ -15,6 +15,7 @@ import biz.oneilenterprise.website.exception.AlbumMissingException;
 import biz.oneilenterprise.website.exception.MediaApprovalException;
 import biz.oneilenterprise.website.exception.MediaException;
 import biz.oneilenterprise.website.utils.FileHandlerUtil;
+import biz.oneilenterprise.website.utils.ImageThumbnailWriterUtil;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class MediaServiceTest extends BaseIntegrationTest {
     public static final String PENDING = "pending";
 
     private final String mediaDirectory = "images/";
-    private final String thumbnailDirectoryPath = mediaDirectory + "/thumbnail";
+    private final String thumbnailDirectoryPath = mediaDirectory + "thumbnail";
 
     private final File videoFile = new File("src/test/resources/video.mp4");
     private final File imageFile = new File("src/test/resources/image.png");
@@ -43,6 +44,9 @@ public class MediaServiceTest extends BaseIntegrationTest {
 
     @Autowired
     private MediaService mediaService;
+
+    @Autowired
+    private ImageThumbnailWriterUtil imageThumbnailWriterUtil;
 
     @BeforeEach
     public void setup() {
@@ -60,24 +64,9 @@ public class MediaServiceTest extends BaseIntegrationTest {
 
     @Test
     public void registerPublicMediasTest() throws IOException {
-        GalleryUploadDTO galleryUploadDTO = new GalleryUploadDTO();
-        galleryUploadDTO.setPrivacy(UNLISTED);
+        MediaUploadDTO mediaUploadDTO = new MediaUploadDTO();
 
-        List<MediaDTO> mediaDTOS = mediaService.registerMedias(Collections.singletonList(imageFile), galleryUploadDTO, testUser);
-
-        assertThat(mediaDTOS).isNotEmpty();
-        assertThat(mediaDTOS).size().isEqualTo(1);
-        assertThat(mediaDTOS.get(0).getLinkStatus()).isEqualTo(UNLISTED);
-        assertThat(mediaDTOS.get(0).getUploader()).isEqualTo(testUser.getUsername());
-        assertThat(mediaDTOS.get(0).getMediaType()).isEqualTo(MediaType.IMAGE.toString());
-    }
-
-    @Test
-    public void registerUnlistedMediasTest() throws IOException {
-        GalleryUploadDTO galleryUploadDTO = new GalleryUploadDTO();
-        galleryUploadDTO.setPrivacy(PUBLIC);
-
-        List<MediaDTO> mediaDTOS = mediaService.registerMedias(Collections.singletonList(imageFile), galleryUploadDTO, testUser);
+        List<MediaDTO> mediaDTOS = mediaService.registerMedias(Collections.singletonList(imageFile), mediaUploadDTO, testUser);
 
         assertThat(mediaDTOS).isNotEmpty();
         assertThat(mediaDTOS).size().isEqualTo(1);
@@ -103,30 +92,11 @@ public class MediaServiceTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void checkPublicMediaPrivacyTest() {
-        Media media = new Media("test.png", "test.png", PUBLIC, testUser, "05/05/2000", 5000L);
-
-        mediaService.checkMediaPrivacy(media, testUser);
-
-        assertThat(media.getPublicMediaApproval()).isNotNull();
-        assertThat(media.getPublicMediaApproval().getStatus()).isEqualTo(PENDING);
-        assertThat(media.getLinkStatus()).isEqualTo(UNLISTED);
-    }
-
-    @Test
-    public void checkUnlistedMediaPrivacyTest() {
-        Media media = new Media("test.png", "test.png", UNLISTED, testUser, "05/05/2000", 5000L);
-
-        mediaService.checkMediaPrivacy(media, testUser);
-        assertThat(media.getPublicMediaApproval()).isNull();
-    }
-
-    @Test
     public void updateMediaNameTest() {
-        GalleryUploadDTO galleryUploadDTO = new GalleryUploadDTO();
-        galleryUploadDTO.setName("Test");
+        MediaUploadDTO mediaUploadDTO = new MediaUploadDTO();
+        mediaUploadDTO.setName("Test");
 
-        mediaService.updateMedia(galleryUploadDTO, 3, testUser);
+        mediaService.updateMedia(mediaUploadDTO, 3);
 
         Media media = mediaService.getMedia(3);
 
@@ -135,29 +105,15 @@ public class MediaServiceTest extends BaseIntegrationTest {
 
     @Test
     public void updateMediaAlbumTest() {
-        GalleryUploadDTO galleryUploadDTO = new GalleryUploadDTO();
-        galleryUploadDTO.setAlbumId("test");
+        MediaUploadDTO mediaUploadDTO = new MediaUploadDTO();
+        mediaUploadDTO.setAlbumId("test");
 
-        mediaService.updateMedia(galleryUploadDTO, 3, testUser);
+        mediaService.updateMedia(mediaUploadDTO, 3);
 
         Media media = mediaService.getMedia(3);
 
         assertThat(media.getAlbum()).isNotNull();
         assertThat(media.getAlbum().getName()).isEqualTo("test");
-    }
-
-    @Test
-    public void updateMediaStatusTest() {
-        GalleryUploadDTO galleryUploadDTO = new GalleryUploadDTO();
-        galleryUploadDTO.setPrivacy(PUBLIC);
-
-        mediaService.updateMedia(galleryUploadDTO, 3, testUser);
-
-        Media media = mediaService.getMediaApprovalByMediaID(3);
-
-        assertThat(media).isNotNull();
-        assertThat(media.getPublicMediaApproval()).isNotNull();
-        assertThat(media.getLinkStatus()).isEqualTo(UNLISTED);
     }
 
     @Test
@@ -312,23 +268,9 @@ public class MediaServiceTest extends BaseIntegrationTest {
         assertThat(userMediaDirectory).isEqualTo(mediaDirectory + testUser.getUsername() + "/");
     }
 
-    @Test
-    public void deleteMediaTest() throws IOException {
-        File file = writeMediaFileForTests();
-
-        Media media = mediaService.getMedia(4);
-        long deletedMediaSize = mediaService.deleteMedia(4);
-
-        assertThat(file).doesNotExist();
-        assertThat(deletedMediaSize).isEqualTo(media.getSize());
-        assertThatThrownBy(() -> mediaService.getMedia(4))
-            .isExactlyInstanceOf(MediaException.class)
-            .hasMessage("Media does not exist on this server");
-    }
-
     @NotNull
     private File writeMediaFileForTests() throws IOException {
-        FileHandlerUtil.writeImageThumbnail(imageFile, mediaService.getUserMediaDirectory(testUser.getUsername()));
+        imageThumbnailWriterUtil.writeThumbnailFromMedia(imageFile, mediaService.getUserMediaDirectory(testUser.getUsername()));
         File file = new File(mediaService.getUserMediaDirectory(testUser.getUsername()) + imageFile.getName());
 
         assertThat(file).exists();

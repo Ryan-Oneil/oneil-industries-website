@@ -1,24 +1,23 @@
 import React from "react";
-import { Field, Formik } from "formik";
+import { Field } from "formik";
 import { InputWithErrors } from "./index";
-import { Alert, Button } from "antd";
-
 import MailOutlined from "@ant-design/icons/lib/icons/MailOutlined";
 import { handleFormError } from "../../apis/ApiErrorHandler";
+import BaseForm from "./BaseForm";
 
-export default props => {
+export default (props) => {
   const onSubmit = (formValues, { setStatus, setFieldError }) => {
     return props
       .action(formValues)
-      .then(response => {
+      .then((response) => {
         if (response) {
           setStatus({ msg: response.data, type: "success" });
         }
       })
-      .catch(error => handleFormError(error, setFieldError, setStatus));
+      .catch((error) => handleFormError(error, setFieldError, setStatus));
   };
 
-  const validate = values => {
+  const validate = (values) => {
     const errors = {};
 
     if (!values.email) {
@@ -27,56 +26,28 @@ export default props => {
     return errors;
   };
 
-  return (
-    <Formik
-      initialValues={{
-        email: ""
-      }}
-      onSubmit={onSubmit}
-      validate={validate}
-    >
-      {props => {
-        const {
-          isSubmitting,
-          handleSubmit,
-          isValid,
-          errors,
-          status,
-          setStatus
-        } = props;
+  const fields = (errors) => {
+    return (
+      <Field
+        name="email"
+        as={InputWithErrors}
+        type="email"
+        suffix={<MailOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
+        error={errors.email}
+      />
+    );
+  };
 
-        return (
-          <form onSubmit={handleSubmit}>
-            <Field
-              name="email"
-              as={InputWithErrors}
-              type="email"
-              placeholder="Email"
-              prefix={<MailOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
-              error={errors.email}
-            />
-            <Button
-              type="primary"
-              htmlType="submit"
-              className="fullWidth formattedBackground"
-              disabled={!isValid || isSubmitting}
-              size="large"
-              loading={isSubmitting}
-            >
-              Confirm
-            </Button>
-            {status && (
-              <Alert
-                message={status.msg}
-                type={status.type}
-                closable
-                showIcon
-                onClose={() => setStatus("")}
-              />
-            )}
-          </form>
-        );
+  return (
+    <BaseForm
+      renderFields={fields}
+      onSubmit={onSubmit}
+      defaultValues={{
+        email: "",
       }}
-    </Formik>
+      submittingButtonText={"Confirming..."}
+      submitButtonText={"Confirm"}
+      validate={validate}
+    />
   );
 };

@@ -1,22 +1,21 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { InputWithErrors } from "./index";
-import { Field, Formik } from "formik";
-import { Alert, Button } from "antd";
+import { Field } from "formik";
 import { updateAlbum } from "../../reducers/mediaReducer";
-import SaveOutlined from "@ant-design/icons/lib/icons/SaveOutlined";
 import { handleFormError } from "../../apis/ApiErrorHandler";
+import BaseForm from "./BaseForm";
 
-export default props => {
+export default (props) => {
   const dispatch = useDispatch();
 
   const onSubmit = (formValues, { setStatus, setFieldError }) => {
-    return dispatch(updateAlbum(formValues, props.album.id)).catch(error =>
+    return dispatch(updateAlbum(formValues, props.album.id)).catch((error) =>
       handleFormError(error, setFieldError, setStatus)
     );
   };
 
-  const validate = values => {
+  const validate = (values) => {
     const errors = {};
 
     if (!values.name) {
@@ -25,57 +24,22 @@ export default props => {
     return errors;
   };
 
+  const fields = (errors) => {
+    return (
+      <Field name="name" as={InputWithErrors} type="text" error={errors.name} />
+    );
+  };
+
   return (
-    <Formik
-      initialValues={{
-        name: props.album.name
-      }}
+    <BaseForm
       onSubmit={onSubmit}
-      validate={validate}
-    >
-      {props => {
-        const {
-          isSubmitting,
-          handleSubmit,
-          isValid,
-          errors,
-          status,
-          setStatus
-        } = props;
-
-        return (
-          <form onSubmit={handleSubmit} className="login-form">
-            <Field
-              name="name"
-              as={InputWithErrors}
-              type="text"
-              placeholder="Album Name"
-              error={errors.name}
-            />
-
-            <Button
-              type="primary"
-              htmlType="submit"
-              className="fullWidth formattedBackground"
-              disabled={!isValid || isSubmitting}
-              loading={isSubmitting}
-              size="large"
-              icon={<SaveOutlined />}
-            >
-              {isSubmitting ? "Updating" : "Update"}
-            </Button>
-            {status && (
-              <Alert
-                message={status.msg}
-                type={status.type}
-                closable
-                showIcon
-                onClose={() => setStatus("")}
-              />
-            )}
-          </form>
-        );
+      defaultValues={{
+        name: props.album.name,
       }}
-    </Formik>
+      validate={validate}
+      renderFields={fields}
+      submitButtonText={"Update"}
+      submittingButtonText={"Updating"}
+    />
   );
 };

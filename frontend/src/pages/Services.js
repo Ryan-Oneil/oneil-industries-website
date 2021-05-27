@@ -4,12 +4,14 @@ import ServiceList from "../components/Services/ServiceList";
 import { Card, Col, Row } from "antd";
 import {
   getDiscordActiveList,
-  getTeamspeakActiveList
+  getTeamspeakActiveList,
 } from "../reducers/serviceReducer";
 
 export default () => {
   const dispatch = useDispatch();
-  const { activeTSList, activeDiscord } = useSelector(state => state.services);
+  const { activeTSList, activeDiscord } = useSelector(
+    (state) => state.services
+  );
 
   useEffect(() => {
     dispatch(getTeamspeakActiveList());

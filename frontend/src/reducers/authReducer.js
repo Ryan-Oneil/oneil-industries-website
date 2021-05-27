@@ -1,11 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { apiPostCall, BASE_URL, getRefreshToken } from "../apis/api";
 
-export const isTokenExpired = token => {
+export const isTokenExpired = (token) => {
   return Date.now() > token.exp * 1000;
 };
 
-export const decodeJWT = tokenType => {
+export const decodeJWT = (tokenType) => {
   const token = localStorage.getItem(tokenType);
 
   if (!token) {
@@ -31,11 +31,11 @@ export const slice = createSlice({
   initialState: {
     isAuthenticated: isAuth(),
     user: { name: decodeJWT("refreshToken").user, avatar: "" },
-    role: decodeJWT("authToken").role
+    role: decodeJWT("authToken").role,
   },
   reducers: {
     loginSuccess(state, action) {
-      state.user = { name: action.payload.username };
+      state.user = { name: action.payload };
       state.isAuthenticated = true;
     },
     logout(state) {
@@ -45,13 +45,13 @@ export const slice = createSlice({
     },
     setUserRole(state, action) {
       state.role = action.payload;
-    }
-  }
+    },
+  },
 });
 export default slice.reducer;
 export const { loginSuccess, logout, setUserRole } = slice.actions;
 
-export const getRefreshTokenWithRole = () => dispatch => {
+export const getRefreshTokenWithRole = () => (dispatch) => {
   const refreshToken = localStorage.getItem("refreshToken");
 
   if (refreshToken) {
@@ -61,29 +61,30 @@ export const getRefreshTokenWithRole = () => dispatch => {
   }
 };
 
-export const loginUser = creds => dispatch => {
-  return apiPostCall(BASE_URL + "/login", creds).then(response => {
+export const loginUser = (creds) => (dispatch) => {
+  return apiPostCall(BASE_URL + "/login", creds).then((response) => {
     const token = response.headers["authorization"];
     localStorage.setItem("refreshToken", token);
+
     return dispatch(getRefreshTokenWithRole()).then(() =>
-      dispatch(loginSuccess(creds))
+      dispatch(loginSuccess(decodeJWT("refreshToken").user))
     );
   });
 };
 
-export const registerUser = creds => {
+export const registerUser = (creds) => {
   return apiPostCall(BASE_URL + "/auth/register", creds);
 };
 
 export const logoutUser = () => {
-  return dispatch => {
+  return (dispatch) => {
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("authToken");
     dispatch(logout());
   };
 };
 
-export const resetPassword = value => {
+export const resetPassword = (value) => {
   return apiPostCall(BASE_URL + "/auth/forgotPassword/" + value.email);
 };
 

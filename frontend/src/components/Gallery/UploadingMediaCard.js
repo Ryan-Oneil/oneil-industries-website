@@ -10,7 +10,7 @@ export default ({
   uploadStatus,
   url,
   deleteAction,
-  handleShowDialog
+  handleShowDialog,
 }) => {
   const mediaFileName = url.substring(url.lastIndexOf("/") + 1);
   const mediaType = url.includes("/image/") ? "image" : "video";
@@ -60,7 +60,7 @@ export default ({
               deleteAction();
             }}
           />
-        </Tooltip>
+        </Tooltip>,
       ]}
     />
   );

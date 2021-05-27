@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, Result } from "antd";
+import { Button, Card, Result, Steps } from "antd";
 import { apiPostCall } from "../../apis/api";
 import { Link } from "react-router-dom";
 import { getApiError } from "../../apis/ApiErrorHandler";
 
-export default props => {
+export default (props) => {
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -15,8 +15,14 @@ export default props => {
       props.history.push("/");
     }
     apiPostCall(`/auth/registrationConfirm/${token}`)
-      .then(response => setSuccessMessage(response.data))
-      .catch(error => setErrorMessage(getApiError(error)));
+      .then((response) => {
+        if (response.data) {
+          setErrorMessage(response.data);
+        } else {
+          setSuccessMessage("Your account has been verified");
+        }
+      })
+      .catch((error) => setErrorMessage(getApiError(error)));
   }, []);
 
   return (
@@ -29,8 +35,10 @@ export default props => {
             subTitle={errorMessage}
             extra={[
               <Link to="/">
-                <Button type="primary">Return Home</Button>
-              </Link>
+                <Button type="primary" className={""}>
+                  Return Home
+                </Button>
+              </Link>,
             ]}
           />
         )}
@@ -43,7 +51,7 @@ export default props => {
             extra={[
               <Link to="/login">
                 <Button type="primary">Login</Button>
-              </Link>
+              </Link>,
             ]}
           />
         )}

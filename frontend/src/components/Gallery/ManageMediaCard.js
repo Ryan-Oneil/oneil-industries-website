@@ -12,7 +12,7 @@ export default ({
   dateAdded,
   manageEnabled,
   onSelect,
-  isSelected
+  isSelected,
 }) => {
   const iconStyle = { fontSize: "4em", float: "right" };
 

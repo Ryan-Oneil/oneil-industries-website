@@ -25,9 +25,9 @@ public class ResetPasswordTokenRepositoryTest extends BaseRepository {
 
     @Test
     public void getByUsernameTest() {
-        Optional<PasswordResetToken> token = repository.getByUsername(user);
+        Optional<PasswordResetToken> token = repository.getByUser(user);
 
         assertThat(token.isPresent()).isTrue();
-        assertThat(token.get().getUsername().getUsername()).isEqualTo(user.getUsername());
+        assertThat(token.get().getUser().getUsername()).isEqualTo(user.getUsername());
     }
 }

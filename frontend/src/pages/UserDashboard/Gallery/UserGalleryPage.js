@@ -6,12 +6,12 @@ import ManageMediaGrid from "../../../components/Gallery/ManageMediaGrid";
 import MediaModal from "../../../components/Gallery/MediaModal";
 
 export default () => {
-  const { albums, medias } = useSelector(state => state.medias.entities);
+  const { albums, medias } = useSelector((state) => state.medias.entities);
   const [activeMedia, setActiveMedia] = useState("");
   const dispatch = useDispatch();
-  const { name } = useSelector(state => state.auth.user);
+  const { name } = useSelector((state) => state.auth.user);
 
-  const handleShowDialog = media => {
+  const handleShowDialog = (media) => {
     setActiveMedia(media);
   };
 

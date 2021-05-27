@@ -7,7 +7,7 @@ import { REGISTER_URL } from "../../constants/constants";
 export default () => {
   return (
     <div className="login">
-      <Card>
+      <Card className={"roundedShadowBox"}>
         <LoginForm />
         <Divider>OR</Divider>
         <Link to={REGISTER_URL}>

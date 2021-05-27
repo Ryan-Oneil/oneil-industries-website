@@ -16,24 +16,24 @@ export default ({
   albums = [],
   showUploader,
   name,
-  endpoint
+  endpoint,
 }) => {
   const [enableManage, setEnableManage] = useState(false);
   const [selectedMedias, setSelectedMedias] = useState([]);
   const disableOptions = !enableManage || !selectedMedias.length > 0;
   const dispatch = useDispatch();
 
-  const toggleManagedMedia = mediaId => {
+  const toggleManagedMedia = (mediaId) => {
     if (!selectedMedias.includes(mediaId)) {
-      setSelectedMedias(prevState => [...prevState, mediaId]);
+      setSelectedMedias((prevState) => [...prevState, mediaId]);
     } else {
-      const filteredArray = selectedMedias.filter(id => id !== mediaId);
+      const filteredArray = selectedMedias.filter((id) => id !== mediaId);
       setSelectedMedias(filteredArray);
     }
   };
 
   const renderAlbums = () => {
-    return albums.map(album => {
+    return albums.map((album) => {
       return (
         <Menu.Item
           key={album.id}
@@ -78,7 +78,7 @@ export default ({
     </Menu>
   );
 
-  const cardRender = item => {
+  const cardRender = (item) => {
     return (
       <List.Item key={item.id}>
         <ManageMediaCard
@@ -103,7 +103,7 @@ export default ({
         }`}
         size={"large"}
         onClick={() => {
-          setEnableManage(prevState => !prevState);
+          setEnableManage((prevState) => !prevState);
         }}
         overlay={options}
         style={{ float: "right", marginBottom: "1%", marginRight: 35 }}

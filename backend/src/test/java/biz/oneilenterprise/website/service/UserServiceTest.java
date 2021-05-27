@@ -154,12 +154,12 @@ public class UserServiceTest extends BaseIntegrationTest {
     @Test
     public void createVerificationTokenTest() {
         User user = userService.getUser("user1");
-        userService.createVerificationToken(user, "55");
+        VerificationToken token = userService.createVerificationToken(user);
 
-        VerificationToken verificationToken = userService.getVerificationToken("55");
+        VerificationToken verificationToken = userService.getVerificationToken(token.getToken());
 
         assertThat(verificationToken).isNotNull();
-        assertThat(verificationToken.getUsername()).isNotNull();
+        assertThat(verificationToken.getUser()).isNotNull();
     }
 
     @Test
@@ -167,7 +167,7 @@ public class UserServiceTest extends BaseIntegrationTest {
         VerificationToken token = userService.getVerificationToken("e1d59296-5167-4986-897a-324c170f6e0f");
 
         assertThat(token).isNotNull();
-        assertThat(token.getUsername()).isNotNull();
+        assertThat(token.getUser()).isNotNull();
     }
 
     @Test
@@ -302,9 +302,9 @@ public class UserServiceTest extends BaseIntegrationTest {
 
     @Test
     public void confirmUserRegistrationExpiredTest() {
-        assertThatThrownBy(() -> userService.confirmUserRegistration("4f8fe42f-255f-471d-9e93-b8a06d1b0c2f"))
-            .isExactlyInstanceOf(TokenException.class)
-            .hasMessage("Token has expired");
+        String message = userService.confirmUserRegistration("4f8fe42f-255f-471d-9e93-b8a06d1b0c2f");
+
+        assertThat(message).isEqualTo("This link has expired, a new one has been emailed");
     }
 
     @Test

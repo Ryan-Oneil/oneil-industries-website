@@ -26,15 +26,15 @@ public class Token {
     private String token;
 
     @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
-    @JoinColumn(nullable = false, name = "username")
-    private User username;
+    @JoinColumn(nullable = false, name = "user_id")
+    private User user;
 
     @Column(name = "expiry_date")
     private Date expiryDate;
 
-    public Token(String token, User username) {
+    public Token(String token, User user) {
         this.token = token;
-        this.username = username;
+        this.user = user;
         this.expiryDate = calculateExpiryDate();
     }
 
@@ -64,12 +64,12 @@ public class Token {
         this.token = token;
     }
 
-    public User getUsername() {
-        return username;
+    public User getUser() {
+        return user;
     }
 
-    public void setUsername(User username) {
-        this.username = username;
+    public void setUser(User username) {
+        this.user = username;
     }
 
     public Date getExpiryDate() {
@@ -87,12 +87,12 @@ public class Token {
         PasswordResetToken that = (PasswordResetToken) o;
         return getId() == that.getId() &&
             getToken().equals(that.getToken()) &&
-            getUsername().equals(that.getUsername()) &&
+            getUser().equals(that.getUser()) &&
             getExpiryDate().equals(that.getExpiryDate());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getToken(), getUsername(), getExpiryDate());
+        return Objects.hash(getId(), getToken(), getUser(), getExpiryDate());
     }
 }

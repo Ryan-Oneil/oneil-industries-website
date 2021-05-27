@@ -6,8 +6,10 @@ import biz.oneilenterprise.website.security.JWTAuthenticationFilter;
 import biz.oneilenterprise.website.security.JWTAuthorizationFilter;
 import biz.oneilenterprise.website.security.RestAccessDeniedHandler;
 import biz.oneilenterprise.website.security.RestAuthenticationEntryPoint;
+import biz.oneilenterprise.website.service.CustomUserDetailsService;
+import biz.oneilenterprise.website.service.LoginAttemptService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
@@ -18,7 +20,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.FilterInvocation;
@@ -31,15 +32,20 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    @Value("${spring.ssl:true}")
+    private Boolean enableSSL;
+
     @Autowired
-    @Qualifier("userDetailsService")
-    private UserDetailsService userDetailsService;
+    private CustomUserDetailsService customUserDetailsService;
 
     @Autowired
     private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
 
     @Autowired
     private RestAccessDeniedHandler restAccessDeniedHandler;
+
+    @Autowired
+    private LoginAttemptService loginAttemptService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -59,14 +65,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     @Autowired
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+        auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable()
-//           .requiresChannel().anyRequest().requiresSecure()
-//           .and()
+        HttpSecurity httpSecurity = http.cors().and().csrf().disable()
+            .formLogin()
+            .usernameParameter("email")
+            .and()
             .exceptionHandling()
             .authenticationEntryPoint(restAuthenticationEntryPoint)
             .accessDeniedHandler(restAccessDeniedHandler)
@@ -80,9 +87,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/admin/**", "/services/admin/**", "/gallery/admin/**", "/user/admin/**", "/**/admin/**", "/actuator/**").access("hasRole('ROLE_ADMIN')")
             .anyRequest().hasAnyRole("ADMIN","USER", "UNREGISTERED")
             .and()
-            .addFilter(new JWTAuthenticationFilter(authenticationManager()))
+            .addFilter(new JWTAuthenticationFilter(authenticationManager(), customUserDetailsService, loginAttemptService))
             .addFilter(jwtAuthorizationFilter())
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and();
+
+        if (enableSSL) {
+            httpSecurity.requiresChannel().anyRequest().requiresSecure();
+        }
     }
 
     @Bean

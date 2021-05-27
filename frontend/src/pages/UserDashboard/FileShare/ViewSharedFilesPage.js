@@ -4,8 +4,8 @@ import { useSelector } from "react-redux";
 import { getUserLinks } from "../../../reducers/fileReducer";
 import SharedLinkTable from "../../../components/Table/SharedLinkTable";
 
-export default props => {
-  const { name } = useSelector(state => state.auth.user);
+export default (props) => {
+  const { name } = useSelector((state) => state.auth.user);
   const { match } = props;
 
   return (

@@ -3,8 +3,8 @@ package biz.oneilenterprise.website.service;
 import static biz.oneilenterprise.website.security.SecurityConstants.SECRET;
 import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
 
-import biz.oneilenterprise.website.dto.RegisterUserDTO;
 import biz.oneilenterprise.website.dto.QuotaDTO;
+import biz.oneilenterprise.website.dto.RegisterUserDTO;
 import biz.oneilenterprise.website.dto.ShareXConfigDTO;
 import biz.oneilenterprise.website.dto.UserDTO;
 import biz.oneilenterprise.website.entity.ApiToken;
@@ -13,7 +13,6 @@ import biz.oneilenterprise.website.entity.Quota;
 import biz.oneilenterprise.website.entity.Role;
 import biz.oneilenterprise.website.entity.User;
 import biz.oneilenterprise.website.entity.VerificationToken;
-import biz.oneilenterprise.website.events.OnRegistrationCompleteEvent;
 import biz.oneilenterprise.website.exception.TokenException;
 import biz.oneilenterprise.website.exception.UserException;
 import biz.oneilenterprise.website.repository.QuotaRepository;
@@ -33,7 +32,6 @@ import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -41,13 +39,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
 
+    private static final String REGISTRATION_EMAIL_MESSAGE = "You have successfully registered your account. Please confirm your email with this link to complete registration";
+
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final VerificationTokenRepository verificationTokenRepository;
     private final ResetPasswordTokenRepository passwordTokenRepository;
     private final QuotaRepository quotaRepository;
     private final RoleRepository roleRepository;
-    private final ApplicationEventPublisher eventPublisher;
     private final EmailSender emailSender;
 
     @Value("${service.backendUrl}")
@@ -59,19 +58,18 @@ public class UserService {
     public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository,
         VerificationTokenRepository verificationTokenRepository,
         ResetPasswordTokenRepository passwordTokenRepository, QuotaRepository quotaRepository, RoleRepository roleRepository,
-        ApplicationEventPublisher eventPublisher, EmailSender emailSender) {
+        EmailSender emailSender) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.verificationTokenRepository = verificationTokenRepository;
         this.passwordTokenRepository = passwordTokenRepository;
         this.quotaRepository = quotaRepository;
         this.roleRepository = roleRepository;
-        this.eventPublisher = eventPublisher;
         this.emailSender = emailSender;
     }
 
     public List<UserDTO> getUsers() {
-        return usersToDTOs(userRepository.getAllUsers());
+        return usersToDTOs(userRepository.findAllByOrderByIdAsc());
     }
 
     public List<UserDTO> getRecentUsers() {
@@ -88,7 +86,7 @@ public class UserService {
 
     public void registerUser(RegisterUserDTO registerUserDTO) {
         String username = registerUserDTO.getUsername();
-        String email = registerUserDTO.getEmail();
+        String email = registerUserDTO.getEmail().toLowerCase();
 
         validateUsername(username);
         validateEmail(email);
@@ -98,9 +96,15 @@ public class UserService {
         User user = new User(username.toLowerCase(), encryptedPassword,false, email, "ROLE_UNREGISTERED");
         Quota quota = new Quota(user, 0, 25, false);
         user.setQuota(quota);
-
         userRepository.save(user);
-        eventPublisher.publishEvent(new OnRegistrationCompleteEvent(user, frontendUrl));
+
+        sendUserVerificationEmail(user);
+    }
+
+    public void sendUserVerificationEmail(User user) {
+        VerificationToken token = createVerificationToken(user);
+        emailSender.sendSimpleEmail(user.getEmail(), "Registration Confirmation", String.format("%s %s/confirmEmail/%s",
+            REGISTRATION_EMAIL_MESSAGE, frontendUrl, token.getToken()),"noreply@oneilenterprise.com", null);
     }
 
     public void validateUsername(String username) {
@@ -134,10 +138,13 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void createVerificationToken(User user, String tokenUUID) {
+    public VerificationToken createVerificationToken(User user) {
+        String tokenUUID = UUID.randomUUID().toString();
         VerificationToken token = new VerificationToken(tokenUUID, user);
 
         verificationTokenRepository.save(token);
+
+        return token;
     }
 
     public VerificationToken getVerificationToken(String token) {
@@ -150,7 +157,7 @@ public class UserService {
 
     public PasswordResetToken generateResetToken(String userEmail) {
         User user = getUserByEmail(userEmail);
-        Optional<PasswordResetToken> passwordResetToken = passwordTokenRepository.getByUsername(user);
+        Optional<PasswordResetToken> passwordResetToken = passwordTokenRepository.getByUser(user);
         passwordResetToken.ifPresent(passwordTokenRepository::delete);
 
         String tokenUUID = UUID.randomUUID().toString();
@@ -169,8 +176,10 @@ public class UserService {
     public void resetUserPassword(String tokenUUID, String newPassword) {
         PasswordResetToken token = getResetToken(tokenUUID);
 
-        checkExpired(token.getExpiryDate());
-        changeUserPassword(token.getUsername(), newPassword);
+        if (isTokenExpired(token.getExpiryDate())) {
+            throw new TokenException("Token has expired");
+        }
+        changeUserPassword(token.getUser(), newPassword);
 
         passwordTokenRepository.delete(token);
     }
@@ -245,29 +254,34 @@ public class UserService {
         ApiToken apiToken = getApiTokenByUser(user);
 
         if (apiToken == null) {
-            return null;
+            apiToken = generateApiToken(user);
         }
         //Returns a shareX custom uploader config template
         return new ShareXConfigDTO(apiToken.getToken(), backendUrl);
     }
 
-    private void checkExpired(Date date) {
+    private boolean isTokenExpired(Date date) {
         Calendar cal = Calendar.getInstance();
-        if ((date.getTime() - cal.getTime().getTime()) <= 0) {
-            throw new TokenException("Token has expired");
-        }
+        return (date.getTime() - cal.getTime().getTime()) <= 0;
     }
 
-    public void confirmUserRegistration(String token) {
+    public String confirmUserRegistration(String token) {
         VerificationToken verificationToken = getVerificationToken(token);
-        checkExpired(verificationToken.getExpiryDate());
+        User user = verificationToken.getUser();
 
-        User user = verificationToken.getUsername();
+        if (isTokenExpired(verificationToken.getExpiryDate())) {
+            deleteVerificationToken(verificationToken);
+            sendUserVerificationEmail(user);
 
+            return "This link has expired, a new one has been emailed";
+        }
         deleteVerificationToken(verificationToken);
 
         user.setEnabled(true);
+        user.setRole("ROLE_USER");
         userRepository.save(user);
+
+        return "";
     }
 
     public UserDTO getUserStats(String username) {

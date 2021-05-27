@@ -5,10 +5,10 @@ import ManageMediaGrid from "../../../components/Gallery/ManageMediaGrid";
 import { ADMIN_MEDIAS_ENDPOINT } from "../../../apis/endpoints";
 
 export default () => {
-  const { medias } = useSelector(state => state.medias.entities);
+  const { medias } = useSelector((state) => state.medias.entities);
   const [activeMedia, setActiveMedia] = useState("");
 
-  const handleShowDialog = media => {
+  const handleShowDialog = (media) => {
     setActiveMedia(media);
   };
 

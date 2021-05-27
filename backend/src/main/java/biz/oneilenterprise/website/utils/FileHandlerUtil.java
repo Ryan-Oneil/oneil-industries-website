@@ -96,16 +96,6 @@ public class FileHandlerUtil {
         deleteFile(directory.getPath());
     }
 
-    public static void writeImageThumbnail(File file, String dest) throws IOException {
-        String extension = getExtensionType(file.getName());
-
-        ImageThumbnailWriterUtil.writeImage(file, dest, extension);
-    }
-
-    public static void writeVideoThumbnail(File video, String dest) throws IOException {
-        ImageThumbnailWriterUtil.writeThumbnailFromVideo(video, dest);
-    }
-
     public static String getExtensionType(String originalFileName) {
         return originalFileName.substring(originalFileName.lastIndexOf('.')+1).toLowerCase();
     }
@@ -140,14 +130,18 @@ public class FileHandlerUtil {
         return supportImageFormats.contains(fileExtension);
     }
 
-    public static boolean isVideoFile(File file) throws IOException {
+    public static boolean isVideoFile(File file) {
         Tika tika = new Tika();
-        String contentType = tika.detect(file);
-
+        String contentType = "";
+        try {
+            contentType = tika.detect(file);
+        } catch (IOException e) {
+            logger.error("Error trying to detect file", e);
+        }
         return contentType.startsWith("video");
     }
 
-    public static String getFileMediaType(File file) throws IOException {
+    public static String getFileMediaType(File file) {
         if (isImageFile(file.getName())) {
             return MediaType.IMAGE.toString();
         } else if (isVideoFile(file)) {

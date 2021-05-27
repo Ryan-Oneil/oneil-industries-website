@@ -4,6 +4,7 @@ import { Layout } from "antd";
 import MainNav from "./MainNav";
 import AuthNav from "./AuthNav";
 import ResponsiveMainNav from "./ResponsiveMainNav";
+import logo from "../../assets/images/OneilEnterpriseLogo.png";
 const { Header } = Layout;
 
 export default () => {
@@ -11,11 +12,7 @@ export default () => {
     <Header className="whiteBackground headerLogo">
       <div className="logo">
         <NavLink to="/">
-          <img
-            src={require("../../assets/images/OneilEnterpriseLogo.png")}
-            alt="Factory"
-            height={60}
-          />
+          <img src={logo} alt="Factory" height={60} />
         </NavLink>
       </div>
       <div className="leftMenu">

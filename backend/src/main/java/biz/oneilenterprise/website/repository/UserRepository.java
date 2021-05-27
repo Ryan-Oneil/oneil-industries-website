@@ -9,8 +9,7 @@ import org.springframework.data.repository.CrudRepository;
 public interface UserRepository extends CrudRepository<User, Integer> {
     Optional<User> getByUsername(String username);
     Optional<User> getUsersByEmail(String email);
-    @Query("select u from users u")
-    List<User> getAllUsers();
+    List<User> findAllByOrderByIdAsc();
 
     @Query("select case when count(u)> 0 then true else false end from users u where lower(u.username) like lower(?1)")
     boolean isUsernameTaken(String name);

@@ -7,7 +7,7 @@ const slice = createSlice({
   name: "service",
   initialState: {
     activeTSList: [],
-    activeDiscord: []
+    activeDiscord: [],
   },
   reducers: {
     fetchedTeamspeakList(state, action) {
@@ -15,24 +15,24 @@ const slice = createSlice({
     },
     fetchedDiscordList(state, action) {
       state.activeDiscord = action.payload;
-    }
-  }
+    },
+  },
 });
 export default slice.reducer;
 export const { fetchedTeamspeakList, fetchedDiscordList } = slice.actions;
 
-export const getTeamspeakActiveList = () => dispatch => {
+export const getTeamspeakActiveList = () => (dispatch) => {
   apiGetCall("/services/public/teamspeak")
-    .then(response => {
+    .then((response) => {
       dispatch(fetchedTeamspeakList(response.data));
     })
-    .catch(error => dispatch(setError(getApiError(error))));
+    .catch((error) => dispatch(setError(getApiError(error))));
 };
 
-export const getDiscordActiveList = () => dispatch => {
+export const getDiscordActiveList = () => (dispatch) => {
   apiGetCall("/services/public/discord")
-    .then(response => {
+    .then((response) => {
       dispatch(fetchedDiscordList(response.data));
     })
-    .catch(error => dispatch(setError(getApiError(error))));
+    .catch((error) => dispatch(setError(getApiError(error))));
 };

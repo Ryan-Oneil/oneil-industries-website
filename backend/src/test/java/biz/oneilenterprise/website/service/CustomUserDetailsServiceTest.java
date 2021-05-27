@@ -24,10 +24,10 @@ public class CustomUserDetailsServiceTest extends BaseIntegrationTest {
 
     @Test
     public void loadUserByUsernameTest() {
-        User user = (User) customUserDetailsService.loadUserByUsername("test");
+        User user = (User) customUserDetailsService.loadUserByUsername("test@example.com");
 
         assertThat(user).isNotNull();
-        assertThat(user.getUsername()).isEqualTo("test");
+        assertThat(user.getEmail()).isEqualTo("test@example.com");
     }
 
     @Test
@@ -46,7 +46,7 @@ public class CustomUserDetailsServiceTest extends BaseIntegrationTest {
         }
         assertThatThrownBy(() -> customUserDetailsService.loadUserByUsername("test"))
             .isExactlyInstanceOf(TooManyLoginAttempts.class)
-            .hasMessage("Too many login attempts");
+            .hasMessage("Too many login attempts. Try again in a few minutes");
     }
 
     @Test

@@ -1,13 +1,11 @@
 import React from "react";
 import { Route, Switch } from "react-router-dom";
 import PrivateRoute from "../../components/PrivateRoute";
-import APIPage from "./APIPage";
 import ProfilePage from "./Overview";
 import UserGalleryPage from "./Gallery/UserGalleryPage";
 import UserAlbumsPage from "./Gallery/UserAlbumsPage";
 import SideNav from "../../components/site layout/SideNav";
 import UserOutlined from "@ant-design/icons/lib/icons/UserOutlined";
-import ApiOutlined from "@ant-design/icons/lib/icons/ApiOutlined";
 import UploadOutlined from "@ant-design/icons/lib/icons/UploadOutlined";
 import PictureOutlined from "@ant-design/icons/lib/icons/PictureOutlined";
 import FileImageOutlined from "@ant-design/icons/lib/icons/FileImageOutlined";
@@ -23,12 +21,9 @@ import ShareAltOutlined from "@ant-design/icons/lib/icons/ShareAltOutlined";
 import { GALLERY_UPLOAD_URL } from "../../constants/constants";
 const { Content, Sider } = Layout;
 
-export default props => {
+export default (props) => {
   const { match } = props;
-  const links = [
-    { path: "", icon: <UserOutlined />, name: "Dashboard" },
-    { path: "/api", icon: <ApiOutlined />, name: "Api" }
-  ];
+  const links = [{ path: "", icon: <UserOutlined />, name: "Dashboard" }];
   const subLinks = [
     {
       title: "Gallery",
@@ -38,14 +33,14 @@ export default props => {
         {
           path: "/gallery/medias",
           icon: <PictureOutlined />,
-          name: "Medias"
+          name: "Medias",
         },
         {
           path: "/gallery/albums",
           icon: <FileImageOutlined />,
-          name: "Albums"
-        }
-      ]
+          name: "Albums",
+        },
+      ],
     },
     {
       title: "File Share",
@@ -54,15 +49,15 @@ export default props => {
         {
           path: "/fileshare/share",
           icon: <ShareAltOutlined />,
-          name: "Share files"
+          name: "Share files",
         },
         {
           path: "/fileshare/files",
           icon: <FolderOutlined />,
-          name: "Files"
-        }
-      ]
-    }
+          name: "Files",
+        },
+      ],
+    },
   ];
 
   return (
@@ -75,7 +70,6 @@ export default props => {
           <Switch>
             <PrivateRoute>
               <Route exact path={match.path} component={ProfilePage} />
-              <Route exact path={`${match.path}/api`} component={APIPage} />
               <Route
                 exact
                 path={`${match.path}/gallery/medias`}

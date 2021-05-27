@@ -4,25 +4,28 @@ import DeleteOutlined from "@ant-design/icons/lib/icons/DeleteOutlined";
 import Uploader from "../../../components/Uploader";
 import {
   displayBytesInReadableForm,
-  getUploadProgress
+  getDateWithAddedDays,
+  getUploadProgress,
 } from "../../../helpers";
-import ShareLinkForm from "../../../components/formElements/ShareLinkForm";
 import { uploadFiles } from "../../../reducers/fileReducer";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import EditOutlined from "@ant-design/icons/lib/icons/EditOutlined";
 import ShareAltOutlined from "@ant-design/icons/lib/icons/ShareAltOutlined";
 import FileAddOutlined from "@ant-design/icons/lib/icons/FileAddOutlined";
+import ShareFileForm from "../../../components/formElements/ShareFileForm";
+import moment from "moment";
+import fileImage from "../../../assets/images/file.png";
 
-export default props => {
+export default (props) => {
   const [files, setFiles] = useState([]);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadStatus, setUploadStatus] = useState("");
   const [uploadedFilesUrlId, setUploadedFilesUrlId] = useState("");
 
-  const removeFile = fileId => {
+  const removeFile = (fileId) => {
     const oldFiles = [...files];
 
-    setFiles(oldFiles.filter(file => file.uid !== fileId));
+    setFiles(oldFiles.filter((file) => file.uid !== fileId));
   };
 
   const updateFileUploadProgress = (progress, status) => {
@@ -30,8 +33,8 @@ export default props => {
     setUploadStatus(status);
   };
 
-  const uploadAction = params => {
-    return uploadFiles("/share", files, params, event =>
+  const uploadAction = (params) => {
+    return uploadFiles("/share", files, params, (event) =>
       updateFileUploadProgress(getUploadProgress(event), "active")
     )
       .then(({ data }) => {
@@ -40,7 +43,7 @@ export default props => {
 
         setUploadedFilesUrlId(data.id);
       })
-      .catch(error => {
+      .catch(() => {
         updateFileUploadProgress(100, "exception");
       });
   };
@@ -51,14 +54,20 @@ export default props => {
         <>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <div style={{ width: "35%" }}>
-              <ShareLinkForm uploadAction={uploadAction} />
+              <ShareFileForm
+                submitAction={uploadAction}
+                submitButtonText={"Upload"}
+                submittingButtonText={"Uploading..."}
+                expires={moment(getDateWithAddedDays(14))}
+              />
             </div>
             <div style={{ width: "60%" }}>
               <Uploader
                 style={{ height: "100%" }}
+                uploadBoxStyle={{ height: "100%" }}
                 removeFile={removeFile}
-                addedFileAction={file =>
-                  setFiles(prevState => [...prevState, file])
+                addedFileAction={(file) =>
+                  setFiles((prevState) => [...prevState, file])
                 }
                 fileList={files}
                 icon={<FileAddOutlined style={{ color: "#54a7b2" }} />}
@@ -68,7 +77,7 @@ export default props => {
           <Card style={{ marginTop: "2%" }} className={"roundedShadowBox"}>
             <List
               dataSource={files}
-              renderItem={item => (
+              renderItem={(item) => (
                 <List.Item
                   actions={[
                     <Button
@@ -79,15 +88,11 @@ export default props => {
                       onClick={() => {
                         removeFile(item.uid);
                       }}
-                    />
+                    />,
                   ]}
                 >
                   <List.Item.Meta
-                    avatar={
-                      <Avatar
-                        src={require("../../../assets/images/file.png")}
-                      />
-                    }
+                    avatar={<Avatar src={fileImage} />}
                     title={item.name}
                     description={displayBytesInReadableForm(item.size)}
                   />
@@ -146,7 +151,7 @@ export default props => {
                   icon={<EditOutlined />}
                 >
                   Edit
-                </Button>
+                </Button>,
               ]}
             />
           )}
