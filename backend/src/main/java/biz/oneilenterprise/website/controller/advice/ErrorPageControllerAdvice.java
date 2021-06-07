@@ -12,12 +12,10 @@ import biz.oneilenterprise.website.exception.TokenException;
 import biz.oneilenterprise.website.exception.TooManyLoginAttempts;
 import biz.oneilenterprise.website.exception.UserException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.github.theholywaffle.teamspeak3.api.exception.TS3QueryShutDownException;
 import java.io.FileNotFoundException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileUploadBase.SizeLimitExceededException;
 import org.apache.commons.fileupload.FileUploadException;
 import org.springframework.http.HttpHeaders;
@@ -71,11 +69,6 @@ public class ErrorPageControllerAdvice extends ResponseEntityExceptionHandler {
     @ExceptionHandler(JWTVerificationException.class)
     public ResponseEntity jwtException(JWTVerificationException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-    }
-
-    @ExceptionHandler(TS3QueryShutDownException.class)
-    public ResponseEntity ts3BotException() {
-        return ResponseEntity.status(HttpServletResponse.SC_INTERNAL_SERVER_ERROR).body("Teamspeak voiceservices bot is down");
     }
 
     @ExceptionHandler(MediaException.class)

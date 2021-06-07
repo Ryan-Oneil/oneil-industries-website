@@ -1,7 +1,7 @@
 package biz.oneilenterprise.website.controller;
 
 import biz.oneilenterprise.website.dto.CustomChannelDTO;
-import biz.oneilenterprise.website.service.ManagerService;
+import biz.oneilenterprise.website.service.VOIPService;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,20 +11,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/services")
 public class ServiceController {
 
-    private final ManagerService managerService;
+    private final VOIPService VOIPService;
 
-    public ServiceController(ManagerService managerService) {
-        this.managerService = managerService;
-    }
-
-    @GetMapping("public/teamspeak")
-    public List<CustomChannelDTO> getActiveTeamspeakChannels() {
-        return managerService.getTeamspeakChannelUsers();
+    public ServiceController(VOIPService VOIPService) {
+        this.VOIPService = VOIPService;
     }
 
     @GetMapping("public/discord")
     public List<CustomChannelDTO> getActiveDiscordChannels() {
-        return managerService.getDiscordCategories();
+        return VOIPService.getDiscordCategories();
     }
 
 }

@@ -30,11 +30,11 @@ public class DiscordManager {
         return categories.stream()
             .filter(category -> !category.getVoiceChannels().isEmpty())
             .map(category -> {
-                CustomChannelDTO parentCategory = new CustomChannelDTO(category.getName(), category.getId());
+                var parentCategory = new CustomChannelDTO(category.getName(), category.getId());
                 List<VoiceChannel> voiceChannels = category.getVoiceChannels();
 
                 voiceChannels.forEach(voiceChannel ->  {
-                    CustomChannelDTO discordChannel = new CustomChannelDTO(voiceChannel.getName(), voiceChannel.getId());
+                    var discordChannel = new CustomChannelDTO(voiceChannel.getName(), voiceChannel.getId());
                     List<ServiceClientDTO> usersInChannel = voiceChannel.getMembers().stream()
                         .map(member -> new ServiceClientDTO(member.getEffectiveName(), member.getId()))
                         .collect(Collectors.toList());
