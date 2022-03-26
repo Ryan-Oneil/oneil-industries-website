@@ -5,7 +5,7 @@
   "dependencies": {
     "@ant-design/icons": "4.6.2",
     "@reduxjs/toolkit": "1.5.1",
-    "antd": "4.16.0",
+    "antd": "4.19.3",
     "axios": "0.21.1",
     "customize-cra": "1.0.0",
     "formik": "2.2.8",
